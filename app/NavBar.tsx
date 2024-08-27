@@ -30,7 +30,7 @@ const NavBar = () => {
             <div className="flex items-center">
                 <a href="/">
                     <h1 className="text-red-600 font-bold text-xl">
-                        Ivan Yalovets
+                        Yalovets Blog
                     </h1>
                 </a>
             </div>
