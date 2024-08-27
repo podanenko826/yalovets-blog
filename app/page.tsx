@@ -14,7 +14,7 @@ export default function Home() {
                 <h2 className="mt-5">
                     By Ivan Yalovets. Since 2024, I published 0 articles.
                 </h2>
-                <button className="mt-7 px-8 py-[18px] rounded-[5px] bg-red-500 text-white font-semibold">
+                <button className="mt-7 px-8 py-[18px] rounded-[5px] bg-red-500 hover:bg-red-600 active:bg-black active:outline outline-2 outline-zinc-600 duration-75 text-white font-semibold">
                     Start Reading
                 </button>
             </div>
