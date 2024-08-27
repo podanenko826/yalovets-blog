@@ -1,6 +1,6 @@
 export default function Home() {
     return (
-        <main className="mt-4 p-5">
+        <main className="mt-8">
             {/* First heading */}
             <div className="min-w-screen px-[330px]">
                 <h1 className="font-sans font-bold text-[25px] text-slate-500">

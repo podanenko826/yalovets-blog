@@ -26,7 +26,7 @@ const NavBar = () => {
     ];
 
     return (
-        <nav className="flex justify-between min-w-screen px-[330px] py-8 bg-white">
+        <nav className="flex justify-between min-w-screen px-[330px] py-6 bg-white">
             <div className="flex items-center">
                 <a href="/">
                     <h1 className="text-red-600 font-bold text-xl">
