@@ -6,6 +6,10 @@ import styles from './NavBar.module.css';
 
 import {usePathname} from 'next/navigation';
 
+import {FaCoffee} from 'react-icons/fa';
+// import {BiSolidCoffee} from 'react-icons/bi';
+// import {BiSolidCoffeeAlt} from 'react-icons/bi';
+
 const NavBar = () => {
     const currentPath = usePathname();
 
@@ -32,6 +36,7 @@ const NavBar = () => {
             <div className={styles.navLogo_container}>
                 <a href="/">
                     <h1 className={styles.navLogo}>Yalovets Blog</h1>
+                    <FaCoffee className={styles.navLogo_icon} />
                 </a>
             </div>
 

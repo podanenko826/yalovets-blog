@@ -10,6 +10,14 @@
 
 .navLogo {
     color: red;
+    align-self: center;
+}
+
+.navLogo_icon {
+    margin: 3px 0px 0px 3px;
+    align-self: center;
+    font-size: 30px;
+    color: red;
 }
 
 .navContainer {
