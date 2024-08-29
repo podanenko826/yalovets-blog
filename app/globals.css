@@ -78,11 +78,11 @@ h2.subheading {
 .btn-filled {
     padding: 20px 36px;
     border-radius: 5px;
-    background: rgb(255, 60, 60);
+    /* background: rgb(255, 60, 60); */
     /* background: darkcyan; */
     /* background: dodgerblue; */
     /* background: royalblue; */
-    /* background: steelblue; */
+    background: steelblue;
     color: white;
     font-size: 16px;
     font-weight: 600;
@@ -91,7 +91,8 @@ h2.subheading {
 }
 
 .btn-filled:hover {
-    background: rgb(220, 0, 0);
+    /* background: rgb(220, 0, 0); */
+    background: rgb(45, 110, 164);
 }
 
 .btn-filled:active {
