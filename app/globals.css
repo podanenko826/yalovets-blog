@@ -1,3 +1,11 @@
+:root {
+    --col-primary: steelblue;
+    --col-secondary: rgb(45, 110, 164);
+    --default-outline: dimgray;
+    --heading-1: rgb(80, 80, 80);
+    --heading-2: rgb(105, 120, 136);
+}
+
 body {
     margin: 0;
     padding-top: 1rem;
@@ -6,17 +14,17 @@ body {
 main {
     margin-top: 54px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: dimgrey;
+    color: var(--default-outline);
 }
 
 a {
     display: flex;
     text-decoration: none;
-    color: dimgray;
+    color: var(--default-outline);
 }
 
 button {
-    color: dimgray;
+    color: var(--default-outline);
     margin: 16px 0px;
     transition: all 75ms;
     cursor: pointer;
@@ -25,12 +33,12 @@ button {
 h1.heading {
     font-weight: 800;
     font-size: 42px;
-    color: rgb(80, 80, 80);
+    color: var(--heading-1);
 }
 
 h2.subheading {
     font-weight: 600;
-    color: rgb(105, 120, 136);
+    color: var(--heading-2);
 }
 
 .content-div {
@@ -65,13 +73,13 @@ h2.subheading {
 
 .btn-outlined {
     padding: 12px 20px;
-    outline: dimgray auto 1px;
+    outline: var(--default-outline) auto 1px;
     background: transparent;
     font-weight: 500;
     font-size: 16px;
 }
 .btn-outlined:hover {
-    background: dimgray;
+    background: var(--default-outline);
     color: white;
 }
 
@@ -82,7 +90,7 @@ h2.subheading {
     /* background: darkcyan; */
     /* background: dodgerblue; */
     /* background: royalblue; */
-    background: steelblue;
+    background: var(--col-primary);
     color: white;
     font-size: 16px;
     font-weight: 600;
@@ -92,9 +100,15 @@ h2.subheading {
 
 .btn-filled:hover {
     /* background: rgb(220, 0, 0); */
-    background: rgb(45, 110, 164);
+    background: var(--col-secondary);
 }
 
 .btn-filled:active {
     outline: slategrey auto 10px;
+}
+
+.content-div__recent-posts {
+    display: flex;
+    justify-content: center;
+    min-width: screen;
 }

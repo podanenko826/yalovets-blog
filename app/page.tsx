@@ -36,6 +36,12 @@ export default function Home() {
                     <button className="btn-filled">Read on</button>
                 </div>
             </div>
+
+            {/* Recent posts */}
+
+            <div className="content-div__recent-posts">
+                <h3>Recent posts</h3>
+            </div>
         </main>
     );
 }
