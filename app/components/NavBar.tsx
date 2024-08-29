@@ -7,8 +7,6 @@ import styles from './NavBar.module.css';
 import {usePathname} from 'next/navigation';
 
 import {FaCoffee} from 'react-icons/fa';
-// import {BiSolidCoffee} from 'react-icons/bi';
-// import {BiSolidCoffeeAlt} from 'react-icons/bi';
 
 const NavBar = () => {
     const currentPath = usePathname();

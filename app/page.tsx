@@ -15,8 +15,27 @@ export default function Home() {
                 <button className="btn-filled">Start Reading</button>
             </div>
 
-            {/* Second heading */}
-            <div className="content-div content-div__review"></div>
+            {/* Latest post */}
+            <div className="content-div__latest-post">
+                <div className="latest-post__image-box">
+                    <img
+                        className="latest-post__image"
+                        src="/img/placeholder.png"
+                        alt="Latest post"
+                    />
+                </div>
+                <div className="latest-post">
+                    <h2>Latest post: An Example</h2>
+                    <p>
+                        Lorem ipsum, dolor sit amet consectetur adipisicing
+                        elit. Corporis recusandae commodi distinctio eos
+                        reprehenderit tempore consequuntur quam quia. Nam quae,
+                        quidem facere nemo adipisci odio ratione tenetur non
+                        ipsa corrupti.
+                    </p>
+                    <button className="btn-filled">Read on</button>
+                </div>
+            </div>
         </main>
     );
 }
