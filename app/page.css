@@ -1,3 +1,8 @@
+.welcome-text {
+    font-weight: 600;
+    color: rgb(105, 120, 136);
+}
+
 .content-div {
     min-width: screen;
     padding: 0px 310px;
@@ -12,14 +17,14 @@
     box-sizing: border-box;
 }
 
-.latest-post__box {
+.latest-post-box {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
     min-width: screen;
-    margin: 0px 294px;
+    margin: 0px 19.8%;
     padding: 0px 15px;
 }
 
@@ -34,6 +39,26 @@
     min-width: 50%;
 }
 
-.latest-post__image {
+.latest-post-image {
     width: 100%;
+}
+
+.content-div__recent-posts {
+    align-self: center;
+    text-align: left;
+    width: 64%;
+    margin-top: 4rem;
+}
+
+.recent-posts-link {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: max-content;
+    max-height: 1.25rem;
+    font-size: 24px;
+}
+
+.recent-posts-icon {
+    font-size: 20px;
 }

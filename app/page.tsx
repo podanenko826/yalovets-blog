@@ -1,12 +1,14 @@
 import * as React from 'react';
 import './page.css';
 
+import {MdOutlineArrowForwardIos} from 'react-icons/md';
+
 export default function Home() {
     return (
         <main>
             {/* First heading */}
             <div className="content-div">
-                <h2 className="subheading" id="col-heading-2">
+                <h2 className="welcome-text" id="col-heading-2">
                     Welcome to Yalovets Blog
                 </h2>
                 <h1 className="heading" id="col-heading-1">
@@ -20,16 +22,16 @@ export default function Home() {
 
             {/* Latest post */}
             <div className="content-div__latest-post">
-                <div className="latest-post__box">
+                <div className="latest-post-box">
                     <div className="latest-post__image-box">
                         <img
-                            className="latest-post__image"
+                            className="latest-post-image"
                             src="/img/placeholder.png"
                             alt="Latest post"
                         />
                     </div>
                     <div className="latest-post__text-box">
-                        <h2 id="col-heading-2">Latest post: An Example</h2>
+                        <h2 id="col-heading-1">Latest post: An Example</h2>
                         <p>
                             Lorem ipsum, dolor sit amet consectetur adipisicing
                             elit. Corporis recusandae commodi distinctio eos
@@ -45,11 +47,17 @@ export default function Home() {
             {/* Recent posts */}
 
             <div className="content-div__recent-posts">
-                <h3 className="subheading" id="col-primary">
-                    Recent posts
-                </h3>
+                <a
+                    id="col-primary"
+                    className="recent-posts-link"
+                    href="/page/1">
+                    <h3>
+                        Recent posts{' '}
+                        <MdOutlineArrowForwardIos className="recent-posts-icon" />
+                    </h3>
+                </a>
                 <h4 className="subheading-tiny" id="col-heading-1">
-                    Subscribe to stay up to date. Browse our archive of 0 posts
+                    Subscribe to stay up to date. Browse my archive of 0 posts
                 </h4>
             </div>
         </main>

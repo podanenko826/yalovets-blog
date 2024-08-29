@@ -19,7 +19,7 @@ const NavBar = () => {
         },
         {
             label: 'Blog',
-            href: '/blog',
+            href: '/page/1',
             id: 1,
         },
         {

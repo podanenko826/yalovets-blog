@@ -106,15 +106,6 @@ h4.subheading-tiny {
     outline: slategrey auto 10px;
 }
 
-.content-div__recent-posts {
-    display: flex;
-    flex-direction: column;
-    align-self: center;
-    text-align: left;
-    width: 62%;
-    margin-top: 4rem;
-}
-
 @font-face {
     font-family: 'rubik';
     src: url('/fonts/Rubik/rubik-black-webfont.woff2') format('woff2'),
