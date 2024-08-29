@@ -5,7 +5,7 @@
 
 .content-div {
     min-width: screen;
-    padding: 0px 310px;
+    padding: 0px 17.5%;
 }
 
 .content-div__latest-post {
@@ -24,7 +24,7 @@
     align-items: center;
     box-sizing: border-box;
     min-width: screen;
-    margin: 0px 19.8%;
+    margin: 0px 19.5%;
     padding: 0px 15px;
 }
 
@@ -46,7 +46,7 @@
 .content-div__recent-posts {
     align-self: center;
     text-align: left;
-    width: 64%;
+    width: 65%;
     margin-top: 4rem;
 }
 
