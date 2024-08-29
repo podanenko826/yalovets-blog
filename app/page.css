@@ -1,0 +1,29 @@
+.content-div {
+    min-width: screen;
+    padding: 0px 310px;
+}
+
+.content-div__latest-post {
+    display: flex;
+    padding: 80px 100px;
+    justify-content: center;
+    align-items: center;
+    background: rgb(245, 245, 245);
+    margin-top: 82px;
+    box-sizing: content-box;
+}
+
+.latest-post__box {
+    box-sizing: border-box;
+    max-width: 35%;
+    margin-left: 2rem;
+}
+
+.latest-post__image-box {
+    max-width: 35%;
+    margin-left: 2rem;
+}
+
+.latest-post__image {
+    width: 100%;
+}

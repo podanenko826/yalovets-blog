@@ -1,12 +1,15 @@
 import * as React from 'react';
+import './page.css';
 
 export default function Home() {
     return (
         <main>
             {/* First heading */}
             <div className="content-div">
-                <h2 className="subheading">Welcome to Yalovets Blog</h2>
-                <h1 className="heading">
+                <h2 className="subheading" id="col-heading-2">
+                    Welcome to Yalovets Blog
+                </h2>
+                <h1 className="heading" id="col-heading-1">
                     Your launchpad for <br />
                     Amazon Web <br />
                     Services (AWS)
@@ -24,8 +27,8 @@ export default function Home() {
                         alt="Latest post"
                     />
                 </div>
-                <div className="latest-post">
-                    <h2>Latest post: An Example</h2>
+                <div className="latest-post__box">
+                    <h2 id="col-heading-2">Latest post: An Example</h2>
                     <p>
                         Lorem ipsum, dolor sit amet consectetur adipisicing
                         elit. Corporis recusandae commodi distinctio eos
@@ -40,7 +43,12 @@ export default function Home() {
             {/* Recent posts */}
 
             <div className="content-div__recent-posts">
-                <h3>Recent posts</h3>
+                <h3 className="subheading" id="col-primary">
+                    Recent posts
+                </h3>
+                <h4 className="subheading-tiny" id="col-heading-1">
+                    Subscribe to stay up to date. Browse our archive of 0 posts
+                </h4>
             </div>
         </main>
     );

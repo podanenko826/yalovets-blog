@@ -6,12 +6,30 @@
     --heading-2: rgb(105, 120, 136);
 }
 
+#col-primary {
+    color: var(--col-primary);
+}
+
+#cor-secondary {
+    color: var(--col-secondary);
+}
+
+#col-heading-1 {
+    color: var(--heading-1);
+}
+
+#col-heading-2 {
+    color: var(--heading-2);
+}
+
 body {
     margin: 0;
     padding-top: 1rem;
 }
 
 main {
+    display: flex;
+    flex-direction: column;
     margin-top: 54px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: var(--default-outline);
@@ -33,42 +51,18 @@ button {
 h1.heading {
     font-weight: 800;
     font-size: 42px;
-    color: var(--heading-1);
 }
 
 h2.subheading {
     font-weight: 600;
-    color: var(--heading-2);
 }
 
-.content-div {
-    min-width: screen;
-    padding: 0px 310px;
+h3.subheading-small {
+    font-weight: 500;
 }
 
-.content-div__latest-post {
-    display: flex;
-    padding: 80px 100px;
-    justify-content: center;
-    align-items: center;
-    background: rgb(245, 245, 245);
-    margin-top: 82px;
-    box-sizing: content-box;
-}
-
-.latest-post {
-    box-sizing: border-box;
-    max-width: 35%;
-    margin-left: 2rem;
-}
-
-.latest-post__image-box {
-    max-width: 35%;
-    margin-left: 2rem;
-}
-
-.latest-post__image {
-    width: 100%;
+h4.subheading-tiny {
+    font-weight: 500;
 }
 
 .btn-outlined {
@@ -109,6 +103,9 @@ h2.subheading {
 
 .content-div__recent-posts {
     display: flex;
-    justify-content: center;
-    min-width: screen;
+    flex-direction: column;
+    align-self: center;
+    text-align: left;
+    width: 62%;
+    margin-top: 4rem;
 }
