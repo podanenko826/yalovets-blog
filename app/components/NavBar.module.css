@@ -1,0 +1,35 @@
+.navbar {
+    display: flex;
+    min-width: screen;
+    justify-content: space-around;
+}
+
+.navLogo_container {
+    display: flex;
+}
+
+.navLogo {
+    color: red;
+}
+
+.navContainer {
+    display: flex;
+    align-items: center;
+    column-gap: 35px;
+}
+
+.navLink {
+    font-family: sans-serif;
+    transition: all;
+    transition-duration: 75ms;
+    text-decoration: none;
+}
+
+.navLink_active {
+    color: red;
+}
+
+.navLink:hover {
+    color: red;
+    text-decoration: underline;
+}

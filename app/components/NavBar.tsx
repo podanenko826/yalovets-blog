@@ -1,11 +1,13 @@
 'use client';
 
-import React from 'react';
+import * as React from 'react';
+
+import styles from './NavBar.module.css';
+
 import {usePathname} from 'next/navigation';
 
 const NavBar = () => {
     const currentPath = usePathname();
-    console.log(currentPath);
 
     const navigation = [
         {
@@ -26,31 +28,32 @@ const NavBar = () => {
     ];
 
     return (
-        <nav className="flex justify-between min-w-screen px-[330px] py-6 bg-white">
-            <div className="flex items-center">
+        <nav className={styles.navbar}>
+            <div className={styles.navLogo_container}>
                 <a href="/">
-                    <h1 className="text-red-600 font-bold text-xl">
-                        Yalovets Blog
-                    </h1>
+                    <h1 className={styles.navLogo}>Yalovets Blog</h1>
                 </a>
             </div>
 
-            <div className="space-x-8 text-gray-700">
+            <div className={styles.navContainer}>
                 {navigation.map(item => (
                     <a
                         key={item.id}
                         href={item.href}
                         className={`${
                             currentPath === item.href
-                                ? 'text-red-600'
-                                : 'hover:text-red-600'
-                        } font-sans hover:underline transition-colors duration-100`}>
+                                ? styles.navLink_active
+                                : ''
+                        } ${styles.navLink}`}>
                         {item.label}
                     </a>
                 ))}
-                <button className="outline outline-1 hover:bg-zinc-500 hover:text-white px-4 py-2.5 rounded-[5px] duration-75">
+                <button className="btn-outlined outline outline-1 hover:bg-zinc-500 hover:text-white px-4 py-2.5 rounded-[5px] duration-75">
                     Subscribe
                 </button>
+                {/* <Button variant="outlined" color="primary">
+                    Subscribe
+                </Button> */}
             </div>
         </nav>
     );

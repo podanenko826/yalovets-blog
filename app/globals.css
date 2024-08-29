@@ -1,3 +1,49 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+body {
+    margin: 0;
+    padding-top: 1rem;
+}
+
+a {
+    text-decoration: none;
+    color: dimgray;
+}
+
+button {
+    color: dimgray;
+}
+
+.content-div {
+    min-width: screen;
+    padding: 0px 310px;
+}
+
+.btn-outlined {
+    padding: 12px 20px;
+    outline: dimgray auto 1px;
+    background: transparent;
+    font-weight: 500;
+    font-size: 16px;
+}
+.btn-outlined:hover {
+    background: dimgray;
+    color: white;
+}
+
+.btn-filled {
+    padding: 20px 36px;
+    border-radius: 5px;
+    background: rgb(255, 60, 60);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    outline: none;
+    border: none;
+}
+
+.btn-filled:hover {
+    background: rgb(220, 0, 0);
+}
+
+.btn-filled:active {
+    outline: slategrey auto 10px;
+}
