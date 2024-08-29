@@ -10,7 +10,7 @@ import {ThemeProvider} from '@mui/material';
 const inter = Inter({subsets: ['latin']});
 
 export const metadata: Metadata = {
-    title: 'Ivan Yalovets',
+    title: 'Yalovets Blog',
     description: 'Ivan Yalovets Blog Website',
 };
 

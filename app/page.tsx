@@ -20,23 +20,25 @@ export default function Home() {
 
             {/* Latest post */}
             <div className="content-div__latest-post">
-                <div className="latest-post__image-box">
-                    <img
-                        className="latest-post__image"
-                        src="/img/placeholder.png"
-                        alt="Latest post"
-                    />
-                </div>
                 <div className="latest-post__box">
-                    <h2 id="col-heading-2">Latest post: An Example</h2>
-                    <p>
-                        Lorem ipsum, dolor sit amet consectetur adipisicing
-                        elit. Corporis recusandae commodi distinctio eos
-                        reprehenderit tempore consequuntur quam quia. Nam quae,
-                        quidem facere nemo adipisci odio ratione tenetur non
-                        ipsa corrupti.
-                    </p>
-                    <button className="btn-filled">Read on</button>
+                    <div className="latest-post__image-box">
+                        <img
+                            className="latest-post__image"
+                            src="/img/placeholder.png"
+                            alt="Latest post"
+                        />
+                    </div>
+                    <div className="latest-post__text-box">
+                        <h2 id="col-heading-2">Latest post: An Example</h2>
+                        <p>
+                            Lorem ipsum, dolor sit amet consectetur adipisicing
+                            elit. Corporis recusandae commodi distinctio eos
+                            reprehenderit tempore consequuntur quam quia. Nam
+                            quae, quidem facere nemo adipisci odio ratione
+                            tenetur non ipsa corrupti.
+                        </p>
+                        <button className="btn-filled">Read on</button>
+                    </div>
                 </div>
             </div>
 

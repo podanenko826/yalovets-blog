@@ -9,10 +9,6 @@
 }
 
 .navLogo {
-    color: steelblue;
-    /* color: rgb(255, 60, 60); */
-    /* color: darkcyan;
-    color: royalblue; */
     align-self: center;
 }
 
@@ -20,10 +16,6 @@
     margin: 3px 0px 0px 3px;
     align-self: center;
     font-size: 30px;
-    color: steelblue;
-    /* color: rgb(255, 60, 60); */
-    /* color: darkcyan; */
-    /* color: royalblue; */
 }
 
 .navContainer {
@@ -39,11 +31,6 @@
     text-decoration: none;
 }
 
-.navLink_active {
-    color: steelblue;
-}
-
 .navLink:hover {
-    color: steelblue;
     text-decoration: underline;
 }

@@ -5,23 +5,33 @@
 
 .content-div__latest-post {
     display: flex;
-    padding: 80px 100px;
-    justify-content: center;
-    align-items: center;
+    padding: 90px 0px;
+    min-width: screen;
     background: rgb(245, 245, 245);
     margin-top: 82px;
-    box-sizing: content-box;
+    box-sizing: border-box;
 }
 
 .latest-post__box {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
     box-sizing: border-box;
-    max-width: 35%;
-    margin-left: 2rem;
+    min-width: screen;
+    margin: 0px 294px;
+    padding: 0px 15px;
 }
 
 .latest-post__image-box {
-    max-width: 35%;
-    margin-left: 2rem;
+    min-width: 50%;
+}
+
+.latest-post__text-box {
+    align-content: center;
+    box-sizing: border-box;
+    margin-left: 95px;
+    min-width: 50%;
 }
 
 .latest-post__image {

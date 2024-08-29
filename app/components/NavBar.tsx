@@ -33,8 +33,13 @@ const NavBar = () => {
         <nav className={styles.navbar}>
             <div className={styles.navLogo_container}>
                 <a href="/">
-                    <h1 className={styles.navLogo}>Yalovets Blog</h1>
-                    <FaCoffee className={styles.navLogo_icon} />
+                    <h1 className={styles.navLogo} id="col-primary">
+                        Yalovets Blog
+                    </h1>
+                    <FaCoffee
+                        className={styles.navLogo_icon}
+                        id="col-primary"
+                    />
                 </a>
             </div>
 
@@ -43,11 +48,8 @@ const NavBar = () => {
                     <a
                         key={item.id}
                         href={item.href}
-                        className={`${
-                            currentPath === item.href
-                                ? styles.navLink_active
-                                : ''
-                        } ${styles.navLink}`}>
+                        className={`${styles.navLink}`}
+                        id={currentPath === item.href ? 'col-primary' : ''}>
                         {item.label}
                     </a>
                 ))}
