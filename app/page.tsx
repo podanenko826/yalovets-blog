@@ -7,22 +7,29 @@ export default function Home() {
     return (
         <main>
             {/* First heading */}
-            <div className="content-div">
-                <h2 className="welcome-text" id="col-heading-2">
-                    Welcome to Yalovets Blog
-                </h2>
-                <h1 className="heading" id="col-heading-1">
-                    Your launchpad for <br />
-                    Amazon Web <br />
-                    Services (AWS)
-                </h1>
-                <p>By Ivan Yalovets. Since 2024, I published 0 articles.</p>
-                <button className="btn-filled">Start Reading</button>
+            <div className="welcome">
+                <div className="welcome-container">
+                    <div className="container">
+                        <h2 className="welcome-text" id="col-heading-2">
+                            Welcome to Yalovets Blog
+                        </h2>
+                        <h1
+                            className="welcome-heading heading"
+                            id="col-heading-1">
+                            Your launchpad for Amazon Web Services (AWS)
+                        </h1>
+                        <p className="welcome-paragraph">
+                            By Ivan Yalovets. Since 2024, I published 0
+                            articles.
+                        </p>
+                        <button className="btn-filled">Start Reading</button>
+                    </div>
+                </div>
             </div>
 
             {/* Latest post */}
             <div className="content-div__latest-post">
-                <div className="latest-post-box">
+                <div className="latest-post">
                     <div className="latest-post__image-box">
                         <img
                             className="latest-post-image"
@@ -46,7 +53,7 @@ export default function Home() {
 
             {/* Recent posts */}
 
-            <div className="content-div__recent-posts">
+            <div className="recent-posts">
                 <a
                     id="col-primary"
                     className="recent-posts-link"

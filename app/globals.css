@@ -26,6 +26,7 @@
 body {
     margin: 0;
     padding-top: 1rem;
+    /* padding: 0px 20%; */
 }
 
 main {
@@ -40,6 +41,7 @@ a {
     display: flex;
     text-decoration: none;
     color: var(--default-outline);
+    cursor: pointer;
 }
 
 a:hover {
@@ -70,16 +72,31 @@ h4.subheading-tiny {
     font-weight: 500;
 }
 
+#block {
+    display: block;
+}
+
+#flex {
+    display: flex;
+}
+
+#hidden {
+    display: none;
+}
+
+#overflow-hidden {
+    overflow: hidden;
+}
+
 .btn-outlined {
-    padding: 12px 20px;
-    outline: var(--default-outline) auto 1px;
+    padding: 12px 10px;
     background: transparent;
     font-weight: 500;
     font-size: 16px;
+    border: none;
 }
 .btn-outlined:hover {
-    background: var(--default-outline);
-    color: white;
+    text-decoration: underline;
 }
 
 .btn-filled {
@@ -104,6 +121,18 @@ h4.subheading-tiny {
 
 .btn-filled:active {
     outline: slategrey auto 10px;
+}
+
+@media (min-width: 820px) {
+    .btn-outlined {
+        outline: var(--default-outline) auto 1px;
+        padding: 12px 20px;
+    }
+
+    .btn-outlined:hover {
+        background: var(--default-outline);
+        color: white;
+    }
 }
 
 @font-face {

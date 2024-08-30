@@ -3,9 +3,17 @@
     color: rgb(105, 120, 136);
 }
 
-.content-div {
-    min-width: screen;
-    padding: 0px 17.5%;
+.welcome {
+    max-width: 100%;
+    padding: 0px 6%;
+}
+
+.welcome-container {
+    display: flex;
+}
+
+.container {
+    max-width: 28rem;
 }
 
 .content-div__latest-post {
@@ -17,37 +25,30 @@
     box-sizing: border-box;
 }
 
-.latest-post-box {
+.latest-post {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
     min-width: screen;
-    margin: 0px 19.5%;
+    margin-left: auto;
+    margin-right: auto;
     padding: 0px 15px;
 }
 
 .latest-post__image-box {
-    min-width: 50%;
+    width: 100%;
 }
 
 .latest-post__text-box {
     align-content: center;
     box-sizing: border-box;
-    margin-left: 95px;
     min-width: 50%;
 }
 
 .latest-post-image {
     width: 100%;
-}
-
-.content-div__recent-posts {
-    align-self: center;
-    text-align: left;
-    width: 65%;
-    margin-top: 4rem;
 }
 
 .recent-posts-link {
@@ -59,6 +60,59 @@
     font-size: 24px;
 }
 
+.recent-posts {
+    align-self: center;
+    text-align: left;
+    /* width: 65%; */
+    width: 90%;
+    margin-top: 4rem;
+}
+
 .recent-posts-icon {
     font-size: 20px;
+}
+
+@media (min-width: 820px) {
+    .welcome {
+        padding: 0px 10.4%;
+    }
+    .latest-post {
+        flex-direction: row;
+        margin: 0px 4%;
+        padding: 0px 15px;
+    }
+    .latest-post__text-box {
+        margin-left: 95px;
+    }
+    .recent-posts {
+        width: 80.5%;
+    }
+}
+
+@media (min-width: 1024px) {
+    .welcome {
+        padding: 0px 14.3%;
+    }
+    .latest-post {
+        flex-direction: row;
+        margin: 0px 8%;
+        padding: 0px 15px;
+    }
+    .recent-posts {
+        width: 71.5%;
+    }
+}
+
+@media (min-width: 1240px) {
+    .welcome {
+        padding: 0px 17.5%;
+    }
+    .latest-post {
+        flex-direction: row;
+        margin: 0px 19.5%;
+        padding: 0px 15px;
+    }
+    .recent-posts {
+        width: 65%;
+    }
 }
