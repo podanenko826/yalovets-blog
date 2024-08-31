@@ -60,12 +60,12 @@
     font-size: 24px;
 }
 
-.recent-posts {
+.post-box {
     align-self: center;
     text-align: left;
     /* width: 65%; */
     width: 90%;
-    margin-top: 4rem;
+    margin: 4rem 0px;
 }
 
 .recent-posts-icon {
@@ -111,7 +111,7 @@
     .latest-post__text-box {
         margin-left: 95px;
     }
-    .recent-posts {
+    .post-box {
         width: 80.5%;
     }
     .post-container {
@@ -128,7 +128,7 @@
         margin: 0px 8%;
         padding: 0px 15px;
     }
-    .recent-posts {
+    .post-box {
         width: 71.5%;
     }
 }
@@ -142,7 +142,7 @@
         margin: 0px 19.5%;
         padding: 0px 15px;
     }
-    .recent-posts {
+    .post-box {
         width: 65%;
     }
 }
