@@ -4,6 +4,17 @@ import './page.css';
 import {MdOutlineArrowForwardIos} from 'react-icons/md';
 
 export default function Home() {
+    const posts = Array(9).fill({
+        imageSrc: '/img/placeholder.png',
+        altText: 'An image',
+        description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                      Ea aperiam consequuntur perferendis, recusandae similique rerum 
+                      rem et, commodi modi numquam eaque repellat quasi facere 
+                      illo earum quam tempore iure nam eveniet totam ad maxime nisi, 
+                      itaque cumque? At, iusto alias!`,
+        link: '#',
+    });
+
     return (
         <main>
             {/* First heading */}
@@ -28,7 +39,7 @@ export default function Home() {
             </div>
 
             {/* Latest post */}
-            <div className="content-div__latest-post">
+            <div className="latest-post-box">
                 <div className="latest-post">
                     <div className="latest-post__image-box">
                         <img
@@ -54,18 +65,37 @@ export default function Home() {
             {/* Recent posts */}
 
             <div className="recent-posts">
-                <a
-                    id="col-primary"
-                    className="recent-posts-link"
-                    href="/page/1">
-                    <h3>
-                        Recent posts{' '}
-                        <MdOutlineArrowForwardIos className="recent-posts-icon" />
-                    </h3>
-                </a>
-                <h4 className="subheading-tiny" id="col-heading-1">
-                    Subscribe to stay up to date. Browse my archive of 0 posts
-                </h4>
+                <div>
+                    <a
+                        id="col-primary"
+                        className="recent-posts-link"
+                        href="/page/1">
+                        <h3>
+                            Recent posts{' '}
+                            <MdOutlineArrowForwardIos className="recent-posts-icon" />
+                        </h3>
+                    </a>
+                    <h4 className="subheading-tiny" id="col-heading-1">
+                        Subscribe to stay up to date. Browse my archive of 0
+                        posts
+                    </h4>
+                </div>
+
+                <div className="post-container">
+                    {posts.map((post, index) => (
+                        <div className="post-card" key={index}>
+                            <img
+                                className="post-card-image"
+                                src={post.imageSrc}
+                                alt={post.altText}
+                            />
+                            <p>{post.description}</p>
+                            <a className="post-card-link" href={post.link}>
+                                Read on
+                            </a>
+                        </div>
+                    ))}
+                </div>
             </div>
         </main>
     );

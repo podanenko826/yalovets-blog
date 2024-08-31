@@ -1,4 +1,5 @@
 import createMDX from '@next/mdx';
+import pkg from 'nextra';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -10,9 +11,10 @@ const nextConfig = {
     },
 };
 
-const withMDX = createMDX({
-    // Add markdown plugins here, as desired
+const withNextra = pkg({
+    theme: 'nextra-theme-blog',
+    themeConfig: './theme.config.jsx',
 });
 
 // Merge MDX config with Next.js config
-export default withMDX(nextConfig);
+export default withNextra(nextConfig);

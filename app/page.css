@@ -16,7 +16,7 @@
     max-width: 28rem;
 }
 
-.content-div__latest-post {
+.latest-post-box {
     display: flex;
     padding: 90px 0px;
     min-width: screen;
@@ -72,6 +72,33 @@
     font-size: 20px;
 }
 
+.post-container {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-auto-rows: minmax(100px, auto);
+    gap: 10px;
+}
+
+.post-card {
+    padding: 22px 12px;
+}
+
+.post-card-image {
+    width: 100%;
+}
+
+.post-card-link {
+    text-decoration: underline;
+    color: black;
+    font-weight: 600;
+}
+
+@media (min-width: 768px) {
+    .post-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (min-width: 820px) {
     .welcome {
         padding: 0px 10.4%;
@@ -86,6 +113,9 @@
     }
     .recent-posts {
         width: 80.5%;
+    }
+    .post-container {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
