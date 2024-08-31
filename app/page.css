@@ -76,11 +76,11 @@
     display: grid;
     grid-template-columns: repeat(1, 1fr);
     grid-auto-rows: minmax(100px, auto);
-    gap: 10px;
+    gap: 30px;
 }
 
 .post-card {
-    padding: 22px 12px;
+    padding-bottom: 20px;
 }
 
 .post-card-image {
@@ -96,6 +96,11 @@
 @media (min-width: 768px) {
     .post-container {
         grid-template-columns: repeat(2, 1fr);
+    }
+    .latest-post {
+        flex-direction: column;
+        margin: 0px 3.5%;
+        padding: 0px 15px;
     }
 }
 

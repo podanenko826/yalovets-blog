@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import {Inter} from 'next/font/google';
 import {AppRouterCacheProvider} from '@mui/material-nextjs/v13-appRouter';
 import theme from './theme';
+import 'bootstrap/dist/css/bootstrap.css';
 import './globals.css';
 
 import NavBar from './components/NavBar';

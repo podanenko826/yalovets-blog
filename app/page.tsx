@@ -1,12 +1,14 @@
 import * as React from 'react';
+import bootstrap from 'bootstrap';
 import './page.css';
 
 import {MdOutlineArrowForwardIos} from 'react-icons/md';
 
 export default function Home() {
-    const recentPosts = Array(9).fill({
+    let recentPosts = Array(9).fill({
         imageSrc: '/img/placeholder.png',
         altText: 'An image',
+        heading: 'Recent post: An Example',
         description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. 
                       Ea aperiam consequuntur perferendis, recusandae similique rerum 
                       rem et, commodi modi numquam eaque repellat quasi facere 
@@ -18,6 +20,7 @@ export default function Home() {
     const popularPosts = Array(3).fill({
         imageSrc: '/img/placeholder.png',
         altText: 'An image',
+        heading: 'Popular post: An Example',
         description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. 
                       Ea aperiam consequuntur perferendis, recusandae similique rerum 
                       rem et, commodi modi numquam eaque repellat quasi facere 
@@ -100,6 +103,7 @@ export default function Home() {
                                 src={post.imageSrc}
                                 alt={post.altText}
                             />
+                            <h2 id="col-heading-1">{post.heading}</h2>
                             <p>{post.description}</p>
                             <a className="post-card-link" href={post.link}>
                                 Read on
@@ -134,6 +138,7 @@ export default function Home() {
                                 src={post.imageSrc}
                                 alt={post.altText}
                             />
+                            <h2 id="col-heading-1">{post.heading}</h2>
                             <p>{post.description}</p>
                             <a className="post-card-link" href={post.link}>
                                 Read on
