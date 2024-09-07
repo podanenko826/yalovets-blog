@@ -31,8 +31,8 @@ export default function Home() {
     return (
         <main>
             {/* First heading */}
-            <div className="welcome">
-                <div className="welcome-container">
+            <div className="welcome contaner-fluid">
+                <div className="container">
                     <div className="container-fluid">
                         <h2 className="welcome-text" id="col-heading-2">
                             Welcome to Yalovets Blog
