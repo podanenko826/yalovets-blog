@@ -40,17 +40,15 @@ const NavBar = () => {
 
     return (
         <>
-            <header className={`container-fluid`}>
-                <div
-                    className={`mt-4 container navbar navbar-expand-lg md-nav xs-nav d-none bg-transparent d-lg-flex ${styles.navbar}`}
-                    id="mobileNavigation">
+            <header className="container">
+                <div className="navbar navbar-expand-lg md-nav row d-none d-lg-flex py-0">
                     {/* <a
                             className={styles.navMenu_btn}
                             onClick={e => handleMobileNavigation(e)}>
                             {mobileMenuOpened ? <IoMdClose /> : <IoMdMenu />}
                         </a> */}
 
-                    <div className="container-sm">
+                    <div className="container-sm col-3 py-0">
                         <a href="/" className="navbar-brand">
                             <h4 className="text-primary">
                                 Yalovets Blog
@@ -59,7 +57,7 @@ const NavBar = () => {
                         </a>
                     </div>
                     <div
-                        className={`${styles.nav_box} container-lg d-flex collapse navbar-collapse`}>
+                        className={`navbar-nav navbar navbar-collapse container-lg col-9 py-0`}>
                         {navigation.map(item => (
                             <a
                                 key={item.id}
@@ -72,9 +70,6 @@ const NavBar = () => {
                             </a>
                         ))}
                         <button className="btn-outlined">Subscribe</button>
-                        {/* <Button variant="outlined" color="primary">
-                                Subscribe
-                            </Button> */}
                     </div>
                 </div>
             </header>

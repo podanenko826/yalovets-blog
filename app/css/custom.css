@@ -28,6 +28,13 @@
   color: rgb(45, 110, 164) !important;
 }
 
+.navbar-nav {
+  display: flex !important;
+  justify-content: flex-end !important;
+  -moz-column-gap: 30px;
+       column-gap: 30px;
+}
+
 .nav-link {
   color: rgb(40, 40, 40);
   transition-duration: 75ms !important;
@@ -40,6 +47,7 @@
 .row {
   display: flex !important;
   flex-wrap: wrap !important;
+  margin-top: 30px !important;
   margin-left: -15px !important;
   margin-right: -15px !important;
 }

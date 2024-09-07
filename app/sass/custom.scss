@@ -34,6 +34,12 @@ $secondary: rgb(45, 110, 164);
     color: $secondary !important;
 }
 
+.navbar-nav {
+    display: flex !important;
+    justify-content: flex-end !important;
+    column-gap: 30px;
+}
+
 .nav-link {
     color: $primary;
 
@@ -48,6 +54,7 @@ $secondary: rgb(45, 110, 164);
 .row {
     display: flex !important;
     flex-wrap: wrap !important;
+    margin-top: 30px !important;
     margin-left: -15px !important;
     margin-right: -15px !important;
 }
