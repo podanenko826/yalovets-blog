@@ -1,5 +1,4 @@
 'use client';
-
 import React, {useState} from 'react';
 
 import styles from './NavBar.module.css';
@@ -40,66 +39,61 @@ const NavBar = () => {
     };
 
     return (
-        <header className={styles.header}>
-            <div className={styles.navBar}>
-                <div className={styles.container}>
-                    <div className={styles.navMenu_box}>
-                        <a
+        <>
+            <header className={`container-fluid`}>
+                <div
+                    className={`mt-4 container navbar navbar-expand-lg md-nav xs-nav d-none bg-transparent d-lg-flex ${styles.navbar}`}
+                    id="mobileNavigation">
+                    {/* <a
                             className={styles.navMenu_btn}
                             onClick={e => handleMobileNavigation(e)}>
                             {mobileMenuOpened ? <IoMdClose /> : <IoMdMenu />}
-                        </a>
-                    </div>
-                    <div className={styles.navLogo_container}>
-                        <a href="/">
-                            <h1 className={styles.navLogo} id="col-primary">
+                        </a> */}
+
+                    <div className="container-sm">
+                        <a href="/" className="navbar-brand">
+                            <h4 className="text-primary">
                                 Yalovets Blog
-                            </h1>
-                            <FaCoffee
-                                className={styles.navLogo_icon}
-                                id="col-primary"
-                            />
+                                <FaCoffee className={styles.navLogo_icon} />
+                            </h4>
                         </a>
                     </div>
-                    <div className={styles.navContainer}>
+                    <div
+                        className={`${styles.nav_box} container-lg d-flex collapse navbar-collapse`}>
                         {navigation.map(item => (
                             <a
                                 key={item.id}
                                 href={item.href}
-                                className={`${styles.navLink}`}
-                                id={
-                                    currentPath === item.href
-                                        ? 'col-primary'
-                                        : ''
-                                }>
+                                className="nav-link"
+                                id={`${
+                                    item.href === currentPath ? 'active' : ''
+                                }`}>
                                 {item.label}
                             </a>
                         ))}
-                        <button className="btn-outlined outline outline-1 hover:bg-zinc-500 hover:text-white px-4 py-2.5 rounded-[5px] duration-75">
-                            Subscribe
-                        </button>
+                        <button className="btn-outlined">Subscribe</button>
                         {/* <Button variant="outlined" color="primary">
-                            Subscribe
-                        </Button> */}
+                                Subscribe
+                            </Button> */}
                     </div>
                 </div>
-            </div>
-            <div
-                className={styles.navMenu_mobile}
-                id={mobileMenuOpened ? 'flex' : 'hidden'}>
-                <div className={styles.navContainer_mobile}>
-                    {navigation.map(item => (
-                        <a
-                            key={item.id}
-                            href={item.href}
-                            className={`${styles.navLink_mobile}`}
-                            id={currentPath === item.href ? 'col-primary' : ''}>
-                            {item.label}
-                        </a>
-                    ))}
-                </div>
-            </div>
-        </header>
+            </header>
+            {/* <div
+                    className={styles.navMenu_mobile}
+                    id={mobileMenuOpened ? 'flex' : 'hidden'}>
+                    <div className={styles.navContainer_mobile}>
+                        {navigation.map(item => (
+                            <a
+                                key={item.id}
+                                href={item.href}
+                                className={`${styles.navLink_mobile}`}
+                                id={currentPath === item.href ? 'col-primary' : ''}>
+                                {item.label}
+                            </a>
+                        ))}
+                    </div>
+                </div> */}
+        </>
     );
 };
 

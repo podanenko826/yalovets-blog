@@ -1,0 +1,65 @@
+$primary: rgb(40, 40, 40);
+$secondary: rgb(45, 110, 164);
+
+@import '../../node_modules/bootstrap/scss/functions';
+@import '../../node_modules/bootstrap/scss/variables';
+
+.container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+
+    @media (min-width: 576px) {
+        // For sm and up
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+
+    @media (min-width: 768px) {
+        // For md and up
+        padding-left: 3rem;
+        padding-right: 3rem;
+    }
+
+    @media (min-width: 992px) {
+        // For lg and up
+        padding-left: 4rem;
+        padding-right: 4rem;
+    }
+
+    @media (min-width: 1200px) {
+        // For xl and up
+        padding-left: 5rem;
+        padding-right: 5rem;
+    }
+
+    @media (min-width: 1400px) {
+        // For xxl and up
+        padding-left: 6rem !important;
+        padding-right: 6rem !important;
+    }
+}
+
+.text-primary {
+    color: $primary !important;
+}
+
+.text-secondary {
+    color: $secondary !important;
+}
+
+.nav-link {
+    color: $primary;
+
+    &:hover {
+        color: $secondary !important;
+        text-decoration: underline;
+    }
+
+    transition-duration: 75ms !important;
+}
+
+#active {
+    color: $secondary !important;
+}
+
+@import '../../node_modules/bootstrap/scss/bootstrap';

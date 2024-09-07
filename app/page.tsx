@@ -1,5 +1,4 @@
 import * as React from 'react';
-import bootstrap from 'bootstrap';
 import './page.css';
 
 import {MdOutlineArrowForwardIos} from 'react-icons/md';
@@ -34,7 +33,7 @@ export default function Home() {
             {/* First heading */}
             <div className="welcome">
                 <div className="welcome-container">
-                    <div className="container">
+                    <div className="container-fluid">
                         <h2 className="welcome-text" id="col-heading-2">
                             Welcome to Yalovets Blog
                         </h2>

@@ -12,10 +12,6 @@
     display: flex;
 }
 
-.container {
-    max-width: 28rem;
-}
-
 .latest-post-box {
     display: flex;
     padding: 90px 0px;

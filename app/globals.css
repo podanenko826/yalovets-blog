@@ -1,18 +1,8 @@
 :root {
-    --col-primary: rgb(40, 40, 40);
     /* --col-primary: rgb(245, 245, 245); */
-    --col-secondary: rgb(45, 110, 164);
     --default-outline: dimgray;
     --heading-1: rgb(80, 80, 80);
     --heading-2: rgb(105, 120, 136);
-}
-
-#col-primary {
-    color: var(--col-primary);
-}
-
-#cor-secondary {
-    color: var(--col-secondary);
 }
 
 #col-heading-1 {
@@ -25,32 +15,19 @@
 
 body {
     margin: 0;
-    padding-top: 1rem;
-    /* padding: 0px 20%; */
+    line-height: 1.5rem !important;
 }
 
 main {
     display: flex;
     flex-direction: column;
-    margin-top: 54px;
-    font-family: 'rubik', 'Segoe UI', Arial;
+    font-family: 'rubik', sans-serif;
     color: var(--default-outline);
-}
-
-a {
-    display: flex;
-    text-decoration: none;
-    color: var(--default-outline);
-    cursor: pointer;
-}
-
-a:hover {
-    color: var(--col-primary);
+    font-size: 16px;
 }
 
 button {
     color: var(--default-outline);
-    margin: 16px 0px;
     transition: all 75ms;
     cursor: pointer;
 }
@@ -70,22 +47,6 @@ h3.subheading-small {
 
 h4.subheading-tiny {
     font-weight: 500;
-}
-
-#block {
-    display: block;
-}
-
-#flex {
-    display: flex;
-}
-
-#hidden {
-    display: none;
-}
-
-#overflow-hidden {
-    overflow: hidden;
 }
 
 .btn-outlined {
