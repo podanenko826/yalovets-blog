@@ -13,12 +13,11 @@
     display: flex;
 }
 
-.latest-post-box {
+.latest-post {
     display: flex;
-    padding: 90px 0px;
-    min-width: screen;
+    padding: 90px 0 !important;
+    width: 100%;
     background: rgb(245, 245, 245);
-    margin-top: 82px;
     box-sizing: border-box;
 }
 
