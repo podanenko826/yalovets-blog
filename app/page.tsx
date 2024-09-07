@@ -31,22 +31,50 @@ export default function Home() {
     return (
         <main>
             {/* First heading */}
-            <div className="welcome contaner-fluid">
-                <div className="container">
-                    <div className="container-fluid">
-                        <h2 className="welcome-text" id="col-heading-2">
-                            Welcome to Yalovets Blog
-                        </h2>
-                        <h1
-                            className="welcome-heading heading"
-                            id="col-heading-1">
-                            Your launchpad for Amazon Web Services (AWS)
-                        </h1>
-                        <p className="welcome-paragraph">
-                            By Ivan Yalovets. Since 2024, I published 0
-                            articles.
-                        </p>
-                        <button className="btn-filled">Start Reading</button>
+            <div className="welcome container-fluid d-none d-lg-block">
+                <div className="row">
+                    <div className="col-lg-7 offset-lg-5">
+                        <picture className="img-fluid">
+                            <source
+                                type="image/webp"
+                                srcSet="/img/teaser-front@1140w.webp 1140w, /img/teaser-front@1140w2x.webp 2280w, /img/teaser-front@960w.webp 960w, /img/teaser-front@960w2x.webp 1920w"
+                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                            />
+                            <source
+                                srcSet="/img/teaser-front@1140w.jpg 1140w, /img/teaser-front@1140w2x.jpg 2280w, /img/teaser-front@960w.jpg 960w, /img/teaser-front@960w2x.jpg 1920w"
+                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                            />
+                            <img
+                                className="img-fluid"
+                                src="/img/teaser-front.jpg"
+                                alt="Cloudonaut Teaser"
+                                title="Cloudonaut Teaser"
+                            />
+                        </picture>
+                    </div>
+                </div>
+                <div>
+                    <div className="container">
+                        <div className="row">
+                            <div className="col-5">
+                                <h2 className="welcome-text" id="col-heading-2">
+                                    Welcome to Yalovets Blog
+                                </h2>
+                                <h1
+                                    className="welcome-heading heading"
+                                    id="col-heading-1">
+                                    AWS Unveiled: Your Gateway to Cloud
+                                    Knowledge
+                                </h1>
+                                <p className="welcome-paragraph">
+                                    By Ivan Yalovets. Since 2024, I published 0
+                                    articles.
+                                </p>
+                                <button className="btn-filled">
+                                    Start Reading
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

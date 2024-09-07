@@ -4,8 +4,9 @@
 }
 
 .welcome {
-    max-width: 100%;
-    padding: 0px 6%;
+    margin-top: 60px;
+    padding: 0 0 30px 0 !important;
+    position: relative;
 }
 
 .welcome-container {
@@ -89,7 +90,7 @@
     font-weight: 600;
 }
 
-@media (min-width: 768px) {
+/* @media (min-width: 768px) {
     .post-container {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -146,4 +147,4 @@
     .post-box {
         width: 65%;
     }
-}
+} */

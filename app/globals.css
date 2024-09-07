@@ -1,5 +1,7 @@
 :root {
     /* --col-primary: rgb(245, 245, 245); */
+    --col-primary: rgb(40, 40, 40);
+    --col-secondary: rgb(45, 110, 164);
     --default-outline: dimgray;
     --heading-1: rgb(80, 80, 80);
     --heading-2: rgb(105, 120, 136);

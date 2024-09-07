@@ -5,9 +5,6 @@ $secondary: rgb(45, 110, 164);
 @import '../../node_modules/bootstrap/scss/variables';
 
 .container {
-    padding-left: 15px !important;
-    padding-right: 15px !important;
-
     @media (min-width: 576px) {
         // For sm and up
         max-width: 540px !important;
@@ -46,6 +43,20 @@ $secondary: rgb(45, 110, 164);
     }
 
     transition-duration: 75ms !important;
+}
+
+.row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    margin-left: -15px !important;
+    margin-right: -15px !important;
+}
+
+.welcome > div:nth-of-type(2) {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
 }
 
 #active {
