@@ -15,6 +15,11 @@
     color: var(--heading-2);
 }
 
+* {
+    font-family: 'rubik', sans-serif;
+    font-size: 16px;
+}
+
 body {
     margin: 0;
     line-height: 1.5rem !important;
@@ -23,9 +28,7 @@ body {
 main {
     display: flex;
     flex-direction: column;
-    font-family: 'rubik', sans-serif;
     color: var(--default-outline);
-    font-size: 16px;
 }
 
 button {
