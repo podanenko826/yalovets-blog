@@ -35,12 +35,48 @@
        column-gap: 30px;
 }
 
+.nav-menu-mobile {
+  position: absolute;
+  background: white;
+  justify-content: center;
+  min-width: 100%;
+  min-height: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1050;
+}
+
+.mobileNavIcon {
+  width: 2.6em;
+  height: 2.6em;
+  color: rgb(40, 40, 40);
+}
+
+#menu-opened {
+  color: rgb(45, 110, 164);
+}
+
 .nav-link {
   color: rgb(40, 40, 40);
   transition-duration: 75ms !important;
 }
 .nav-link:hover {
   color: rgb(45, 110, 164) !important;
+  text-decoration: underline;
+}
+
+.nav-link-mobile {
+  margin-bottom: 2rem;
+  font-size: 24px;
+}
+.nav-link-mobile:active {
+  color: rgb(45, 110, 164) !important;
+}
+
+.btn-subscribe {
+  text-decoration: none;
+}
+.btn-subscribe:active {
   text-decoration: underline;
 }
 
@@ -57,6 +93,16 @@
   left: 0;
   right: 0;
   top: 0;
+}
+
+#mobileNavigation {
+  font-size: xx-large;
+  padding: 10px;
+  width: 3rem;
+  border: none;
+  background: transparent;
+  position: relative;
+  z-index: 1050;
 }
 
 #active {

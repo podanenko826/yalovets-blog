@@ -31,23 +31,23 @@ const NavBar = () => {
         },
     ];
 
-    const handleMobileNavigation = (
-        event: React.MouseEvent<HTMLAnchorElement>
-    ) => {
-        event.preventDefault();
+    const handleMobileNavigation = () => {
         setMobileMenuOpened(!mobileMenuOpened);
+
+        window.scrollTo(0, 0);
+
+        // To make sure user cannot scroll the page when nav menu is opened
+        if (mobileMenuOpened) {
+            document.body.classList.remove('overflow-hidden');
+        } else {
+            document.body.classList.add('overflow-hidden');
+        }
     };
 
     return (
         <>
             <header className="container">
                 <div className="navbar navbar-expand-lg md-nav row d-none d-lg-flex py-0">
-                    {/* <a
-                            className={styles.navMenu_btn}
-                            onClick={e => handleMobileNavigation(e)}>
-                            {mobileMenuOpened ? <IoMdClose /> : <IoMdMenu />}
-                        </a> */}
-
                     <div className="container-sm col-3 py-0">
                         <a href="/" className="navbar-brand">
                             <h4 className="text-primary">
@@ -72,22 +72,52 @@ const NavBar = () => {
                         <button className="btn-outlined">Subscribe</button>
                     </div>
                 </div>
-            </header>
-            {/* <div
-                    className={styles.navMenu_mobile}
-                    id={mobileMenuOpened ? 'flex' : 'hidden'}>
-                    <div className={styles.navContainer_mobile}>
+                <div className="navbar navbar-expand-lg xs-nav row d-flex d-lg-none container">
+                    <div className="col-3 d-flex">
+                        <button
+                            id="mobileNavigation"
+                            type="button"
+                            aria-controls="mobileNavigation"
+                            aria-expanded={mobileMenuOpened}
+                            aria-label="Toggle navigation"
+                            onClick={handleMobileNavigation}>
+                            {mobileMenuOpened ? (
+                                <IoMdClose
+                                    className="mobileNavIcon"
+                                    id="menu-opened"
+                                />
+                            ) : (
+                                <IoMdMenu className="mobileNavIcon" />
+                            )}
+                        </button>
+                    </div>
+                    <div className="d-flex col-9 justify-content-end">
+                        <a className="btn-subscribe" href="#">
+                            Subscribe
+                        </a>
+                    </div>
+                </div>
+                <div
+                    className={`${
+                        mobileMenuOpened ? 'd-flex' : 'd-none'
+                    } nav-menu-mobile`}>
+                    <div className="justify-content-end pt-3">
                         {navigation.map(item => (
                             <a
                                 key={item.id}
                                 href={item.href}
-                                className={`${styles.navLink_mobile}`}
-                                id={currentPath === item.href ? 'col-primary' : ''}>
+                                className={`nav-link-mobile d-flex`}
+                                id={
+                                    currentPath === item.href
+                                        ? 'col-secondary'
+                                        : 'col-primary'
+                                }>
                                 {item.label}
                             </a>
                         ))}
                     </div>
-                </div> */}
+                </div>
+            </header>
         </>
     );
 };

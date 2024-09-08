@@ -10,7 +10,7 @@
 
 .navMenu_btn {
     max-height: min-content;
-    font-size: 42px;
+    font-size: 90px !important;
     border: none;
     background: transparent;
 }
@@ -29,18 +29,3 @@
 .navContainer {
     justify-content: flex-end;
 }
-
-/* .navMenu_mobile {
-    display: flex;
-    position: absolute;
-    background: white;
-    margin-top: 5rem;
-    justify-content: center;
-    min-width: 100%;
-    min-height: 100%;
-} */
-
-/* .navLink_mobile {
-    margin-bottom: 1.5rem;
-    font-size: 24px;
-} */

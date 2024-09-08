@@ -7,6 +7,14 @@
     --heading-2: rgb(105, 120, 136);
 }
 
+#col-primary {
+    color: var(--col-primary);
+}
+
+#col-secondary {
+    color: var(--col-secondary);
+}
+
 #col-heading-1 {
     color: var(--heading-1);
 }
@@ -18,6 +26,10 @@
 * {
     font-family: 'rubik', sans-serif;
     font-size: 16px;
+}
+
+div {
+    overflow: hidden;
 }
 
 body {
