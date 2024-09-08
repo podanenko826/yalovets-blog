@@ -50,7 +50,7 @@ const NavBar = () => {
                 <div className="navbar navbar-expand-lg md-nav row d-none d-lg-flex py-0">
                     <div className="container-sm col-3 py-0">
                         <a href="/" className="navbar-brand">
-                            <h4 className="text-primary">
+                            <h4 className="col-primary">
                                 Yalovets Blog
                                 <FaCoffee className={styles.navLogo_icon} />
                             </h4>

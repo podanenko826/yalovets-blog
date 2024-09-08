@@ -20,14 +20,6 @@
   }
 }
 
-.text-primary {
-  color: rgb(40, 40, 40) !important;
-}
-
-.text-secondary {
-  color: rgb(45, 110, 164) !important;
-}
-
 .navbar-nav {
   display: flex !important;
   justify-content: flex-end !important;

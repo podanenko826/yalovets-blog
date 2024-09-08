@@ -78,6 +78,50 @@ export default function Home() {
                 </div>
             </div>
 
+            <div className="container welcome-xs d-block d-lg-none">
+                <div className="row">
+                    <div className="col-12 container p-3">
+                        <h2 className="welcome-text" id="col-heading-2">
+                            Welcome to Yalovets Blog
+                        </h2>
+                        <h1
+                            className="welcome-heading heading"
+                            id="col-heading-1">
+                            AWS Unveiled: Your Gateway to Cloud Knowledge
+                        </h1>
+                        <p className="welcome-paragraph">
+                            By Ivan Yalovets. Since 2024, I published 0
+                            articles.
+                        </p>
+                        <button className="btn-filled">Start Reading</button>
+                    </div>
+                </div>
+            </div>
+
+            <div className="container-fluid welcome-xs d-block d-lg-none p-0">
+                <div className="row">
+                    <div className="col-11 offset-1 col-sm-10 offset-sm-2 col-md-7 offset-md-5">
+                        <picture className="img-fluid">
+                            <source
+                                type="image/webp"
+                                srcSet="/img/teaser-front@1140w2x.webp 1140w, /img/teaser-front@1140w2x.webp 2280w, /img/teaser-front@1140w2x.webp 960w, /img/teaser-front@1140w2x.webp 1920w"
+                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                            />
+                            <source
+                                srcSet="/img/teaser-front@1140w2x.jpg 1140w, /img/teaser-front@1140w2x.jpg 2280w, /img/teaser-front@1140w2x.jpg 960w, /img/teaser-front@1140w2x.jpg 1920w"
+                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                            />
+                            <img
+                                className="img-fluid"
+                                src="/img/teaser-front.jpg"
+                                alt="Cloudonaut Teaser"
+                                title="Cloudonaut Teaser"
+                            />
+                        </picture>
+                    </div>
+                </div>
+            </div>
+
             <div className="latest-post" id="latest-post">
                 <div className="container">
                     <div className="row align-items-center">
