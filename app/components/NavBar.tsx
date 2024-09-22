@@ -29,6 +29,11 @@ const NavBar = () => {
             href: '/skills',
             id: 2,
         },
+        {
+            label: 'Books',
+            href: '/books-and-courses',
+            id: 3,
+        },
     ];
 
     const handleMobileNavigation = () => {

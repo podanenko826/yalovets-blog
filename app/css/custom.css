@@ -75,6 +75,7 @@
 .row {
   display: flex !important;
   flex-wrap: wrap !important;
+  overflow: hidden !important;
   margin-top: 30px !important;
   margin-left: -15px !important;
   margin-right: -15px !important;
@@ -99,6 +100,51 @@
 
 #active {
   color: rgb(45, 110, 164) !important;
+}
+
+.posts,
+.image,
+.col-md-4,
+.col-md-6,
+img {
+  -o-object-fit: cover;
+  object-fit: cover;
+  width: 100%;
+  margin: 0;
+  max-width: 100%;
+}
+
+.image,
+img {
+  filter: grayscale(100%) opacity(90%);
+}
+.image:hover,
+img:hover {
+  filter: none;
+}
+
+.teaser-img {
+  filter: none;
+}
+
+.col-11,
+.col-sm-10,
+.col-md-7,
+.offset-1,
+.offset-sm-1,
+.offset-md-5 {
+  overflow: hidden !important;
+}
+
+.posts > .post-list > div {
+  margin-top: 60px;
+  margin-bottom: 60px;
+}
+@media (min-width: 768px) {
+  .posts > .post-list > div {
+    margin-top: 30px;
+    margin-bottom: 30px;
+  }
 }
 
 /*!

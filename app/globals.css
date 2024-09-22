@@ -1,3 +1,7 @@
+/* background: rgb(255, 60, 60); */
+/* background: darkcyan; */
+/* background: dodgerblue; */
+/* background: royalblue; */
 :root {
     /* --col-primary: rgb(245, 245, 245); */
     --col-primary: rgb(40, 40, 40);
@@ -28,8 +32,14 @@
     font-size: 16px;
 }
 
-div {
-    overflow: hidden;
+img {
+    overflow: clip;
+    overflow-clip-margin: content-box;
+}
+
+img,
+svg {
+    vertical-align: middle;
 }
 
 body {
@@ -66,12 +76,16 @@ h4.subheading-tiny {
     font-weight: 500;
 }
 
+button {
+    border-radius: 5px;
+    border: none;
+    outline: none;
+}
+
 .btn-outlined {
     padding: 12px 10px;
     background: transparent;
     font-weight: 500;
-    font-size: 16px;
-    border: none;
 }
 .btn-outlined:hover {
     text-decoration: underline;
@@ -79,17 +93,9 @@ h4.subheading-tiny {
 
 .btn-filled {
     padding: 20px 36px;
-    border-radius: 5px;
-    /* background: rgb(255, 60, 60); */
-    /* background: darkcyan; */
-    /* background: dodgerblue; */
-    /* background: royalblue; */
     background: var(--col-primary);
     color: white;
-    font-size: 16px;
     font-weight: 600;
-    outline: none;
-    border: none;
 }
 
 .btn-filled:hover {
@@ -103,7 +109,7 @@ h4.subheading-tiny {
 
 @media (min-width: 820px) {
     .btn-outlined {
-        outline: var(--default-outline) auto 1px;
+        border: dimgray solid 1px;
         padding: 12px 20px;
     }
 
