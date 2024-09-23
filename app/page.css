@@ -3,6 +3,10 @@
     color: rgb(105, 120, 136);
 }
 
+.welcome-heading {
+    font-size: 2.5rem;
+}
+
 .welcome {
     margin-top: 60px;
     padding: 0 0 30px 0 !important;
@@ -65,8 +69,27 @@
     margin: 4rem 0px;
 }
 
+#btn-text {
+    font-weight: 600 !important;
+}
+
+.category-link {
+    display: flex;
+    flex-direction: column;
+}
+
+.recent-btn {
+    font-weight: 600 !important;
+    text-decoration: none;
+    width: max-content;
+}
+
 .recent-posts-icon {
     font-size: 20px;
+}
+
+.read-on-btn {
+    font-weight: 600;
 }
 
 .post-container {

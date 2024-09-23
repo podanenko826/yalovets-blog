@@ -59,13 +59,16 @@ button {
     cursor: pointer;
 }
 
-h1.heading {
-    font-weight: 800;
-    font-size: 42px;
+h1,
+.heading {
+    font-weight: 700;
+    font-size: 28px;
 }
 
-h2.subheading {
+h2,
+.subheading {
     font-weight: 600;
+    font-size: 23px;
 }
 
 h3.subheading-small {

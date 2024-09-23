@@ -108,7 +108,7 @@ export default function Home() {
                                     Welcome to Yalovets Blog
                                 </h2>
                                 <h1
-                                    className="welcome-heading heading"
+                                    className="welcome-heading"
                                     id="col-heading-1">
                                     AWS Unveiled: Your Gateway to Cloud
                                     Knowledge
@@ -153,9 +153,9 @@ export default function Home() {
                         <div
                             className="col-lg-5 offset-lg-1 py-3"
                             id="latest-post">
-                            <h2 id="col-heading-1 py-3">
+                            <h1 id="col-heading-1 py-3">
                                 Latest post: An Example
-                            </h2>
+                            </h1>
                             <p className="pb-2">
                                 Lorem ipsum, dolor sit amet consectetur
                                 adipisicing elit. Corporis recusandae commodi
@@ -171,18 +171,21 @@ export default function Home() {
             </div>
             {/* Recent posts */}
             <div className="container posts" id="posts">
-                <div className="row">
+                <div className="row pt-5">
                     <div className="col-12 category-link">
-                        <a id="col-primary" className="" href="/page/1">
-                            <h3>
+                        <a
+                            id="col-primary"
+                            className="recent-btn"
+                            href="/page/1">
+                            <h3 id="btn-text">
                                 Recent posts{' '}
                                 <MdOutlineArrowForwardIos className="recent-posts-icon" />
                             </h3>
                         </a>
-                        <h4 className="subheading-tiny" id="col-heading-1">
+                        <h5 className="subheading-tiny" id="col-heading-1">
                             Subscribe to stay up to date. Browse my archive of 0
                             posts
-                        </h4>
+                        </h5>
                     </div>
                 </div>
 
@@ -208,9 +211,11 @@ export default function Home() {
                                     />
                                 </picture>
                             </a>
-                            <h3 id="col-heading-1">{post.heading}</h3>
+                            <h2 className="pt-3" id="col-heading-1">
+                                {post.heading}
+                            </h2>
                             <p>{post.description}</p>
-                            <a className="" href={post.link}>
+                            <a className="read-on-btn" href={post.link}>
                                 Read on
                             </a>
                         </div>
