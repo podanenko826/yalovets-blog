@@ -55,7 +55,7 @@ export default function Home() {
             <div className="container-fluid welcome-xs d-block d-lg-none p-0 overflow-hidden">
                 <div className="row">
                     <div className="col-11 offset-1 col-sm-10 offset-sm-2 col-md-7 offset-md-5">
-                        <picture className="img-fluid">
+                        <picture className="img-fluid teaser-img">
                             <source
                                 type="image/webp"
                                 srcSet="/img/teaser-front@1140w2x.webp 1140w, /img/teaser-front@1140w2x.webp 2280w, /img/teaser-front@1140w2x.webp 960w, /img/teaser-front@1140w2x.webp 1920w"
@@ -78,10 +78,10 @@ export default function Home() {
 
             {/* Welcome section (Desktop) */}
 
-            <div className="welcome container-fluid d-none d-lg-block">
+            <div className="welcome container-fluid d-none d-lg-block overflow-hidden">
                 <div className="row">
                     <div className="col-lg-7 offset-lg-5">
-                        <picture className="img-fluid">
+                        <picture className="img-fluid teaser-img">
                             <source
                                 type="image/webp"
                                 srcSet="/img/teaser-front@1140w2x.webp 1140w, /img/teaser-front@1140w2x.webp 2280w, /img/teaser-front@1140w2x.webp 960w, /img/teaser-front@1140w2x.webp 1920w"

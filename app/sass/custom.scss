@@ -86,8 +86,12 @@ $secondary: rgb(45, 110, 164);
     flex-wrap: wrap !important;
     overflow: hidden !important;
     margin-top: 30px !important;
-    margin-left: -15px !important;
-    margin-right: -15px !important;
+
+    @media (min-width: 768px) {
+        // For md and up
+        // margin-left: -15px !important;
+        // margin-right: -15px !important;
+    }
 }
 
 .welcome > div:nth-of-type(2) {
@@ -118,6 +122,7 @@ $secondary: rgb(45, 110, 164);
 img {
     -o-object-fit: cover;
     object-fit: cover;
+    border-style: none;
     width: 100%;
 
     margin: 0;
@@ -134,6 +139,17 @@ img {
 
 .teaser-img {
     filter: none;
+    overflow: hidden;
+    max-width: 100%;
+}
+
+.img-fluid,
+.teaser-img,
+.col-11,
+.row,
+.welcome-xs,
+.container-fluid {
+    overflow: hidden !important;
 }
 
 // .posts,

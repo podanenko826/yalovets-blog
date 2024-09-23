@@ -77,10 +77,7 @@
   flex-wrap: wrap !important;
   overflow: hidden !important;
   margin-top: 30px !important;
-  margin-left: -15px !important;
-  margin-right: -15px !important;
 }
-
 .welcome > div:nth-of-type(2) {
   position: absolute;
   left: 0;
@@ -109,6 +106,7 @@
 img {
   -o-object-fit: cover;
   object-fit: cover;
+  border-style: none;
   width: 100%;
   margin: 0;
   max-width: 100%;
@@ -125,6 +123,22 @@ img:hover {
 
 .teaser-img {
   filter: none;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.img-fluid,
+.teaser-img,
+.col-11,
+.row,
+.welcome-xs,
+.container-fluid,
+.container-xxl,
+.container-xl,
+.container-lg,
+.container-md,
+.container-sm {
+  overflow: hidden !important;
 }
 
 .col-11,
