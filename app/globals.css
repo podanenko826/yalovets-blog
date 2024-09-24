@@ -6,6 +6,7 @@
     /* --col-primary: rgb(245, 245, 245); */
     --col-primary: rgb(40, 40, 40);
     --col-secondary: rgb(45, 110, 164);
+    --col-highlight: rgb(31, 90, 139);
     --default-outline: dimgray;
     --heading-1: rgb(80, 80, 80);
     --heading-2: rgb(105, 120, 136);
@@ -96,18 +97,19 @@ button {
 
 .btn-filled {
     padding: 20px 36px;
-    background: var(--col-primary);
+    background: var(--col-secondary);
     color: white;
     font-weight: 600;
 }
 
 .btn-filled:hover {
     /* background: rgb(220, 0, 0); */
-    background: var(--col-secondary);
+    background: var(--col-highlight);
 }
 
 .btn-filled:active {
     outline: slategrey auto 10px;
+    background: var(--col-primary);
 }
 
 @media (min-width: 820px) {
