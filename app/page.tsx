@@ -169,6 +169,7 @@ export default function Home() {
                     </div>
                 </div>
             </div>
+
             {/* Recent posts */}
             <div className="container posts" id="posts">
                 <div className="row pt-5">
@@ -191,6 +192,53 @@ export default function Home() {
 
                 <div className="row post-list">
                     {recentPosts.map((post, index) => (
+                        <div className="col-12 col-md-4" key={index}>
+                            <a href={post.link}>
+                                <picture className="img-fluid">
+                                    <source
+                                        type="image/png"
+                                        srcSet={`${post.imageSrc} 1140w, ${post.imageSrc} 2280w, ${post.imageSrc} 960w, ${post.imageSrc} 1920w`}
+                                        sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                                    />
+                                    <source
+                                        srcSet={`${post.imageSrc} 1140w, ${post.imageSrc} 2280w, ${post.imageSrc} 960w, ${post.imageSrc} 1920w`}
+                                        sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                                    />
+                                    <img
+                                        className="img-fluid"
+                                        src={post.imageSrc}
+                                        alt={post.heading}
+                                        title={post.heading}
+                                    />
+                                </picture>
+                            </a>
+                            <h2 className="pt-3" id="col-heading-1">
+                                {post.heading}
+                            </h2>
+                            <p>{post.description}</p>
+                            <a className="read-on-btn" href={post.link}>
+                                Read on
+                            </a>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Most popular posts */}
+
+            <div className="container posts" id="posts">
+                <div className="row pt-5">
+                    <div className="col-12 category-link">
+                        <h1 id="btn-text col-secondary">Most popular posts</h1>
+                        <h5 className="subheading-tiny" id="col-heading-1">
+                            Those posts are most beloved ones from our
+                            subscribers
+                        </h5>
+                    </div>
+                </div>
+
+                <div className="row post-list">
+                    {popularPosts.map((post, index) => (
                         <div className="col-12 col-md-4" key={index}>
                             <a href={post.link}>
                                 <picture className="img-fluid">

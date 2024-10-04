@@ -13,19 +13,19 @@
 }
 
 #col-primary {
-    color: var(--col-primary);
+    color: var(--col-primary) !important;
 }
 
 #col-secondary {
-    color: var(--col-secondary);
+    color: var(--col-secondary) !important;
 }
 
 #col-heading-1 {
-    color: var(--heading-1);
+    color: var(--heading-1) !important;
 }
 
 #col-heading-2 {
-    color: var(--heading-2);
+    color: var(--heading-2) !important;
 }
 
 * {
