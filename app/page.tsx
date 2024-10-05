@@ -270,40 +270,43 @@ export default function Home() {
                     ))}
                 </div>
             </div>
-            {/* <div className="post-box">
-                <div>
-                    <a
-                        id="col-primary"
-                        className="recent-posts-link"
-                        href="/page/1">
-                        <h3>
-                            Most Popular Posts{' '}
-                            <MdOutlineArrowForwardIos className="recent-posts-icon" />
-                        </h3>
-                    </a>
-                    <h4 className="subheading-tiny" id="col-heading-1">
-                        Subscribe to stay up to date. Browse my archive of 0
-                        posts
-                    </h4>
-                </div>
-
-                <div className="post-container">
-                    {popularPosts.map((post, index) => (
-                        <div className="post-card" key={index}>
-                            <img
-                                className="post-card-image"
-                                src={post.imageSrc}
-                                alt={post.altText}
+            <div className="container about-me mt-5">
+                <div className="row align-items-center">
+                    <div className="col-12 col-sm-10 offset-sm-1 offset-md-1 col-md-5">
+                        <picture className="img-fluid ivan-yalovets">
+                            <source
+                                type="image/jpg"
+                                srcSet="/img/ivan.jpg 1140w, /img/ivan.jpg 2280w, /img/ivan.jpg 960w, /img/ivan.jpg 1920w"
+                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                             />
-                            <h2 id="col-heading-1">{post.heading}</h2>
-                            <p>{post.description}</p>
-                            <a className="post-card-link" href={post.link}>
-                                Read on
-                            </a>
-                        </div>
-                    ))}
+                            <source
+                                srcSet="/img/ivan.jpg 1140w, /img/ivan.jpg 2280w, /img/ivan.jpg 960w, /img/ivan.jpg 1920w"
+                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                            />
+                            <img
+                                className="img-fluid ivan-yalovets"
+                                src="/img/ivan.jpg"
+                                alt="Teaser"
+                                title="Teaser"
+                            />
+                        </picture>
+                    </div>
+                    <div className="col-md-5 col-lg-5 offset-md-1 offset-lg-0">
+                        <h1>Hi, I'm Ivan Yalovets!</h1>
+                        <p className="pt-2">
+                            I started Yalovets Blog in 2024 to share the latest
+                            tools and insights on web services. My goal is to
+                            provide valuable, up-to-date content for web
+                            professionals and enthusiasts alike.
+                        </p>
+                        <p>
+                            To support my work, please <a href="#">subscribe</a>{' '}
+                            to the newsletter and share it with your friends or
+                            colleagues.
+                        </p>
+                    </div>
                 </div>
-            </div> */}
+            </div>
         </main>
     );
 }
