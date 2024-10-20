@@ -33,11 +33,12 @@ const PostCard = ({post, index}: PostCardProps) => {
                         title={post.heading}
                     />
                 </picture>
+
+                <h2 className="pt-3" id="col-heading-1">
+                    {post.heading}
+                </h2>
+                <p>{post.description}</p>
             </a>
-            <h2 className="pt-3" id="col-heading-1">
-                {post.heading}
-            </h2>
-            <p>{post.description}</p>
             <div className="d-flex profile-info">
                 <div className="align-content-center">
                     <img

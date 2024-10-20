@@ -33,6 +33,10 @@
     font-size: 16px;
 }
 
+a {
+    text-decoration: none;
+}
+
 img {
     overflow: clip;
     overflow-clip-margin: content-box;
