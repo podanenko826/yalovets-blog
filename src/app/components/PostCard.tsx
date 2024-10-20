@@ -43,7 +43,7 @@ const PostCard = ({post, index}: PostCardProps) => {
                 <div className="align-content-center">
                     <img
                         className="img-fluid pfp"
-                        src="/img/ivan_pfp.png"
+                        src="/img/ivan-pfp.png"
                         alt="pfp"
                     />
                 </div>
