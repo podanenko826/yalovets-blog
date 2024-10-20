@@ -112,17 +112,7 @@ img {
   max-width: 100%;
 }
 
-.image,
-img {
-  filter: grayscale(100%) opacity(90%);
-}
-.image:hover,
-img:hover {
-  filter: none;
-}
-
 .teaser-img {
-  filter: none;
   overflow: hidden;
   max-width: 100%;
 }
@@ -139,6 +129,12 @@ img:hover {
 .container-md,
 .container-sm {
   overflow: hidden !important;
+}
+
+.about-me {
+  display: flex;
+  width: 100% !important;
+  justify-content: center;
 }
 
 .col-11,
