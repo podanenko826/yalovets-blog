@@ -1,8 +1,8 @@
 $primary: rgb(40, 40, 40);
 $secondary: rgb(45, 110, 164);
 
-@import '../../node_modules/bootstrap/scss/functions';
-@import '../../node_modules/bootstrap/scss/variables';
+@import '../../../node_modules/bootstrap/scss/functions';
+@import '../../../node_modules/bootstrap/scss/variables';
 
 .container {
     @media (min-width: 576px) {
@@ -129,16 +129,7 @@ img {
     max-width: 100%;
 }
 
-.image,
-img {
-    filter: grayscale(100%) opacity(90%);
-    &:hover {
-        filter: none;
-    }
-}
-
 .teaser-img {
-    filter: none;
     overflow: hidden;
     max-width: 100%;
 }
@@ -151,18 +142,6 @@ img {
 .container-fluid {
     overflow: hidden !important;
 }
-
-// .posts,
-// .col-md-4,
-// img {
-//     @media (min-width: 576px) {
-//         height: 160px;
-//     }
-
-//     @media (min-width: 768px) {
-//         height: 210px;
-//     }
-// }
 
 .about-me {
     display: flex;
@@ -189,4 +168,4 @@ img {
     }
 }
 
-@import '../../node_modules/bootstrap/scss/bootstrap';
+@import '../../../node_modules/bootstrap/scss/bootstrap';
