@@ -1,5 +1,7 @@
 import React from 'react';
 
+import styles from './PostCard.module.css';
+
 type Post = {
     imageSrc: string;
     heading: string;
@@ -34,23 +36,27 @@ const PostCard = ({post, index}: PostCardProps) => {
                     />
                 </picture>
 
-                <h2 className="pt-3" id="col-heading-1">
-                    {post.heading}
-                </h2>
-                <p>{post.description}</p>
+                <div className={styles.postInfo}>
+                    <h2 className="pt-3" id="col-heading-1">
+                        {post.heading}
+                    </h2>
+                    <p>{post.description}</p>
+                </div>
             </a>
-            <div className="d-flex profile-info">
+            <div className={`${styles.profile_info} d-flex`}>
                 <div className="align-content-center">
                     <img
-                        className="img-fluid pfp"
+                        className={`${styles.pfp} img-fluid`}
                         src="/img/ivan-pfp.png"
                         alt="pfp"
                     />
                 </div>
 
-                <div className="profile-info">
-                    <p className="profile-info__text">Ivan Yalovets</p>
-                    <p className="profile-info__text">20 Oct • 5 min read</p>
+                <div className={styles.profile_info__details}>
+                    <p className={styles.profile_info__text}>Ivan Yalovets</p>
+                    <p className={styles.profile_info__text}>
+                        20 Oct • 5 min read
+                    </p>
                 </div>
             </div>
         </div>

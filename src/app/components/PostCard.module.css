@@ -1,0 +1,25 @@
+.postInfo {
+    padding-top: 4px;
+}
+
+.profile_info {
+    padding: 0;
+}
+
+.profile_info__details {
+    line-height: 8px;
+    align-content: space-around;
+}
+
+.profile_info__text {
+    font-size: 14px;
+    font-weight: lighter;
+    margin-top: 12px !important;
+    margin-bottom: 12px !important;
+    margin-left: 8px;
+}
+
+.pfp {
+    width: 50px;
+    border-radius: 100%;
+}

@@ -116,22 +116,3 @@
 .ivan-yalovets {
     width: 290px;
 }
-
-.pfp {
-    width: 45px;
-    border-radius: 50%;
-}
-
-.profile-info {
-    line-height: 8px;
-    align-content: space-around;
-    justify-content: start;
-}
-
-.profile-info__text {
-    font-size: 14px;
-    font-weight: lighter;
-    margin-top: 12px !important;
-    margin-bottom: 12px !important;
-    margin-left: 8px;
-}
