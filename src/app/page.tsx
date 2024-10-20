@@ -1,12 +1,21 @@
 import * as React from 'react';
 import './page.css';
 
+import PostCard from './components/PostCard';
+
 import StartReadingButton from './components/Button/StartReadingButton';
 
 import {MdOutlineArrowForwardIos} from 'react-icons/md';
 
 export default function Home() {
-    let recentPosts = Array(9).fill({
+    type Post = {
+        imageSrc: string;
+        heading: string;
+        description: string;
+        link: string;
+    };
+
+    const recentPosts: Post[] = new Array(9).fill({
         imageSrc: '/img/placeholder.png',
         heading: 'Recent post: An Example',
         description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. 
@@ -17,16 +26,49 @@ export default function Home() {
         link: '#',
     });
 
-    const popularPosts = Array(3).fill({
-        imageSrc: '/img/placeholder.png',
-        heading: 'Popular post: An Example',
-        description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-                      Ea aperiam consequuntur perferendis, recusandae similique rerum 
-                      rem et, commodi modi numquam eaque repellat quasi facere 
-                      illo earum quam tempore iure nam eveniet totam ad maxime nisi, 
-                      itaque cumque? At, iusto alias!`,
-        link: '#',
-    });
+    // const popularPosts: Post[] = Array(3).fill({
+    //     imageSrc: '/img/placeholder.png',
+    //     heading: 'Popular post: An Example',
+    //     description: `Lorem ipsum dolor sit amet consectetur adipisicing elit.
+    //                   Ea aperiam consequuntur perferendis, recusandae similique rerum
+    //                   rem et, commodi modi numquam eaque repellat quasi facere
+    //                   illo earum quam tempore iure nam eveniet totam ad maxime nisi,
+    //                   itaque cumque? At, iusto alias!`,
+    //     link: '#',
+    // });
+
+    const popularPosts: Post[] = [
+        {
+            imageSrc: '/img/placeholder.png',
+            heading: 'Popular post: An Example 1',
+            description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                            Ea aperiam consequuntur perferendis, recusandae similique rerum 
+                            rem et, commodi modi numquam eaque repellat quasi facere 
+                            illo earum quam tempore iure nam eveniet totam ad maxime nisi, 
+                            itaque cumque? At, iusto alias!`,
+            link: '#',
+        },
+        {
+            imageSrc: '/img/placeholder.png',
+            heading: 'Popular post: An Example 2',
+            description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                            Ea aperiam consequuntur perferendis, recusandae similique rerum 
+                            rem et, commodi modi numquam eaque repellat quasi facere 
+                            illo earum quam tempore iure nam eveniet totam ad maxime nisi, 
+                            itaque cumque? At, iusto alias!`,
+            link: '#',
+        },
+        {
+            imageSrc: '/img/placeholder.png',
+            heading: 'Popular post: An Example 3',
+            description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                            Ea aperiam consequuntur perferendis, recusandae similique rerum 
+                            rem et, commodi modi numquam eaque repellat quasi facere 
+                            illo earum quam tempore iure nam eveniet totam ad maxime nisi, 
+                            itaque cumque? At, iusto alias!`,
+            link: '#',
+        },
+    ];
 
     return (
         <main>
@@ -192,34 +234,7 @@ export default function Home() {
 
                 <div className="row post-list">
                     {recentPosts.map((post, index) => (
-                        <div className="col-12 col-md-4" key={index}>
-                            <a href={post.link}>
-                                <picture className="img-fluid">
-                                    <source
-                                        type="image/png"
-                                        srcSet={`${post.imageSrc} 1140w, ${post.imageSrc} 2280w, ${post.imageSrc} 960w, ${post.imageSrc} 1920w`}
-                                        sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                                    />
-                                    <source
-                                        srcSet={`${post.imageSrc} 1140w, ${post.imageSrc} 2280w, ${post.imageSrc} 960w, ${post.imageSrc} 1920w`}
-                                        sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                                    />
-                                    <img
-                                        className="img-fluid"
-                                        src={post.imageSrc}
-                                        alt={post.heading}
-                                        title={post.heading}
-                                    />
-                                </picture>
-                            </a>
-                            <h2 className="pt-3" id="col-heading-1">
-                                {post.heading}
-                            </h2>
-                            <p>{post.description}</p>
-                            <a className="read-on-btn" href={post.link}>
-                                Read on
-                            </a>
-                        </div>
+                        <PostCard post={post} index={index} key={index} />
                     ))}
                 </div>
             </div>
@@ -239,34 +254,7 @@ export default function Home() {
 
                 <div className="row post-list">
                     {popularPosts.map((post, index) => (
-                        <div className="col-12 col-md-4" key={index}>
-                            <a href={post.link}>
-                                <picture className="img-fluid">
-                                    <source
-                                        type="image/png"
-                                        srcSet={`${post.imageSrc} 1140w, ${post.imageSrc} 2280w, ${post.imageSrc} 960w, ${post.imageSrc} 1920w`}
-                                        sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                                    />
-                                    <source
-                                        srcSet={`${post.imageSrc} 1140w, ${post.imageSrc} 2280w, ${post.imageSrc} 960w, ${post.imageSrc} 1920w`}
-                                        sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                                    />
-                                    <img
-                                        className="img-fluid"
-                                        src={post.imageSrc}
-                                        alt={post.heading}
-                                        title={post.heading}
-                                    />
-                                </picture>
-                            </a>
-                            <h2 className="pt-3" id="col-heading-1">
-                                {post.heading}
-                            </h2>
-                            <p>{post.description}</p>
-                            <a className="read-on-btn" href={post.link}>
-                                Read on
-                            </a>
-                        </div>
+                        <PostCard post={post} index={index} key={index} />
                     ))}
                 </div>
             </div>
