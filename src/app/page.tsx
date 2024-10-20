@@ -261,7 +261,7 @@ export default function Home() {
             <div className="container about-me mt-5">
                 <div className="row align-items-center">
                     <div className="col-12 col-sm-10 offset-sm-1 offset-md-1 col-md-5">
-                        <picture className="img-fluid ivan-yalovets">
+                        <picture className="ivan-yalovets">
                             <source
                                 type="image/jpg"
                                 srcSet="/img/ivan.jpg 1140w, /img/ivan.jpg 2280w, /img/ivan.jpg 960w, /img/ivan.jpg 1920w"

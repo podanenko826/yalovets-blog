@@ -112,9 +112,15 @@ img {
   max-width: 100%;
 }
 
+@media (max-width: 767px) {
+  .img-fluid img {
+    height: 160px;
+  }
+}
 .teaser-img {
   overflow: hidden;
   max-width: 100%;
+  height: auto !important;
 }
 
 .img-fluid,
