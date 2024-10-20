@@ -38,6 +38,20 @@ const PostCard = ({post, index}: PostCardProps) => {
                 {post.heading}
             </h2>
             <p>{post.description}</p>
+            <div className="d-flex profile-info">
+                <div className="align-content-center">
+                    <img
+                        className="img-fluid pfp"
+                        src="/img/ivan_pfp.png"
+                        alt="pfp"
+                    />
+                </div>
+
+                <div className="profile-info">
+                    <p className="profile-info__text">Ivan Yalovets</p>
+                    <p className="profile-info__text">20 Oct • 5 min read</p>
+                </div>
+            </div>
         </div>
     );
 };
