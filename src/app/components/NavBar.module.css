@@ -1,3 +1,8 @@
+.navbar_brand {
+    font-family: 'rubik', sans-serif !important;
+    font-weight: 500;
+}
+
 .nav_box {
     justify-content: flex-end !important;
     column-gap: 35px;

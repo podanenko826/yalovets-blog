@@ -54,8 +54,9 @@ const NavBar = () => {
             <header className="container">
                 <div className="navbar navbar-expand-lg md-nav row d-none d-lg-flex py-0">
                     <div className="container-sm col-3 py-0">
-                        <a href="/" className="navbar-brand">
-                            <h4 className="col-primary">
+                        <a href="/">
+                            <h4
+                                className={`${styles.navbar_brand} col-primary`}>
                                 Yalovets Blog
                                 <FaCoffee className={styles.navLogo_icon} />
                             </h4>

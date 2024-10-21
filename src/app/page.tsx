@@ -38,10 +38,20 @@ export default function Home() {
             imageSrc: '/img/placeholder.png',
             heading: 'Popular post: An Example 1',
             description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-                            Ea aperiam consequuntur perferendis, recusandae similique rerum 
-                            rem et, commodi modi numquam eaque repellat quasi facere 
-                            illo earum quam tempore iure nam eveniet totam ad maxime nisi, 
-                            itaque cumque? At, iusto alias!`,
+            Ea aperiam consequuntur perferendis, recusandae similique rerum 
+            rem et, commodi modi numquam eaque repellat quasi facere 
+            illo earum quam tempore iure nam eveniet totam ad maxime nisi, 
+            itaque cumque? At, iusto alias!`,
+            link: '#',
+        },
+        {
+            imageSrc: '/img/placeholder.png',
+            heading: 'Popular post: An Example 3',
+            description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+            Ea aperiam consequuntur perferendis, recusandae similique rerum 
+            rem et, commodi modi numquam eaque repellat quasi facere 
+            illo earum quam tempore iure nam eveniet totam ad maxime nisi, 
+            itaque cumque? At, iusto alias!`,
             link: '#',
         },
         {
@@ -50,16 +60,6 @@ export default function Home() {
             description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. 
                             Ea aperiam consequuntur perferendis, recusandae similique rerum 
                             rem et, commodi modi numquam eaque repellat quasi facere.`,
-            link: '#',
-        },
-        {
-            imageSrc: '/img/placeholder.png',
-            heading: 'Popular post: An Example 3',
-            description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-                            Ea aperiam consequuntur perferendis, recusandae similique rerum 
-                            rem et, commodi modi numquam eaque repellat quasi facere 
-                            illo earum quam tempore iure nam eveniet totam ad maxime nisi, 
-                            itaque cumque? At, iusto alias!`,
             link: '#',
         },
     ];
