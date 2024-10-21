@@ -15,6 +15,13 @@ export default function Home() {
         link: string;
     };
 
+    const latestPost: Post = {
+        imageSrc: '/img/placeholder.png',
+        heading: 'How to begin with AWS: Introduction',
+        description: `Learn more about AWS and its practical use in real-world cases.`,
+        link: '#',
+    };
+
     const recentPosts: Post[] = new Array(9).fill({
         imageSrc: '/img/placeholder.png',
         heading: 'How to begin with AWS: Introduction',
@@ -161,49 +168,8 @@ export default function Home() {
             </div>
 
             {/* Latest post section */}
-
-            <div className="latest-post" id="latest-post">
-                <div className="container">
-                    <div className="row align-items-center">
-                        <div className="col-lg-6">
-                            <a href="#">
-                                <picture className="img-fluid">
-                                    <source
-                                        type="image/png"
-                                        srcSet="/img/placeholder.png 1140w, /img/placeholder.png 2280w, /img/placeholder.png 960w, /img/placeholder.png 1920w"
-                                        sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                                    />
-                                    <source
-                                        srcSet="/img/placeholder.png 1140w, /img/placeholder.png 2280w, /img/placeholder.png 960w, /img/placeholder.png 1920w"
-                                        sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                                    />
-                                    <img
-                                        className="img-fluid"
-                                        src="/img/placeholder.png"
-                                        alt="Recent post teaser"
-                                        title="Recent Post"
-                                    />
-                                </picture>
-                            </a>
-                        </div>
-                        <div
-                            className="col-lg-5 offset-lg-1 py-3"
-                            id="latest-post">
-                            <h1 id="col-heading-1 py-3">
-                                Latest post: An Example
-                            </h1>
-                            <p className="pb-2">
-                                Lorem ipsum, dolor sit amet consectetur
-                                adipisicing elit. Corporis recusandae commodi
-                                distinctio eos reprehenderit tempore
-                                consequuntur quam quia. Nam quae, quidem facere
-                                nemo adipisci odio ratione tenetur non ipsa
-                                corrupti.
-                            </p>
-                            <button className="btn-filled">Read on</button>
-                        </div>
-                    </div>
-                </div>
+            <div className="container-fluid posts p-0" id="posts">
+                <PostCard post={latestPost} style="massive" />
             </div>
 
             {/* Recent posts */}
@@ -230,7 +196,12 @@ export default function Home() {
 
                 <div className="row post-list">
                     {recentPosts.map((post, index) => (
-                        <PostCard post={post} index={index} key={index} />
+                        <PostCard
+                            post={post}
+                            index={index}
+                            key={index}
+                            style="standard"
+                        />
                     ))}
                 </div>
             </div>
@@ -254,7 +225,12 @@ export default function Home() {
 
                 <div className="row post-list">
                     {popularPosts.map((post, index) => (
-                        <PostCard post={post} index={index} key={index} />
+                        <PostCard
+                            post={post}
+                            index={index}
+                            key={index}
+                            style="standard"
+                        />
                     ))}
                 </div>
             </div>
