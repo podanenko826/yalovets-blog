@@ -17,12 +17,8 @@ export default function Home() {
 
     const recentPosts: Post[] = new Array(9).fill({
         imageSrc: '/img/placeholder.png',
-        heading: 'Recent post: An Example',
-        description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-                      Ea aperiam consequuntur perferendis, recusandae similique rerum 
-                      rem et, commodi modi numquam eaque repellat quasi facere 
-                      illo earum quam tempore iure nam eveniet totam ad maxime nisi, 
-                      itaque cumque? At, iusto alias!`,
+        heading: 'How to begin with AWS: Introduction',
+        description: `Learn more about AWS and its practical use in real-world cases.`,
         link: '#',
     });
 
