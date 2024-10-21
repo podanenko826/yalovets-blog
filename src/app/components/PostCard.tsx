@@ -39,10 +39,10 @@ const PostCard = ({post, index}: PostCardProps) => {
                 </div>
 
                 <div className={styles.postInfo}>
-                    <h2 className="pt-3" id="col-heading-1">
+                    <h2 className={styles.heading} id="col-heading-1">
                         {post.heading}
                     </h2>
-                    <p>{post.description}</p>
+                    <p className={styles.description}>{post.description}</p>
                 </div>
             </a>
             <div className={`${styles.profile_info} d-flex`}>

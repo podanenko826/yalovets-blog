@@ -3,7 +3,16 @@
 }
 
 .postInfo {
-    padding-top: 4px;
+    padding-top: 18px;
+}
+
+.heading {
+    font-size: 25px;
+}
+
+.description {
+    font-weight: lighter;
+    opacity: 75%;
 }
 
 .profile_info {

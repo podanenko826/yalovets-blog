@@ -49,13 +49,11 @@ export default function Home() {
             link: '#',
         },
         {
-            imageSrc: '/img/placeholder.png',
-            heading: 'Popular post: An Example 2',
+            imageSrc: '',
+            heading: 'An Example of post with no image',
             description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. 
                             Ea aperiam consequuntur perferendis, recusandae similique rerum 
-                            rem et, commodi modi numquam eaque repellat quasi facere 
-                            illo earum quam tempore iure nam eveniet totam ad maxime nisi, 
-                            itaque cumque? At, iusto alias!`,
+                            rem et, commodi modi numquam eaque repellat quasi facere.`,
             link: '#',
         },
         {
