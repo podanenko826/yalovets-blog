@@ -209,8 +209,8 @@ export default function Home() {
             {/* Recent posts */}
             <div className="container posts" id="posts">
                 <div className="row pt-5">
-                    <div className="col-12 category-link">
-                        <a
+                    <div className="col-12 category-heading">
+                        {/* <a
                             id="col-primary"
                             className="recent-btn"
                             href="/page/1">
@@ -218,11 +218,13 @@ export default function Home() {
                                 Recent posts{' '}
                                 <MdOutlineArrowForwardIos className="recent-posts-icon" />
                             </h3>
-                        </a>
-                        <h5 className="subheading-tiny" id="col-heading-1">
-                            Subscribe to stay up to date. Browse my archive of 0
-                            posts
-                        </h5>
+                        </a> */}
+                        <h4 className="subheading-smaller">Recent posts</h4>
+                        <div className="horisontal-line" />
+                        <h6 className="subheading-tiny" id="col-heading-1">
+                            Subscribe to keep in touch with latest information
+                            in tech industry
+                        </h6>
                     </div>
                 </div>
 
@@ -238,11 +240,15 @@ export default function Home() {
             <div className="container posts" id="posts">
                 <div className="row pt-5">
                     <div className="col-12 category-link">
-                        <h1 id="btn-text col-secondary">Most popular posts</h1>
-                        <h5 className="subheading-tiny" id="col-heading-1">
-                            Those posts are most beloved ones from our
-                            subscribers
-                        </h5>
+                        <h4
+                            className="subheading-smaller"
+                            id="btn-text col-secondary">
+                            Popular posts
+                        </h4>
+                        <div className="horisontal-line" />
+                        <h6 className="subheading-tiny" id="col-heading-1">
+                            Those posts are most beloved ones by our subscribers
+                        </h6>
                     </div>
                 </div>
 
