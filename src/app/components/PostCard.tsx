@@ -18,25 +18,27 @@ const PostCard = ({post, index}: PostCardProps) => {
     return (
         <div className="col-12 col-md-4" key={index}>
             <a href={post.link}>
-                <div className={styles.image}>
-                    <picture className="img-fluid">
-                        <source
-                            type="image/png"
-                            srcSet={`${post.imageSrc} 1140w, ${post.imageSrc} 2280w, ${post.imageSrc} 960w, ${post.imageSrc} 1920w`}
-                            sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                        />
-                        <source
-                            srcSet={`${post.imageSrc} 1140w, ${post.imageSrc} 2280w, ${post.imageSrc} 960w, ${post.imageSrc} 1920w`}
-                            sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                        />
-                        <img
-                            className="img-fluid"
-                            src={post.imageSrc}
-                            alt={post.heading}
-                            title={post.heading}
-                        />
-                    </picture>
-                </div>
+                {post.imageSrc && (
+                    <div className={styles.image}>
+                        <picture className="img-fluid">
+                            <source
+                                type="image/png"
+                                srcSet={`${post.imageSrc} 1140w, ${post.imageSrc} 2280w, ${post.imageSrc} 960w, ${post.imageSrc} 1920w`}
+                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                            />
+                            <source
+                                srcSet={`${post.imageSrc} 1140w, ${post.imageSrc} 2280w, ${post.imageSrc} 960w, ${post.imageSrc} 1920w`}
+                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                            />
+                            <img
+                                className="img-fluid"
+                                src={post.imageSrc}
+                                alt={post.heading}
+                                title={post.heading}
+                            />
+                        </picture>
+                    </div>
+                )}
 
                 <div className={styles.postInfo}>
                     <h2 className={styles.heading} id="col-heading-1">
