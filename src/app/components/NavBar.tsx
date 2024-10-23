@@ -63,14 +63,16 @@ const NavBar = () => {
                         </a>
                     </div>
                     <div
-                        className={`navbar-nav navbar navbar-collapse container-lg col-9 py-0`}>
+                        className={`${styles.navbar_nav} navbar navbar-collapse container-lg col-9 py-0`}>
                         {navigation.map(item => (
                             <a
                                 key={item.id}
                                 href={item.href}
-                                className="nav-link"
+                                className={styles.nav_link}
                                 id={`${
-                                    item.href === currentPath ? 'active' : ''
+                                    item.href === currentPath
+                                        ? styles.active
+                                        : ''
                                 }`}>
                                 {item.label}
                             </a>
@@ -81,7 +83,7 @@ const NavBar = () => {
                 <div className="navbar navbar-expand-lg xs-nav row d-flex d-lg-none container">
                     <div className="col-3 d-flex">
                         <button
-                            id="mobileNavigation"
+                            id={styles.mobileNavigation}
                             type="button"
                             aria-controls="mobileNavigation"
                             aria-expanded={mobileMenuOpened}
@@ -89,30 +91,30 @@ const NavBar = () => {
                             onClick={handleMobileNavigation}>
                             {mobileMenuOpened ? (
                                 <IoMdClose
-                                    className="mobileNavIcon"
-                                    id="menu-opened"
+                                    className={styles.mobileNavIcon}
+                                    id={styles.menu_opened}
                                 />
                             ) : (
-                                <IoMdMenu className="mobileNavIcon" />
+                                <IoMdMenu className={styles.mobileNavIcon} />
                             )}
                         </button>
                     </div>
                     <div className="d-flex col-9 justify-content-end">
-                        <a className="btn-subscribe" href="#">
+                        <a className={styles.btn_subscribe} href="#">
                             Subscribe
                         </a>
                     </div>
                 </div>
                 <div
-                    className={`${
-                        mobileMenuOpened ? 'd-flex' : 'd-none'
-                    } nav-menu-mobile`}>
-                    <div className="justify-content-end pt-3">
+                    className={`${mobileMenuOpened ? 'd-flex' : 'd-none'} ${
+                        styles.nav_menu_mobile
+                    }`}>
+                    <div className="pt-3">
                         {navigation.map(item => (
                             <a
                                 key={item.id}
                                 href={item.href}
-                                className={`nav-link-mobile d-flex`}
+                                className={`${styles.nav_link_mobile} d-flex`}
                                 id={
                                     currentPath === item.href
                                         ? 'col-secondary'

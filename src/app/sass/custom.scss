@@ -26,61 +26,6 @@ $secondary: rgb(45, 110, 164);
     }
 }
 
-.navbar-nav {
-    display: flex !important;
-    justify-content: flex-end !important;
-    column-gap: 30px;
-}
-
-.nav-menu-mobile {
-    position: absolute;
-    background: white;
-    justify-content: center;
-    min-width: 100%;
-    min-height: 100%;
-    left: 0;
-    right: 0;
-    z-index: 1050;
-}
-
-.mobileNavIcon {
-    width: 2.6em;
-    height: 2.6em;
-    color: $primary;
-}
-
-#menu-opened {
-    color: $secondary;
-}
-
-.nav-link {
-    color: $primary;
-
-    &:hover {
-        color: $secondary !important;
-        text-decoration: underline;
-    }
-
-    transition-duration: 75ms !important;
-}
-
-.nav-link-mobile {
-    margin-bottom: 2rem;
-    font-size: 24px;
-
-    &:active {
-        color: $secondary !important;
-    }
-}
-
-.btn-subscribe {
-    text-decoration: none;
-
-    &:active {
-        text-decoration: underline;
-    }
-}
-
 .row {
     display: flex !important;
     flex-wrap: wrap !important;
@@ -99,20 +44,6 @@ $secondary: rgb(45, 110, 164);
     left: 0;
     right: 0;
     top: 0;
-}
-
-#mobileNavigation {
-    font-size: xx-large;
-    padding: 10px;
-    width: 3rem;
-    border: none;
-    background: transparent;
-    position: relative;
-    z-index: 1050;
-}
-
-#active {
-    color: $secondary !important;
 }
 
 .posts,
