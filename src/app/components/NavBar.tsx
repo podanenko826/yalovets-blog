@@ -109,12 +109,12 @@ const NavBar = () => {
                     className={`${mobileMenuOpened ? 'd-flex' : 'd-none'} ${
                         styles.nav_menu_mobile
                     }`}>
-                    <div className="pt-3">
+                    <div className="pt-3 d-flex flex-column">
                         {navigation.map(item => (
                             <a
                                 key={item.id}
                                 href={item.href}
-                                className={`${styles.nav_link_mobile} d-flex`}
+                                className={`${styles.nav_link_mobile}`}
                                 id={
                                     currentPath === item.href
                                         ? 'col-secondary'
