@@ -39,7 +39,7 @@
     display: flex !important;
     justify-content: flex-end !important;
     /* column-gap: 30px; */
-    column-gap: 45px;
+    column-gap: 42.5px;
 }
 
 .nav_menu_mobile {
