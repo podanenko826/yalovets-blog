@@ -73,6 +73,12 @@ input {
     outline: none;
     border-radius: 5px;
     padding: 5.5px 0;
+    border: 1px solid var(--col-outline-default);
+    transition-duration: 75ms;
+}
+
+input:focus {
+    border: 1px solid var(--col-secondary);
 }
 
 h1,
