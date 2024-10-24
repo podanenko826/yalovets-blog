@@ -21,12 +21,17 @@
     margin-top: 10px;
 }
 
-#text_white {
+.navText {
     color: whitesmoke;
 }
 
-a#text_white:hover {
-    color: lightgrey;
+.navLink {
+    color: rgb(239, 239, 239);
+    text-decoration: underline;
+}
+
+.navLink:hover {
+    color: var(--col-primary);
 }
 
 .btn_subscribe {
@@ -38,4 +43,5 @@ a#text_white:hover {
 
 .btn_subscribe:hover {
     background: var(--col-secondary);
+    color: whitesmoke;
 }

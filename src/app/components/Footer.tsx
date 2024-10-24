@@ -52,13 +52,18 @@ const Footer = () => {
 
     return (
         <>
-            <div className={`${styles.footer} container-fluid`}>
-                <div className="container d-flex">
-                    <div className="col-7 pt-4">
-                        <h1 id={styles.subscribeText}>
+            <div
+                className={`${styles.footer} container-fluid justify-content-center`}>
+                <div className="container d-flex pb-5">
+                    <div className="col-7 pt-3">
+                        <h1 className="heading-large" id={styles.subscribeText}>
                             Stay informed, <br />
                             subscribe to Yalovets Blog!
                         </h1>
+                        <p className={`${styles.navText} pt-2`}>
+                            Keep in touch with latest information in tech
+                            industry
+                        </p>
                     </div>
                     <div className="d-flex">
                         <form className="row p-3">
@@ -97,11 +102,13 @@ const Footer = () => {
                                     }
                                     id={styles.agreementCheckbox}
                                 />
-                                <p id={styles.text_white}>
+                                <p className={styles.navText}>
                                     I want to subscribe to the newsletter and
                                     recieve annoucements regarding new products
-                                    and services. I agree with the Privacy
-                                    Policy.
+                                    and services. I agree with the{' '}
+                                    <a href="#" className={styles.navLink}>
+                                        Privacy Policy.
+                                    </a>
                                 </p>
                             </div>
                             <button
@@ -117,39 +124,45 @@ const Footer = () => {
                         </form>
                     </div>
                 </div>
-                <div className="container d-flex justify-content-between mt-5">
-                    <div>
-                        <h4 id={styles.text_white}>Links</h4>
-                        <div className="d-flex gap-4" id={styles.text_white}>
-                            {navButtons.map(item => (
-                                <a
-                                    href={item.href}
-                                    key={item.id}
-                                    id={styles.text_white}>
-                                    {item.label}
-                                </a>
-                            ))}
+                <div className="container justify-content-between py-3">
+                    <div className="row justify-content-between">
+                        <div className="col-md-3">
+                            <h4 className={styles.navText}>Links</h4>
+                            <div className="horisontal-line horisontal-line-thin" />
+                            <ul className="row gap-3">
+                                {navButtons.map(item => (
+                                    <li key={item.id}>
+                                        <a
+                                            href={item.href}
+                                            key={item.id}
+                                            className={styles.navLink}>
+                                            {item.label}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
-                    </div>
-                    <div>
-                        <h4 id={styles.text_white}>Legal</h4>
-                        <div
-                            className="d-flex justify-content-end gap-4"
-                            id={styles.text_white}>
-                            {footerLinks.map(item => (
-                                <a
-                                    href={item.href}
-                                    key={item.id}
-                                    id={styles.text_white}>
-                                    {item.label}
-                                </a>
-                            ))}
+                        <div className="col-md-3">
+                            <h4 className={styles.navText}>Legal</h4>
+                            <div className="horisontal-line horisontal-line-thin" />
+                            <ul className="row justify-content-end gap-3">
+                                {footerLinks.map(item => (
+                                    <li key={item.id}>
+                                        <a
+                                            href={item.href}
+                                            key={item.id}
+                                            className={styles.navLink}>
+                                            {item.label}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
                     </div>
                 </div>
 
-                <div className="container mt-5">
-                    <p id={styles.text_white}>@2024 Yalovets Blog</p>
+                <div className="container pt-5">
+                    <p className={styles.navText}>@2024 Yalovets Blog</p>
                 </div>
             </div>
         </>

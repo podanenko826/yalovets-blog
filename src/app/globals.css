@@ -69,6 +69,13 @@ button {
     cursor: pointer;
 }
 
+ul,
+li,
+a {
+    list-style: none;
+    padding: 0;
+}
+
 input {
     outline: none;
     border-radius: 5px;
@@ -81,29 +88,33 @@ input:focus {
     border: 1px solid var(--col-secondary);
 }
 
+.heading-large {
+    font-size: 36px !important;
+}
+
 h1,
 .heading {
-    font-weight: 700;
-    font-size: 28px;
+    font-weight: 700 !important;
+    font-size: 28px !important;
 }
 
 h2,
 .subheading {
-    font-weight: 600;
-    font-size: 23px;
+    font-weight: 600 !important;
+    font-size: 23px !important;
 }
 
 .subheading-small {
-    font-weight: 500;
-    font-size: 16px;
+    font-weight: 500 !important;
+    font-size: 16px !important;
 }
 
 .subheading-smaller {
-    font-weight: 450;
+    font-weight: 450 !important;
 }
 
 .subheading-tiny {
-    font-weight: 300;
+    font-weight: 300 !important;
 }
 
 button {
@@ -143,6 +154,11 @@ button {
     height: 1.5px;
     margin-bottom: 10px;
     background: lightgrey;
+}
+
+.horisontal-line-thin {
+    height: 1px;
+    opacity: 50%;
 }
 
 @media (min-width: 820px) {
