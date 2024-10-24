@@ -9,32 +9,32 @@ import {FaCoffee} from 'react-icons/fa';
 import {IoMdMenu} from 'react-icons/io';
 import {IoMdClose} from 'react-icons/io';
 
+export const navigation = [
+    {
+        label: 'Home',
+        href: '/',
+        id: 0,
+    },
+    {
+        label: 'Blog',
+        href: '/page/1',
+        id: 1,
+    },
+    {
+        label: 'Skills',
+        href: '/skills',
+        id: 2,
+    },
+    {
+        label: 'Books',
+        href: '/books-and-courses',
+        id: 3,
+    },
+];
+
 const NavBar = () => {
     const currentPath = usePathname();
     const [mobileMenuOpened, setMobileMenuOpened] = useState<boolean>(false);
-
-    const navigation = [
-        {
-            label: 'Home',
-            href: '/',
-            id: 0,
-        },
-        {
-            label: 'Blog',
-            href: '/page/1',
-            id: 1,
-        },
-        {
-            label: 'Skills',
-            href: '/skills',
-            id: 2,
-        },
-        {
-            label: 'Books',
-            href: '/books-and-courses',
-            id: 3,
-        },
-    ];
 
     const handleMobileNavigation = () => {
         setMobileMenuOpened(!mobileMenuOpened);

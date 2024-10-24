@@ -1,0 +1,41 @@
+.footer {
+    min-width: screen;
+
+    padding: 90px 0;
+
+    background-color: var(--col-footer);
+}
+
+#subscribeText {
+    color: whitesmoke;
+    font-size: 32px;
+}
+
+#inputBox {
+    margin-bottom: 10px;
+}
+
+#agreementCheckbox {
+    height: max-content;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+#text_white {
+    color: whitesmoke;
+}
+
+a#text_white:hover {
+    color: lightgrey;
+}
+
+.btn_subscribe {
+    padding: 16px 0;
+    background: transparent;
+    border: 2px solid var(--col-outline-default);
+    color: var(--col-outline-default);
+}
+
+.btn_subscribe:hover {
+    background: var(--col-secondary);
+}

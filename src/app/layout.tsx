@@ -6,6 +6,8 @@ import './css/custom.css';
 import './globals.css';
 
 import NavBar from './components/NavBar';
+import Footer from './components/Footer';
+
 import {ThemeProvider} from '@mui/material';
 
 const inter = Inter({subsets: ['latin']});
@@ -27,6 +29,7 @@ export default function RootLayout({
                     <ThemeProvider theme={theme}>
                         <NavBar />
                         {children}
+                        <Footer />
                     </ThemeProvider>
                 </AppRouterCacheProvider>
             </body>

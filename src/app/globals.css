@@ -7,9 +7,11 @@
     --col-primary: rgb(40, 40, 40);
     --col-secondary: rgb(45, 110, 164);
     --col-highlight: rgb(31, 90, 139);
-    --default-outline: dimgray;
-    --heading-1: rgb(80, 80, 80);
-    --heading-2: rgb(105, 120, 136);
+    --col-text: dimgray;
+    --col-outline-default: lightgrey;
+    --col-heading-1: rgb(80, 80, 80);
+    --col-heading-2: rgb(105, 120, 136);
+    --col-footer: rgb(31, 90, 139);
 }
 
 #col-primary {
@@ -21,11 +23,11 @@
 }
 
 #col-heading-1 {
-    color: var(--heading-1) !important;
+    color: var(--col-heading-1) !important;
 }
 
 #col-heading-2 {
-    color: var(--heading-2) !important;
+    color: var(--col-heading-2) !important;
 }
 
 * {
@@ -58,13 +60,19 @@ body {
 main {
     display: flex;
     flex-direction: column;
-    color: var(--default-outline);
+    color: var(--col-text);
 }
 
 button {
-    color: var(--default-outline);
+    color: var(--col-text);
     transition: all 75ms;
     cursor: pointer;
+}
+
+input {
+    outline: none;
+    border-radius: 5px;
+    padding: 5.5px 0;
 }
 
 h1,
@@ -138,7 +146,7 @@ button {
     }
 
     .btn-outlined:hover {
-        background: var(--default-outline);
+        background: var(--col-text);
         color: white;
     }
 }
