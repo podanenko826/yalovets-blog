@@ -8,6 +8,24 @@ import {navigation} from './NavBar';
 const Footer = () => {
     const [navButtons, setNavButtons] = useState(navigation);
 
+    const [subscribeData, setSubscribeData] = useState({
+        firstName: '',
+        email: '',
+    });
+
+    const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+    const handleSubscribeDataChange = (e: string, field: string) => {
+        setSubscribeData(prevData => ({
+            ...prevData,
+            [field]: e,
+        }));
+    };
+
+    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setAgreedToTerms(e.target.checked);
+    };
+
     useEffect(() => {
         if (!navButtons) {
             setNavButtons([...navigation]);
@@ -46,17 +64,37 @@ const Footer = () => {
                         <form className="row p-3">
                             <input
                                 type="text"
+                                name="firstName"
                                 placeholder="First name"
+                                value={subscribeData?.firstName}
+                                onChange={e =>
+                                    handleSubscribeDataChange(
+                                        e.target.value,
+                                        e.target.name
+                                    )
+                                }
                                 id={styles.inputBox}
                             />
                             <input
                                 type="email"
+                                name="email"
                                 placeholder="Email address"
+                                value={subscribeData?.email}
+                                onChange={e =>
+                                    handleSubscribeDataChange(
+                                        e.target.value,
+                                        e.target.name
+                                    )
+                                }
                                 id={styles.inputBox}
                             />
                             <div className="d-flex align-content-start">
                                 <input
                                     type="checkbox"
+                                    checked={agreedToTerms}
+                                    onChange={(e: any) =>
+                                        handleCheckboxChange(e)
+                                    }
                                     id={styles.agreementCheckbox}
                                 />
                                 <p id={styles.text_white}>
@@ -68,11 +106,15 @@ const Footer = () => {
                             </div>
                             <button
                                 type="submit"
+                                disabled={
+                                    !agreedToTerms ||
+                                    subscribeData.firstName === '' ||
+                                    subscribeData.email === ''
+                                }
                                 className={styles.btn_subscribe}>
                                 Subscribe
                             </button>
                         </form>
-                        <div></div>
                     </div>
                 </div>
                 <div className="container d-flex justify-content-between mt-5">
