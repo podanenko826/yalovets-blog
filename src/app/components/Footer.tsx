@@ -54,7 +54,7 @@ const Footer = () => {
         <>
             <div
                 className={`${styles.footer} container-fluid justify-content-center`}>
-                <div className="container d-flex pb-5">
+                <div className="container d-flex">
                     <div className="col-7 pt-3">
                         <h1 className="heading-large" id={styles.subscribeText}>
                             Stay informed, <br />
@@ -124,7 +124,7 @@ const Footer = () => {
                         </form>
                     </div>
                 </div>
-                <div className="container justify-content-between py-3">
+                <div className="container justify-content-between py-4">
                     <div className="row justify-content-between">
                         <div className="col-md-3">
                             <h4 className={styles.navText}>Links</h4>
@@ -161,7 +161,7 @@ const Footer = () => {
                     </div>
                 </div>
 
-                <div className="container pt-5">
+                <div className="container pt-4">
                     <p className={styles.navText}>@2024 Yalovets Blog</p>
                 </div>
             </div>
