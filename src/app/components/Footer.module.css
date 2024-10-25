@@ -6,6 +6,10 @@
     background-color: var(--col-footer);
 }
 
+#subscribeForm {
+    padding: 12px;
+}
+
 #subscribeText {
     color: whitesmoke;
     font-size: 32px;
