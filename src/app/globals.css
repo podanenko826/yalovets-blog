@@ -88,6 +88,10 @@ input:focus {
     border: 1px solid var(--col-secondary);
 }
 
+.heading-xlarge {
+    font-size: 48px !important;
+}
+
 .heading-large {
     font-size: 36px !important;
 }

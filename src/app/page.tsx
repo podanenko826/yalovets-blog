@@ -83,7 +83,7 @@ export default function Home() {
                             Welcome to Yalovets Blog
                         </h2>
                         <h1
-                            className="welcome-heading heading"
+                            className="welcome-heading heading-large"
                             id="col-heading-1">
                             AWS Unveiled: Your Gateway to Cloud Knowledge
                         </h1>
