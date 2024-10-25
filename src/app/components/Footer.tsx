@@ -103,9 +103,10 @@ const Footer = () => {
                                     id={styles.agreementCheckbox}
                                 />
                                 <p className={styles.navText}>
-                                    I want to subscribe to the newsletter and
-                                    recieve annoucements regarding new products
-                                    and services. I agree with the{' '}
+                                    I want to subscribe to the newsletter with
+                                    new content and recieve annoucements
+                                    regarding new products and services. I agree
+                                    with the{' '}
                                     <a href="#" className={styles.navLink}>
                                         Privacy Policy.
                                     </a>
