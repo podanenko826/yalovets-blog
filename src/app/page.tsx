@@ -2,9 +2,9 @@ import * as React from 'react';
 import {useState} from 'react';
 import './page.css';
 
-import PostCard from './components/PostCard';
+import PostCard from '../components/PostCard';
 
-import StartReadingButton from './components/Button/StartReadingButton';
+import StartReadingButton from '../components/Button/StartReadingButton';
 
 import {MdOutlineArrowForwardIos} from 'react-icons/md';
 

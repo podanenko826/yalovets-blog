@@ -5,8 +5,8 @@ import theme from './theme';
 import './css/custom.css';
 import './globals.css';
 
-import NavBar from './components/NavBar';
-import Footer from './components/Footer';
+import NavBar from '../components/NavBar';
+import Footer from '../components/Footer';
 
 import {ThemeProvider} from '@mui/material';
 
