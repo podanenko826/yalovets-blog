@@ -18,8 +18,24 @@
     margin-bottom: 30px;
 }
 
+.teaser-img {
+    overflow: hidden;
+    max-width: 100%;
+    height: auto !important;
+}
+
 #btn-text {
     font-weight: 600 !important;
+}
+
+#link-light {
+    color: lightgrey !important;
+    text-decoration: underline;
+    transition-duration: 75ms;
+}
+
+#link-light:hover {
+    color: var(--col-secondary) !important;
 }
 
 .category-heading {
@@ -62,6 +78,14 @@
     font-weight: 600;
 }
 
+.about-me {
+    display: flex;
+    width: 100% !important;
+    justify-content: center;
+    background: var(--col-primary);
+}
+
 .ivan-yalovets {
     width: 290px;
+    border-radius: 100%;
 }

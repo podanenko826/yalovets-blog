@@ -235,17 +235,17 @@ export default function Home() {
                     ))}
                 </div>
             </div>
-            <div className="container about-me mt-5">
-                <div className="row align-items-center">
-                    <div className="col-12 col-sm-10 offset-sm-1 offset-md-1 col-md-5">
+            <div className="container-fluid about-me py-5 mt-5">
+                <div className="container d-flex row align-items-center">
+                    <div className="d-flex col-sm-10 offset-md-1 col-md-5">
                         <picture className="ivan-yalovets">
                             <source
                                 type="image/jpg"
-                                srcSet="/img/ivan.jpg 1140w, /img/ivan.jpg 2280w, /img/ivan.jpg 960w, /img/ivan.jpg 1920w"
+                                srcSet="/img/ivan-pfp.png 1140w, /img/ivan-pfp.png 2280w, /img/ivan-pfp.png 960w, /img/ivan-pfp.png 1920w"
                                 sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                             />
                             <source
-                                srcSet="/img/ivan.jpg 1140w, /img/ivan.jpg 2280w, /img/ivan.jpg 960w, /img/ivan.jpg 1920w"
+                                srcSet="/img/ivan-pfp.png 1140w, /img/ivan-pfp.png 2280w, /img/ivan-pfp.png 960w, /img/ivan-pfp.png 1920w"
                                 sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                             />
                             <img
@@ -256,16 +256,24 @@ export default function Home() {
                             />
                         </picture>
                     </div>
-                    <div className="col-md-5 col-lg-5 offset-md-1 offset-lg-0">
-                        <h1>Hi, I'm Ivan Yalovets!</h1>
-                        <p className="pt-2">
+                    <div className="col-7 col-md-5 col-lg-5 offset-md-1 offset-lg-0">
+                        <h1 id="col-text" className="heading">
+                            Hi, I'm Ivan Yalovets!
+                        </h1>
+                        <p className="pt-2 subheading-smaller" id="col-text">
                             I started Yalovets Blog in 2024 to share the latest
                             tools and insights on web services. My goal is to
                             provide valuable, up-to-date content for web
                             professionals and enthusiasts alike.
                         </p>
-                        <p>
-                            To support my work, please <a href="#">subscribe</a>{' '}
+                        <p className="subheading-smaller" id="col-text">
+                            To support my work, please{' '}
+                            <a
+                                className="subheading-smaller"
+                                id="link-light"
+                                href="#">
+                                subscribe
+                            </a>{' '}
                             to the newsletter and share it with your friends or
                             colleagues.
                         </p>
