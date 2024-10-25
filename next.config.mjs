@@ -1,5 +1,4 @@
 import createMDX from '@next/mdx';
-import pkg from 'nextra';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -11,10 +10,7 @@ const nextConfig = {
     },
 };
 
-const withNextra = pkg({
-    theme: 'nextra-theme-blog',
-    themeConfig: './theme.config.jsx',
-});
+const withMDX = createMDX();
 
 // Merge MDX config with Next.js config
-export default withNextra(nextConfig);
+export default withMDX(nextConfig);
