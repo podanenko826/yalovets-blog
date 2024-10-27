@@ -2,6 +2,12 @@
     border: 1px solid lightgrey;
 }
 
+@media (min-width: 768px) {
+    .massive_img {
+        height: auto !important;
+    }
+}
+
 .postInfo {
     padding-top: 18px;
 }

@@ -2,6 +2,10 @@ import * as React from 'react';
 import {useState} from 'react';
 import './page.css';
 
+import type {ArticleItem} from '@/types';
+
+import {getLatestArticle, getRecentArticles} from '@/lib/articles';
+
 import PostCard from '../components/PostCard';
 
 import StartReadingButton from '../components/Button/StartReadingButton';
@@ -9,68 +13,11 @@ import StartReadingButton from '../components/Button/StartReadingButton';
 import {MdOutlineArrowForwardIos} from 'react-icons/md';
 
 export default function Home() {
-    type Post = {
-        imageSrc: string;
-        heading: string;
-        description: string;
-        link: string;
-    };
+    const latestPost: ArticleItem = getLatestArticle();
 
-    const latestPost: Post = {
-        imageSrc: '/img/placeholder.png',
-        heading: 'How to begin with AWS: Introduction',
-        description: `Learn more about AWS and its practical use in real-world cases.`,
-        link: '#',
-    };
+    const recentPosts: ArticleItem[] = getRecentArticles();
 
-    const recentPosts: Post[] = new Array(9).fill({
-        imageSrc: '/img/placeholder.png',
-        heading: 'How to begin with AWS: Introduction',
-        description: `Learn more about AWS and its practical use in real-world cases.`,
-        link: '#',
-    });
-
-    // const popularPosts: Post[] = Array(3).fill({
-    //     imageSrc: '/img/placeholder.png',
-    //     heading: 'Popular post: An Example',
-    //     description: `Lorem ipsum dolor sit amet consectetur adipisicing elit.
-    //                   Ea aperiam consequuntur perferendis, recusandae similique rerum
-    //                   rem et, commodi modi numquam eaque repellat quasi facere
-    //                   illo earum quam tempore iure nam eveniet totam ad maxime nisi,
-    //                   itaque cumque? At, iusto alias!`,
-    //     link: '#',
-    // });
-
-    const popularPosts: Post[] = [
-        {
-            imageSrc: '/img/placeholder.png',
-            heading: 'Popular post: An Example 1',
-            description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-            Ea aperiam consequuntur perferendis, recusandae similique rerum 
-            rem et, commodi modi numquam eaque repellat quasi facere 
-            illo earum quam tempore iure nam eveniet totam ad maxime nisi, 
-            itaque cumque? At, iusto alias!`,
-            link: '#',
-        },
-        {
-            imageSrc: '/img/placeholder.png',
-            heading: 'Popular post: An Example 3',
-            description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-            Ea aperiam consequuntur perferendis, recusandae similique rerum 
-            rem et, commodi modi numquam eaque repellat quasi facere 
-            illo earum quam tempore iure nam eveniet totam ad maxime nisi, 
-            itaque cumque? At, iusto alias!`,
-            link: '#',
-        },
-        {
-            imageSrc: '',
-            heading: 'An Example of post with no image',
-            description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-                            Ea aperiam consequuntur perferendis, recusandae similique rerum 
-                            rem et, commodi modi numquam eaque repellat quasi facere.`,
-            link: '#',
-        },
-    ];
+    const popularPosts: ArticleItem[] = [];
 
     return (
         <main>

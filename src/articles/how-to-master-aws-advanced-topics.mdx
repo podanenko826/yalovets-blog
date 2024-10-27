@@ -1,0 +1,65 @@
+---
+title: 'How to Master AWS: Advanced Topics'
+description: 'Learn how to build a production infrastructure and business logic, as well as AWS CLI tool for automation processes.'
+imageUrl: '/img/AWS-advanced.png'
+date: '28-10-2024'
+authorName: 'Ivan Yalovets'
+readTime: 12
+---
+
+Lorem ipsum `dolor` sit amet consectetur _adipisicing_ elit. Vitae **inventore** molestias molestiae similique quidem excepturi. Corrupti tempore animi, nesciunt, eum quo minima nulla sunt tempora ratione, vitae labore consectetur eveniet maiores temporibus magnam dolorum quia reiciendis ipsum eligendi blanditiis qui? Corporis ipsam inventore amet saepe, ut consectetur necessitatibus delectus animi consequuntur vel officiis ad, deleniti dignissimos obcaecati. Dolores, odio odit.
+
+![Image](/img/AWS-advanced.png)
+
+## How to make an app infrastructure?
+
+This is a detailed list of how to make an app infrastructure:
+
+-   One
+-   Two
+-   Three
+
+```typescript
+export const getArticleData = async (id: string) => {
+    const fullPath = path.join(articlesDirectory, `${id}.mdx`);
+
+    const fileContents = fs.readFileSync(fullPath, 'utf-8');
+
+    const matterResult = matter(fileContents);
+
+    const processedContent = await remark()
+        .use(html)
+        .process(matterResult.content);
+
+    const contentHtml = processedContent.toString();
+    console.log(matterResult.data.date);
+
+    return {
+        id,
+        contentHtml,
+        title: matterResult.data.title,
+        description: matterResult.data.description,
+        imageUrl: matterResult.data.imageUrl,
+        date: moment(matterResult.data.date, 'DD-MM-YYYY').format(
+            'DD MMM YYYY'
+        ),
+        authorName: matterResult.data.authorName,
+        readTime: matterResult.data.readTime,
+    };
+};
+```
+
+> "Internal Pointer Variable." - Ivan Yalovets
+
+To Be Fixed Later
+
+| header1 | header2 | header3 |
+| ------- | ------- | ------- |
+| one     | two     | three   |
+| one     | two     | three   |
+
+---
+
+## Summary
+
+Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae inventore molestias molestiae similique quidem excepturi. Corrupti tempore animi, nesciunt, eum quo minima nulla sunt tempora ratione, vitae labore consectetur eveniet maiores temporibus magnam dolorum quia reiciendis ipsum eligendi blanditiis qui?

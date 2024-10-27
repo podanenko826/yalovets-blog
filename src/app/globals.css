@@ -169,6 +169,72 @@ button {
     opacity: 50%;
 }
 
+.social-links {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+}
+
+.social-links > a {
+    padding: 0 15px;
+    padding-bottom: 30px;
+}
+
+.article {
+    line-height: 1.75rem;
+}
+
+.article > h2 {
+    color: var(--col-heading-1);
+    padding: 12px 0;
+}
+
+.article > ul {
+    padding-left: 40px;
+    margin: 1em 0;
+}
+
+.article > ul > li {
+    list-style-type: disc;
+    margin: 0.5em 0;
+}
+
+.article > p > img {
+    padding: 20px 0;
+}
+
+.article > pre {
+    padding: 30px 0;
+}
+
+.article > p > code {
+    background: rgba(210, 210, 210, 0.1);
+    color: rgb(130, 130, 130);
+    padding: 3px;
+    border-radius: 5px;
+}
+
+.article > blockquote {
+    padding-left: 2em;
+    padding-right: 0.5em;
+    width: max-content;
+    background: rgba(210, 210, 210, 0.1);
+    color: rgb(130, 130, 130);
+    border-radius: 2px;
+}
+
+@media (min-width: 576px) {
+    .social-links {
+        display: flex;
+        flex-direction: column !important;
+        justify-content: flex-start;
+    }
+    .social-links > a {
+        padding: 0;
+        padding-bottom: 15px;
+    }
+}
+
 @media (min-width: 820px) {
     .btn-outlined {
         border: dimgray solid 1px;

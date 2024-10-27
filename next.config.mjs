@@ -1,4 +1,6 @@
 import createMDX from '@next/mdx';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -10,7 +12,14 @@ const nextConfig = {
     },
 };
 
-const withMDX = createMDX();
+const withMDX = createMDX({
+    options: {
+        remarkPlugins: [remarkGfm],
+        rehypePlugins: [rehypeRaw],
+    },
+    extension: /.(md|mdx)$/,
+    providerImportSource: '@mdx-js/react',
+});
 
 // Merge MDX config with Next.js config
 export default withMDX(nextConfig);

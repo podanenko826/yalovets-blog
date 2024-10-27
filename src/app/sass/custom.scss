@@ -60,6 +60,16 @@ img {
     max-width: 100%;
 }
 
+.img-fluid img {
+    height: 180px;
+}
+
+@media (max-width: 992px) {
+    .img-fluid img {
+        height: 140px;
+    }
+}
+
 @media (max-width: 767px) {
     .img-fluid img {
         height: 160px;

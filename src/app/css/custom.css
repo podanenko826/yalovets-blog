@@ -46,17 +46,20 @@ img {
   max-width: 100%;
 }
 
+.img-fluid img {
+  height: 180px;
+}
+
+@media (max-width: 992px) {
+  .img-fluid img {
+    height: 140px;
+  }
+}
 @media (max-width: 767px) {
   .img-fluid img {
     height: 160px;
   }
 }
-.teaser-img {
-  overflow: hidden;
-  max-width: 100%;
-  height: auto !important;
-}
-
 .img-fluid,
 .teaser-img,
 .col-11,
@@ -69,12 +72,6 @@ img {
 .container-md,
 .container-sm {
   overflow: hidden !important;
-}
-
-.about-me {
-  display: flex;
-  width: 100% !important;
-  justify-content: center;
 }
 
 .col-11,
