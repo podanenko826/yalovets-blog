@@ -30,7 +30,7 @@ export const getSortedArticles = (): ArticleItem[] => {
         };
     });
 
-    return allArticlesData.sort((a, b) => {
+    const sortedArticlesData = allArticlesData.sort((a, b) => {
         const format = 'DD-MM-YYYY';
         const dateOne = moment(a.date, format);
         const dateTwo = moment(b.date, format);
@@ -43,19 +43,21 @@ export const getSortedArticles = (): ArticleItem[] => {
             return 0;
         }
     });
+
+    return sortedArticlesData.reverse();
 };
 
 export const getLatestArticle = (): ArticleItem => {
-    const reversedSortedArticles = getSortedArticles().reverse();
-    const latestArticle: ArticleItem = reversedSortedArticles[0];
+    const sortedArticles = getSortedArticles();
+    const latestArticle: ArticleItem = sortedArticles[0];
 
     return latestArticle;
 };
 
 export const getRecentArticles = (): ArticleItem[] => {
-    const reversedSortedArticles = getSortedArticles().reverse();
+    const reversedSortedArticles = getSortedArticles();
 
-    return reversedSortedArticles.slice(0, 8);
+    return reversedSortedArticles.slice(0, 9);
 };
 
 export const getArticleData = async (id: string) => {
