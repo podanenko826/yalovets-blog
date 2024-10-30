@@ -80,7 +80,7 @@ const PostCard = ({post, index, style}: PostCardProps) => {
             <a href={`/${post.id}`}>
                 {post.imageUrl && (
                     <div className={styles.image}>
-                        <picture className="img-fluid">
+                        <picture className="img-fluid full-image">
                             <source
                                 type="image/png"
                                 srcSet={`${post.imageUrl} 1140w, ${post.imageUrl} 2280w, ${post.imageUrl} 960w, ${post.imageUrl} 1920w`}
@@ -91,7 +91,7 @@ const PostCard = ({post, index, style}: PostCardProps) => {
                                 sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                             />
                             <img
-                                className="img-fluid"
+                                className="img-fluid full-image"
                                 src={post.imageUrl}
                                 alt={post.title}
                                 title={post.title}

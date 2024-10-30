@@ -223,6 +223,10 @@ button {
     border-radius: 2px;
 }
 
+.full-image {
+    height: 210px !important;
+}
+
 @media (min-width: 576px) {
     .social-links {
         display: flex;
