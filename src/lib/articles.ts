@@ -8,23 +8,26 @@ import {remark} from 'remark';
 import html from 'remark-html';
 
 import type {ArticleItem} from '@/types';
+import Post from '@/models/Post';
 
 const articlesDirectory = path.join(process.cwd(), 'src/articles');
-
-const postSchema = new mongoose.Schema({
-    slug: {type: String, reguired: true, unique: true},
-    title: {type: String, reguired: true, unique: false},
-    description: {type: String, reguired: false, unique: false},
-    imageUrl: {type: String, reguired: false, unique: true},
-    authorId: {type: String, reguired: true, unique: true},
-    readTime: {type: Number, reguired: true, unique: false},
-    viewsCount: {type: Number, reguired: true, unique: false},
-});
 
 const connectDB = async () => {
     try {
         await mongoose.connect(process.env.MONGO_URI_ATLAS!);
         console.log('MongoDB connected to AWS Atlas');
+
+        const collections = await mongoose.connection.db
+            ?.listCollections()
+            .toArray();
+        const collectionExists = collections?.some(col => col.name === 'posts');
+
+        if (!collectionExists) {
+            console.log('Posts collection does not exist. Creating...');
+
+            await Post.init();
+            console.log('Indexes ensured on Post model');
+        }
     } catch (err) {
         console.log('Failed to connect to MongoDB Atlas: ', err);
     }
