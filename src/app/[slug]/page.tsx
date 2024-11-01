@@ -18,11 +18,11 @@ const PostPage = async ({params}: {params: {slug: string}}) => {
                             <h1
                                 className="heading-xlarge w-100 col-md-11 col-lg-12 text-center"
                                 id="col-heading-1">
-                                {articleData.title}
+                                {/* {articleData.title} */}
                             </h1>
                             <p>
-                                {articleData.authorName} •{' '}
-                                {articleData.date.toString()}
+                                {/* {articleData.authorName} •{' '}
+                                {articleData.date.toString()} */}
                             </p>
                         </div>
                     </div>
@@ -44,7 +44,7 @@ const PostPage = async ({params}: {params: {slug: string}}) => {
                         <div className="col-12 col-sm-8">
                             <article
                                 dangerouslySetInnerHTML={{
-                                    __html: articleData.contentHtml,
+                                    __html: articleData?.contentHtml,
                                 }}
                                 className="article"
                             />

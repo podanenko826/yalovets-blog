@@ -22,7 +22,6 @@ export default function Home() {
     // const recentPosts: ArticleItem[] = getRecentArticles();
 
     // const popularPosts: ArticleItem[] = [];
-    const posts: ArticleItem[] = getSortedArticles();
 
     return (
         <main>
