@@ -4,7 +4,11 @@ import './page.css';
 
 import type {ArticleItem} from '@/types';
 
-import {getLatestArticle, getRecentArticles} from '@/lib/articles';
+import {
+    getLatestArticle,
+    getRecentArticles,
+    getSortedArticles,
+} from '@/lib/articles';
 
 import PostCard from '../components/PostCard';
 
@@ -13,11 +17,12 @@ import StartReadingButton from '../components/Button/StartReadingButton';
 import {MdOutlineArrowForwardIos} from 'react-icons/md';
 
 export default function Home() {
-    const latestPost: ArticleItem = getLatestArticle();
+    // const latestPost: ArticleItem = getLatestArticle();
 
-    const recentPosts: ArticleItem[] = getRecentArticles();
+    // const recentPosts: ArticleItem[] = getRecentArticles();
 
-    const popularPosts: ArticleItem[] = [];
+    // const popularPosts: ArticleItem[] = [];
+    const posts: ArticleItem[] = getSortedArticles();
 
     return (
         <main>
@@ -117,7 +122,7 @@ export default function Home() {
 
             {/* Latest post section */}
             <div className="container-fluid posts p-0" id="posts">
-                <PostCard post={latestPost} style="massive" />
+                {/* <PostCard post={latestPost} style="massive" /> */}
             </div>
 
             {/* Recent posts */}
@@ -143,14 +148,14 @@ export default function Home() {
                 </div>
 
                 <div className="row post-list">
-                    {recentPosts.map((post, index) => (
+                    {/* {recentPosts.map((post, index) => (
                         <PostCard
                             post={post}
                             index={index}
                             key={index}
                             style="standard"
                         />
-                    ))}
+                    ))} */}
                 </div>
             </div>
 
@@ -172,14 +177,14 @@ export default function Home() {
                 </div>
 
                 <div className="row post-list">
-                    {popularPosts.map((post, index) => (
+                    {/* {popularPosts.map((post, index) => (
                         <PostCard
                             post={post}
                             index={index}
                             key={index}
                             style="standard"
                         />
-                    ))}
+                    ))} */}
                 </div>
             </div>
             <div className="container-fluid about-me py-5 mt-5">

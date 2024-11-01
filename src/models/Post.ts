@@ -5,6 +5,7 @@ const postSchema = new mongoose.Schema({
     title: {type: String, reguired: true, unique: false},
     description: {type: String, reguired: false, unique: false},
     imageUrl: {type: String, reguired: false, unique: true},
+    date: {type: String, required: true, unique: false},
     authorId: {type: String, reguired: true, unique: true},
     readTime: {type: Number, reguired: true, unique: false},
     viewsCount: {type: Number, reguired: true, unique: false},

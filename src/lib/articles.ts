@@ -1,11 +1,13 @@
+'use client';
 import mongoose from 'mongoose';
 
-import fs from 'fs';
 import matter from 'gray-matter';
 import path from 'path';
 import moment from 'moment';
 import {remark} from 'remark';
 import html from 'remark-html';
+
+import {useEffect, useState} from 'react';
 
 import type {ArticleItem} from '@/types';
 import Post from '@/models/Post';
@@ -14,7 +16,7 @@ const articlesDirectory = path.join(process.cwd(), 'src/articles');
 
 const connectDB = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_URI_ATLAS!);
+        await mongoose.connect(process.env.DB_CONNECTION_STRING!);
         console.log('MongoDB connected to AWS Atlas');
 
         const collections = await mongoose.connection.db
@@ -35,29 +37,62 @@ const connectDB = async () => {
 
 export const getSortedArticles = (): ArticleItem[] => {
     connectDB();
-    const fileNames = fs.readdirSync(articlesDirectory);
+    const [fileNames, setFileNames] = useState([]);
+    const [content, setContent] = useState({});
 
-    const allArticlesData = fileNames.map(fileName => {
-        const id = fileName.replace(/\.mdx$/, '');
+    useEffect(() => {
+        const fetchFileNames = async () => {
+            try {
+                const response = await fetch('/api/s3?key=mdx/');
+                const data = await response.json();
 
-        const fullPath = path.join(articlesDirectory, fileName);
-        const fileContents = fs.readFileSync(fullPath, 'utf-8');
-        const matterResult = matter(fileContents);
-
-        return {
-            id,
-            title: matterResult.data.title,
-            description: matterResult.data.description,
-            imageUrl: matterResult.data.imageUrl,
-            date: matterResult.data.date,
-            authorName: matterResult.data.authorName,
-            readTime: matterResult.data.readTime,
+                if (data.files && data.files.length) {
+                    const keys = data.files.map(({file}: any) => file.Key);
+                    setFileNames(keys);
+                }
+            } catch (err) {
+                console.error('Error fetching S3 files list: ', err);
+            }
         };
+
+        fetchFileNames();
+    }, []);
+
+    console.log('fileNames: ', fileNames);
+
+    // useEffect(() => {
+    //     const fetchContent = async () => {
+    //         try {
+    //         } catch (err) {
+    //             console.error('Error fetching S3 content: ', err);
+    //         }
+    //     };
+
+    //     fetchContent();
+    // }, []);
+    const allArticlesData = fileNames.map(async (post: ArticleItem) => {
+        const response = await fetch(`/api/s3?key=${post}`);
+        const fileContents = JSON.stringify(response);
+        console.log('Response: ', response);
+        console.log('fileContents: ', fileContents);
+
+        const matterResult = matter(fileContents);
+        console.log('MatterResult: ', matterResult);
+        // return {
+        //     slug,
+        //     title: matterResult.data.title,
+        //     description: matterResult.data.description,
+        //     imageUrl: matterResult.data.imageUrl,
+        //     date: matterResult.data.date,
+        //     authorId: matterResult.data.authorName,
+        //     readTime: matterResult.data.readTime,
+        // };
+        return console.log('Response: ', response);
     });
 
     const sortedArticlesData = allArticlesData.sort((a, b) => {
         const format = 'DD-MM-YYYY';
-        const dateOne = moment(a.date, format);
+        const dateOne = moment(a, format);
         const dateTwo = moment(b.date, format);
 
         if (dateOne.isBefore(dateTwo)) {
@@ -69,7 +104,8 @@ export const getSortedArticles = (): ArticleItem[] => {
         }
     });
 
-    return sortedArticlesData.reverse();
+    // return sortedArticlesData.reverse();
+    return [];
 };
 
 export const getLatestArticle = (): ArticleItem => {
