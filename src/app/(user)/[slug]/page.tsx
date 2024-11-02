@@ -5,9 +5,15 @@ import {MdEmail} from 'react-icons/md';
 import {FaLinkedin} from 'react-icons/fa';
 import {FaSquareInstagram} from 'react-icons/fa6';
 import {FaFacebookF} from 'react-icons/fa';
+import {notFound} from 'next/navigation';
 
 const PostPage = async ({params}: {params: {slug: string}}) => {
     const articleData = await getArticleData(params.slug);
+    console.log(articleData);
+
+    if (!articleData.contentHtml) {
+        return notFound();
+    }
 
     return (
         <section>
