@@ -84,9 +84,8 @@ const Editor: FC<EditorProps> = ({markdown, editorRef}) => {
             <div className="container col-md-9 mt-5">
                 <div className="text-center pt-4">
                     <textarea
-                        className="heading-xlarge w-100 col-md-11 col-lg-12 text-center py-"
+                        className="heading-xlarge w-100 h-auto col-md-11 col-lg-12 text-center align-content-center"
                         id="col-heading-1"
-                        rows={2}
                         placeholder="Enter the post title"
                         onChange={e => handlePostTitleChange(e.target.value)}
                         value={postTitle}
