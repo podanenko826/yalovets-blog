@@ -5,6 +5,8 @@ import theme from '@/app/theme';
 import '@/app/css/custom.css';
 import '@/app/globals.css';
 
+import {ThemeProvider} from '@mui/material';
+
 const inter = Inter({subsets: ['latin']});
 
 export const metadata: Metadata = {
@@ -20,7 +22,9 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${inter.className}`}>
-                <AppRouterCacheProvider>{children}</AppRouterCacheProvider>
+                <AppRouterCacheProvider>
+                    <ThemeProvider theme={theme}>{children}</ThemeProvider>
+                </AppRouterCacheProvider>
             </body>
         </html>
     );

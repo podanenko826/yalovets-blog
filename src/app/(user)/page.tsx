@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useState} from 'react';
-import './page.css';
+import '@/app/page.css';
 
 import type {ArticleItem} from '@/types';
 
@@ -10,9 +10,9 @@ import type {ArticleItem} from '@/types';
 //     getSortedArticles,
 // } from '@/lib/articles';
 
-import PostCard from '../components/PostCard';
+import PostCard from '@/components/PostCard';
 
-import StartReadingButton from '../components/Button/StartReadingButton';
+import StartReadingButton from '@/components/Button/StartReadingButton';
 
 import {MdOutlineArrowForwardIos} from 'react-icons/md';
 
