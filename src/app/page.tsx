@@ -4,11 +4,11 @@ import './page.css';
 
 import type {ArticleItem} from '@/types';
 
-import {
-    getLatestArticle,
-    getRecentArticles,
-    getSortedArticles,
-} from '@/lib/articles';
+// import {
+//     getLatestArticle,
+//     getRecentArticles,
+//     getSortedArticles,
+// } from '@/lib/articles';
 
 import PostCard from '../components/PostCard';
 

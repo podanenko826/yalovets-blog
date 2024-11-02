@@ -15,6 +15,7 @@
     "@emotion/styled": "^11.13.0",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
+    "@mdxeditor/editor": "^3.15.0",
     "@mui/material": "^6.0.0",
     "@mui/material-nextjs": "^6.0.0",
     "@next/mdx": "^14.2.16",
