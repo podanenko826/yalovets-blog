@@ -9,7 +9,6 @@ import {notFound} from 'next/navigation';
 
 const PostPage = async ({params}: {params: {slug: string}}) => {
     const articleData = await getArticleData(params.slug);
-    console.log(articleData);
 
     if (!articleData.contentHtml) {
         return notFound();
@@ -25,6 +24,7 @@ const PostPage = async ({params}: {params: {slug: string}}) => {
                                 className="heading-xlarge w-100 col-md-11 col-lg-12 text-center"
                                 id="col-heading-1">
                                 {/* {articleData.title} */}
+                                How to master AWS: Advanced Topics
                             </h1>
                             <p>
                                 {/* {articleData.authorName} •{' '}

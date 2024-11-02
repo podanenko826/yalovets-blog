@@ -1,5 +1,7 @@
 'use client';
 
+import {useRouter} from 'next/navigation';
+
 import {
     headingsPlugin,
     listsPlugin,
@@ -12,9 +14,17 @@ import {
     imagePlugin,
     sandpackPlugin,
     tablePlugin,
+    diffSourcePlugin,
+    frontmatterPlugin,
     MDXEditor,
     type MDXEditorMethods,
     type MDXEditorProps,
+    directiveDescriptors$,
+    AdmonitionDirectiveDescriptor,
+    ConditionalContents,
+    ShowSandpackInfo,
+    codeBlockPlugin,
+    linkPlugin,
 } from '@mdxeditor/editor';
 
 /* MDXEditor toolbar components */
@@ -32,10 +42,14 @@ import {
     InsertImage,
     InsertSandpack,
     InsertTable,
+    Separator,
+    InsertThematicBreak,
+    DiffSourceToggleWrapper,
+    InsertFrontmatter,
 } from '@mdxeditor/editor';
 import '@mdxeditor/editor/style.css';
 
-import {FC, FormEvent, useState} from 'react';
+import {ChangeEvent, FC, FormEvent, useState} from 'react';
 
 interface EditorProps {
     markdown: string;
@@ -44,71 +58,151 @@ interface EditorProps {
 
 const Editor: FC<EditorProps> = ({markdown, editorRef}) => {
     const [content, setContent] = useState('');
-    const [fileName, setFileName] = useState('');
+    const [postTitle, setPostTitle] = useState('');
+
+    const router = useRouter();
+
     const handleMDXEditorChange = (e: string) => {
         setContent(e);
         console.log(content);
     };
 
-    const handleFileNameChange = (e: string) => {
-        setFileName(e);
+    const handlePostTitleChange = (e: string) => {
+        setPostTitle(e);
     };
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
     };
 
+    const handleCancel = () => {
+        router.push('/admin');
+    };
+
     return (
         <div>
-            <form onSubmit={handleSubmit}>
-                <MDXEditor
-                    onChange={e => handleMDXEditorChange(e)}
-                    ref={editorRef}
-                    markdown={markdown}
-                    plugins={[
-                        // Example Plugin Usage
-                        headingsPlugin(),
-                        listsPlugin(),
-                        quotePlugin(),
-                        thematicBreakPlugin(),
-                        markdownShortcutPlugin(),
-                        codeMirrorPlugin(),
-                        linkDialogPlugin(),
-                        directivesPlugin(),
-                        imagePlugin(),
-                        sandpackPlugin(),
-                        tablePlugin(),
-                        toolbarPlugin({
-                            toolbarClassName: 'mdxeditor-toolbar',
-                            toolbarContents: () => (
-                                <>
-                                    {' '}
-                                    <UndoRedo />
-                                    <BoldItalicUnderlineToggles />
-                                    <BlockTypeSelect />
-                                    {/* <ChangeAdmonitionType  /> */}
-                                    {/* <ChangeCodeMirrorLanguage /> */}
-                                    <CodeToggle />
-                                    <CreateLink />
-                                    {/* <InsertAdmonition /> */}
-                                    <InsertCodeBlock />
-                                    <InsertImage />
-                                    {/* <InsertSandpack /> */}
-                                    <InsertTable />
-                                </>
-                            ),
-                        }),
-                    ]}
-                />
-                <div className="d-flex align-items-center">
-                    <div>
-                        <button className="p-2 m-2" type="submit">
-                            Save
+            <div className="container col-md-9 mt-5">
+                <div className="text-center pt-4">
+                    <textarea
+                        className="heading-xlarge w-100 col-md-11 col-lg-12 text-center py-"
+                        id="col-heading-1"
+                        rows={2}
+                        placeholder="Enter the post title"
+                        onChange={e => handlePostTitleChange(e.target.value)}
+                        value={postTitle}
+                    />
+                    <p>Ivan Yalovets • 2 Nov 2024</p>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-md-8 offset-md-2 container">
+                    <MDXEditor
+                        onChange={e => handleMDXEditorChange(e)}
+                        ref={editorRef}
+                        markdown={markdown}
+                        plugins={[
+                            // Example Plugin Usage
+                            headingsPlugin(),
+                            listsPlugin(),
+                            quotePlugin(),
+                            thematicBreakPlugin(),
+                            markdownShortcutPlugin(),
+                            codeBlockPlugin({
+                                defaultCodeBlockLanguage: 'js',
+                            }),
+                            codeMirrorPlugin({
+                                codeBlockLanguages: {
+                                    js: 'JavaScript',
+                                    ts: 'TypeScript',
+                                    css: 'CSS',
+                                },
+                            }),
+                            linkPlugin(),
+                            linkDialogPlugin(),
+                            directivesPlugin({
+                                directiveDescriptors: [
+                                    AdmonitionDirectiveDescriptor,
+                                ],
+                            }),
+                            imagePlugin(),
+                            sandpackPlugin(),
+                            tablePlugin(),
+                            diffSourcePlugin(),
+                            frontmatterPlugin(),
+                            toolbarPlugin({
+                                toolbarClassName: 'mdxeditor-toolbar',
+                                toolbarContents: () => (
+                                    <>
+                                        {' '}
+                                        <UndoRedo />
+                                        <Separator />
+                                        <BoldItalicUnderlineToggles />
+                                        <CodeToggle />
+                                        <Separator />
+                                        {/* <ChangeAdmonitionType /> */}
+                                        {/* <ChangeCodeMirrorLanguage /> */}
+                                        <BlockTypeSelect />
+                                        <Separator />
+                                        <CreateLink />
+                                        <InsertImage />
+                                        <Separator />
+                                        <InsertTable />
+                                        <InsertThematicBreak />
+                                        <Separator />
+                                        <ConditionalContents
+                                            options={[
+                                                {
+                                                    when: editor =>
+                                                        editor?.editorType ===
+                                                        'codeblock',
+                                                    contents: () => (
+                                                        <ChangeCodeMirrorLanguage />
+                                                    ),
+                                                },
+                                                {
+                                                    when: editor =>
+                                                        editor?.editorType ===
+                                                        'sandpack',
+                                                    contents: () => (
+                                                        <ShowSandpackInfo />
+                                                    ),
+                                                },
+                                                {
+                                                    fallback: () => (
+                                                        <InsertCodeBlock />
+                                                    ),
+                                                },
+                                            ]}
+                                        />
+                                        {/* <InsertSandpack /> */}
+                                        <Separator />
+                                        <InsertAdmonition />
+                                        <Separator />
+                                        <InsertFrontmatter />
+                                        <DiffSourceToggleWrapper children />
+                                    </>
+                                ),
+                            }),
+                        ]}
+                    />
+                </div>
+            </div>
+            <div className="container d-flex justify-content-end col-md-9 mt-5">
+                <div className="row">
+                    <div className="col-12 container">
+                        <button
+                            className="py-2 px-3 m-2 btn-filled"
+                            type="submit">
+                            Post
                         </button>
-                        <button className="p-2 m-2">Cancel</button>
+                        <button
+                            onClick={handleCancel}
+                            className="py-2 px-3 m-2 btn-outlined">
+                            Cancel
+                        </button>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     );
 };
