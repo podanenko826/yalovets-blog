@@ -2,7 +2,7 @@ import * as React from 'react';
 import {useState} from 'react';
 import '@/app/page.css';
 
-import type {ArticleItem} from '@/types';
+import type {PostItem} from '@/types';
 
 // import {
 //     getLatestArticle,
@@ -18,11 +18,11 @@ import {MdOutlineArrowForwardIos} from 'react-icons/md';
 import {getUsers} from '@/lib/users';
 
 export default function Home() {
-    // const latestPost: ArticleItem = getLatestArticle();
+    // const latestPost: PostItem = getLatestArticle();
 
-    // const recentPosts: ArticleItem[] = getRecentArticles();
+    // const recentPosts: PostItem[] = getRecentArticles();
 
-    // const popularPosts: ArticleItem[] = [];
+    // const popularPosts: PostItem[] = [];
 
     return (
         <main>

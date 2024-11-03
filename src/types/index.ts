@@ -1,11 +1,12 @@
-export type ArticleItem = [
+export type PostItem = [
     {
+        email: string;
         slug: string;
         title: string;
         description: string;
-        imageUrl: string;
+        imageUrl?: string;
         date: string;
-        authorId: string;
+        modifyDate: string;
         readTime: number;
         viewsCount: number;
     }

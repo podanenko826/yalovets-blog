@@ -58,6 +58,8 @@ interface EditorProps {
 const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
     const [content, setContent] = useState('');
     const [postTitle, setPostTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
 
     const router = useRouter();
 
@@ -74,7 +76,7 @@ const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
         if (slug) {
             postMDXContent(postTitle, content, slug);
         } else {
-            postMDXContent(postTitle, content);
+            postMDXContent(postTitle, description, content, imageUrl);
         }
     };
 
@@ -184,7 +186,7 @@ const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
                     />
                 </div>
             </div>
-            <div className="container d-flex justify-content-end col-md-9 mt-5">
+            <div className="container d-flex justify-content-center col-md-9 mt-5">
                 <div className="row">
                     <div className="col-12 container">
                         <button

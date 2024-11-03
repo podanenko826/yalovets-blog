@@ -8,7 +8,7 @@ import html from 'remark-html';
 
 import {useEffect, useState} from 'react';
 
-import type {ArticleItem} from '@/types';
+import type {PostItem} from '@/types';
 import Post from '@/models/Post';
 
 // const articlesDirectory = path.join(process.cwd(), 'src/articles');
@@ -34,7 +34,7 @@ import Post from '@/models/Post';
 //     }
 // };
 
-// export const getSortedArticles = (): ArticleItem[] => {
+// export const getSortedArticles = (): PostItem[] => {
 //     connectDB();
 //     const [fileNames, setFileNames] = useState([]);
 //     const [content, setContent] = useState({});
@@ -69,7 +69,7 @@ import Post from '@/models/Post';
 
 //         fetchContent();
 //     }, []);
-//     const allArticlesData = fileNames.map(async (post: ArticleItem) => {
+//     const allArticlesData = fileNames.map(async (post: PostItem) => {
 //         const response = await fetch(`/api/s3?key=${post}`);
 //         const fileContents = JSON.stringify(response);
 //         console.log('Response: ', response);
@@ -99,14 +99,14 @@ import Post from '@/models/Post';
 //     return [];
 // };
 
-// export const getLatestArticle = (): ArticleItem => {
+// export const getLatestArticle = (): PostItem => {
 //     const sortedArticles = getSortedArticles();
-//     const latestArticle: ArticleItem = sortedArticles[0];
+//     const latestArticle: PostItem = sortedArticles[0];
 
 //     return latestArticle;
 // };
 
-// export const getRecentArticles = (): ArticleItem[] => {
+// export const getRecentArticles = (): PostItem[] => {
 //     const reversedSortedArticles = getSortedArticles();
 
 //     return reversedSortedArticles.slice(0, 9);
@@ -199,7 +199,9 @@ export const getMDXContent = async (
 
 export const postMDXContent = async (
     postTitle: string,
+    description: string,
     markdown: string,
+    imageUrl?: string,
     slug?: string
 ) => {
     try {

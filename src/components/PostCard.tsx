@@ -3,12 +3,12 @@ import moment from 'moment';
 
 import styles from './PostCard.module.css';
 
-import type {ArticleItem} from '@/types';
+import type {PostItem} from '@/types';
 
 type PostCardProps = {
-    post: ArticleItem;
+    post: PostItem;
     index?: number | 1;
-    style: 'massive' | 'full' | 'standard';
+    style: 'massive' | 'full' | 'admin' | 'standard';
 };
 
 const PostCard = ({post, index, style}: PostCardProps) => {
@@ -18,7 +18,7 @@ const PostCard = ({post, index, style}: PostCardProps) => {
                 <div className="row align-items-center justify-content-center">
                     {post.imageUrl && (
                         <div className="col-lg-6">
-                            <a href={`${post.id}`}>
+                            <a href={`${post.slug}`}>
                                 <picture
                                     className={`img-fluid ${styles.massive_img}`}>
                                     <source
@@ -53,7 +53,7 @@ const PostCard = ({post, index, style}: PostCardProps) => {
 
                             <div className={styles.profile_info__details}>
                                 <p className={styles.profile_info__text}>
-                                    {post.authorName}
+                                    Ivan Yalovets
                                 </p>
                                 <p className={styles.profile_info__text}>
                                     {moment(post.date, 'DD-MM-YYYY').format(
@@ -63,7 +63,7 @@ const PostCard = ({post, index, style}: PostCardProps) => {
                                 </p>
                             </div>
                         </div>
-                        <a href={`/${post.id}`}>
+                        <a href={`/${post.slug}`}>
                             <h1 className={styles.heading}>{post.title}</h1>
                             <p className={`${styles.description} pb-2`}>
                                 {post.description}
@@ -77,7 +77,7 @@ const PostCard = ({post, index, style}: PostCardProps) => {
         </div>
     ) : style === 'full' ? (
         <div className="col-12 col-md-6" key={index}>
-            <a href={`/${post.id}`}>
+            <a href={`/${post.slug}`}>
                 {post.imageUrl && (
                     <div className={styles.image}>
                         <picture className="img-fluid full-image">
@@ -117,19 +117,68 @@ const PostCard = ({post, index, style}: PostCardProps) => {
                 </div>
 
                 <div className={styles.profile_info__details}>
+                    <p className={styles.profile_info__text}>Ivan Yalovets</p>
                     <p className={styles.profile_info__text}>
-                        {post.authorName}
+                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')}•{' '}
+                        {post.readTime} min read
                     </p>
+                </div>
+            </div>
+        </div>
+    ) : style === 'admin' ? (
+        <div className="col-12 col-md-6" key={index}>
+            <a href={`/${post.slug}`}>
+                {post.imageUrl && (
+                    <div className={styles.image}>
+                        <picture className="img-fluid full-image">
+                            <source
+                                type="image/png"
+                                srcSet={`${post.imageUrl} 1140w, ${post.imageUrl} 2280w, ${post.imageUrl} 960w, ${post.imageUrl} 1920w`}
+                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                            />
+                            <source
+                                srcSet={`${post.imageUrl} 1140w, ${post.imageUrl} 2280w, ${post.imageUrl} 960w, ${post.imageUrl} 1920w`}
+                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                            />
+                            <img
+                                className="img-fluid full-image"
+                                src={post.imageUrl}
+                                alt={post.title}
+                                title={post.title}
+                            />
+                        </picture>
+                    </div>
+                )}
+
+                <div className={styles.postInfo}>
+                    <h2 className={styles.heading} id="col-heading-1">
+                        {post.title}
+                    </h2>
+                    <p className={styles.description}>{post.description}</p>
+                </div>
+            </a>
+            <div className={`${styles.profile_info} d-flex`}>
+                <div className="align-content-center">
+                    <img
+                        className={`${styles.pfp} img-fluid`}
+                        src="/img/ivan-pfp.png"
+                        alt="pfp"
+                    />
+                </div>
+
+                <div className={styles.profile_info__details}>
+                    <p className={styles.profile_info__text}>Ivan Yalovets</p>
                     <p className={styles.profile_info__text}>
                         {moment(post.date, 'DD-MM-YYYY').format('D MMM')} •{' '}
-                        {post.readTime} min read
+                        {post.readTime}
+                        min read
                     </p>
                 </div>
             </div>
         </div>
     ) : (
         <div className="col-12 col-md-4" key={index}>
-            <a href={`/${post.id}`}>
+            <a href={`/${post.slug}`}>
                 {post.imageUrl && (
                     <div className={styles.image}>
                         <picture className="img-fluid">
@@ -169,11 +218,9 @@ const PostCard = ({post, index, style}: PostCardProps) => {
                 </div>
 
                 <div className={styles.profile_info__details}>
+                    <p className={styles.profile_info__text}>Ivan Yalovets</p>
                     <p className={styles.profile_info__text}>
-                        {post.authorName}
-                    </p>
-                    <p className={styles.profile_info__text}>
-                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')} •{' '}
+                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')}•{' '}
                         {post.readTime} min read
                     </p>
                 </div>
