@@ -178,6 +178,8 @@ export const getMDXContent = async (
 
         const data = await response.json();
 
+        console.log('DATA: ', data);
+
         const markdown = data.content.toString('utf-8');
 
         if (!markdown) {
@@ -192,5 +194,39 @@ export const getMDXContent = async (
     } catch (err) {
         console.error('Failed to fetch post from server: ', err);
         return {slug, markdown: ''};
+    }
+};
+
+export const postMDXContent = async (slug: string, markdown: string) => {
+    try {
+        const content = JSON.stringify(markdown);
+
+        const fileContent = JSON.parse(content);
+
+        console.log('FILECONTENT: ', fileContent);
+
+        const fileName = `mdx/${slug}.mdx`;
+
+        const response = await fetch('/api/s3', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                fileContent,
+                fileName,
+                fileType: 'text/markdown',
+            }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            // setResponseMessage(`File uploaded successfully! URL: ${data.url}`);
+        } else {
+            throw new Error(data.error || 'Upload failed');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        // setResponseMessage('An error occurred during file upload.');
     }
 };

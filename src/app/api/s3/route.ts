@@ -1,8 +1,12 @@
 // src/app/api/s3/route.ts
-import {NextResponse} from 'next/server';
+import {NextRequest, NextResponse} from 'next/server';
 import {S3} from 'aws-sdk';
 
-const s3 = new S3();
+const s3 = new S3({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION,
+});
 const BUCKET_NAME = process.env.S3_BUCKET_NAME;
 
 export async function GET(request: Request) {
@@ -55,5 +59,30 @@ export async function GET(request: Request) {
                 {status: 500}
             );
         }
+    }
+}
+
+export async function POST(request: Request) {
+    try {
+        const {fileContent, fileName, fileType} = await request.json();
+
+        const params = {
+            Bucket: process.env.S3_BUCKET_NAME as string,
+            Key: fileName, // Name of the file in S3
+            Body: fileContent,
+            ContentType: fileType,
+        };
+
+        const data = await s3.upload(params).promise();
+        return NextResponse.json({
+            message: 'File uploaded successfully',
+            url: data.Location,
+        });
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        return NextResponse.json(
+            {error: 'Failed to upload file'},
+            {status: 500}
+        );
     }
 }

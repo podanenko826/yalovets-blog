@@ -47,12 +47,15 @@ import '@mdxeditor/editor/style.css';
 
 import {ChangeEvent, FC, FormEvent, useRef, useState} from 'react';
 
+import {postMDXContent} from '@/lib/articles';
+
 interface EditorProps {
     markdown: string;
+    slug?: string;
     editorRef?: React.MutableRefObject<MDXEditorMethods | null>;
 }
 
-const Editor: FC<EditorProps> = ({markdown, editorRef}) => {
+const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
     const [content, setContent] = useState('');
     const [postTitle, setPostTitle] = useState('');
 
@@ -67,8 +70,10 @@ const Editor: FC<EditorProps> = ({markdown, editorRef}) => {
         setPostTitle(e);
     };
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const handleSubmit = () => {
+        if (slug) {
+            postMDXContent(slug, content);
+        }
     };
 
     const handleCancel = () => {
@@ -82,7 +87,7 @@ const Editor: FC<EditorProps> = ({markdown, editorRef}) => {
                     <textarea
                         className="heading-xlarge w-100 col-md-11 col-lg-12 text-center align-content-center"
                         id="col-heading-1"
-                        placeholder="Enter the post title"
+                        placeholder={slug ? slug : 'Enter the post title'}
                         onChange={e => handlePostTitleChange(e.target.value)}
                         value={postTitle}
                     />
@@ -181,6 +186,7 @@ const Editor: FC<EditorProps> = ({markdown, editorRef}) => {
                 <div className="row">
                     <div className="col-12 container">
                         <button
+                            onClick={handleSubmit}
                             className="py-2 px-3 m-2 btn-filled"
                             type="submit">
                             Post

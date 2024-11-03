@@ -21,7 +21,10 @@ const EditPage = async ({params}: {params: {slug: string}}) => {
         <div className="container-fluid mt-3">
             <div className="container">
                 <Suspense fallback={null}>
-                    <PostEditor markdown={content.markdown} />
+                    <PostEditor
+                        markdown={content.markdown}
+                        slug={content.slug}
+                    />
                 </Suspense>
             </div>
         </div>
