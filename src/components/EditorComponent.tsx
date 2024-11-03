@@ -47,6 +47,7 @@ import '@mdxeditor/editor/style.css';
 import {ChangeEvent, FC, FormEvent, useRef, useState} from 'react';
 
 import {postMDXContent} from '@/lib/articles';
+import React from 'react';
 
 interface EditorProps {
     markdown: string;
@@ -55,6 +56,7 @@ interface EditorProps {
 }
 
 const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
+    const [currentMarkdown, setCurrentMarkdown] = useState(markdown); // Track current markdown
     const [content, setContent] = useState('');
     const [postTitle, setPostTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -62,20 +64,40 @@ const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
 
     const router = useRouter();
 
-    const handleMDXEditorChange = (e: string) => {
-        setContent(e);
-        console.log(content);
-    };
-
     const handlePostTitleChange = (e: string) => {
         setPostTitle(e);
     };
 
-    const handleSubmit = () => {
+    const handleSave = async () => {
+        let fileName: string;
+
         if (slug) {
-            postMDXContent(postTitle, content, slug);
+            fileName = `mdx/${slug}.mdx`;
         } else {
-            postMDXContent(postTitle, content);
+            fileName = `mdx/${postTitle
+                .replace(/[^a-zA-Z0-9 ]/g, '')
+                .replaceAll(' ', '-')
+                .toLowerCase()}.mdx`;
+        } // Specify the filename
+        const content = currentMarkdown;
+
+        try {
+            const response = await fetch('/api/save-mdx', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({fileName, content}),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save file');
+            }
+
+            const data = await response.text();
+            console.log(data);
+        } catch (error) {
+            console.error('Error:', error);
         }
     };
 
@@ -100,9 +122,11 @@ const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
             <div className="row">
                 <div className="col-md-8 offset-md-2 container">
                     <MDXEditor
-                        onChange={e => handleMDXEditorChange(e)}
+                        onChange={e => {
+                            setCurrentMarkdown(e); // Update current markdown when the editor content changes
+                        }}
                         ref={editorRef}
-                        markdown={markdown}
+                        markdown={currentMarkdown}
                         plugins={[
                             // Example Plugin Usage
                             headingsPlugin(),
@@ -189,7 +213,7 @@ const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
                 <div className="row">
                     <div className="col-12 container">
                         <button
-                            onClick={handleSubmit}
+                            onClick={handleSave}
                             className="py-2 px-3 m-2 btn-filled"
                             type="submit">
                             Post

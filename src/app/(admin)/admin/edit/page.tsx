@@ -8,12 +8,16 @@ const PostEditor = dynamic(() => import('@/components/EditorComponent'), {
     ssr: false,
 });
 
+const markdown = `
+Hello**World**!
+`;
+
 const AddPage = () => {
     return (
         <div className="container-fluid mt-3">
             <div className="container">
                 <Suspense fallback={null}>
-                    <PostEditor markdown={''} />
+                    <PostEditor markdown={markdown} />
                 </Suspense>
             </div>
         </div>

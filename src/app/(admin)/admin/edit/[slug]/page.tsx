@@ -12,20 +12,21 @@ const PostEditor = dynamic(() => import('@/components/EditorComponent'), {
 });
 
 const EditPage = async ({params}: {params: {slug: string}}) => {
-    const content = await getMDXContent(params.slug);
+    // const content = await getMDXContent(params.slug);
 
-    if (!content.markdown) {
-        return notFound();
-    }
+    const markdown = `
+    Hello**World**!
+    `;
+
+    // if (!content.markdown) {
+    //     return notFound();
+    // }
 
     return (
         <div className="container-fluid mt-3">
             <div className="container">
                 <Suspense fallback={null}>
-                    <PostEditor
-                        markdown={content.markdown}
-                        slug={content.slug}
-                    />
+                    <PostEditor markdown={markdown} slug={params.slug} />
                 </Suspense>
             </div>
         </div>
