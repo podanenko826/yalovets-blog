@@ -72,7 +72,9 @@ const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
 
     const handleSubmit = () => {
         if (slug) {
-            postMDXContent(slug, content);
+            postMDXContent(postTitle, content, slug);
+        } else {
+            postMDXContent(postTitle, content);
         }
     };
 

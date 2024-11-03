@@ -197,7 +197,11 @@ export const getMDXContent = async (
     }
 };
 
-export const postMDXContent = async (slug: string, markdown: string) => {
+export const postMDXContent = async (
+    postTitle: string,
+    markdown: string,
+    slug?: string
+) => {
     try {
         const content = JSON.stringify(markdown);
 
@@ -205,7 +209,17 @@ export const postMDXContent = async (slug: string, markdown: string) => {
 
         console.log('FILECONTENT: ', fileContent);
 
-        const fileName = `mdx/${slug}.mdx`;
+        let fileName;
+
+        if (slug) {
+            fileName = `mdx/${slug}.mdx`;
+        } else {
+            fileName = `mdx/${postTitle
+                .replace(/[^a-zA-Z0-9 ]/g, '')
+                .replaceAll(' ', '-')
+                .toLowerCase()}.mdx`;
+        }
+        console.log(fileName);
 
         const response = await fetch('/api/s3', {
             method: 'POST',

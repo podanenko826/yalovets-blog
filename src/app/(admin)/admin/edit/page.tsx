@@ -13,7 +13,7 @@ const AddPage = () => {
         <div className="container-fluid mt-3">
             <div className="container">
                 <Suspense fallback={null}>
-                    <PostEditor markdown={'# Hello world'} />
+                    <PostEditor markdown={''} />
                 </Suspense>
             </div>
         </div>
