@@ -15,16 +15,14 @@ import {
     sandpackPlugin,
     tablePlugin,
     diffSourcePlugin,
-    frontmatterPlugin,
     MDXEditor,
     type MDXEditorMethods,
     type MDXEditorProps,
-    directiveDescriptors$,
     AdmonitionDirectiveDescriptor,
     ConditionalContents,
-    ShowSandpackInfo,
     codeBlockPlugin,
     linkPlugin,
+    ListsToggle,
 } from '@mdxeditor/editor';
 
 /* MDXEditor toolbar components */
@@ -40,16 +38,14 @@ import {
     InsertAdmonition,
     InsertCodeBlock,
     InsertImage,
-    InsertSandpack,
     InsertTable,
     Separator,
     InsertThematicBreak,
     DiffSourceToggleWrapper,
-    InsertFrontmatter,
 } from '@mdxeditor/editor';
 import '@mdxeditor/editor/style.css';
 
-import {ChangeEvent, FC, FormEvent, useState} from 'react';
+import {ChangeEvent, FC, FormEvent, useRef, useState} from 'react';
 
 interface EditorProps {
     markdown: string;
@@ -84,7 +80,7 @@ const Editor: FC<EditorProps> = ({markdown, editorRef}) => {
             <div className="container col-md-9 mt-5">
                 <div className="text-center pt-4">
                     <textarea
-                        className="heading-xlarge w-100 h-auto col-md-11 col-lg-12 text-center align-content-center"
+                        className="heading-xlarge w-100 col-md-11 col-lg-12 text-center align-content-center"
                         id="col-heading-1"
                         placeholder="Enter the post title"
                         onChange={e => handlePostTitleChange(e.target.value)}
@@ -124,30 +120,19 @@ const Editor: FC<EditorProps> = ({markdown, editorRef}) => {
                                 ],
                             }),
                             imagePlugin(),
-                            sandpackPlugin(),
+                            sandpackPlugin({
+                                sandpackConfig: {
+                                    defaultPreset: '',
+                                    presets: [],
+                                },
+                            }),
                             tablePlugin(),
                             diffSourcePlugin(),
-                            frontmatterPlugin(),
                             toolbarPlugin({
                                 toolbarClassName: 'mdxeditor-toolbar',
                                 toolbarContents: () => (
                                     <>
                                         {' '}
-                                        <UndoRedo />
-                                        <Separator />
-                                        <BoldItalicUnderlineToggles />
-                                        <CodeToggle />
-                                        <Separator />
-                                        {/* <ChangeAdmonitionType /> */}
-                                        {/* <ChangeCodeMirrorLanguage /> */}
-                                        <BlockTypeSelect />
-                                        <Separator />
-                                        <CreateLink />
-                                        <InsertImage />
-                                        <Separator />
-                                        <InsertTable />
-                                        <InsertThematicBreak />
-                                        <Separator />
                                         <ConditionalContents
                                             options={[
                                                 {
@@ -159,25 +144,31 @@ const Editor: FC<EditorProps> = ({markdown, editorRef}) => {
                                                     ),
                                                 },
                                                 {
-                                                    when: editor =>
-                                                        editor?.editorType ===
-                                                        'sandpack',
-                                                    contents: () => (
-                                                        <ShowSandpackInfo />
-                                                    ),
-                                                },
-                                                {
                                                     fallback: () => (
-                                                        <InsertCodeBlock />
+                                                        <>
+                                                            <UndoRedo />
+                                                            <Separator />
+                                                            <BoldItalicUnderlineToggles />
+                                                            <CodeToggle />
+                                                            <Separator />
+                                                            <ListsToggle />
+                                                            <Separator />
+                                                            <BlockTypeSelect />
+                                                            <Separator />
+                                                            <CreateLink />
+                                                            <InsertImage />
+                                                            <Separator />
+                                                            <InsertTable />
+                                                            <InsertThematicBreak />
+                                                            <Separator />
+                                                            <InsertCodeBlock />
+                                                            <Separator />
+                                                            <InsertAdmonition />
+                                                        </>
                                                     ),
                                                 },
                                             ]}
                                         />
-                                        {/* <InsertSandpack /> */}
-                                        <Separator />
-                                        <InsertAdmonition />
-                                        <Separator />
-                                        <InsertFrontmatter />
                                         <DiffSourceToggleWrapper children />
                                     </>
                                 ),
