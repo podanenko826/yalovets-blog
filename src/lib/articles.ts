@@ -158,3 +158,39 @@ export const getArticleData = async (
         return {slug, contentHtml: ''};
     }
 };
+
+export const getMDXContent = async (
+    slug: string
+): Promise<{slug: string; markdown: string}> => {
+    try {
+        const baseUrl =
+            typeof window === 'undefined'
+                ? process.env.NEXT_PUBLIC_API_BASE_URL ||
+                  'http://localhost:3000'
+                : '';
+
+        const response = await fetch(`${baseUrl}/api/s3?key=mdx/${slug}.mdx`);
+
+        if (!response.body) {
+            console.error('No markdown file was found for the given key.');
+            return {slug, markdown: ''};
+        }
+
+        const data = await response.json();
+
+        const markdown = data.content.toString('utf-8');
+
+        if (!markdown) {
+            console.error('No content found for the given key.');
+            return {slug, markdown: ''};
+        }
+
+        return {
+            slug,
+            markdown,
+        };
+    } catch (err) {
+        console.error('Failed to fetch post from server: ', err);
+        return {slug, markdown: ''};
+    }
+};
