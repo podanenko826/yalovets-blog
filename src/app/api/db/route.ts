@@ -29,7 +29,7 @@ export async function GET(request: Request) {
             TableName: TABLE_NAME,
             Key: {
                 email: accountEmail,
-                slug: 'writer-account',
+                slug: 'author-account',
             },
         });
 
