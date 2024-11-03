@@ -15,6 +15,7 @@ import PostCard from '@/components/PostCard';
 import StartReadingButton from '@/components/Button/StartReadingButton';
 
 import {MdOutlineArrowForwardIos} from 'react-icons/md';
+import {getUsers} from '@/lib/users';
 
 export default function Home() {
     // const latestPost: ArticleItem = getLatestArticle();
