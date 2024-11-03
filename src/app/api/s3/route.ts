@@ -1,6 +1,14 @@
 // src/app/api/s3/route.ts
 import {NextRequest, NextResponse} from 'next/server';
+
 import {S3} from 'aws-sdk';
+import {DynamoDBClient} from '@aws-sdk/client-dynamodb';
+import {
+    DynamoDBDocumentClient,
+    GetCommand,
+    PutCommand,
+    UpdateCommand,
+} from '@aws-sdk/lib-dynamodb';
 
 const s3 = new S3({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -8,6 +16,14 @@ const s3 = new S3({
     region: process.env.AWS_REGION,
 });
 const BUCKET_NAME = process.env.S3_BUCKET_NAME;
+
+const dbClient = new DynamoDBClient({
+    credentials: {
+        accessKeyId: process.env.DYNAMODB_ACCESS_KEY_ID as string,
+        secretAccessKey: process.env.DYNAMODB_SECRET_ACCESS_KEY as string,
+    },
+});
+const docClient = DynamoDBDocumentClient.from(dbClient);
 
 export async function GET(request: Request) {
     const {searchParams} = new URL(request.url);
