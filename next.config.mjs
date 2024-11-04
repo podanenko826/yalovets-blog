@@ -15,7 +15,7 @@ const nextConfig = {
 const withMDX = createMDX({
     options: {
         remarkPlugins: [remarkGfm],
-        rehypePlugins: [rehypeRaw],
+        // rehypePlugins: [rehypeRaw],
     },
     extension: /.(md|mdx)$/,
     providerImportSource: '@mdx-js/react',

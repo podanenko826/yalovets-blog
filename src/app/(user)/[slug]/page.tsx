@@ -1,18 +1,25 @@
-import Link from 'next/link';
-import {getArticleData} from '@/lib/articles';
+'use client';
 
+import dynamic from 'next/dynamic';
 import {MdEmail} from 'react-icons/md';
-import {FaLinkedin} from 'react-icons/fa';
+import {FaLinkedin, FaFacebookF} from 'react-icons/fa';
 import {FaSquareInstagram} from 'react-icons/fa6';
-import {FaFacebookF} from 'react-icons/fa';
-import {notFound} from 'next/navigation';
+import {notFound, useParams} from 'next/navigation';
+import {FC} from 'react';
 
-const PostPage = async ({params}: {params: {slug: string}}) => {
-    const articleData = await getArticleData(params.slug);
+const PostPage: FC = () => {
+    const params = useParams();
 
-    if (!articleData.contentHtml) {
-        return notFound();
-    }
+    // Cast the parameters to the expected type
+    const slug = params?.slug as string;
+    console.log('SLUG: ', params?.slug);
+
+    const MDXComponent = dynamic(() => import(`./post1.mdx`), {
+        // Set `ssr: false` to ensure this only runs on the client side if needed.
+        ssr: false, // `dynamic` can be client-side only if the content is highly interactive
+    });
+
+    // return notFound();
 
     return (
         <section>
@@ -48,11 +55,8 @@ const PostPage = async ({params}: {params: {slug: string}}) => {
                             </a>
                         </div>
                         <div className="col-12 col-sm-8">
-                            <article
-                                dangerouslySetInnerHTML={{
-                                    __html: articleData?.contentHtml,
-                                }}
-                                className="article"
+                            <MDXComponent
+                            // className="article"
                             />
                         </div>
                     </div>
