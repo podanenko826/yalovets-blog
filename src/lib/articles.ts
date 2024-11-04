@@ -199,9 +199,7 @@ export const getMDXContent = async (
 
 export const postMDXContent = async (
     postTitle: string,
-    description: string,
     markdown: string,
-    imageUrl?: string,
     slug?: string
 ) => {
     try {

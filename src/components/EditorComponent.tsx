@@ -1,5 +1,4 @@
 'use client';
-
 import {useRouter} from 'next/navigation';
 
 import {
@@ -76,7 +75,7 @@ const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
         if (slug) {
             postMDXContent(postTitle, content, slug);
         } else {
-            postMDXContent(postTitle, description, content, imageUrl);
+            postMDXContent(postTitle, content);
         }
     };
 
