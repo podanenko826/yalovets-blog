@@ -72,9 +72,9 @@ const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
         let fileName: string;
 
         if (slug) {
-            fileName = `mdx/${slug}.mdx`;
+            fileName = `${slug}.mdx`;
         } else {
-            fileName = `mdx/${postTitle
+            fileName = `${postTitle
                 .replace(/[^a-zA-Z0-9 ]/g, '')
                 .replaceAll(' ', '-')
                 .toLowerCase()}.mdx`;
