@@ -21,10 +21,7 @@ export async function POST(request: Request) {
     // Write the file to the filesystem
     try {
         fs.writeFileSync(filePath, content);
-        return NextResponse.json(
-            {message: 'File saved successfully'},
-            {status: 200}
-        );
+        return NextResponse.json(filePath, {status: 200});
     } catch (err) {
         return NextResponse.json(
             {message: 'Failed to save file'},

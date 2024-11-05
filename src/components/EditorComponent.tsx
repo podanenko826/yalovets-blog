@@ -1,5 +1,5 @@
 'use client';
-import {useRouter} from 'next/navigation';
+import {redirect, useRouter} from 'next/navigation';
 
 import {
     headingsPlugin,
@@ -70,9 +70,18 @@ const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
 
     const handleSave = async () => {
         if (slug) {
-            saveMDXContent(postTitle, currentMarkdown, slug);
+            const redirectSlug = await saveMDXContent(
+                postTitle,
+                currentMarkdown,
+                slug
+            );
+            return router.push(`/${redirectSlug}`);
         } else {
-            saveMDXContent(postTitle, currentMarkdown);
+            const redirectSlug = await saveMDXContent(
+                postTitle,
+                currentMarkdown
+            );
+            return router.push(`/${redirectSlug}`);
         }
     };
 

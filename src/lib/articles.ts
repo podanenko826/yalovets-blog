@@ -200,16 +200,14 @@ export const saveMDXContent = async (
     markdown: string,
     slug?: string
 ) => {
-    let fileName: string;
-
-    if (slug) {
-        fileName = `${slug}.mdx`;
-    } else {
-        fileName = `${postTitle
+    if (!slug) {
+        slug = `${postTitle
             .replace(/[^a-zA-Z0-9 ]/g, '')
             .replaceAll(' ', '-')
-            .toLowerCase()}.mdx`;
-    } // Specify the filename
+            .toLowerCase()}`;
+    }
+
+    const fileName = `${slug}.mdx`;
 
     try {
         const response = await fetch('/api/save-mdx', {
@@ -226,6 +224,7 @@ export const saveMDXContent = async (
 
         const data = await response.text();
         console.log(data);
+        return slug;
     } catch (error) {
         console.error('Error:', error);
     }
