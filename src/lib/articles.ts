@@ -169,18 +169,16 @@ export const getMDXContent = async (
                   'http://localhost:3000'
                 : '';
 
-        const response = await fetch(`${baseUrl}/api/s3?key=mdx/${slug}.mdx`);
-
-        if (!response.body) {
-            console.error('No markdown file was found for the given key.');
+        // Fetch the markdown content
+        const response = await fetch(`${baseUrl}/api/get-mdx?slug=${slug}`);
+        if (!response.ok) {
+            console.error('Failed to fetch markdown content');
             return {slug, markdown: ''};
         }
 
-        const data = await response.json();
+        const {content} = await response.json();
 
-        console.log('DATA: ', data);
-
-        const markdown = data.content.toString('utf-8');
+        const markdown = content;
 
         if (!markdown) {
             console.error('No content found for the given key.');
