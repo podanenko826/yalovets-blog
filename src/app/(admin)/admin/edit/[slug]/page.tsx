@@ -1,4 +1,3 @@
-'use client';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import {Suspense} from 'react';
@@ -12,21 +11,15 @@ const PostEditor = dynamic(() => import('@/components/EditorComponent'), {
 });
 
 const EditPage = async ({params}: {params: {slug: string}}) => {
-    // const content = await getMDXContent(params.slug);
+    const {slug} = params;
 
-    const markdown = `
-    Hello**World**!
-    `;
-
-    // if (!content.markdown) {
-    //     return notFound();
-    // }
+    const data = await getMDXContent(slug);
 
     return (
         <div className="container-fluid mt-3">
             <div className="container">
                 <Suspense fallback={null}>
-                    <PostEditor markdown={markdown} slug={params.slug} />
+                    <PostEditor markdown={data.markdown} slug={params.slug} />
                 </Suspense>
             </div>
         </div>
