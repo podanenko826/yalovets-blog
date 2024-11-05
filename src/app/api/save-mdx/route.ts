@@ -8,7 +8,7 @@ export async function POST(request: Request) {
 
     // Define the directory to save the file
     // const dirPath = path.join(process.cwd(), 'saved_files');
-    const dirPath = 'src/app/(user)/[slug]';
+    const dirPath = 'src/articles';
 
     // Ensure the directory exists
     if (!fs.existsSync(dirPath)) {
