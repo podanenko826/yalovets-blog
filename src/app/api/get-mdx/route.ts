@@ -11,14 +11,12 @@ export async function GET(request: Request) {
     }
 
     const filePath = path.join(process.cwd(), 'src/articles', `${slug}.mdx`);
-    console.log('filePath: ', filePath);
 
     if (!fs.existsSync(filePath)) {
         return new Response('File not found', {status: 404});
     }
 
     const content = fs.readFileSync(filePath, 'utf8');
-    console.log('CONTENT: ', content);
 
     return new Response(JSON.stringify({content}), {
         status: 200,
