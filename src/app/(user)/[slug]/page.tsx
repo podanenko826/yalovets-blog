@@ -33,8 +33,6 @@ const PostPageWrapper = async ({params}: PostPageWrapperProps) => {
     //     Record<string, unknown>,
     //     Record<string, unknown>
     // > = await serialize(content);
-    // console.log('TESSSSSSSST: ', content);
-    // console.log('TESSSSSSSST2222222: ', mdxSourceSerialized);
 
     // Pass the serialized content to the client component
     return <PostPage params={params} mdxSource={content} />;

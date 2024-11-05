@@ -4,12 +4,6 @@ import '@/app/page.css';
 
 import type {PostItem} from '@/types';
 
-// import {
-//     getLatestArticle,
-//     getRecentArticles,
-//     getSortedArticles,
-// } from '@/lib/articles';
-
 import PostCard from '@/components/PostCard';
 
 import StartReadingButton from '@/components/Button/StartReadingButton';
@@ -18,12 +12,6 @@ import {MdOutlineArrowForwardIos} from 'react-icons/md';
 import {getUsers} from '@/lib/users';
 
 export default function Home() {
-    // const latestPost: PostItem = getLatestArticle();
-
-    // const recentPosts: PostItem[] = getRecentArticles();
-
-    // const popularPosts: PostItem[] = [];
-
     return (
         <main>
             {/* Welcome section (Mobile) */}
@@ -210,7 +198,7 @@ export default function Home() {
                     </div>
                     <div className="col-7 col-md-5 col-lg-5 offset-md-1 offset-lg-0">
                         <h1 id="col-text" className="heading">
-                            Hi, I'm Ivan Yalovets!
+                            Hi, I&rsquo;m Ivan Yalovets!
                         </h1>
                         <p className="pt-2 subheading-smaller" id="col-text">
                             I started Yalovets Blog in 2024 to share the latest

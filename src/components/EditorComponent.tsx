@@ -178,30 +178,32 @@ const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
                                                 {
                                                     fallback: () => (
                                                         <>
-                                                            <UndoRedo />
-                                                            <Separator />
-                                                            <BoldItalicUnderlineToggles />
-                                                            <CodeToggle />
-                                                            <Separator />
-                                                            <ListsToggle />
-                                                            <Separator />
-                                                            <BlockTypeSelect />
-                                                            <Separator />
-                                                            <CreateLink />
-                                                            <InsertImage />
-                                                            <Separator />
-                                                            <InsertTable />
-                                                            <InsertThematicBreak />
-                                                            <Separator />
-                                                            <InsertCodeBlock />
-                                                            <Separator />
-                                                            <InsertAdmonition />
+                                                            <DiffSourceToggleWrapper>
+                                                                <UndoRedo />
+                                                                <Separator />
+                                                                <BoldItalicUnderlineToggles />
+                                                                <CodeToggle />
+                                                                <Separator />
+                                                                <ListsToggle />
+                                                                <Separator />
+                                                                <BlockTypeSelect />
+                                                                <Separator />
+                                                                <CreateLink />
+                                                                <InsertImage />
+                                                                <Separator />
+                                                                <InsertTable />
+                                                                <InsertThematicBreak />
+                                                                <Separator />
+                                                                <InsertCodeBlock />
+                                                                <Separator />
+                                                                <InsertAdmonition />
+                                                                <Separator />
+                                                            </DiffSourceToggleWrapper>
                                                         </>
                                                     ),
                                                 },
                                             ]}
                                         />
-                                        <DiffSourceToggleWrapper children />
                                     </>
                                 ),
                             }),

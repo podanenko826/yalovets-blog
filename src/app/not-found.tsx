@@ -18,10 +18,10 @@ const PageNotFound = () => {
                             the code. ☕️💻
                         </h2>
                         <h4 className="mt-5 subheading-tiny" id="col-heading-2">
-                            The page you’re looking for might be in the "other"
-                            database, left in staging, or maybe it’s just
-                            chilling in the cloud ☁️ somewhere. Either way, it’s
-                            not here.
+                            The page you&rsquo;re looking for might be in the
+                            &quot;other&quot; database, left in staging, or
+                            maybe it&rsquo;s just chilling in the cloud ☁️
+                            somewhere. Either way, it&rsquo;s not here.
                         </h4>
                         <h5 className="subheading-tiny" id="col-heading-2">
                             Remember, behind every 404 is a developer crying
