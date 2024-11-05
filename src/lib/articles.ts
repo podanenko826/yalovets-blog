@@ -195,50 +195,38 @@ export const getMDXContent = async (
     }
 };
 
-export const postMDXContent = async (
+export const saveMDXContent = async (
     postTitle: string,
     markdown: string,
     slug?: string
 ) => {
+    let fileName: string;
+
+    if (slug) {
+        fileName = `${slug}.mdx`;
+    } else {
+        fileName = `${postTitle
+            .replace(/[^a-zA-Z0-9 ]/g, '')
+            .replaceAll(' ', '-')
+            .toLowerCase()}.mdx`;
+    } // Specify the filename
+
     try {
-        const content = JSON.stringify(markdown);
-
-        const fileContent = JSON.parse(content);
-
-        console.log('FILECONTENT: ', fileContent);
-
-        let fileName;
-
-        if (slug) {
-            fileName = `mdx/${slug}.mdx`;
-        } else {
-            fileName = `mdx/${postTitle
-                .replace(/[^a-zA-Z0-9 ]/g, '')
-                .replaceAll(' ', '-')
-                .toLowerCase()}.mdx`;
-        }
-        console.log(fileName);
-
-        const response = await fetch('/api/s3', {
+        const response = await fetch('/api/save-mdx', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                fileContent,
-                fileName,
-                fileType: 'text/markdown',
-            }),
+            body: JSON.stringify({fileName, content: markdown}),
         });
 
-        const data = await response.json();
-        if (response.ok) {
-            // setResponseMessage(`File uploaded successfully! URL: ${data.url}`);
-        } else {
-            throw new Error(data.error || 'Upload failed');
+        if (!response.ok) {
+            throw new Error('Failed to save file');
         }
+
+        const data = await response.text();
+        console.log(data);
     } catch (error) {
         console.error('Error:', error);
-        // setResponseMessage('An error occurred during file upload.');
     }
 };

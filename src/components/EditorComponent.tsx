@@ -46,7 +46,7 @@ import '@mdxeditor/editor/style.css';
 
 import {ChangeEvent, FC, FormEvent, useRef, useState} from 'react';
 
-import {postMDXContent} from '@/lib/articles';
+import {saveMDXContent} from '@/lib/articles';
 import React from 'react';
 
 interface EditorProps {
@@ -69,35 +69,10 @@ const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
     };
 
     const handleSave = async () => {
-        let fileName: string;
-
         if (slug) {
-            fileName = `${slug}.mdx`;
+            saveMDXContent(postTitle, currentMarkdown, slug);
         } else {
-            fileName = `${postTitle
-                .replace(/[^a-zA-Z0-9 ]/g, '')
-                .replaceAll(' ', '-')
-                .toLowerCase()}.mdx`;
-        } // Specify the filename
-        const content = currentMarkdown;
-
-        try {
-            const response = await fetch('/api/save-mdx', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({fileName, content}),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to save file');
-            }
-
-            const data = await response.text();
-            console.log(data);
-        } catch (error) {
-            console.error('Error:', error);
+            saveMDXContent(postTitle, currentMarkdown);
         }
     };
 
