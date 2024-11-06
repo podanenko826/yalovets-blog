@@ -72,8 +72,10 @@ const PostPage: FC<PostPageProps> = async ({params}: PostPageProps) => {
                                 <FaFacebookF className="fs-1 p-1" />
                             </a>
                         </div>
-                        <div className="col-12 col-sm-8 article">
-                            <MDXRemote source={content} />
+                        <div className="col-12 col-sm-8">
+                            <article className="article">
+                                <MDXRemote source={content} />
+                            </article>
                         </div>
                     </div>
                 </div>
