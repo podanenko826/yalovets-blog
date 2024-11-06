@@ -96,6 +96,7 @@ const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
                     <textarea
                         className="heading-xlarge w-100 col-md-11 col-lg-12 text-center align-content-center"
                         id="col-heading-1"
+                        disabled={slug ? true : false}
                         placeholder={slug ? slug : 'Enter the post title'}
                         onChange={e => handlePostTitleChange(e.target.value)}
                         value={postTitle}

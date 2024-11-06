@@ -91,6 +91,7 @@ input {
 textarea {
     line-height: 100% !important;
     font-weight: bolder;
+    resize: none;
 }
 
 input:focus {
