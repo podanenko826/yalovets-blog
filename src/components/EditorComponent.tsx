@@ -46,6 +46,9 @@ import '@mdxeditor/editor/style.css';
 
 import {ChangeEvent, FC, FormEvent, useRef, useState} from 'react';
 
+import PostCard from '@/components/PostCard';
+import {PostItem} from '@/types';
+
 import {saveMDXContent} from '@/lib/articles';
 import React from 'react';
 
@@ -57,10 +60,22 @@ interface EditorProps {
 
 const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
     const [currentMarkdown, setCurrentMarkdown] = useState(markdown); // Track current markdown
-    const [content, setContent] = useState('');
-    const [postTitle, setPostTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [imageUrl, setImageUrl] = useState('');
+    const [postTitle, setPostTitle] = useState('Test Post');
+    const [description, setDescription] = useState('A Test Description');
+    const [imageUrl, setImageUrl] = useState('/img/AWS-beginning.png');
+    const authorEmail = 'Yalovechik2012@gmail.com';
+
+    const Post: PostItem = {
+        email: authorEmail,
+        slug: 'test-post',
+        title: postTitle,
+        description: description,
+        imageUrl: imageUrl,
+        date: '07-11-2024',
+        modifyDate: '07-11-2024',
+        readTime: 5,
+        viewsCount: 10,
+    };
 
     const router = useRouter();
 
@@ -204,18 +219,29 @@ const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
                     />
                 </div>
             </div>
-            <div className="container d-flex justify-content-center col-md-9 mt-5">
+            <div
+                className="container d-flex justify-content-center col-md-9"
+                style={{marginTop: '40rem'}}>
                 <div className="row">
-                    <div className="col-12 container">
+                    <div className="container">
+                        <h1 className="text-center py-3">Preview</h1>
+                        <PostCard
+                            post={Post}
+                            style="preview"
+                            setValue={setDescription}
+                        />
+                    </div>
+
+                    <div className="col-12 d-flex container justify-content-center py-4">
                         <button
                             onClick={handleSave}
-                            className="py-2 px-3 m-2 btn-filled"
+                            className="py-2 px-3 m-3 btn-filled"
                             type="submit">
                             Post
                         </button>
                         <button
                             onClick={handleCancel}
-                            className="py-2 px-3 m-2 btn-outlined">
+                            className="py-2 px-3 m-3 btn-outlined">
                             Cancel
                         </button>
                     </div>

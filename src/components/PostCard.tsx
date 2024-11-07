@@ -7,11 +7,12 @@ import type {PostItem} from '@/types';
 
 type PostCardProps = {
     post: PostItem;
+    style: 'massive' | 'full' | 'preview' | 'admin' | 'standard';
     index?: number | 1;
-    style: 'massive' | 'full' | 'admin' | 'standard';
+    setValue?: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const PostCard = ({post, index, style}: PostCardProps) => {
+const PostCard = ({post, style, index, setValue}: PostCardProps) => {
     return style === 'massive' ? (
         <div className={styles.latest_post}>
             <div className="container">
@@ -169,10 +170,79 @@ const PostCard = ({post, index, style}: PostCardProps) => {
                 <div className={styles.profile_info__details}>
                     <p className={styles.profile_info__text}>Ivan Yalovets</p>
                     <p className={styles.profile_info__text}>
-                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')} •{' '}
-                        {post.readTime}
-                        min read
+                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')}•{' '}
+                        {post.readTime} min read
                     </p>
+                </div>
+            </div>
+        </div>
+    ) : style === 'preview' ? (
+        <div className={styles.latest_post}>
+            <div className="container">
+                <div className="row align-items-center justify-content-center">
+                    {post.imageUrl && (
+                        <div className="col-lg-8">
+                            <picture className="img-fluid">
+                                <source
+                                    type="image/png"
+                                    srcSet={`${post.imageUrl} 1140w, ${post.imageUrl} 2280w, ${post.imageUrl} 960w, ${post.imageUrl} 1920w`}
+                                    sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                                />
+                                <source
+                                    srcSet={`${post.imageUrl} 1140w, ${post.imageUrl} 2280w, ${post.imageUrl} 960w, ${post.imageUrl} 1920w`}
+                                    sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                                />
+                                <img
+                                    className="img-fluid"
+                                    src={post.imageUrl}
+                                    alt={post.title}
+                                    title={post.title}
+                                />
+                            </picture>
+                        </div>
+                    )}
+
+                    <div className="col-lg-8">
+                        <div className={styles.postInfo}>
+                            <h2 className={styles.heading} id="col-heading-1">
+                                {post.title}
+                            </h2>
+                            {setValue ? (
+                                <textarea
+                                    name="description"
+                                    placeholder="Enter a post description"
+                                    onChange={e => setValue(e.target.value)}
+                                    className="w-100 subheading-small mb-2 col-heading-2"
+                                    // rows={2}
+                                />
+                            ) : (
+                                <p className={styles.description}>
+                                    {post.description}
+                                </p>
+                            )}
+                        </div>
+                        <div className={`${styles.profile_info} d-flex`}>
+                            <div className="align-content-center">
+                                <img
+                                    className={`${styles.pfp} img-fluid`}
+                                    src="/img/ivan-pfp.png"
+                                    alt="pfp"
+                                />
+                            </div>
+
+                            <div className={styles.profile_info__details}>
+                                <p className={styles.profile_info__text}>
+                                    Ivan Yalovets
+                                </p>
+                                <p className={styles.profile_info__text}>
+                                    {moment(post.date, 'DD-MM-YYYY').format(
+                                        'D MMM'
+                                    )}{' '}
+                                    • {post.readTime} min read
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
