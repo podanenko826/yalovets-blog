@@ -1,17 +1,17 @@
-import {DynamoDBClient} from '@aws-sdk/client-dynamodb';
+import {DynamoDBClient, ScanCommand} from '@aws-sdk/client-dynamodb';
 import {DynamoDBDocumentClient, GetCommand} from '@aws-sdk/lib-dynamodb';
 import {NextResponse} from 'next/server';
 
 const dbClient = new DynamoDBClient({
     credentials: {
-        accessKeyId: process.env.DYNAMODB_ACCESS_KEY_ID as string,
-        secretAccessKey: process.env.DYNAMODB_SECRET_ACCESS_KEY as string,
+        accessKeyId: process.env.NEXT_PUBLIC_ACCESS_KEY_ID as string,
+        secretAccessKey: process.env.NEXT_PUBLIC_SECRET_ACCESS_KEY as string,
     },
 });
 const docClient = DynamoDBDocumentClient.from(dbClient);
 
 export async function GET(request: Request) {
-    const TABLE_NAME = process.env.DYNAMODB_TABLE_NAME;
+    const TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
 
     const {searchParams} = new URL(request.url);
     const email = searchParams.get('email');
@@ -48,8 +48,22 @@ export async function GET(request: Request) {
             return NextResponse.json(err, {status: 500});
         }
     } else {
-        return NextResponse.json('Account email is not provided.', {
-            status: 500,
-        });
+        try {
+            const params = {
+                TableName: TABLE_NAME,
+                FilterExpression: 'slug = :slugValue',
+                ExpressionAttributeValues: {
+                    ':slugValue': {S: 'author-account'}, // Wrap the value in `{ S: ... }` to indicate it's a string type in DynamoDB
+                },
+            };
+            const command = new ScanCommand(params);
+
+            const result = await dbClient.send(command);
+            return NextResponse.json(result, {status: 201});
+        } catch (err) {
+            return NextResponse.json(err, {
+                status: 500,
+            });
+        }
     }
 }

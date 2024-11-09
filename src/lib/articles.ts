@@ -39,70 +39,68 @@ const docClient = DynamoDBDocumentClient.from(dbClient);
 
 // const articlesDirectory = path.join(process.cwd(), 'src/articles');
 
-// export const getSortedArticles = (): PostItem[] => {
-//     connectDB();
-//     const [fileNames, setFileNames] = useState([]);
-//     const [content, setContent] = useState({});
+export const getSortedArticles = (): PostItem[] => {
+    const [fileNames, setFileNames] = useState([]);
+    const [content, setContent] = useState({});
 
-//     useEffect(() => {
-//         const fetchFileNames = async () => {
-//             try {
-//                 const response = await fetch('/api/s3?key=mdx/');
-//                 const data = await response.json();
+    useEffect(() => {
+        const fetchFileNames = async () => {
+            try {
+                const response = await fetch('/api/user');
+                const data = await response.json();
 
-//                 if (data.files && data.files.length) {
-//                     const keys = data.files.map(({file}: any) => file.Key);
-//                     setFileNames(keys);
-//                 }
-//             } catch (err) {
-//                 console.error('Error fetching S3 files list: ', err);
-//             }
-//         };
+                if (data.files && data.files.length) {
+                    const keys = data.files.map(({file}: any) => file.Key);
+                    setFileNames(keys);
+                }
+            } catch (err) {
+                console.error('Error fetching S3 files list: ', err);
+            }
+        };
 
-//         fetchFileNames();
-//     }, []);
+        fetchFileNames();
+    }, []);
 
-//     console.log('fileNames: ', fileNames);
+    console.log('fileNames: ', fileNames);
 
-//     useEffect(() => {
-//         const fetchContent = async () => {
-//             try {
-//             } catch (err) {
-//                 console.error('Error fetching S3 content: ', err);
-//             }
-//         };
+    useEffect(() => {
+        const fetchContent = async () => {
+            try {
+            } catch (err) {
+                console.error('Error fetching S3 content: ', err);
+            }
+        };
 
-//         fetchContent();
-//     }, []);
-//     const allArticlesData = fileNames.map(async (post: PostItem) => {
-//         const response = await fetch(`/api/s3?key=${post}`);
-//         const fileContents = JSON.stringify(response);
-//         console.log('Response: ', response);
-//         console.log('fileContents: ', fileContents);
+        fetchContent();
+    }, []);
+    const allArticlesData = fileNames.map(async (post: PostItem) => {
+        const response = await fetch(`/api/s3?key=${post}`);
+        const fileContents = JSON.stringify(response);
+        console.log('Response: ', response);
+        console.log('fileContents: ', fileContents);
 
-//         const matterResult = matter(fileContents);
-//         console.log('MatterResult: ', matterResult);
+        const matterResult = matter(fileContents);
+        console.log('MatterResult: ', matterResult);
 
-//         return;
-//     });
+        return;
+    });
 
-//     const sortedArticlesData = allArticlesData.sort((a, b) => {
-//         const format = 'DD-MM-YYYY';
-//         const dateOne = moment(a, format);
-//         const dateTwo = moment(b.date, format);
+    const sortedArticlesData = allArticlesData.sort((a, b) => {
+        const format = 'DD-MM-YYYY';
+        const dateOne = moment(a, format);
+        const dateTwo = moment(b.date, format);
 
-//         if (dateOne.isBefore(dateTwo)) {
-//             return -1;
-//         } else if (dateTwo.isAfter(dateOne)) {
-//             return 1;
-//         } else {
-//             return 0;
-//         }
-//     });
+        if (dateOne.isBefore(dateTwo)) {
+            return -1;
+        } else if (dateTwo.isAfter(dateOne)) {
+            return 1;
+        } else {
+            return 0;
+        }
+    });
 
-//     return sortedArticlesData.reverse();
-//     return [];
-// };
+    return sortedArticlesData.reverse();
+};
 
 // export const getLatestArticle = (): PostItem => {
 //     const sortedArticles = getSortedArticles();
