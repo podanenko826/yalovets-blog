@@ -11,10 +11,10 @@ import StartReadingButton from '@/components/Button/StartReadingButton';
 
 // import {MdOutlineArrowForwardIos} from 'react-icons/md';
 // import {getUsers} from '@/lib/users';
-import {getSortedArticles} from '@/lib/articles';
+import {getSortedPosts} from '@/lib/posts';
 
 export default async function Home() {
-    const sortedArticles = await getSortedArticles();
+    const sortedArticles = await getSortedPosts();
     console.log('SortedArticles: ', sortedArticles);
 
     return (

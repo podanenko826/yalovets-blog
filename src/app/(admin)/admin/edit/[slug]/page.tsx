@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 import {Suspense} from 'react';
 import React from 'react';
 
-import {getMDXContent} from '@/lib/articles';
+import {getMDXContent} from '@/lib/posts';
 import {notFound} from 'next/navigation';
 
 const PostEditor = dynamic(() => import('@/components/EditorComponent'), {

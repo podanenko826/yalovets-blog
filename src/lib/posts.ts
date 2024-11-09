@@ -50,7 +50,7 @@ const transformPostData = (data: any[]) => {
     return post;
 };
 
-export const getSortedArticles = async () => {
+export const getSortedPosts = async () => {
     let authorEmails: string[] = [];
 
     const baseUrl =
@@ -66,10 +66,8 @@ export const getSortedArticles = async () => {
             authorEmails = data;
         }
     } catch (err) {
-        console.error('Error fetching S3 files list: ', err);
+        console.error('Error fetching authors list: ', err);
     }
-
-    console.log('authorEmails: ', authorEmails);
 
     let allPosts: any[] = [];
 
@@ -101,18 +99,10 @@ export const getSortedArticles = async () => {
 
     const transformedPosts: any[] = [...transformPostData(allPosts)];
 
-    const posts = [...transformedPosts];
-
-    const sortedArticlesData = posts.sort((a, b) => {
+    const sortedPostsData = transformedPosts.sort((a, b) => {
         const format = 'DD-MM-YYYY';
         const dateOne = moment(a.date, format);
         const dateTwo = moment(b.date, format);
-
-        console.log(a);
-        console.log(b);
-
-        console.log(dateOne);
-        console.log(dateTwo);
 
         if (dateOne.isBefore(dateTwo)) {
             return 1;
@@ -123,7 +113,7 @@ export const getSortedArticles = async () => {
         }
     });
 
-    return sortedArticlesData;
+    return sortedPostsData;
 };
 
 // export const getLatestArticle = (): PostItem => {

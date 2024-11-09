@@ -49,7 +49,7 @@ import {ChangeEvent, FC, FormEvent, useRef, useState} from 'react';
 import PostCard from '@/components/PostCard';
 import {PostItem} from '@/types';
 
-import {createPost, saveMDXContent} from '@/lib/articles';
+import {createPost, saveMDXContent} from '@/lib/posts';
 import React from 'react';
 
 interface EditorProps {
