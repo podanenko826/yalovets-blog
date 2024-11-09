@@ -9,3 +9,17 @@ export type PostItem = {
     readTime?: number;
     viewsCount?: number;
 };
+
+export type AuthorItem = {
+    email: string;
+    slug: string;
+    fullName: string;
+    profileImageUrl: string;
+    bio: string;
+    socialLinks: {
+        emailAddress: string;
+        linkedInUrl: string;
+        instagramUrl: string;
+        facebookUrl: string;
+    };
+};

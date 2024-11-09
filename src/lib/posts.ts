@@ -1,5 +1,4 @@
 import matter from 'gray-matter';
-import path from 'path';
 import moment from 'moment';
 import {remark} from 'remark';
 import html from 'remark-html';
@@ -13,7 +12,6 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 
 import type {PostItem} from '@/types';
-import Post from '@/models/Post';
 
 const AWS_REGION = process.env.NEXT_PUBLIC_REGION;
 const DYNAMODB_TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
