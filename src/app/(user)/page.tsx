@@ -3,15 +3,20 @@ import {useState} from 'react';
 import '@/app/page.css';
 
 import type {PostItem} from '@/types';
+// import type {PostItem} from '@/types';
 
-import PostCard from '@/components/PostCard';
+// import PostCard from '@/components/PostCard';
 
 import StartReadingButton from '@/components/Button/StartReadingButton';
 
-import {MdOutlineArrowForwardIos} from 'react-icons/md';
-import {getUsers} from '@/lib/users';
+// import {MdOutlineArrowForwardIos} from 'react-icons/md';
+// import {getUsers} from '@/lib/users';
+import {getSortedArticles} from '@/lib/articles';
 
-export default function Home() {
+export default async function Home() {
+    const sortedArticles = await getSortedArticles();
+    console.log('SortedArticles: ', sortedArticles);
+
     return (
         <main>
             {/* Welcome section (Mobile) */}

@@ -14,8 +14,8 @@ export async function GET(request: Request) {
     const TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
 
     const {searchParams} = new URL(request.url);
-    const email = searchParams.get('email');
-    const accountEmail = searchParams.get('email')?.split('/').at(-1);
+    const slug = searchParams.get('slug');
+    const postSlug = searchParams.get('slug')?.split('/').at(-1);
 
     if (!TABLE_NAME) {
         return NextResponse.json(
@@ -24,14 +24,37 @@ export async function GET(request: Request) {
         );
     }
 
-    if (accountEmail) {
+    if (postSlug) {
+        const params = {
+            TableName: TABLE_NAME,
+            FilterExpression: 'email = :emailValue',
+            ExpressionAttributeValues: {
+                ':emailValue': {S: 'Yalovechik2012@gmail.com'}, // Wrap the value in `{ S: ... }` to indicate it's a string type in DynamoDB
+            },
+        };
+
+        try {
+            const response = await fetch('/api/user');
+            const data = await response.json();
+
+            console.log('DATA: ', data);
+        } catch (err) {
+            console.error('Failed to fetch data from the database: ', err);
+            return NextResponse.json(err, {status: 500});
+        }
+
         const command = new GetCommand({
             TableName: TABLE_NAME,
             Key: {
-                email: accountEmail,
-                slug: 'author-account',
+                email: 'Yalovechik2012@gmail.com',
+                slug: postSlug,
             },
         });
+
+        // const command = new ScanCommand(params);
+
+        const result = await dbClient.send(command);
+        return NextResponse.json(result, {status: 201});
 
         try {
             const response = await docClient.send(command);
@@ -48,31 +71,18 @@ export async function GET(request: Request) {
             return NextResponse.json(err, {status: 500});
         }
     } else {
-        const params = {
-            TableName: TABLE_NAME,
-            FilterExpression: 'slug = :slugValue',
-            ExpressionAttributeValues: {
-                ':slugValue': {S: 'author-account'}, // Wrap the value in `{ S: ... }` to indicate it's a string type in DynamoDB
-            },
-        };
-
         try {
+            const params = {
+                TableName: TABLE_NAME,
+                FilterExpression: 'slug = :slugValue',
+                ExpressionAttributeValues: {
+                    ':slugValue': {S: 'author-account'}, // Wrap the value in `{ S: ... }` to indicate it's a string type in DynamoDB
+                },
+            };
             const command = new ScanCommand(params);
+
             const result = await dbClient.send(command);
-
-            const emailAddresses: string[] = [];
-
-            if (result.Items) {
-                // Iterate over the items and extract the email addresses
-                result.Items.forEach(item => {
-                    // Check if the email field exists and extract the value
-                    if (item.email && item.email.S) {
-                        emailAddresses.push(item.email.S); // Push the email string to the array
-                    }
-                });
-            }
-
-            return NextResponse.json(emailAddresses, {status: 201});
+            return NextResponse.json(result, {status: 201});
         } catch (err) {
             return NextResponse.json(err, {
                 status: 500,

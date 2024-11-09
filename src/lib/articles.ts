@@ -1,14 +1,10 @@
-import mongoose from 'mongoose';
-
 import matter from 'gray-matter';
 import path from 'path';
 import moment from 'moment';
 import {remark} from 'remark';
 import html from 'remark-html';
 
-import {useEffect, useState} from 'react';
-
-import {DynamoDB} from '@aws-sdk/client-dynamodb';
+import {DynamoDB, QueryCommand} from '@aws-sdk/client-dynamodb';
 import {
     DynamoDBDocumentClient,
     GetCommand,
@@ -38,68 +34,96 @@ const dbClient = new DynamoDB({
 const docClient = DynamoDBDocumentClient.from(dbClient);
 
 // const articlesDirectory = path.join(process.cwd(), 'src/articles');
+const transformPostData = (data: any[]) => {
+    const post = data.map(post => ({
+        date: post.date?.S,
+        imageUrl: post.imageUrl?.S,
+        modifyDate: post.modifyDate?.S,
+        slug: post.slug?.S,
+        readTime: parseInt(post.readTime?.N || '0'), // Parse number, default to 0 if not present
+        viewsCount: parseInt(post.viewsCount?.N || '0'), // Parse number, default to 0 if not present
+        description: post.description?.S,
+        email: post.email?.S,
+        title: post.title?.S,
+    }));
 
-export const getSortedArticles = (): PostItem[] => {
-    const [fileNames, setFileNames] = useState([]);
-    const [content, setContent] = useState({});
+    return post;
+};
 
-    useEffect(() => {
-        const fetchFileNames = async () => {
-            try {
-                const response = await fetch('/api/user');
-                const data = await response.json();
+export const getSortedArticles = async () => {
+    let authorEmails: string[] = [];
 
-                if (data.files && data.files.length) {
-                    const keys = data.files.map(({file}: any) => file.Key);
-                    setFileNames(keys);
-                }
-            } catch (err) {
-                console.error('Error fetching S3 files list: ', err);
+    const baseUrl =
+        typeof window === 'undefined'
+            ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
+            : '';
+
+    try {
+        const response = await fetch(`${baseUrl}/api/user`);
+        const data = await response.json();
+
+        if (data) {
+            authorEmails = data;
+        }
+    } catch (err) {
+        console.error('Error fetching S3 files list: ', err);
+    }
+
+    console.log('authorEmails: ', authorEmails);
+
+    let allPosts: any[] = [];
+
+    for (const authorEmail of authorEmails) {
+        try {
+            const params = {
+                TableName: DYNAMODB_TABLE_NAME, // Replace with your actual posts table name
+                KeyConditionExpression: 'email = :email', // Querying by slug in the GSI
+                ExpressionAttributeValues: {
+                    ':email': {S: authorEmail}, // The email value to search for
+                },
+            };
+
+            const command = new QueryCommand(params);
+            const result = await docClient.send(command);
+            const data = result.Items;
+
+            const filteredPost = data?.filter(
+                post => post.slug?.S !== 'author-account'
+            );
+
+            if (filteredPost && filteredPost.length > 0) {
+                allPosts = [...allPosts, ...filteredPost];
             }
-        };
+        } catch (err) {
+            console.error('Error fetching content: ', err);
+        }
+    }
 
-        fetchFileNames();
-    }, []);
+    const transformedPosts: any[] = [...transformPostData(allPosts)];
 
-    console.log('fileNames: ', fileNames);
+    const posts = [...transformedPosts];
 
-    useEffect(() => {
-        const fetchContent = async () => {
-            try {
-            } catch (err) {
-                console.error('Error fetching S3 content: ', err);
-            }
-        };
-
-        fetchContent();
-    }, []);
-    const allArticlesData = fileNames.map(async (post: PostItem) => {
-        const response = await fetch(`/api/s3?key=${post}`);
-        const fileContents = JSON.stringify(response);
-        console.log('Response: ', response);
-        console.log('fileContents: ', fileContents);
-
-        const matterResult = matter(fileContents);
-        console.log('MatterResult: ', matterResult);
-
-        return;
-    });
-
-    const sortedArticlesData = allArticlesData.sort((a, b) => {
+    const sortedArticlesData = posts.sort((a, b) => {
         const format = 'DD-MM-YYYY';
-        const dateOne = moment(a, format);
+        const dateOne = moment(a.date, format);
         const dateTwo = moment(b.date, format);
 
+        console.log(a);
+        console.log(b);
+
+        console.log(dateOne);
+        console.log(dateTwo);
+
         if (dateOne.isBefore(dateTwo)) {
-            return -1;
-        } else if (dateTwo.isAfter(dateOne)) {
             return 1;
+        } else if (dateTwo.isAfter(dateOne)) {
+            return -1;
         } else {
             return 0;
         }
     });
 
-    return sortedArticlesData.reverse();
+    return sortedArticlesData;
 };
 
 // export const getLatestArticle = (): PostItem => {
