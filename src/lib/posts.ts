@@ -34,23 +34,21 @@ const dbClient = new DynamoDB({
 const docClient = DynamoDBDocumentClient.from(dbClient);
 
 // const articlesDirectory = path.join(process.cwd(), 'src/articles');
-const transformPostData = (data: any[]) => {
-    const post = data.map(post => ({
-        date: post.date?.S,
-        imageUrl: post.imageUrl?.S,
-        modifyDate: post.modifyDate?.S,
-        slug: post.slug?.S,
-        readTime: parseInt(post.readTime?.N || '0'), // Parse number, default to 0 if not present
-        viewsCount: parseInt(post.viewsCount?.N || '0'), // Parse number, default to 0 if not present
-        description: post.description?.S,
+const transformPostData = (data: any[]): PostItem[] => {
+    return data.map(post => ({
         email: post.email?.S,
+        slug: post.slug?.S,
         title: post.title?.S,
+        description: post.description?.S,
+        imageUrl: post.imageUrl?.S,
+        date: post.date?.S,
+        modifyDate: post.modifyDate?.S,
+        readTime: parseInt(post.readTime?.N || '0'),
+        viewsCount: parseInt(post.viewsCount?.N || '0'),
     }));
-
-    return post;
 };
 
-export const getSortedPosts = async () => {
+export const getSortedPosts = async (): Promise<PostItem[]> => {
     let authorEmails: string[] = [];
 
     const baseUrl =
@@ -97,7 +95,7 @@ export const getSortedPosts = async () => {
         }
     }
 
-    const transformedPosts: any[] = [...transformPostData(allPosts)];
+    const transformedPosts: PostItem[] = transformPostData(allPosts);
 
     const sortedPostsData = transformedPosts.sort((a, b) => {
         const format = 'DD-MM-YYYY';
@@ -116,18 +114,33 @@ export const getSortedPosts = async () => {
     return sortedPostsData;
 };
 
-// export const getLatestArticle = (): PostItem => {
-//     const sortedArticles = getSortedArticles();
-//     const latestArticle: PostItem = sortedArticles[0];
+export const getLatestPost = async (): Promise<PostItem> => {
+    const sortedPosts = await getSortedPosts();
+    const latestArticle: PostItem = sortedPosts[0];
 
-//     return latestArticle;
-// };
+    return latestArticle;
+};
 
-// export const getRecentArticles = (): PostItem[] => {
-//     const reversedSortedArticles = getSortedArticles();
+export const getRecentPosts = async (): Promise<PostItem[]> => {
+    const sortedPosts = await getSortedPosts();
 
-//     return reversedSortedArticles.slice(0, 9);
-// };
+    const recentPosts: PostItem[] = sortedPosts.slice(0, 9);
+
+    return recentPosts;
+};
+
+export const getPopularPosts = async (): Promise<PostItem[]> => {
+    const sortedPosts = await getSortedPosts();
+
+    // Sort posts by viewsCount in descending order
+    const sortedByViews = sortedPosts
+        .filter(post => post.viewsCount !== undefined) // Filter out posts with undefined viewsCount
+        .sort((a, b) => (b.viewsCount ?? 0) - (a.viewsCount ?? 0));
+
+    const mostPopularPosts = sortedByViews.slice(0, 3); // Returs an array of 3 most popular posts by views
+    return mostPopularPosts;
+};
+
 function formatPostDate(date: Date) {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
