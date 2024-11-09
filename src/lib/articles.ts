@@ -8,31 +8,36 @@ import html from 'remark-html';
 
 import {useEffect, useState} from 'react';
 
+import {DynamoDB} from '@aws-sdk/client-dynamodb';
+import {
+    DynamoDBDocumentClient,
+    GetCommand,
+    PutCommand,
+    UpdateCommand,
+} from '@aws-sdk/lib-dynamodb';
+
 import type {PostItem} from '@/types';
 import Post from '@/models/Post';
 
+const AWS_REGION = process.env.NEXT_PUBLIC_REGION;
+const DYNAMODB_TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
+const ACCESS_KEY_ID = process.env.NEXT_PUBLIC_ACCESS_KEY_ID;
+const SECRET_ACCESS_KEY = process.env.NEXT_PUBLIC_SECRET_ACCESS_KEY;
+console.log(AWS_REGION);
+
+console.log(ACCESS_KEY_ID);
+console.log(SECRET_ACCESS_KEY);
+
+const dbClient = new DynamoDB({
+    credentials: {
+        accessKeyId: ACCESS_KEY_ID!,
+        secretAccessKey: SECRET_ACCESS_KEY!,
+    },
+    region: 'eu-west-1',
+});
+const docClient = DynamoDBDocumentClient.from(dbClient);
+
 // const articlesDirectory = path.join(process.cwd(), 'src/articles');
-
-// const connectDB = async () => {
-//     try {
-//         await mongoose.connect(process.env.MONGODB_URI!);
-//         console.log('MongoDB connected to AWS Atlas');
-
-//         const collections = await mongoose.connection.db
-//             ?.listCollections()
-//             .toArray();
-//         const collectionExists = collections?.some(col => col.name === 'posts');
-
-//         if (!collectionExists) {
-//             console.log('Posts collection does not exist. Creating...');
-
-//             await Post.init();
-//             console.log('Indexes ensured on Post model');
-//         }
-//     } catch (err) {
-//         console.log('Failed to connect to MongoDB Atlas: ', err);
-//     }
-// };
 
 // export const getSortedArticles = (): PostItem[] => {
 //     connectDB();
@@ -111,53 +116,12 @@ import Post from '@/models/Post';
 
 //     return reversedSortedArticles.slice(0, 9);
 // };
-
-export const getArticleData = async (
-    slug: string
-): Promise<{slug: string; contentHtml: string | TrustedHTML}> => {
-    try {
-        const baseUrl =
-            typeof window === 'undefined'
-                ? process.env.NEXT_PUBLIC_API_BASE_URL ||
-                  'http://localhost:3000'
-                : '';
-
-        const response = await fetch(`${baseUrl}/api/s3?key=mdx/${slug}.mdx`);
-
-        const data = await response.json();
-
-        const fileContent = data.content.toString('utf-8');
-
-        if (!fileContent) {
-            console.error('No content found for the given key.');
-            return {slug, contentHtml: ''};
-        }
-
-        const matterResult = matter(fileContent);
-
-        const processedContent = await remark()
-            .use(html)
-            .process(matterResult.content);
-
-        const contentHtml = processedContent.toString();
-
-        return {
-            slug,
-            contentHtml,
-            // title: matterResult.data.title,
-            // description: matterResult.data.description,
-            // imageUrl: matterResult.data.imageUrl,
-            // date: moment(matterResult.data.date, 'DD-MM-YYYY').format(
-            //     'DD MMM YYYY'
-            // ),
-            // authorName: matterResult.data.authorName,
-            // readTime: matterResult.data.readTime,
-        };
-    } catch (err) {
-        console.error('Failed to fetch post from server: ', err);
-        return {slug, contentHtml: ''};
-    }
-};
+function formatPostDate(date: Date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+}
 
 export const getMDXContent = async (
     slug: string
@@ -227,5 +191,108 @@ export const saveMDXContent = async (
         return slug;
     } catch (error) {
         console.error('Error:', error);
+    }
+};
+
+export const createPost = async (
+    postData: Partial<PostItem>,
+    markdown: string
+) => {
+    const {email, title, description, imageUrl} = postData;
+    let {slug} = postData;
+
+    if (!email || !title || !description) {
+        throw new Error(
+            'Missing required post data: email, slug, title, or description.'
+        );
+    }
+
+    const currentDate = new Date();
+    const formattedDate = formatPostDate(currentDate);
+
+    if (!slug) {
+        if (title) {
+            slug = `${title
+                .replace(/[^a-zA-Z0-9 ]/g, '')
+                .replaceAll(' ', '-')
+                .toLowerCase()}`;
+        } else {
+            throw new Error('Missing required slug identifier.');
+        }
+    }
+
+    const savedPostSlug = saveMDXContent(title, markdown, slug);
+
+    const newPost: PostItem = {
+        email,
+        slug,
+        title,
+        description,
+        imageUrl: imageUrl ?? '', // Optional imageUrl, default to an empty string if not provided
+        date: formattedDate, // Automatically generated date
+        modifyDate: formattedDate, // Automatically generated modifyDate
+        readTime: 0, // Default readTime
+        viewsCount: 0, // Default viewsCount
+    };
+
+    const command = new PutCommand({
+        TableName: DYNAMODB_TABLE_NAME,
+        Item: newPost,
+    });
+
+    try {
+        const response = await docClient.send(command);
+        console.log('RESPONSE: ', response);
+        console.log('Post successfully uploaded:', newPost);
+        return savedPostSlug;
+    } catch (error) {
+        console.error('Failed to upload post:', error);
+    }
+};
+
+export const getArticleData = async (
+    slug: string
+): Promise<{slug: string; contentHtml: string | TrustedHTML}> => {
+    try {
+        const baseUrl =
+            typeof window === 'undefined'
+                ? process.env.NEXT_PUBLIC_API_BASE_URL ||
+                  'http://localhost:3000'
+                : '';
+
+        const response = await fetch(`${baseUrl}/api/s3?key=mdx/${slug}.mdx`);
+
+        const data = await response.json();
+
+        const fileContent = data.content.toString('utf-8');
+
+        if (!fileContent) {
+            console.error('No content found for the given key.');
+            return {slug, contentHtml: ''};
+        }
+
+        const matterResult = matter(fileContent);
+
+        const processedContent = await remark()
+            .use(html)
+            .process(matterResult.content);
+
+        const contentHtml = processedContent.toString();
+
+        return {
+            slug,
+            contentHtml,
+            // title: matterResult.data.title,
+            // description: matterResult.data.description,
+            // imageUrl: matterResult.data.imageUrl,
+            // date: moment(matterResult.data.date, 'DD-MM-YYYY').format(
+            //     'DD MMM YYYY'
+            // ),
+            // authorName: matterResult.data.authorName,
+            // readTime: matterResult.data.readTime,
+        };
+    } catch (err) {
+        console.error('Failed to fetch post from server: ', err);
+        return {slug, contentHtml: ''};
     }
 };

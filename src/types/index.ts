@@ -4,8 +4,8 @@ export type PostItem = {
     title: string;
     description: string;
     imageUrl?: string;
-    date: string;
-    modifyDate: string;
-    readTime: number;
-    viewsCount: number;
+    date?: string;
+    modifyDate?: string;
+    readTime?: number;
+    viewsCount?: number;
 };

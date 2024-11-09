@@ -49,7 +49,7 @@ import {ChangeEvent, FC, FormEvent, useRef, useState} from 'react';
 import PostCard from '@/components/PostCard';
 import {PostItem} from '@/types';
 
-import {saveMDXContent} from '@/lib/articles';
+import {createPost, saveMDXContent} from '@/lib/articles';
 import React from 'react';
 
 interface EditorProps {
@@ -67,14 +67,10 @@ const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
 
     const Post: PostItem = {
         email: authorEmail,
-        slug: 'test-post',
+        slug: slug ? slug : '',
         title: postTitle,
         description: description,
         imageUrl: imageUrl,
-        date: '07-11-2024',
-        modifyDate: '07-11-2024',
-        readTime: 5,
-        viewsCount: 10,
     };
 
     const router = useRouter();
@@ -85,17 +81,10 @@ const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
 
     const handleSave = async () => {
         if (slug) {
-            const redirectSlug = await saveMDXContent(
-                postTitle,
-                currentMarkdown,
-                slug
-            );
+            const redirectSlug = await createPost(Post, currentMarkdown);
             return router.push(`/${redirectSlug}`);
         } else {
-            const redirectSlug = await saveMDXContent(
-                postTitle,
-                currentMarkdown
-            );
+            const redirectSlug = await createPost(Post, currentMarkdown);
             return router.push(`/${redirectSlug}`);
         }
     };
