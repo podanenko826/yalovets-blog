@@ -4,6 +4,7 @@ import moment from 'moment';
 import styles from './PostCard.module.css';
 
 import type {PostItem} from '@/types';
+import {getUsers} from '@/lib/users';
 
 type PostCardProps = {
     post: PostItem;
@@ -12,7 +13,13 @@ type PostCardProps = {
     setValue?: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const PostCard = ({post, style, index, setValue}: PostCardProps) => {
+const PostCard = async ({post, style, index, setValue}: PostCardProps) => {
+    const authorData = await getUsers(post.email);
+
+    if (!authorData) {
+        return [];
+    }
+
     return style === 'massive' ? (
         <div className={styles.latest_post}>
             <div className="container">
@@ -47,14 +54,14 @@ const PostCard = ({post, style, index, setValue}: PostCardProps) => {
                             <div className="align-content-center">
                                 <img
                                     className={`${styles.pfp} img-fluid`}
-                                    src="/img/ivan-pfp.png"
+                                    src={authorData.profileImageUrl}
                                     alt="pfp"
                                 />
                             </div>
 
                             <div className={styles.profile_info__details}>
                                 <p className={styles.profile_info__text}>
-                                    Ivan Yalovets
+                                    {authorData.fullName}
                                 </p>
                                 <p className={styles.profile_info__text}>
                                     {moment(post.date, 'DD-MM-YYYY').format(
@@ -112,13 +119,15 @@ const PostCard = ({post, style, index, setValue}: PostCardProps) => {
                 <div className="align-content-center">
                     <img
                         className={`${styles.pfp} img-fluid`}
-                        src="/img/ivan-pfp.png"
+                        src={authorData.profileImageUrl}
                         alt="pfp"
                     />
                 </div>
 
                 <div className={styles.profile_info__details}>
-                    <p className={styles.profile_info__text}>Ivan Yalovets</p>
+                    <p className={styles.profile_info__text}>
+                        {authorData.fullName}
+                    </p>
                     <p className={styles.profile_info__text}>
                         {moment(post.date, 'DD-MM-YYYY').format('D MMM')}•{' '}
                         {post.readTime} min read
@@ -162,13 +171,15 @@ const PostCard = ({post, style, index, setValue}: PostCardProps) => {
                 <div className="align-content-center">
                     <img
                         className={`${styles.pfp} img-fluid`}
-                        src="/img/ivan-pfp.png"
+                        src={authorData.profileImageUrl}
                         alt="pfp"
                     />
                 </div>
 
                 <div className={styles.profile_info__details}>
-                    <p className={styles.profile_info__text}>Ivan Yalovets</p>
+                    <p className={styles.profile_info__text}>
+                        {authorData.fullName}
+                    </p>
                     <p className={styles.profile_info__text}>
                         {moment(post.date, 'DD-MM-YYYY').format('D MMM')}•{' '}
                         {post.readTime} min read
@@ -225,14 +236,14 @@ const PostCard = ({post, style, index, setValue}: PostCardProps) => {
                             <div className="align-content-center">
                                 <img
                                     className={`${styles.pfp} img-fluid`}
-                                    src="/img/ivan-pfp.png"
+                                    src={authorData.profileImageUrl}
                                     alt="pfp"
                                 />
                             </div>
 
                             <div className={styles.profile_info__details}>
                                 <p className={styles.profile_info__text}>
-                                    Ivan Yalovets
+                                    {authorData.fullName}
                                 </p>
                                 <p className={styles.profile_info__text}>
                                     {moment(post.date, 'DD-MM-YYYY').format(
@@ -282,13 +293,15 @@ const PostCard = ({post, style, index, setValue}: PostCardProps) => {
                 <div className="align-content-center">
                     <img
                         className={`${styles.pfp} img-fluid`}
-                        src="/img/ivan-pfp.png"
+                        src={authorData.profileImageUrl}
                         alt="pfp"
                     />
                 </div>
 
                 <div className={styles.profile_info__details}>
-                    <p className={styles.profile_info__text}>Ivan Yalovets</p>
+                    <p className={styles.profile_info__text}>
+                        {authorData.fullName}
+                    </p>
                     <p className={styles.profile_info__text}>
                         {moment(post.date, 'DD-MM-YYYY').format('D MMM')}•{' '}
                         {post.readTime} min read
