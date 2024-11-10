@@ -44,25 +44,38 @@ import {
 } from '@mdxeditor/editor';
 import '@mdxeditor/editor/style.css';
 
-import {ChangeEvent, FC, FormEvent, useRef, useState} from 'react';
+import {ChangeEvent, FC, FormEvent, Suspense, useRef, useState} from 'react';
 
 import PostCard from '@/components/PostCard';
-import {PostItem} from '@/types';
+import {AuthorItem, PostItem} from '@/types';
 
 import {createPost} from '@/lib/posts';
 import React from 'react';
+import moment from 'moment';
 
 interface EditorProps {
     markdown: string;
     slug?: string;
+    postData?: PostItem;
+    authorData: AuthorItem[];
     editorRef?: React.MutableRefObject<MDXEditorMethods | null>;
 }
 
-const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
+const Editor: FC<EditorProps> = ({
+    markdown,
+    slug,
+    postData,
+    authorData,
+    editorRef,
+}) => {
     const [currentMarkdown, setCurrentMarkdown] = useState(markdown); // Track current markdown
-    const [postTitle, setPostTitle] = useState('Test Post');
-    const [description, setDescription] = useState('A Test Description');
-    const [imageUrl, setImageUrl] = useState('/img/AWS-beginning.png');
+    const [postTitle, setPostTitle] = useState(postData ? postData.title : '');
+    const [description, setDescription] = useState(
+        postData ? postData.description : 'A Test Description'
+    );
+    const [imageUrl, setImageUrl] = useState(
+        postData ? postData.imageUrl : '/img/AWS-beginning.png'
+    );
     const authorEmail = 'podanenko826@icloud.com';
 
     const Post: PostItem = {
@@ -101,11 +114,20 @@ const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
                         className="heading-xlarge w-100 col-md-11 col-lg-12 text-center align-content-center"
                         id="col-heading-1"
                         disabled={slug ? true : false}
-                        placeholder={slug ? slug : 'Enter the post title'}
+                        placeholder={
+                            postData ? postData.title : 'Enter the post title'
+                        }
                         onChange={e => handlePostTitleChange(e.target.value)}
                         value={postTitle}
                     />
-                    <p>Ivan Yalovets • 2 Nov 2024</p>
+                    <p>
+                        {authorData[1].fullName} •{' '}
+                        {postData
+                            ? moment(postData.date, 'DD-MM-YYYY').format(
+                                  'D MMM'
+                              )
+                            : moment(Date.now()).format('D MMM')}
+                    </p>
                 </div>
             </div>
             <div className="row">
@@ -214,11 +236,14 @@ const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
                 <div className="row">
                     <div className="container">
                         <h1 className="text-center py-3">Preview</h1>
-                        <PostCard
-                            post={Post}
-                            style="preview"
-                            setValue={setDescription}
-                        />
+                        <Suspense fallback={null}>
+                            <PostCard
+                                post={Post}
+                                authorsData={authorData}
+                                style="preview"
+                                setValue={setDescription}
+                            />
+                        </Suspense>
                     </div>
 
                     <div className="col-12 d-flex container justify-content-center py-4">

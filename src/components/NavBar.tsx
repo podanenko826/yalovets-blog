@@ -1,5 +1,6 @@
 'use client';
 import React, {useState} from 'react';
+import Link from 'next/link';
 
 import styles from './NavBar.module.css';
 
@@ -54,18 +55,18 @@ const NavBar = () => {
             <header className="container">
                 <div className="navbar navbar-expand-lg md-nav row d-none d-lg-flex py-0">
                     <div className="container-sm col-3 py-0">
-                        <a href="/">
+                        <Link href="/">
                             <h4
                                 className={`${styles.navbar_brand} col-primary`}>
                                 Yalovets Blog
                                 <FaCoffee className={styles.navLogo_icon} />
                             </h4>
-                        </a>
+                        </Link>
                     </div>
                     <div
                         className={`${styles.navbar_nav} navbar navbar-collapse container-lg col-9 py-0`}>
                         {navigation.map(item => (
-                            <a
+                            <Link
                                 key={item.id}
                                 href={item.href}
                                 className={styles.nav_link}
@@ -75,7 +76,7 @@ const NavBar = () => {
                                         : ''
                                 }`}>
                                 {item.label}
-                            </a>
+                            </Link>
                         ))}
                         <button className="btn-outlined">Subscribe</button>
                     </div>
@@ -100,9 +101,9 @@ const NavBar = () => {
                         </button>
                     </div>
                     <div className="d-flex col-9 justify-content-end">
-                        <a className={styles.btn_subscribe} href="#">
+                        <Link className={styles.btn_subscribe} href="#">
                             Subscribe
-                        </a>
+                        </Link>
                     </div>
                 </div>
                 <div
@@ -111,7 +112,7 @@ const NavBar = () => {
                     }`}>
                     <div className="pt-3 d-flex flex-column">
                         {navigation.map(item => (
-                            <a
+                            <Link
                                 key={item.id}
                                 href={item.href}
                                 className={`${styles.nav_link_mobile}`}
@@ -121,7 +122,7 @@ const NavBar = () => {
                                         : 'col-primary'
                                 }>
                                 {item.label}
-                            </a>
+                            </Link>
                         ))}
                     </div>
                 </div>

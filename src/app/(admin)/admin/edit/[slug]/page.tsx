@@ -3,8 +3,9 @@ import dynamic from 'next/dynamic';
 import {Suspense} from 'react';
 import React from 'react';
 
-import {getMDXContent} from '@/lib/posts';
+import {getMDXContent, getPost} from '@/lib/posts';
 import {notFound} from 'next/navigation';
+import {getUsers} from '@/lib/users';
 
 const PostEditor = dynamic(() => import('@/components/EditorComponent'), {
     ssr: false,
@@ -15,11 +16,19 @@ const EditPage = async ({params}: {params: {slug: string}}) => {
 
     const data = await getMDXContent(slug);
 
+    const postData = await getPost(slug);
+    const authorData = await getUsers();
+
     return (
         <div className="container-fluid mt-3">
             <div className="container">
                 <Suspense fallback={null}>
-                    <PostEditor markdown={data.markdown} slug={params.slug} />
+                    <PostEditor
+                        markdown={data.markdown}
+                        slug={params.slug}
+                        postData={postData}
+                        authorData={authorData}
+                    />
                 </Suspense>
             </div>
         </div>

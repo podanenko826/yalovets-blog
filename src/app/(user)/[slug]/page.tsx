@@ -1,5 +1,3 @@
-// 'use client';
-
 import dynamic from 'next/dynamic';
 import moment from 'moment';
 import {MdEmail} from 'react-icons/md';

@@ -2,7 +2,7 @@ import * as React from 'react';
 import {useState} from 'react';
 import '@/app/page.css';
 
-import type {PostItem} from '@/types';
+import type {AuthorItem, PostItem} from '@/types';
 
 import PostCard from '@/components/PostCard';
 
@@ -17,6 +17,8 @@ export default async function Home() {
     const recentPosts: PostItem[] = await getRecentPosts();
     const latestPost: PostItem = await getLatestPost();
     const popularPosts: PostItem[] = await getPopularPosts();
+
+    const authorData: AuthorItem[] = await getUsers();
 
     return (
         <main>
@@ -116,7 +118,11 @@ export default async function Home() {
 
             {/* Latest post section */}
             <div className="container-fluid posts p-0" id="posts">
-                <PostCard post={latestPost} style="massive" />
+                <PostCard
+                    post={latestPost}
+                    authorsData={authorData}
+                    style="massive"
+                />
             </div>
 
             {/* Recent posts */}
@@ -145,6 +151,7 @@ export default async function Home() {
                     {recentPosts.map((post, index) => (
                         <PostCard
                             post={post}
+                            authorsData={authorData}
                             index={index}
                             key={index}
                             style="standard"
@@ -174,6 +181,7 @@ export default async function Home() {
                     {popularPosts.map((post, index) => (
                         <PostCard
                             post={post}
+                            authorsData={authorData}
                             index={index}
                             key={index}
                             style="standard"

@@ -1,24 +1,35 @@
 import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 import moment from 'moment';
 
 import styles from './PostCard.module.css';
 
-import type {PostItem} from '@/types';
+import type {AuthorItem, PostItem} from '@/types';
 import {getUsers} from '@/lib/users';
 
 type PostCardProps = {
     post: PostItem;
+    authorsData: AuthorItem[];
     style: 'massive' | 'full' | 'preview' | 'admin' | 'standard';
     index?: number | 1;
     setValue?: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const PostCard = async ({post, style, index, setValue}: PostCardProps) => {
-    const authorData = await getUsers(post.email);
-
-    if (!authorData) {
+const PostCard = async ({
+    post,
+    authorsData,
+    style,
+    index,
+    setValue,
+}: PostCardProps) => {
+    if (!authorsData) {
         return [];
     }
+
+    const author: AuthorItem = authorsData.find(
+        author => author.email === post.email
+    ) as AuthorItem;
 
     return style === 'massive' ? (
         <div className={styles.latest_post}>
@@ -26,7 +37,7 @@ const PostCard = async ({post, style, index, setValue}: PostCardProps) => {
                 <div className="row align-items-center justify-content-center">
                     {post.imageUrl && (
                         <div className="col-lg-6">
-                            <a href={`${post.slug}`}>
+                            <Link href={`${post.slug}`}>
                                 <picture
                                     className={`img-fluid ${styles.massive_img}`}>
                                     <source
@@ -38,14 +49,17 @@ const PostCard = async ({post, style, index, setValue}: PostCardProps) => {
                                         srcSet={`${post.imageUrl} 1140w, ${post.imageUrl} 2280w, ${post.imageUrl} 960w, ${post.imageUrl} 1920w`}
                                         sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                                     />
-                                    <img
+                                    <Image
                                         className={`img-fluid ${styles.massive_img}`}
                                         src={post.imageUrl}
                                         alt="Recent post teaser"
                                         title="Recent Post"
+                                        width={180}
+                                        height={354}
+                                        priority
                                     />
                                 </picture>
-                            </a>
+                            </Link>
                         </div>
                     )}
                     <div className="col-lg-5 offset-lg-1 py-3" id="latest-post">
@@ -54,14 +68,14 @@ const PostCard = async ({post, style, index, setValue}: PostCardProps) => {
                             <div className="align-content-center">
                                 <img
                                     className={`${styles.pfp} img-fluid`}
-                                    src={authorData.profileImageUrl}
+                                    src={author.profileImageUrl}
                                     alt="pfp"
                                 />
                             </div>
 
                             <div className={styles.profile_info__details}>
                                 <p className={styles.profile_info__text}>
-                                    {authorData.fullName}
+                                    {author.fullName}
                                 </p>
                                 <p className={styles.profile_info__text}>
                                     {moment(post.date, 'DD-MM-YYYY').format(
@@ -71,21 +85,21 @@ const PostCard = async ({post, style, index, setValue}: PostCardProps) => {
                                 </p>
                             </div>
                         </div>
-                        <a href={`/${post.slug}`}>
+                        <Link href={`/${post.slug}`}>
                             <h1 className={styles.heading}>{post.title}</h1>
                             <p className={`${styles.description} pb-2`}>
                                 {post.description}
                             </p>
 
                             <button className="btn-filled">Read on</button>
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>
         </div>
     ) : style === 'full' ? (
         <div className="col-12 col-md-6" key={index}>
-            <a href={`/${post.slug}`}>
+            <Link href={`/${post.slug}`}>
                 {post.imageUrl && (
                     <div className={styles.image}>
                         <picture className="img-fluid full-image">
@@ -98,11 +112,14 @@ const PostCard = async ({post, style, index, setValue}: PostCardProps) => {
                                 srcSet={`${post.imageUrl} 1140w, ${post.imageUrl} 2280w, ${post.imageUrl} 960w, ${post.imageUrl} 1920w`}
                                 sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                             />
-                            <img
+                            <Image
                                 className="img-fluid full-image"
                                 src={post.imageUrl}
                                 alt={post.title}
                                 title={post.title}
+                                width={180}
+                                height={354}
+                                priority
                             />
                         </picture>
                     </div>
@@ -114,19 +131,19 @@ const PostCard = async ({post, style, index, setValue}: PostCardProps) => {
                     </h2>
                     <p className={styles.description}>{post.description}</p>
                 </div>
-            </a>
+            </Link>
             <div className={`${styles.profile_info} d-flex`}>
                 <div className="align-content-center">
                     <img
                         className={`${styles.pfp} img-fluid`}
-                        src={authorData.profileImageUrl}
+                        src={author.profileImageUrl}
                         alt="pfp"
                     />
                 </div>
 
                 <div className={styles.profile_info__details}>
                     <p className={styles.profile_info__text}>
-                        {authorData.fullName}
+                        {author.fullName}
                     </p>
                     <p className={styles.profile_info__text}>
                         {moment(post.date, 'DD-MM-YYYY').format('D MMM')}•{' '}
@@ -137,7 +154,7 @@ const PostCard = async ({post, style, index, setValue}: PostCardProps) => {
         </div>
     ) : style === 'admin' ? (
         <div className="col-12 col-md-6" key={index}>
-            <a href={`/${post.slug}`}>
+            <Link href={`/${post.slug}`}>
                 {post.imageUrl && (
                     <div className={styles.image}>
                         <picture className="img-fluid full-image">
@@ -150,11 +167,14 @@ const PostCard = async ({post, style, index, setValue}: PostCardProps) => {
                                 srcSet={`${post.imageUrl} 1140w, ${post.imageUrl} 2280w, ${post.imageUrl} 960w, ${post.imageUrl} 1920w`}
                                 sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                             />
-                            <img
+                            <Image
                                 className="img-fluid full-image"
                                 src={post.imageUrl}
                                 alt={post.title}
                                 title={post.title}
+                                width={180}
+                                height={354}
+                                priority
                             />
                         </picture>
                     </div>
@@ -166,19 +186,19 @@ const PostCard = async ({post, style, index, setValue}: PostCardProps) => {
                     </h2>
                     <p className={styles.description}>{post.description}</p>
                 </div>
-            </a>
+            </Link>
             <div className={`${styles.profile_info} d-flex`}>
                 <div className="align-content-center">
                     <img
                         className={`${styles.pfp} img-fluid`}
-                        src={authorData.profileImageUrl}
+                        src={author.profileImageUrl}
                         alt="pfp"
                     />
                 </div>
 
                 <div className={styles.profile_info__details}>
                     <p className={styles.profile_info__text}>
-                        {authorData.fullName}
+                        {author.fullName}
                     </p>
                     <p className={styles.profile_info__text}>
                         {moment(post.date, 'DD-MM-YYYY').format('D MMM')}•{' '}
@@ -203,11 +223,14 @@ const PostCard = async ({post, style, index, setValue}: PostCardProps) => {
                                     srcSet={`${post.imageUrl} 1140w, ${post.imageUrl} 2280w, ${post.imageUrl} 960w, ${post.imageUrl} 1920w`}
                                     sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                                 />
-                                <img
+                                <Image
                                     className="img-fluid"
                                     src={post.imageUrl}
                                     alt={post.title}
                                     title={post.title}
+                                    width={180}
+                                    height={354}
+                                    priority
                                 />
                             </picture>
                         </div>
@@ -236,14 +259,14 @@ const PostCard = async ({post, style, index, setValue}: PostCardProps) => {
                             <div className="align-content-center">
                                 <img
                                     className={`${styles.pfp} img-fluid`}
-                                    src={authorData.profileImageUrl}
+                                    src={`/${author.profileImageUrl}`}
                                     alt="pfp"
                                 />
                             </div>
 
                             <div className={styles.profile_info__details}>
                                 <p className={styles.profile_info__text}>
-                                    {authorData.fullName}
+                                    {author.fullName}
                                 </p>
                                 <p className={styles.profile_info__text}>
                                     {moment(post.date, 'DD-MM-YYYY').format(
@@ -259,7 +282,7 @@ const PostCard = async ({post, style, index, setValue}: PostCardProps) => {
         </div>
     ) : (
         <div className="col-12 col-md-4" key={index}>
-            <a href={`/${post.slug}`}>
+            <Link href={`/${post.slug}`}>
                 {post.imageUrl && (
                     <div className={styles.image}>
                         <picture className="img-fluid">
@@ -272,11 +295,14 @@ const PostCard = async ({post, style, index, setValue}: PostCardProps) => {
                                 srcSet={`${post.imageUrl} 1140w, ${post.imageUrl} 2280w, ${post.imageUrl} 960w, ${post.imageUrl} 1920w`}
                                 sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                             />
-                            <img
+                            <Image
                                 className="img-fluid"
                                 src={post.imageUrl}
                                 alt={post.title}
                                 title={post.title}
+                                width={180}
+                                height={354}
+                                priority
                             />
                         </picture>
                     </div>
@@ -288,19 +314,19 @@ const PostCard = async ({post, style, index, setValue}: PostCardProps) => {
                     </h2>
                     <p className={styles.description}>{post.description}</p>
                 </div>
-            </a>
+            </Link>
             <div className={`${styles.profile_info} d-flex`}>
                 <div className="align-content-center">
                     <img
                         className={`${styles.pfp} img-fluid`}
-                        src={authorData.profileImageUrl}
+                        src={author.profileImageUrl}
                         alt="pfp"
                     />
                 </div>
 
                 <div className={styles.profile_info__details}>
                     <p className={styles.profile_info__text}>
-                        {authorData.fullName}
+                        {author.fullName}
                     </p>
                     <p className={styles.profile_info__text}>
                         {moment(post.date, 'DD-MM-YYYY').format('D MMM')}•{' '}
