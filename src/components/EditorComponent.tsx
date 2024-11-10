@@ -49,7 +49,7 @@ import {ChangeEvent, FC, FormEvent, useRef, useState} from 'react';
 import PostCard from '@/components/PostCard';
 import {PostItem} from '@/types';
 
-import {createPost, saveMDXContent} from '@/lib/posts';
+import {createPost} from '@/lib/posts';
 import React from 'react';
 
 interface EditorProps {
@@ -63,7 +63,7 @@ const Editor: FC<EditorProps> = ({markdown, slug, editorRef}) => {
     const [postTitle, setPostTitle] = useState('Test Post');
     const [description, setDescription] = useState('A Test Description');
     const [imageUrl, setImageUrl] = useState('/img/AWS-beginning.png');
-    const authorEmail = 'Yalovechik2012@gmail.com';
+    const authorEmail = 'podanenko826@icloud.com';
 
     const Post: PostItem = {
         email: authorEmail,

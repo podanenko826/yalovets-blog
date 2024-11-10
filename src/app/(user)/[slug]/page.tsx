@@ -15,6 +15,8 @@ import {
 import {serialize} from 'next-mdx-remote/serialize';
 
 import {getPost} from '@/lib/posts';
+import {getUsers} from '@/lib/users';
+import Link from 'next/link';
 
 interface PostPageProps {
     params: {slug: string};
@@ -48,6 +50,8 @@ const PostPage: FC<PostPageProps> = async ({params}: PostPageProps) => {
         return [];
     }
 
+    const authorData = await getUsers(postData.email);
+
     return (
         <section>
             <div className="mt-5">
@@ -60,7 +64,7 @@ const PostPage: FC<PostPageProps> = async ({params}: PostPageProps) => {
                                 {postData.title}
                             </h1>
                             <p>
-                                {postData.email} •{' '}
+                                {authorData.fullName} •{' '}
                                 {moment(postData.date, 'DD-MM-YYYY').format(
                                     'D MMM YYYY'
                                 )}
@@ -69,18 +73,34 @@ const PostPage: FC<PostPageProps> = async ({params}: PostPageProps) => {
                     </div>
                     <div className="row">
                         <div className="col-12 col-sm-2 social-links">
-                            <a href="#">
-                                <MdEmail className="fs-1 p-1" />
-                            </a>
-                            <a href="#">
-                                <FaLinkedin className="fs-1 p-1" />
-                            </a>
-                            <a href="https://www.instagram.com/yalovetsvanya?igsh=MWNrbWtwa2oyODE1eQ==">
-                                <FaSquareInstagram className="fs-1 p-1" />
-                            </a>
-                            <a href="https://www.facebook.com/yalovechik">
-                                <FaFacebookF className="fs-1 p-1" />
-                            </a>
+                            {authorData.socialLinks.emailAddress && (
+                                <Link
+                                    href={authorData.socialLinks.emailAddress}
+                                    target="_blank">
+                                    <MdEmail className="fs-1 p-1" />
+                                </Link>
+                            )}
+                            {authorData.socialLinks.linkedInUrl && (
+                                <Link
+                                    href={authorData.socialLinks.linkedInUrl}
+                                    target="_blank">
+                                    <FaLinkedin className="fs-1 p-1" />
+                                </Link>
+                            )}
+                            {authorData.socialLinks.instagramUrl && (
+                                <Link
+                                    href={authorData.socialLinks.instagramUrl}
+                                    target="_blank">
+                                    <FaSquareInstagram className="fs-1 p-1" />
+                                </Link>
+                            )}
+                            {authorData.socialLinks.facebookUrl && (
+                                <Link
+                                    href={authorData.socialLinks.facebookUrl}
+                                    target="_blank">
+                                    <FaFacebookF className="fs-1 p-1" />
+                                </Link>
+                            )}
                         </div>
                         <div className="col-12 col-sm-8">
                             <article className="article">

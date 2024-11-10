@@ -103,11 +103,6 @@ export const getSortedPosts = async (): Promise<PostItem[]> => {
 export const getPost = async (slug: string): Promise<PostItem> => {
     const authorEmails: any = await getAuthorEmails();
 
-    const baseUrl =
-        typeof window === 'undefined'
-            ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
-            : '';
-
     let post: any[] = [];
 
     for (const authorEmail of authorEmails) {
