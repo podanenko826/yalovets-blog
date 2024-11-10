@@ -1,3 +1,4 @@
+import {AuthorItem, PostItem} from '@/types';
 import {DynamoDBClient, ScanCommand} from '@aws-sdk/client-dynamodb';
 import {DynamoDBDocumentClient, GetCommand} from '@aws-sdk/lib-dynamodb';
 import {NextResponse} from 'next/server';
@@ -14,7 +15,6 @@ export async function GET(request: Request) {
     const TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
 
     const {searchParams} = new URL(request.url);
-    const email = searchParams.get('email');
     const accountEmail = searchParams.get('email')?.split('/').at(-1);
 
     if (!TABLE_NAME) {
@@ -35,7 +35,6 @@ export async function GET(request: Request) {
 
         try {
             const response = await docClient.send(command);
-
             const item = response.Item;
 
             if (item === undefined) {
@@ -48,31 +47,19 @@ export async function GET(request: Request) {
             return NextResponse.json(err, {status: 500});
         }
     } else {
-        const params = {
-            TableName: TABLE_NAME,
-            FilterExpression: 'slug = :slugValue',
-            ExpressionAttributeValues: {
-                ':slugValue': {S: 'author-account'}, // Wrap the value in `{ S: ... }` to indicate it's a string type in DynamoDB
-            },
-        };
-
         try {
+            const params = {
+                TableName: TABLE_NAME,
+                FilterExpression: 'slug = :slugValue',
+                ExpressionAttributeValues: {
+                    ':slugValue': {S: 'author-account'}, // Wrap the value in `{ S: ... }` to indicate it's a string type in DynamoDB
+                },
+            };
             const command = new ScanCommand(params);
             const result = await dbClient.send(command);
+            const data = result.Items;
 
-            const emailAddresses: string[] = [];
-
-            if (result.Items) {
-                // Iterate over the items and extract the email addresses
-                result.Items.forEach(item => {
-                    // Check if the email field exists and extract the value
-                    if (item.email && item.email.S) {
-                        emailAddresses.push(item.email.S); // Push the email string to the array
-                    }
-                });
-            }
-
-            return NextResponse.json(emailAddresses, {status: 201});
+            return NextResponse.json(data, {status: 201});
         } catch (err) {
             return NextResponse.json(err, {
                 status: 500,
@@ -80,3 +67,7 @@ export async function GET(request: Request) {
         }
     }
 }
+
+/**
+    A code to get a full object of all created authors on the database
+**/

@@ -11,6 +11,7 @@ import StartReadingButton from '@/components/Button/StartReadingButton';
 // import {MdOutlineArrowForwardIos} from 'react-icons/md';
 // import {getUsers} from '@/lib/users';
 import {getLatestPost, getPopularPosts, getRecentPosts} from '@/lib/posts';
+import {getAuthorEmails, getUsers} from '@/lib/users';
 
 export default async function Home() {
     const recentPosts: PostItem[] = await getRecentPosts();

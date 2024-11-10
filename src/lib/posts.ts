@@ -12,15 +12,12 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 
 import type {PostItem} from '@/types';
+import {getAuthorEmails} from './users';
 
 const AWS_REGION = process.env.NEXT_PUBLIC_REGION;
 const DYNAMODB_TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
 const ACCESS_KEY_ID = process.env.NEXT_PUBLIC_ACCESS_KEY_ID;
 const SECRET_ACCESS_KEY = process.env.NEXT_PUBLIC_SECRET_ACCESS_KEY;
-console.log(AWS_REGION);
-
-console.log(ACCESS_KEY_ID);
-console.log(SECRET_ACCESS_KEY);
 
 const dbClient = new DynamoDB({
     credentials: {
@@ -31,8 +28,7 @@ const dbClient = new DynamoDB({
 });
 const docClient = DynamoDBDocumentClient.from(dbClient);
 
-// const articlesDirectory = path.join(process.cwd(), 'src/articles');
-const transformPostData = (data: any[]): PostItem[] => {
+function transformPostData(data: any[]): PostItem[] {
     return data.map(post => ({
         email: post.email?.S,
         slug: post.slug?.S,
@@ -44,26 +40,19 @@ const transformPostData = (data: any[]): PostItem[] => {
         readTime: parseInt(post.readTime?.N || '0'),
         viewsCount: parseInt(post.viewsCount?.N || '0'),
     }));
-};
+}
 
 export const getSortedPosts = async (): Promise<PostItem[]> => {
-    let authorEmails: string[] = [];
+    const authorEmails: any = await getAuthorEmails();
+
+    if (!authorEmails) {
+        return [];
+    }
 
     const baseUrl =
         typeof window === 'undefined'
             ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
             : '';
-
-    try {
-        const response = await fetch(`${baseUrl}/api/user`);
-        const data = await response.json();
-
-        if (data) {
-            authorEmails = data;
-        }
-    } catch (err) {
-        console.error('Error fetching authors list: ', err);
-    }
 
     let allPosts: any[] = [];
 
@@ -93,9 +82,9 @@ export const getSortedPosts = async (): Promise<PostItem[]> => {
         }
     }
 
-    const transformedPosts: PostItem[] = transformPostData(allPosts);
+    const transformedPostData = transformPostData(allPosts);
 
-    const sortedPostsData = transformedPosts.sort((a, b) => {
+    const sortedPostsData = transformedPostData.sort((a, b) => {
         const format = 'DD-MM-YYYY';
         const dateOne = moment(a.date, format);
         const dateTwo = moment(b.date, format);
@@ -108,28 +97,16 @@ export const getSortedPosts = async (): Promise<PostItem[]> => {
             return 0;
         }
     });
-
     return sortedPostsData;
 };
 
 export const getPost = async (slug: string): Promise<PostItem> => {
-    let authorEmails: string[] = [];
+    const authorEmails: any = await getAuthorEmails();
 
     const baseUrl =
         typeof window === 'undefined'
             ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
             : '';
-
-    try {
-        const response = await fetch(`${baseUrl}/api/user`);
-        const data = await response.json();
-
-        if (data) {
-            authorEmails = data;
-        }
-    } catch (err) {
-        console.error('Error fetching authors list: ', err);
-    }
 
     let post: any[] = [];
 
@@ -156,9 +133,9 @@ export const getPost = async (slug: string): Promise<PostItem> => {
         }
     }
 
-    const transformedPost: PostItem[] = transformPostData(post);
+    const transformedPostData = transformPostData(post);
 
-    return transformedPost[0];
+    return transformedPostData[0];
 };
 
 export const getLatestPost = async (): Promise<PostItem> => {
@@ -259,7 +236,6 @@ export const saveMDXContent = async (
         }
 
         const data = await response.text();
-        console.log(data);
         return slug;
     } catch (error) {
         console.error('Error:', error);
@@ -314,7 +290,6 @@ export const createPost = async (
 
     try {
         const response = await docClient.send(command);
-        console.log('RESPONSE: ', response);
         console.log('Post successfully uploaded:', newPost);
         return savedPostSlug;
     } catch (error) {
