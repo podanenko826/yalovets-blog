@@ -10,27 +10,44 @@ function transformAuthorData(data: any[]): AuthorItem[] {
         fullName: author.fullName?.S,
         profileImageUrl: author.profileImageUrl?.S,
         socialLinks: {
-            emailAddress: author.socialLinks.M.emailAddress?.S,
-            facebookUrl: author.socialLinks.M.facebookUrl?.S,
-            instagramUrl: author.socialLinks.M.instagramUrl?.S,
-            linkedInUrl: author.socialLinks.M.linkedInUrl?.S,
+            emailAddress: author.socialLinks?.M.emailAddress?.S,
+            facebookUrl: author.socialLinks?.M.facebookUrl?.S,
+            instagramUrl: author.socialLinks?.M.instagramUrl?.S,
+            linkedInUrl: author.socialLinks?.M.linkedInUrl?.S,
         },
     }));
 }
 
-export const getUsers = async (email: string) => {
+export const getUsers = async (email?: string) => {
     const baseUrl =
         typeof window === 'undefined'
             ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
             : '';
 
     try {
-        const response = await fetch(`${baseUrl}/api/user?email=${email}`);
-        const data = await response.json();
+        if (email) {
+            const response = await fetch(`${baseUrl}/api/user?email=${email}`);
+            const data = await response.json();
+            let user: any = {};
 
-        return data.Item;
+            if (data) {
+                user = data;
+            }
+            return user;
+        } else {
+            const response = await fetch(`${baseUrl}/api/user`);
+            const data = await response.json();
+            let users: any[] = [];
+
+            if (data) {
+                users = [...users, ...data];
+            }
+
+            const transformedAuthorData = transformAuthorData(users);
+            return transformedAuthorData;
+        }
     } catch (err) {
-        console.error('Failed to fetch users from the database.');
+        console.error('Failed to fetch users from the database: ', err);
         return [];
     }
 };
