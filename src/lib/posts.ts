@@ -112,6 +112,55 @@ export const getSortedPosts = async (): Promise<PostItem[]> => {
     return sortedPostsData;
 };
 
+export const getPost = async (slug: string): Promise<PostItem> => {
+    let authorEmails: string[] = [];
+
+    const baseUrl =
+        typeof window === 'undefined'
+            ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
+            : '';
+
+    try {
+        const response = await fetch(`${baseUrl}/api/user`);
+        const data = await response.json();
+
+        if (data) {
+            authorEmails = data;
+        }
+    } catch (err) {
+        console.error('Error fetching authors list: ', err);
+    }
+
+    let post: any[] = [];
+
+    for (const authorEmail of authorEmails) {
+        try {
+            const params = {
+                TableName: DYNAMODB_TABLE_NAME, // Replace with your actual posts table name
+                KeyConditionExpression: 'email = :email AND slug = :slug', // Querying by slug in the GSI
+                ExpressionAttributeValues: {
+                    ':email': {S: authorEmail}, // The email value to search for
+                    ':slug': {S: slug},
+                },
+            };
+
+            const command = new QueryCommand(params);
+            const result = await docClient.send(command);
+            const data = result.Items;
+
+            if (data && data.length > 0) {
+                post = [...post, ...data];
+            }
+        } catch (err) {
+            console.error('Error fetching content: ', err);
+        }
+    }
+
+    const transformedPost: PostItem[] = transformPostData(post);
+
+    return transformedPost[0];
+};
+
 export const getLatestPost = async (): Promise<PostItem> => {
     const sortedPosts = await getSortedPosts();
     const latestArticle: PostItem = sortedPosts[0];
