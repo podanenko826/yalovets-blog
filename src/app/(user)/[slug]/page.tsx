@@ -1,6 +1,7 @@
 // 'use client';
 
 import dynamic from 'next/dynamic';
+import moment from 'moment';
 import {MdEmail} from 'react-icons/md';
 import {FaLinkedin, FaFacebookF} from 'react-icons/fa';
 import {FaSquareInstagram} from 'react-icons/fa6';
@@ -12,6 +13,8 @@ import {
     MDXRemoteProps,
 } from 'next-mdx-remote/rsc';
 import {serialize} from 'next-mdx-remote/serialize';
+
+import {getPost} from '@/lib/posts';
 
 interface PostPageProps {
     params: {slug: string};
@@ -39,6 +42,12 @@ const PostPage: FC<PostPageProps> = async ({params}: PostPageProps) => {
         return notFound();
     }
 
+    const postData = await getPost(slug);
+
+    if (!postData) {
+        return [];
+    }
+
     return (
         <section>
             <div className="mt-5">
@@ -48,12 +57,13 @@ const PostPage: FC<PostPageProps> = async ({params}: PostPageProps) => {
                             <h1
                                 className="heading-xlarge w-100 col-md-11 col-lg-12 text-center"
                                 id="col-heading-1">
-                                {/* {articleData.title} */}
-                                {slug}
+                                {postData.title}
                             </h1>
                             <p>
-                                {/* {articleData.authorName} •{' '}
-                                    {articleData.date.toString()} */}
+                                {postData.email} •{' '}
+                                {moment(postData.date, 'DD-MM-YYYY').format(
+                                    'D MMM YYYY'
+                                )}
                             </p>
                         </div>
                     </div>
