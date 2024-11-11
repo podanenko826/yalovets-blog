@@ -239,6 +239,11 @@ button {
     height: 210px !important;
 }
 
+.preview-author-select {
+    width: max-content;
+    height: max-content;
+}
+
 @media (min-width: 576px) {
     .social-links {
         display: flex;

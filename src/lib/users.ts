@@ -44,7 +44,8 @@ export const getUsers = async (email?: string) => {
             }
 
             const transformedAuthorData = transformAuthorData(users);
-            return transformedAuthorData;
+            const authorData = transformedAuthorData.reverse();
+            return authorData;
         }
     } catch (err) {
         console.error('Failed to fetch users from the database: ', err);

@@ -52,6 +52,7 @@ import {AuthorItem, PostItem} from '@/types';
 import {createPost} from '@/lib/posts';
 import React from 'react';
 import moment from 'moment';
+import {getUsers} from '@/lib/users';
 
 interface EditorProps {
     markdown: string;
@@ -68,6 +69,11 @@ const Editor: FC<EditorProps> = ({
     authorData,
     editorRef,
 }) => {
+    const [selectedAuthor, setSelectedAuthor] = useState<AuthorItem>(
+        authorData.find(
+            author => author.email === postData?.email
+        ) as AuthorItem
+    );
     const [currentMarkdown, setCurrentMarkdown] = useState(markdown); // Track current markdown
     const [postTitle, setPostTitle] = useState(postData ? postData.title : '');
     const [description, setDescription] = useState(
@@ -76,10 +82,9 @@ const Editor: FC<EditorProps> = ({
     const [imageUrl, setImageUrl] = useState(
         postData ? postData.imageUrl : '/img/AWS-beginning.png'
     );
-    const authorEmail = 'podanenko826@icloud.com';
 
     const Post: PostItem = {
-        email: authorEmail,
+        email: selectedAuthor?.email || '',
         slug: slug ? slug : '',
         title: postTitle,
         description: description,
@@ -90,6 +95,14 @@ const Editor: FC<EditorProps> = ({
 
     const handlePostTitleChange = (e: string) => {
         setPostTitle(e);
+    };
+
+    const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedAuthorEmail = event.target.value;
+        const author = authorData.find(
+            a => a.email === selectedAuthorEmail
+        ) as AuthorItem;
+        setSelectedAuthor(author); // Update the state with the selected author
     };
 
     const handleSave = async () => {
@@ -120,14 +133,30 @@ const Editor: FC<EditorProps> = ({
                         onChange={e => handlePostTitleChange(e.target.value)}
                         value={postTitle}
                     />
-                    <p>
-                        {authorData[1].fullName} •{' '}
-                        {postData
-                            ? moment(postData.date, 'DD-MM-YYYY').format(
-                                  'D MMM'
-                              )
-                            : moment(Date.now()).format('D MMM')}
-                    </p>
+                    <div className="d-flex justify-content-center align-items-center gap-2 mr-5">
+                        <select
+                            className="form-select preview-author-select"
+                            aria-label="Default select example"
+                            onChange={handleChange}>
+                            {authorData.map(author => (
+                                <option
+                                    key={author.email}
+                                    value={author.email}
+                                    selected={
+                                        author.email === selectedAuthor.email
+                                    }>
+                                    {author.fullName}
+                                </option>
+                            ))}
+                        </select>
+                        <p className="m-0">
+                            {postData
+                                ? moment(postData.date, 'DD-MM-YYYY').format(
+                                      'DD MMM YYYY'
+                                  )
+                                : moment(Date.now()).format('DD MMM YYYY')}
+                        </p>
+                    </div>
                 </div>
             </div>
             <div className="row">
@@ -236,12 +265,13 @@ const Editor: FC<EditorProps> = ({
                 <div className="row">
                     <div className="container">
                         <h1 className="text-center py-3">Preview</h1>
-                        <Suspense fallback={null}>
+                        <Suspense fallback={<p>Loading preview...</p>}>
                             <PostCard
                                 post={Post}
-                                authorsData={authorData}
+                                authorData={selectedAuthor}
                                 style="preview"
-                                setValue={setDescription}
+                                description={description}
+                                onDescriptionChange={setDescription}
                             />
                         </Suspense>
                     </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Suspense, useState} from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import moment from 'moment';
@@ -10,26 +10,24 @@ import {getUsers} from '@/lib/users';
 
 type PostCardProps = {
     post: PostItem;
-    authorsData: AuthorItem[];
+    authorData: AuthorItem;
     style: 'massive' | 'full' | 'preview' | 'admin' | 'standard';
     index?: number | 1;
-    setValue?: React.Dispatch<React.SetStateAction<string>>;
+    description?: string;
+    onDescriptionChange?: (desc: string) => void;
 };
 
 const PostCard = async ({
     post,
-    authorsData,
+    authorData,
     style,
     index,
-    setValue,
+    description,
+    onDescriptionChange,
 }: PostCardProps) => {
-    if (!authorsData) {
+    if (!authorData) {
         return [];
     }
-
-    const author: AuthorItem = authorsData.find(
-        author => author.email === post.email
-    ) as AuthorItem;
 
     return style === 'massive' ? (
         <div className={styles.latest_post}>
@@ -68,14 +66,14 @@ const PostCard = async ({
                             <div className="align-content-center">
                                 <img
                                     className={`${styles.pfp} img-fluid`}
-                                    src={author.profileImageUrl}
+                                    src={authorData.profileImageUrl}
                                     alt="pfp"
                                 />
                             </div>
 
                             <div className={styles.profile_info__details}>
                                 <p className={styles.profile_info__text}>
-                                    {author.fullName}
+                                    {authorData.fullName}
                                 </p>
                                 <p className={styles.profile_info__text}>
                                     {moment(post.date, 'DD-MM-YYYY').format(
@@ -136,14 +134,14 @@ const PostCard = async ({
                 <div className="align-content-center">
                     <img
                         className={`${styles.pfp} img-fluid`}
-                        src={author.profileImageUrl}
+                        src={authorData.profileImageUrl}
                         alt="pfp"
                     />
                 </div>
 
                 <div className={styles.profile_info__details}>
                     <p className={styles.profile_info__text}>
-                        {author.fullName}
+                        {authorData.fullName}
                     </p>
                     <p className={styles.profile_info__text}>
                         {moment(post.date, 'DD-MM-YYYY').format('D MMM')}•{' '}
@@ -191,14 +189,14 @@ const PostCard = async ({
                 <div className="align-content-center">
                     <img
                         className={`${styles.pfp} img-fluid`}
-                        src={author.profileImageUrl}
+                        src={authorData.profileImageUrl}
                         alt="pfp"
                     />
                 </div>
 
                 <div className={styles.profile_info__details}>
                     <p className={styles.profile_info__text}>
-                        {author.fullName}
+                        {authorData.fullName}
                     </p>
                     <p className={styles.profile_info__text}>
                         {moment(post.date, 'DD-MM-YYYY').format('D MMM')}•{' '}
@@ -239,16 +237,21 @@ const PostCard = async ({
                     <div className="col-lg-8">
                         <div className={styles.postInfo}>
                             <h2 className={styles.heading} id="col-heading-1">
-                                {post.title}
+                                {post.title || 'Enter the post title'}
                             </h2>
-                            {setValue ? (
-                                <textarea
-                                    name="description"
-                                    placeholder="Enter a post description"
-                                    onChange={e => setValue(e.target.value)}
-                                    className="w-100 subheading-small mb-2 col-heading-2"
-                                    // rows={2}
-                                />
+                            {onDescriptionChange ? (
+                                <Suspense fallback={null}>
+                                    <textarea
+                                        name="description"
+                                        placeholder="Enter the post description"
+                                        onChange={e =>
+                                            onDescriptionChange(e.target.value)
+                                        }
+                                        className="w-100 subheading-small mb-2 col-heading-2"
+                                        value={description}
+                                        // rows={2}
+                                    />
+                                </Suspense>
                             ) : (
                                 <p className={styles.description}>
                                     {post.description}
@@ -259,20 +262,18 @@ const PostCard = async ({
                             <div className="align-content-center">
                                 <img
                                     className={`${styles.pfp} img-fluid`}
-                                    src={`/${author.profileImageUrl}`}
+                                    src={`/${authorData.profileImageUrl}`}
                                     alt="pfp"
                                 />
                             </div>
 
                             <div className={styles.profile_info__details}>
                                 <p className={styles.profile_info__text}>
-                                    {author.fullName}
+                                    {authorData.fullName}
                                 </p>
                                 <p className={styles.profile_info__text}>
-                                    {moment(post.date, 'DD-MM-YYYY').format(
-                                        'D MMM'
-                                    )}{' '}
-                                    • {post.readTime} min read
+                                    {moment(post.date).format('D MMM')} •{' '}
+                                    {post.readTime} min read
                                 </p>
                             </div>
                         </div>
@@ -319,14 +320,14 @@ const PostCard = async ({
                 <div className="align-content-center">
                     <img
                         className={`${styles.pfp} img-fluid`}
-                        src={author.profileImageUrl}
+                        src={authorData.profileImageUrl}
                         alt="pfp"
                     />
                 </div>
 
                 <div className={styles.profile_info__details}>
                     <p className={styles.profile_info__text}>
-                        {author.fullName}
+                        {authorData.fullName}
                     </p>
                     <p className={styles.profile_info__text}>
                         {moment(post.date, 'DD-MM-YYYY').format('D MMM')}•{' '}

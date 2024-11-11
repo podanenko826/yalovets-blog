@@ -120,7 +120,11 @@ export default async function Home() {
             <div className="container-fluid posts p-0" id="posts">
                 <PostCard
                     post={latestPost}
-                    authorsData={authorData}
+                    authorData={
+                        authorData.find(
+                            author => author.email === latestPost.email
+                        ) as AuthorItem
+                    }
                     style="massive"
                 />
             </div>
@@ -151,7 +155,11 @@ export default async function Home() {
                     {recentPosts.map((post, index) => (
                         <PostCard
                             post={post}
-                            authorsData={authorData}
+                            authorData={
+                                authorData.find(
+                                    author => author.email === post.email
+                                ) as AuthorItem
+                            }
                             index={index}
                             key={index}
                             style="standard"
@@ -181,7 +189,11 @@ export default async function Home() {
                     {popularPosts.map((post, index) => (
                         <PostCard
                             post={post}
-                            authorsData={authorData}
+                            authorData={
+                                authorData.find(
+                                    author => author.email === post.email
+                                ) as AuthorItem
+                            }
                             index={index}
                             key={index}
                             style="standard"
