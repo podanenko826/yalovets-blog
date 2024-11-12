@@ -11,6 +11,8 @@ const PostEditor = dynamic(() => import('@/components/EditorComponent'), {
 const AddPage = async () => {
     const authorData = await getUsers();
 
+    if (!authorData) return <p>Loading...</p>;
+
     return (
         <div className="container-fluid mt-3">
             <div className="container">

@@ -44,20 +44,19 @@ import {
 } from '@mdxeditor/editor';
 import '@mdxeditor/editor/style.css';
 
-import {ChangeEvent, FC, FormEvent, Suspense, useRef, useState} from 'react';
+import {ChangeEvent, FC, FormEvent, useEffect, useRef, useState} from 'react';
 
 import PostCard from '@/components/PostCard';
-import {AuthorItem, PostItem} from '@/types';
+import {AuthorItem, PostItem, PostPreviewItem} from '@/types';
 
-import {createPost} from '@/lib/posts';
+import {createPost, saveMDXContent} from '@/lib/posts';
 import React from 'react';
 import moment from 'moment';
-import {getUsers} from '@/lib/users';
 
 interface EditorProps {
     markdown: string;
     slug?: string;
-    postData?: PostItem;
+    postsData?: PostItem[];
     authorData: AuthorItem[];
     editorRef?: React.MutableRefObject<MDXEditorMethods | null>;
 }
@@ -65,37 +64,48 @@ interface EditorProps {
 const Editor: FC<EditorProps> = ({
     markdown,
     slug,
-    postData,
+    postsData,
     authorData,
     editorRef,
 }) => {
-    const [selectedAuthor, setSelectedAuthor] = useState<AuthorItem>(
-        authorData.find(
-            author => author.email === postData?.email
-        ) as AuthorItem
-    );
     const [currentMarkdown, setCurrentMarkdown] = useState(markdown); // Track current markdown
-    const [postTitle, setPostTitle] = useState(postData ? postData.title : '');
-    const [description, setDescription] = useState(
-        postData ? postData.description : 'A Test Description'
+    if (postsData && !slug) {
+        return (
+            <p>EditorComponent error: pass the postsData to the component</p>
+        );
+    }
+    const postData = postsData?.find(post => post.slug === slug) || undefined;
+
+    const [selectedAuthor, setSelectedAuthor] = useState(
+        postData
+            ? authorData.find(author => author.email === postData.email)
+            : authorData[0]
     );
-    const [imageUrl, setImageUrl] = useState(
-        postData ? postData.imageUrl : '/img/AWS-beginning.png'
-    );
+    const [postTitle, setPostTitle] = useState('Test Post');
+    const [description, setDescription] = useState('A Test Description');
+    const [imageUrl, setImageUrl] = useState('/img/AWS-beginning.png');
+    // const authorEmail = 'Yalovechik2012@gmail.com';
 
     const Post: PostItem = {
-        email: selectedAuthor?.email || '',
+        email: selectedAuthor?.email || authorData[0].email,
         slug: slug ? slug : '',
         title: postTitle,
         description: description,
         imageUrl: imageUrl,
     };
 
-    const router = useRouter();
-
-    const handlePostTitleChange = (e: string) => {
-        setPostTitle(e);
+    const PostPreview: PostPreviewItem = {
+        title: postTitle,
+        description: description,
+        imageUrl: imageUrl,
+        date: postData?.date || moment(Date.now()).format('DD MMM YYYY'),
+        modifyDate:
+            postData?.modifyDate || moment(Date.now()).format('DD MMM YYYY'),
+        readTime: postData?.readTime || 0,
+        authorData: (selectedAuthor as AuthorItem) || authorData[0],
     };
+
+    const router = useRouter();
 
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedAuthorEmail = event.target.value;
@@ -103,6 +113,10 @@ const Editor: FC<EditorProps> = ({
             a => a.email === selectedAuthorEmail
         ) as AuthorItem;
         setSelectedAuthor(author); // Update the state with the selected author
+    };
+
+    const handlePostTitleChange = (e: string) => {
+        setPostTitle(e);
     };
 
     const handleSave = async () => {
@@ -127,33 +141,30 @@ const Editor: FC<EditorProps> = ({
                         className="heading-xlarge w-100 col-md-11 col-lg-12 text-center align-content-center"
                         id="col-heading-1"
                         disabled={slug ? true : false}
-                        placeholder={
-                            postData ? postData.title : 'Enter the post title'
-                        }
+                        placeholder={slug ? slug : 'Enter the post title'}
                         onChange={e => handlePostTitleChange(e.target.value)}
                         value={postTitle}
                     />
-                    <div className="d-flex justify-content-center align-items-center gap-2 mr-5">
+                    <div className="d-flex justify-content-center gap-1">
                         <select
-                            className="form-select preview-author-select"
+                            className="form-select preview-author-select p-0 px-2"
                             aria-label="Default select example"
+                            value={selectedAuthor?.email}
                             onChange={handleChange}>
                             {authorData.map(author => (
                                 <option
                                     key={author.email}
                                     value={author.email}
-                                    selected={
-                                        author.email === selectedAuthor.email
-                                    }>
+                                    className="w-auto p-0 m-0 text-center">
                                     {author.fullName}
                                 </option>
                             ))}
                         </select>
-                        <p className="m-0">
+                        <p className="m-0 align-content-center">•</p>
+
+                        <p className="m-0 align-content-center">
                             {postData
-                                ? moment(postData.date, 'DD-MM-YYYY').format(
-                                      'DD MMM YYYY'
-                                  )
+                                ? moment(postData.date).format('DD MMM YYYY')
                                 : moment(Date.now()).format('DD MMM YYYY')}
                         </p>
                     </div>
@@ -265,15 +276,13 @@ const Editor: FC<EditorProps> = ({
                 <div className="row">
                     <div className="container">
                         <h1 className="text-center py-3">Preview</h1>
-                        <Suspense fallback={<p>Loading preview...</p>}>
-                            <PostCard
-                                post={Post}
-                                authorData={selectedAuthor}
-                                style="preview"
-                                description={description}
-                                onDescriptionChange={setDescription}
-                            />
-                        </Suspense>
+                        <PostCard
+                            post={Post}
+                            previewData={PostPreview}
+                            authorData={selectedAuthor || authorData[0]}
+                            style="preview"
+                            setValue={setDescription}
+                        />
                     </div>
 
                     <div className="col-12 d-flex container justify-content-center py-4">

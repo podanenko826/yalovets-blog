@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 import {Suspense} from 'react';
 import React from 'react';
 
-import {getMDXContent, getPost} from '@/lib/posts';
+import {getMDXContent, getPost, getSortedPosts} from '@/lib/posts';
 import {notFound} from 'next/navigation';
 import {getUsers} from '@/lib/users';
 
@@ -16,17 +16,21 @@ const EditPage = async ({params}: {params: {slug: string}}) => {
 
     const data = await getMDXContent(slug);
 
-    const postData = await getPost(slug);
+    const postData = await getSortedPosts();
     const authorData = await getUsers();
+
+    if (!postData || !authorData) {
+        return <p>Loading...</p>;
+    }
 
     return (
         <div className="container-fluid mt-3">
             <div className="container">
-                <Suspense fallback={null}>
+                <Suspense fallback={<p>Loading...</p>}>
                     <PostEditor
                         markdown={data.markdown}
                         slug={params.slug}
-                        postData={postData}
+                        postsData={postData}
                         authorData={authorData}
                     />
                 </Suspense>

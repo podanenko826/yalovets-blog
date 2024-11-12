@@ -240,8 +240,9 @@ button {
 }
 
 .preview-author-select {
-    width: max-content;
-    height: max-content;
+    width: min-content;
+    height: min-content;
+    background-image: none;
 }
 
 @media (min-width: 576px) {
