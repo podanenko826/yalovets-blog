@@ -47,7 +47,7 @@ const PostCard = ({
                                     <Image
                                         className={`img-fluid ${styles.massive_img}`}
                                         src={post.imageUrl}
-                                        priority
+                                        priority={true}
                                         alt="Recent post teaser"
                                         title="Recent Post"
                                         width={354}
@@ -114,7 +114,7 @@ const PostCard = ({
                                 src={post.imageUrl}
                                 alt={post.title}
                                 title={post.title}
-                                priority
+                                priority={true}
                                 width={354}
                                 height={180}
                             />
@@ -171,7 +171,7 @@ const PostCard = ({
                                 src={post.imageUrl}
                                 alt={post.title}
                                 title={post.title}
-                                priority
+                                priority={true}
                                 width={354}
                                 height={180}
                             />
@@ -228,7 +228,7 @@ const PostCard = ({
                                         src={previewData.imageUrl}
                                         alt={previewData.title}
                                         title={previewData.title}
-                                        priority
+                                        priority={true}
                                         width={354}
                                         height={180}
                                     />
@@ -249,6 +249,7 @@ const PostCard = ({
                                         placeholder="Enter a post description"
                                         onChange={e => setValue(e.target.value)}
                                         className="w-100 subheading-small mb-2 col-heading-2"
+                                        value={previewData.description}
                                         // rows={2}
                                     />
                                 ) : (

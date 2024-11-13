@@ -81,23 +81,27 @@ const Editor: FC<EditorProps> = ({
             ? authorData.find(author => author.email === postData.email)
             : authorData[0]
     );
-    const [postTitle, setPostTitle] = useState('Test Post');
-    const [description, setDescription] = useState('A Test Description');
-    const [imageUrl, setImageUrl] = useState('/img/AWS-beginning.png');
-    // const authorEmail = 'Yalovechik2012@gmail.com';
+    const [postTitle, setPostTitle] = useState(postData ? postData.title : '');
+    const [description, setDescription] = useState(
+        postData ? postData.description : ''
+    );
+    const [imageUrl, setImageUrl] = useState(
+        postData ? postData.imageUrl : '/img/AWS-beginning.png'
+    );
 
     const Post: PostItem = {
         email: selectedAuthor?.email || authorData[0].email,
         slug: slug ? slug : '',
         title: postTitle,
         description: description,
+        modifyDate: moment(Date.now()).format('DD MMM YYYY'),
         imageUrl: imageUrl,
     };
 
     const PostPreview: PostPreviewItem = {
         title: postTitle,
         description: description,
-        imageUrl: imageUrl,
+        imageUrl: imageUrl as string,
         date: postData?.date || moment(Date.now()).format('DD MMM YYYY'),
         modifyDate:
             postData?.modifyDate || moment(Date.now()).format('DD MMM YYYY'),
@@ -150,6 +154,7 @@ const Editor: FC<EditorProps> = ({
                             className="form-select preview-author-select p-0 px-2"
                             aria-label="Default select example"
                             value={selectedAuthor?.email}
+                            disabled={slug ? true : false}
                             onChange={handleChange}>
                             {authorData.map(author => (
                                 <option

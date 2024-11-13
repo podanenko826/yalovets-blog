@@ -241,10 +241,10 @@ export const createPost = async (
     postData: Partial<PostItem>,
     markdown: string
 ) => {
-    const {email, title, description, imageUrl} = postData;
+    const {email, title, description, modifyDate, imageUrl} = postData;
     let {slug} = postData;
 
-    if (!email || !title || !description) {
+    if (!email || !title || !description || !modifyDate) {
         throw new Error(
             'Missing required post data: email, slug, title, or description.'
         );
@@ -252,6 +252,9 @@ export const createPost = async (
 
     const currentDate = new Date();
     const formattedDate = formatPostDate(currentDate);
+
+    const transformedModifyDate = moment(modifyDate).toDate();
+    const formattedModifyDate = formatPostDate(transformedModifyDate);
 
     if (!slug) {
         if (title) {
@@ -273,7 +276,7 @@ export const createPost = async (
         description,
         imageUrl: imageUrl ?? '', // Optional imageUrl, default to an empty string if not provided
         date: formattedDate, // Automatically generated date
-        modifyDate: formattedDate, // Automatically generated modifyDate
+        modifyDate: formattedModifyDate, // Automatically generated modifyDate
         readTime: 0, // Default readTime
         viewsCount: 0, // Default viewsCount
     };
