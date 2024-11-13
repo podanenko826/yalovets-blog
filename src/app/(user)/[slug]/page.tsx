@@ -55,7 +55,16 @@ const PostPage: FC<PostPageProps> = async ({params}: PostPageProps) => {
             <div className="mt-5">
                 <div className="container">
                     <div className="row">
-                        <div className="col-sm-8 offset-sm-2 text-center">
+                        <div className="col-md-2">
+                            <div className="h-min mt-md-2 d-flex justify-content-md-center">
+                                <Link href="/">
+                                    <button className="btn-outlined py-2 px-3">
+                                        ←Back
+                                    </button>
+                                </Link>
+                            </div>
+                        </div>
+                        <div className="col-md-8 text-center">
                             <h1
                                 className="heading-xlarge w-100 col-md-11 col-lg-12 text-center"
                                 id="col-heading-1">
