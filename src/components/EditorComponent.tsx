@@ -81,6 +81,7 @@ const Editor: FC<EditorProps> = ({
             ? authorData.find(author => author.email === postData.email)
             : authorData[0]
     );
+
     const [postTitle, setPostTitle] = useState(postData ? postData.title : '');
     const [description, setDescription] = useState(
         postData ? postData.description : ''
@@ -94,6 +95,7 @@ const Editor: FC<EditorProps> = ({
         slug: slug ? slug : '',
         title: postTitle,
         description: description,
+        date: moment(postData?.date, 'DD-MM-YYYY').format('DD MMM YYYY'),
         modifyDate: moment(Date.now()).format('DD MMM YYYY'),
         imageUrl: imageUrl,
     };
@@ -102,7 +104,9 @@ const Editor: FC<EditorProps> = ({
         title: postTitle,
         description: description,
         imageUrl: imageUrl as string,
-        date: postData?.date || moment(Date.now()).format('DD MMM YYYY'),
+        date:
+            moment(postData?.date, 'DD-MM-YYYY').format('DD MMM YYYY') ||
+            moment(Date.now()).format('DD MMM YYYY'),
         modifyDate:
             postData?.modifyDate || moment(Date.now()).format('DD MMM YYYY'),
         readTime: postData?.readTime || 0,

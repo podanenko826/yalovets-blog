@@ -90,14 +90,14 @@ export const getSortedPosts = async (): Promise<PostItem[]> => {
         const dateTwo = moment(b.date, format);
 
         if (dateOne.isBefore(dateTwo)) {
-            return 1;
-        } else if (dateTwo.isAfter(dateOne)) {
             return -1;
+        } else if (dateTwo.isAfter(dateOne)) {
+            return 1;
         } else {
             return 0;
         }
     });
-    return sortedPostsData;
+    return sortedPostsData.reverse();
 };
 
 export const getPost = async (slug: string): Promise<PostItem> => {
@@ -241,17 +241,20 @@ export const createPost = async (
     postData: Partial<PostItem>,
     markdown: string
 ) => {
-    const {email, title, description, modifyDate, imageUrl} = postData;
+    const {email, title, description, date, modifyDate, imageUrl} = postData;
     let {slug} = postData;
 
-    if (!email || !title || !description || !modifyDate) {
+    if (!email || !title || !description || !date || !modifyDate) {
         throw new Error(
-            'Missing required post data: email, slug, title, or description.'
+            'Missing required post data: email, slug, title, description, date or modifyDate.'
         );
     }
 
-    const currentDate = new Date();
-    const formattedDate = formatPostDate(currentDate);
+    const transformedDate = moment(date).toDate();
+    console.log(transformedDate);
+
+    const formattedDate = formatPostDate(transformedDate);
+    console.log(formattedDate);
 
     const transformedModifyDate = moment(modifyDate).toDate();
     const formattedModifyDate = formatPostDate(transformedModifyDate);
@@ -275,7 +278,7 @@ export const createPost = async (
         title,
         description,
         imageUrl: imageUrl ?? '', // Optional imageUrl, default to an empty string if not provided
-        date: formattedDate, // Automatically generated date
+        date: formattedDate,
         modifyDate: formattedModifyDate, // Automatically generated modifyDate
         readTime: 0, // Default readTime
         viewsCount: 0, // Default viewsCount
