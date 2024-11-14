@@ -179,7 +179,9 @@ export const getMDXContent = async (
                 : '';
 
         // Fetch the markdown content
-        const response = await fetch(`${baseUrl}/api/get-mdx?slug=${slug}`);
+        const response = await fetch(`${baseUrl}/api/mdx?slug=${slug}`, {
+            method: 'GET',
+        });
         if (!response.ok) {
             console.error('Failed to fetch markdown content');
             return {slug, markdown: ''};
@@ -219,7 +221,7 @@ export const saveMDXContent = async (
     const fileName = `${slug}.mdx`;
 
     try {
-        const response = await fetch('/api/save-mdx', {
+        const response = await fetch('/api/mdx', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
