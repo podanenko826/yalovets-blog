@@ -1,13 +1,15 @@
+'use client';
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-
 import moment from 'moment';
 
 import styles from './PostCard.module.css';
 
 import type {AuthorItem, PostItem, PostPreviewItem} from '@/types';
 import {StaticImport} from 'next/dist/shared/lib/get-img-props';
+import {Modal} from 'bootstrap';
+import {formatPostDate} from '@/lib/posts';
 
 type PostCardProps = {
     post: PostItem;
@@ -26,6 +28,11 @@ const PostCard = ({
     index,
     setValue,
 }: PostCardProps) => {
+    const showModal = () => {
+        const myModal = new Modal('#deletionModal');
+        myModal.show();
+    };
+
     return style === 'massive' ? (
         <div className={styles.latest_post}>
             <div className="container">
@@ -145,17 +152,20 @@ const PostCard = ({
                         {authorData.fullName}
                     </p>
                     <p className={styles.profile_info__text}>
-                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')}•{' '}
+                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')} •{' '}
                         {post.readTime?.toString()} min read
                     </p>
                 </div>
             </div>
         </div>
     ) : style === 'admin' ? (
-        <div className="col-12 col-md-6" key={index}>
-            <a href={`/${post.slug}`}>
+        <div className="col-12" key={index}>
+            <Link
+                href={''}
+                data-bs-toggle="modal"
+                data-bs-target={`#leavingModal-${post.slug}`}>
                 {post.imageUrl && (
-                    <div className={styles.image}>
+                    <div className={styles.image} key={post.imageUrl}>
                         <picture className="img-fluid full-image">
                             <source
                                 type="image/png"
@@ -185,7 +195,51 @@ const PostCard = ({
                     </h2>
                     <p className={styles.description}>{post.description}</p>
                 </div>
-            </a>
+            </Link>
+
+            <div
+                className="modal fade"
+                id={`leavingModal-${post.slug}`}
+                tabIndex={-1}
+                aria-labelledby={`leavingModalLabel-${post.slug}`}
+                aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5
+                                className="modal-title"
+                                id={`leavingModalLabel-${post.slug}`}>
+                                You are about to leave the admin page.
+                            </h5>
+                            <button
+                                type="button"
+                                className="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            <p>
+                                The post with the following title will be opened
+                                in the blog: <br />
+                            </p>
+                            <h4 id={`leavingModalLabel-${post.slug}`}>
+                                {post.title}
+                            </h4>
+                        </div>
+                        <div className="modal-footer">
+                            <Link href={`/${post.slug}`}>
+                                <button
+                                    type="button"
+                                    className="btn-filled py-2"
+                                    data-bs-dismiss="modal">
+                                    Open post
+                                </button>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div className={`${styles.profile_info} d-flex`}>
                 <div className="align-content-center">
                     <Image
@@ -198,11 +252,82 @@ const PostCard = ({
                 </div>
 
                 <div className={styles.profile_info__details}>
-                    <p className={styles.profile_info__text}>Ivan Yalovets</p>
                     <p className={styles.profile_info__text}>
-                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')}•{' '}
+                        {authorData.fullName}
+                    </p>
+                    <p className={styles.profile_info__text}>
+                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')} •{' '}
                         {post.readTime?.toString()} min read
                     </p>
+                </div>
+            </div>
+            <div className="d-flex justify-content-end mt-3 gap-3">
+                {/* <button
+                    className="btn-filled px-5 py-2"
+                    type="button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#leavingModal">
+                    Edit
+                </button> */}
+                <Link href={`/admin/${post.slug}`}>
+                    <button className="btn-filled px-5 py-2">Edit</button>
+                </Link>
+
+                <button
+                    className="btn-filled btn-danger px-3 py-2"
+                    type="button"
+                    data-bs-toggle="modal"
+                    data-bs-target={`#deletionModal-${post.slug}`}>
+                    Delete
+                </button>
+                <div
+                    className="modal fade"
+                    id={`deletionModal-${post.slug}`}
+                    tabIndex={-1}
+                    aria-labelledby={`deletionModalLabel-${post.slug}`}
+                    aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5
+                                    className="modal-title"
+                                    id={`deletionModalLabel-${post.slug}`}>
+                                    Are you sure you want to delete this post?
+                                </h5>
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div className="modal-body">
+                                <p>
+                                    The post with the following title will be
+                                    permanently deleted: <br />
+                                </p>
+                                <h4 id={`deletionModalLabel-${post.slug}`}>
+                                    {post.title}
+                                </h4>
+                                <p className="pt-4">
+                                    (Think twice before making this desicion,
+                                    'permanently' is a long period)
+                                </p>
+                            </div>
+                            <div className="modal-footer">
+                                <button
+                                    type="button"
+                                    className="btn-filled py-2 px-5"
+                                    data-bs-dismiss="modal">
+                                    Close
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn-filled btn-danger py-2 px-3">
+                                    Delete post
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -241,12 +366,13 @@ const PostCard = ({
                                 <h2
                                     className={styles.heading}
                                     id="col-heading-1">
-                                    {previewData.title}
+                                    {previewData.title ||
+                                        'Enter the post title'}
                                 </h2>
                                 {setValue ? (
                                     <textarea
                                         name="description"
-                                        placeholder="Enter a post description"
+                                        placeholder="Enter the post description"
                                         onChange={e => setValue(e.target.value)}
                                         className="w-100 subheading-small mb-2 col-heading-2"
                                         value={previewData.description}
@@ -275,9 +401,10 @@ const PostCard = ({
                                         {previewData.authorData.fullName}
                                     </p>
                                     <p className={styles.profile_info__text}>
-                                        {moment(previewData.date).format(
-                                            'D MMM'
-                                        )}{' '}
+                                        {moment(
+                                            previewData.date,
+                                            'DD-MM-YYYY'
+                                        ).format('D MMM')}{' '}
                                         • {previewData.readTime?.toString()} min
                                         read
                                     </p>
@@ -340,7 +467,9 @@ const PostCard = ({
                 </div>
 
                 <div className={styles.profile_info__details}>
-                    <p className={styles.profile_info__text}>Ivan Yalovets</p>
+                    <p className={styles.profile_info__text}>
+                        {authorData.fullName}
+                    </p>
                     <p className={styles.profile_info__text}>
                         {moment(post.date, 'DD-MM-YYYY').format('D MMM')} •{' '}
                         {post.readTime?.toString()} min read

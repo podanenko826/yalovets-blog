@@ -1,5 +1,5 @@
 'use client';
-import {redirect, useRouter} from 'next/navigation';
+import {notFound, redirect, useRouter} from 'next/navigation';
 
 import {
     headingsPlugin,
@@ -49,7 +49,7 @@ import {ChangeEvent, FC, FormEvent, useEffect, useRef, useState} from 'react';
 import PostCard from '@/components/PostCard';
 import {AuthorItem, PostItem, PostPreviewItem} from '@/types';
 
-import {createPost, saveMDXContent} from '@/lib/posts';
+import {createPost, formatPostDate, saveMDXContent} from '@/lib/posts';
 import React from 'react';
 import moment from 'moment';
 
@@ -82,6 +82,18 @@ const Editor: FC<EditorProps> = ({
             : authorData[0]
     );
 
+    if (slug && !postData) {
+        return (
+            <>
+                <h5>
+                    The post with this identifier does not exist on the
+                    database.
+                </h5>
+                <p>Check the slug in URL for any spelling mistakes.</p>
+            </>
+        );
+    }
+
     const [postTitle, setPostTitle] = useState(postData ? postData.title : '');
     const [description, setDescription] = useState(
         postData ? postData.description : ''
@@ -95,20 +107,24 @@ const Editor: FC<EditorProps> = ({
         slug: slug ? slug : '',
         title: postTitle,
         description: description,
-        date: moment(postData?.date, 'DD-MM-YYYY').format('DD MMM YYYY'),
-        modifyDate: moment(Date.now()).format('DD MMM YYYY'),
+        date: moment(postData?.date).format('DD-MM-YYYY'),
+        modifyDate: moment(Date.now()).format('DD-MM-YYYY'),
         imageUrl: imageUrl,
+        readTime: postData?.readTime || 0,
+        viewsCount: postData?.viewsCount || 0,
     };
+    console.log(moment(postData?.date).format('DD-MM-YYYY'));
 
     const PostPreview: PostPreviewItem = {
         title: postTitle,
         description: description,
         imageUrl: imageUrl as string,
-        date:
-            moment(postData?.date, 'DD-MM-YYYY').format('DD MMM YYYY') ||
-            moment(Date.now()).format('DD MMM YYYY'),
+        date: postData?.date || moment(Date.now()).format('DD-MM-YYYY'),
         modifyDate:
-            postData?.modifyDate || moment(Date.now()).format('DD MMM YYYY'),
+            moment(
+                formatPostDate(moment(postData?.modifyDate).toDate()),
+                'DD-MM-YYYY'
+            ).format('DD-MM-YYYY') || moment(Date.now()).format('DD-MM-YYYY'),
         readTime: postData?.readTime || 0,
         authorData: (selectedAuthor as AuthorItem) || authorData[0],
     };
@@ -173,7 +189,9 @@ const Editor: FC<EditorProps> = ({
 
                         <p className="m-0 align-content-center">
                             {postData
-                                ? moment(postData.date).format('DD MMM YYYY')
+                                ? moment(postData.date, 'DD-MM-YYYY').format(
+                                      'D MMM YYYY'
+                                  )
                                 : moment(Date.now()).format('DD MMM YYYY')}
                         </p>
                     </div>
@@ -299,7 +317,7 @@ const Editor: FC<EditorProps> = ({
                             onClick={handleSave}
                             className="py-2 px-3 m-3 btn-filled"
                             type="submit">
-                            Post
+                            {postData ? 'Update' : 'Post'}
                         </button>
                         <button
                             onClick={handleCancel}

@@ -163,6 +163,20 @@ button {
     background: var(--col-primary);
 }
 
+.btn-danger {
+    color: white !important;
+    background: rgb(140, 36, 36);
+}
+
+.btn-danger:hover {
+    background: rgb(110, 21, 21);
+}
+
+.btn-danger:active {
+    outline: slategrey auto 10px;
+    background: var(--col-primary);
+}
+
 .horisontal-line {
     min-width: 100%;
     height: 1.5px;

@@ -5,6 +5,7 @@ import html from 'remark-html';
 
 import {DynamoDB, QueryCommand} from '@aws-sdk/client-dynamodb';
 import {
+    DeleteCommand,
     DynamoDBDocumentClient,
     GetCommand,
     PutCommand,
@@ -160,12 +161,12 @@ export const getPopularPosts = async (): Promise<PostItem[]> => {
     return mostPopularPosts;
 };
 
-function formatPostDate(date: Date) {
+export const formatPostDate = (date: Date) => {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
-}
+};
 
 export const getMDXContent = async (
     slug: string
@@ -241,7 +242,16 @@ export const createPost = async (
     postData: Partial<PostItem>,
     markdown: string
 ) => {
-    const {email, title, description, date, modifyDate, imageUrl} = postData;
+    const {
+        email,
+        title,
+        description,
+        date,
+        modifyDate,
+        imageUrl,
+        readTime,
+        viewsCount,
+    } = postData;
     let {slug} = postData;
 
     if (!email || !title || !description || !date || !modifyDate) {
@@ -249,15 +259,6 @@ export const createPost = async (
             'Missing required post data: email, slug, title, description, date or modifyDate.'
         );
     }
-
-    const transformedDate = moment(date).toDate();
-    console.log(transformedDate);
-
-    const formattedDate = formatPostDate(transformedDate);
-    console.log(formattedDate);
-
-    const transformedModifyDate = moment(modifyDate).toDate();
-    const formattedModifyDate = formatPostDate(transformedModifyDate);
 
     if (!slug) {
         if (title) {
@@ -278,10 +279,10 @@ export const createPost = async (
         title,
         description,
         imageUrl: imageUrl ?? '', // Optional imageUrl, default to an empty string if not provided
-        date: formattedDate,
-        modifyDate: formattedModifyDate, // Automatically generated modifyDate
-        readTime: 0, // Default readTime
-        viewsCount: 0, // Default viewsCount
+        date: date,
+        modifyDate: modifyDate, // Automatically generated modifyDate
+        readTime: readTime || 0, // Default readTime
+        viewsCount: viewsCount || 0, // Default viewsCount
     };
 
     const command = new PutCommand({
@@ -295,6 +296,30 @@ export const createPost = async (
         return savedPostSlug;
     } catch (error) {
         console.error('Failed to upload post:', error);
+    }
+};
+
+export const deletePost = async (postData: {slug: string}) => {
+    const {slug} = postData;
+
+    // Check that the required slug is provided
+    if (!slug) {
+        throw new Error('Missing required identifier: slug.');
+    }
+
+    // Create the delete command with the specified TableName and Key (slug in this case)
+    const command = new DeleteCommand({
+        TableName: DYNAMODB_TABLE_NAME,
+        Key: {slug},
+    });
+
+    try {
+        const response = await docClient.send(command);
+        console.log('Post successfully deleted:', slug);
+        return response;
+    } catch (error) {
+        console.error('Failed to delete post:', error);
+        throw new Error('Error deleting post.');
     }
 };
 
