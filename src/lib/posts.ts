@@ -12,8 +12,8 @@ import {
     UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
 
-import type {PostItem} from '@/types';
-import {getAuthorEmails} from './users';
+import type {AuthorItem, PostItem} from '@/types';
+import {getAuthorEmails, getUsers} from './users';
 
 const AWS_REGION = process.env.NEXT_PUBLIC_REGION;
 const DYNAMODB_TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
@@ -325,47 +325,52 @@ export const deletePost = async (postData: {slug: string}) => {
 
 export const getArticleData = async (
     slug: string
-): Promise<{slug: string; contentHtml: string | TrustedHTML}> => {
+): Promise<{
+    slug: string;
+    markdown: string;
+    postData: PostItem;
+    authorData: AuthorItem;
+}> => {
     try {
-        const baseUrl =
-            typeof window === 'undefined'
-                ? process.env.NEXT_PUBLIC_API_BASE_URL ||
-                  'http://localhost:3000'
-                : '';
-
-        const response = await fetch(`${baseUrl}/api/s3?key=mdx/${slug}.mdx`);
-
-        const data = await response.json();
-
-        const fileContent = data.content.toString('utf-8');
-
-        if (!fileContent) {
-            console.error('No content found for the given key.');
-            return {slug, contentHtml: ''};
+        const mdxContent = await getMDXContent(slug);
+        if (!mdxContent) {
+            throw new Error('No content found for the given key.');
         }
+        const markdown = mdxContent.markdown;
 
-        const matterResult = matter(fileContent);
-
-        const processedContent = await remark()
-            .use(html)
-            .process(matterResult.content);
-
-        const contentHtml = processedContent.toString();
+        const postData = await getPost(slug);
+        const authorData = await getUsers(postData.email);
 
         return {
             slug,
-            contentHtml,
-            // title: matterResult.data.title,
-            // description: matterResult.data.description,
-            // imageUrl: matterResult.data.imageUrl,
-            // date: moment(matterResult.data.date, 'DD-MM-YYYY').format(
-            //     'DD MMM YYYY'
-            // ),
-            // authorName: matterResult.data.authorName,
-            // readTime: matterResult.data.readTime,
+            markdown,
+            postData,
+            authorData,
         };
     } catch (err) {
         console.error('Failed to fetch post from server: ', err);
-        return {slug, contentHtml: ''};
+        return {
+            slug,
+            markdown: '',
+            postData: {
+                email: '',
+                slug: '',
+                title: '',
+                description: '',
+            },
+            authorData: {
+                email: '',
+                slug: '',
+                fullName: '',
+                profileImageUrl: '',
+                bio: '',
+                socialLinks: {
+                    emailAddress: '',
+                    linkedInUrl: '',
+                    instagramUrl: '',
+                    facebookUrl: '',
+                },
+            },
+        };
     }
 };

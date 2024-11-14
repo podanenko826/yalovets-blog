@@ -12,7 +12,7 @@ import {
 } from 'next-mdx-remote/rsc';
 import {serialize} from 'next-mdx-remote/serialize';
 
-import {getPost} from '@/lib/posts';
+import {getArticleData, getPost} from '@/lib/posts';
 import {getUsers} from '@/lib/users';
 import Link from 'next/link';
 
@@ -30,25 +30,17 @@ const PostPage: FC<PostPageProps> = async ({params}: PostPageProps) => {
             : '';
 
     // Fetch the markdown content
-    const response = await fetch(`${baseUrl}/api/get-mdx?slug=${slug}`);
-    if (!response.ok) {
+    const post = await getArticleData(slug);
+    if (!post.postData || !post.markdown) {
         console.error('Failed to fetch markdown content');
         return notFound();
     }
 
-    const {content} = await response.json();
+    const markdown = post.markdown;
 
-    if (!content) {
-        return notFound();
-    }
+    const postData = post.postData;
 
-    const postData = await getPost(slug);
-
-    if (!postData) {
-        return [];
-    }
-
-    const authorData = await getUsers(postData.email);
+    const authorData = post.authorData;
 
     return (
         <section>
@@ -111,7 +103,7 @@ const PostPage: FC<PostPageProps> = async ({params}: PostPageProps) => {
                         </div>
                         <div className="col-12 col-sm-8">
                             <article className="article">
-                                <MDXRemote source={content} />
+                                <MDXRemote source={markdown} />
                             </article>
                         </div>
                     </div>
