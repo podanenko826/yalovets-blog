@@ -298,42 +298,24 @@ const PostCard = ({
                             </tr>
                         </thead>
                         <tbody>
-                            <tr className="table-primary">
-                                <td>email</td>
-                                <td>{post.email}</td>
-                            </tr>
-                            <tr className="table-secondary">
-                                <td>slug</td>
-                                <td>{post.slug}</td>
-                            </tr>
-                            <tr>
-                                <td>title</td>
-                                <td>{post.title}</td>
-                            </tr>
-                            <tr>
-                                <td>description</td>
-                                <td>{post.description}</td>
-                            </tr>
-                            <tr>
-                                <td>imageUrl</td>
-                                <td>{post.imageUrl}</td>
-                            </tr>
-                            <tr>
-                                <td>date</td>
-                                <td>{post.date}</td>
-                            </tr>
-                            <tr>
-                                <td>modifyDate</td>
-                                <td>{post.modifyDate}</td>
-                            </tr>
-                            <tr>
-                                <td>readTime</td>
-                                <td>{post.readTime}</td>
-                            </tr>
-                            <tr>
-                                <td>viewsCount</td>
-                                <td>{post.viewsCount}</td>
-                            </tr>
+                            {Object.keys(post).map(key => {
+                                const typedKey = key as keyof PostItem; // Explicitly tell TypeScript this is a key of PostItem
+
+                                // Determine the class name based on the key
+                                let rowClass = '';
+                                if (key === 'email') {
+                                    rowClass = 'table-primary'; // Add table-primary class for email
+                                } else if (key === 'slug') {
+                                    rowClass = 'table-secondary'; // Add table-secondary class for slug
+                                }
+
+                                return (
+                                    <tr key={key} className={rowClass}>
+                                        <td>{key}</td>
+                                        <td>{post[typedKey]}</td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
@@ -361,11 +343,11 @@ const PostCard = ({
             </div>
             <div className="d-flex justify-content-end mt-3 gap-3 mb-5">
                 <Link href={`/admin/posts/${post.slug}`}>
-                    <button className="btn-filled px-5 py-2">Edit</button>
+                    <button className="btn-outlined px-5 py-2">Edit</button>
                 </Link>
 
                 <button
-                    className="btn-filled btn-danger px-3 py-2"
+                    className="btn-outlined btn-danger px-3 py-2"
                     type="button"
                     data-bs-toggle="modal"
                     data-bs-target={`#deletionModal-${post.slug}`}>
