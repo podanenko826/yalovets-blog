@@ -302,34 +302,37 @@ export const createPost = async (
     }
 };
 
-export const deletePost = async (postData: {slug: string}) => {
-    const {slug} = postData;
+export const deletePost = async (postData: {email: string; slug: string}) => {
+    const {email, slug} = postData;
     // Check that the required slug is provided
     if (!slug) {
         throw new Error('Missing required identifier: slug.');
     }
 
-    const response = await fetch(`/api/mdx?slug=${slug}`, {
-        method: 'DELETE',
-    });
-
-    if (!response.ok) {
-        throw new Error('Failed to delete file');
-    }
     // Create the delete command with the specified TableName and Key (slug in this case)
     const command = new DeleteCommand({
         TableName: DYNAMODB_TABLE_NAME,
-        Key: {slug},
+        Key: {
+            email,
+            slug,
+        },
     });
 
     try {
         const response = await docClient.send(command);
         console.log('Post successfully deleted:', slug);
-        return response;
     } catch (error) {
         console.error('Failed to delete post:', error);
         throw new Error('Error deleting post.');
     }
+
+    const response = await fetch(`/api/mdx?slug=${slug}`, {
+        method: 'DELETE',
+    });
+    if (!response.ok) {
+        throw new Error('Failed to delete file');
+    }
+    return slug;
 };
 
 export const getArticleData = async (

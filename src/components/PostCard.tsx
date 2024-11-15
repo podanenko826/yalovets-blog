@@ -3,6 +3,7 @@ import React, {useEffect, useRef} from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import moment from 'moment';
+import {useRouter} from 'next/navigation';
 
 import styles from './PostCard.module.css';
 import bootstrap from 'react-bootstrap';
@@ -30,6 +31,7 @@ const PostCard = ({
     index,
     setValue,
 }: PostCardProps) => {
+    const router = useRouter();
     const modalRef = useRef<Modal | null>(null);
 
     const showModal = () => {
@@ -48,8 +50,11 @@ const PostCard = ({
         }
     }, []);
 
-    const handlePostDeletion = (slug: string) => {
-        const deletedPost = deletePost({slug});
+    const handlePostDeletion = async (email: string, slug: string) => {
+        const deletedPostSlug = await deletePost({email, slug});
+        if (deletedPostSlug) {
+            router.refresh();
+        }
     };
 
     return style === 'massive' ? (
@@ -308,7 +313,10 @@ const PostCard = ({
                                     className="btn-filled btn-danger py-2 px-3"
                                     data-bs-dismiss="modal"
                                     onClick={() =>
-                                        handlePostDeletion(post.slug)
+                                        handlePostDeletion(
+                                            post.email,
+                                            post.slug
+                                        )
                                     }>
                                     Delete post
                                 </button>

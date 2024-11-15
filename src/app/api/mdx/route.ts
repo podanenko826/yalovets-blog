@@ -65,7 +65,7 @@ export async function DELETE(request: Request) {
     const filePath = path.join(process.cwd(), dirPath, `${slug}.mdx`);
 
     if (!fs.existsSync(filePath)) {
-        return new Response('File not found', {status: 404});
+        return NextResponse.json(true, {status: 200});
     }
 
     try {
