@@ -222,7 +222,7 @@ const PostCard = ({
                             </h4>
                         </div>
                         <div className="modal-footer">
-                            <Link href={`/${post.slug}`}>
+                            <Link href={`/${post.slug}`} target="_blank">
                                 <button
                                     type="button"
                                     className="btn-filled py-2"
