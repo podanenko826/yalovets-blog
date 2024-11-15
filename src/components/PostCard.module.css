@@ -87,3 +87,55 @@
     width: 42.5px;
     border-radius: 100%;
 }
+
+.newPostImage:hover {
+    filter: brightness(0.92) saturate(1.2);
+}
+
+.dot,
+.underscore {
+    display: inline-block;
+    background-color: #ccc;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    animation: blink 2.75s infinite step-start;
+    animation-fill-mode: both;
+
+    transition: all;
+    padding: 0;
+    margin: 0;
+}
+
+.underscore {
+    width: 18px;
+    height: 4px;
+    border-radius: 2px;
+    animation: blink-underscore 2.5s infinite step-start;
+    animation-fill-mode: both;
+}
+
+.placeholder_pfp {
+    animation: blink-underscore 3s infinite step-start;
+    animation-fill-mode: both;
+}
+
+@keyframes blink {
+    0%,
+    100% {
+        opacity: 0.9;
+    }
+    60% {
+        opacity: 1;
+    }
+}
+
+@keyframes blink-underscore {
+    0%,
+    100% {
+        opacity: 0.85;
+    }
+    60% {
+        opacity: 1;
+    }
+}

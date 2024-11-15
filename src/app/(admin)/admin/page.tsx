@@ -3,7 +3,12 @@ import React from 'react';
 import {getSortedPosts} from '@/lib/posts';
 import {getUsers} from '@/lib/users';
 import {AuthorItem, PostItem} from '@/types';
+import Image from 'next/image';
 import dynamic from 'next/dynamic';
+
+import postCardStyles from '@/components/PostCard.module.css';
+import moment from 'moment';
+import Link from 'next/link';
 
 const PostCard = dynamic(() => import('@/components/PostCard'), {ssr: false});
 
@@ -14,11 +19,103 @@ const AdminPage = async () => {
 
     return (
         <div>
-            <a href="/admin/new">
-                <button className="p-2 m-4">New post</button>
-            </a>
             <div className="container-fluid posts" id="posts">
                 <div className="row post-list">
+                    <div className="col-md-3">
+                        <div className="col-12">
+                            <Link href={'/admin/new'}>
+                                <div className={postCardStyles.image}>
+                                    <Image
+                                        className={`img-fluid full-image ${postCardStyles.newPostImage}`}
+                                        src={'/img/addpost.png'} // Using the image URL, including the placeholder logic if needed
+                                        alt={'Create new post'}
+                                        title={'Create new post'}
+                                        priority={true} // Ensuring the image is preloaded and prioritized
+                                        width={354}
+                                        height={180}
+                                        sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                                    />
+                                </div>
+
+                                <div className={postCardStyles.postInfo}>
+                                    <h2
+                                        className={postCardStyles.heading}
+                                        id="col-heading-1">
+                                        Create new post
+                                    </h2>
+                                    <p className={postCardStyles.description}>
+                                        Start expressing yourself on latest IT
+                                        news and insights.
+                                    </p>
+                                </div>
+                            </Link>
+
+                            <div
+                                className={`${postCardStyles.profile_info} d-flex`}>
+                                <div className="align-content-center">
+                                    <Image
+                                        className={`${postCardStyles.pfp} ${postCardStyles.placeholder_pfp} img-fluid`}
+                                        src={`/img/placeholder-pfp.png`}
+                                        alt="pfp"
+                                        width={42.5}
+                                        height={42.5}
+                                    />
+                                </div>
+
+                                <div
+                                    className={`
+                                        ${postCardStyles.profile_info__details} gap-2
+                                    `}>
+                                    <div
+                                        className={
+                                            postCardStyles.profile_info__text
+                                        }>
+                                        <p className={postCardStyles.dot}></p>
+
+                                        <p
+                                            className={
+                                                postCardStyles.underscore
+                                            }></p>
+                                        <p
+                                            className={
+                                                postCardStyles.underscore
+                                            }></p>
+
+                                        <p className={postCardStyles.dot}></p>
+                                        <p
+                                            className={
+                                                postCardStyles.underscore
+                                            }></p>
+                                        <p className={postCardStyles.dot}></p>
+                                        <p
+                                            className={
+                                                postCardStyles.underscore
+                                            }></p>
+                                    </div>
+                                    <div
+                                        className={
+                                            postCardStyles.profile_info__text
+                                        }>
+                                        <p
+                                            className={
+                                                postCardStyles.underscore
+                                            }></p>
+                                        <p className={postCardStyles.dot}></p>{' '}
+                                        <p className={postCardStyles.dot}></p>
+                                        <p
+                                            className={
+                                                postCardStyles.underscore
+                                            }></p>
+                                        <p
+                                            className={
+                                                postCardStyles.underscore
+                                            }></p>
+                                        <p className={postCardStyles.dot}></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     {postData.map((post, index) => (
                         <div className="col-md-3">
                             <PostCard

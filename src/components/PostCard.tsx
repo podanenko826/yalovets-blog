@@ -5,7 +5,7 @@ import Link from 'next/link';
 import moment from 'moment';
 import {useRouter} from 'next/navigation';
 
-import styles from './PostCard.module.css';
+import styles from '@/components/PostCard.module.css';
 import bootstrap from 'react-bootstrap';
 import {Alert} from 'react-bootstrap';
 
