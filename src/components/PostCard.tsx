@@ -8,6 +8,7 @@ import {useRouter} from 'next/navigation';
 import styles from '@/components/PostCard.module.css';
 import bootstrap from 'react-bootstrap';
 import {Alert} from 'react-bootstrap';
+import {Offcanvas} from 'bootstrap';
 
 import type {AuthorItem, PostItem, PostPreviewItem} from '@/types';
 import {StaticImport} from 'next/dist/shared/lib/get-img-props';
@@ -33,10 +34,17 @@ const PostCard = ({
 }: PostCardProps) => {
     const router = useRouter();
     const modalRef = useRef<Modal | null>(null);
+    const offcanvasRef = useRef<Offcanvas | null>(null);
 
     const showModal = () => {
         if (modalRef.current) {
             modalRef.current.show();
+        }
+    };
+
+    const showOffcanvas = () => {
+        if (offcanvasRef.current) {
+            offcanvasRef.current.show();
         }
     };
 
@@ -46,6 +54,20 @@ const PostCard = ({
             const modalElement = document.getElementById('deletionModal');
             if (modalElement) {
                 modalRef.current = new Modal(modalElement, {backdrop: true});
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        // Check for window and document to confirm we are on the client side
+        if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+            const offcanvasElement = document.getElementById(
+                `postDetails-${post.slug}`
+            );
+            if (offcanvasElement) {
+                offcanvasRef.current = new Offcanvas(offcanvasElement, {
+                    backdrop: true,
+                });
             }
         }
     }, []);
@@ -165,12 +187,23 @@ const PostCard = ({
         </div>
     ) : style === 'admin' ? (
         <div className="col-12" key={index}>
-            <Link
-                href={''}
-                data-bs-toggle="modal"
-                data-bs-target={`#leavingModal-${post.slug}`}>
-                {post.imageUrl && (
-                    <div className={styles.image} key={post.imageUrl}>
+            {post.imageUrl && (
+                <div
+                    className={`${styles.image} position-relative`}
+                    key={post.imageUrl}>
+                    <button
+                        className="btn-filled position-absolute mt-4 px-2 py-1 top-0 end-0 translate-middle"
+                        type="button"
+                        data-bs-toggle="offcanvas"
+                        onClick={e => e.preventDefault()}
+                        data-bs-target={`#postDetails-${post.slug}`}
+                        aria-controls={`postDetails-${post.slug}`}>
+                        ...
+                    </button>
+                    <Link
+                        href={''}
+                        data-bs-toggle="modal"
+                        data-bs-target={`#leavingModal-${post.slug}`}>
                         <Image
                             className="img-fluid full-image"
                             src={post.imageUrl || '/img/placeholder.png'} // Using the image URL, including the placeholder logic if needed
@@ -181,9 +214,13 @@ const PostCard = ({
                             height={180}
                             sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                         />
-                    </div>
-                )}
-
+                    </Link>
+                </div>
+            )}
+            <Link
+                href={''}
+                data-bs-toggle="modal"
+                data-bs-target={`#leavingModal-${post.slug}`}>
                 <div className={styles.postInfo}>
                     <h2 className={styles.heading} id="col-heading-1">
                         {post.title}
@@ -234,7 +271,73 @@ const PostCard = ({
                     </div>
                 </div>
             </div>
-
+            <div
+                className="offcanvas offcanvas-start"
+                data-bs-scroll="true"
+                tabIndex={-1}
+                id={`postDetails-${post.slug}`}
+                aria-labelledby={`postDetailsLabel-${post.slug}`}>
+                <div className="offcanvas-header">
+                    <h5
+                        className="offcanvas-title"
+                        id={`postDetailsLabel-${post.slug}`}>
+                        Post Details
+                    </h5>
+                    <button
+                        type="button"
+                        className="btn-close"
+                        data-bs-dismiss="offcanvas"
+                        aria-label="Close"></button>
+                </div>
+                <div className="offcanvas-body">
+                    <table className="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Attribute</th>
+                                <th scope="col">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr className="table-primary">
+                                <td>email</td>
+                                <td>{post.email}</td>
+                            </tr>
+                            <tr className="table-secondary">
+                                <td>slug</td>
+                                <td>{post.slug}</td>
+                            </tr>
+                            <tr>
+                                <td>title</td>
+                                <td>{post.title}</td>
+                            </tr>
+                            <tr>
+                                <td>description</td>
+                                <td>{post.description}</td>
+                            </tr>
+                            <tr>
+                                <td>imageUrl</td>
+                                <td>{post.imageUrl}</td>
+                            </tr>
+                            <tr>
+                                <td>date</td>
+                                <td>{post.date}</td>
+                            </tr>
+                            <tr>
+                                <td>modifyDate</td>
+                                <td>{post.modifyDate}</td>
+                            </tr>
+                            <tr>
+                                <td>readTime</td>
+                                <td>{post.readTime}</td>
+                            </tr>
+                            <tr>
+                                <td>viewsCount</td>
+                                <td>{post.viewsCount}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
             <div className={`${styles.profile_info} d-flex`}>
                 <div className="align-content-center">
                     <Image
