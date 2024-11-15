@@ -109,7 +109,9 @@ const Editor: FC<EditorProps> = ({
         slug: slug ? slug : '',
         title: postTitle,
         description: description,
-        date: moment(postData?.date).format('DD-MM-YYYY'),
+        date:
+            moment(postData?.date).format('DD-MM-YYYY') ||
+            moment(Date.now()).format('DD-MM-YYYY'),
         modifyDate: moment(Date.now()).format('DD-MM-YYYY'),
         imageUrl: imageUrl,
         readTime: postData?.readTime || 0,
@@ -147,15 +149,21 @@ const Editor: FC<EditorProps> = ({
     const handleSave = async () => {
         if (slug) {
             const redirectSlug = await createPost(Post, currentMarkdown);
-            return router.push(`/${redirectSlug}`);
+            window.open(`/${redirectSlug}`, '_blank', 'noopener,noreferrer');
+            setTimeout(() => {
+                return router.push(`/admin/posts`);
+            }, 12000);
         } else {
             const redirectSlug = await createPost(Post, currentMarkdown);
-            return router.push(`/${redirectSlug}`);
+            window.open(`/${redirectSlug}`, '_blank', 'noopener,noreferrer');
+            setTimeout(() => {
+                return router.push(`/admin/posts`);
+            }, 12000);
         }
     };
 
     const handleCancel = () => {
-        router.push('/admin');
+        router.push('/admin/posts');
     };
 
     return (

@@ -256,8 +256,8 @@ const PostCard = ({
                     </p>
                 </div>
             </div>
-            <div className="d-flex justify-content-end mt-3 gap-3">
-                <Link href={`/admin/${post.slug}`}>
+            <div className="d-flex justify-content-end mt-3 gap-3 mb-5">
+                <Link href={`/admin/posts/${post.slug}`}>
                     <button className="btn-filled px-5 py-2">Edit</button>
                 </Link>
 
