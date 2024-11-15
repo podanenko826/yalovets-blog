@@ -14,6 +14,7 @@ import {
 
 import type {AuthorItem, PostItem} from '@/types';
 import {getAuthorEmails, getUsers} from './users';
+import {request} from 'http';
 
 const AWS_REGION = process.env.NEXT_PUBLIC_REGION;
 const DYNAMODB_TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
@@ -303,12 +304,18 @@ export const createPost = async (
 
 export const deletePost = async (postData: {slug: string}) => {
     const {slug} = postData;
-
     // Check that the required slug is provided
     if (!slug) {
         throw new Error('Missing required identifier: slug.');
     }
 
+    const response = await fetch(`/api/mdx?slug=${slug}`, {
+        method: 'DELETE',
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to delete file');
+    }
     // Create the delete command with the specified TableName and Key (slug in this case)
     const command = new DeleteCommand({
         TableName: DYNAMODB_TABLE_NAME,

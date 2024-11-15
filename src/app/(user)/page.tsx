@@ -4,14 +4,15 @@ import '@/app/page.css';
 
 import type {AuthorItem, PostItem} from '@/types';
 
-import PostCard from '@/components/PostCard';
-
 import StartReadingButton from '@/components/Button/StartReadingButton';
 
 // import {MdOutlineArrowForwardIos} from 'react-icons/md';
 // import {getUsers} from '@/lib/users';
 import {getLatestPost, getPopularPosts, getRecentPosts} from '@/lib/posts';
 import {getAuthorEmails, getUsers} from '@/lib/users';
+import dynamic from 'next/dynamic';
+
+const PostCard = dynamic(() => import('@/components/PostCard'), {ssr: false});
 
 export default async function Home() {
     const recentPosts: PostItem[] = await getRecentPosts();

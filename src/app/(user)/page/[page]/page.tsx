@@ -1,9 +1,11 @@
 import React from 'react';
-import PostCard from '@/components/PostCard';
 
 import {getSortedPosts} from '@/lib/posts';
 import {getUsers} from '@/lib/users';
 import {AuthorItem, PostItem} from '@/types';
+import dynamic from 'next/dynamic';
+
+const PostCard = dynamic(() => import('@/components/PostCard'), {ssr: false});
 
 const ARTICLES_PER_PAGE = 10;
 
@@ -32,21 +34,19 @@ export default async function BlogPage({params}: {params: {page: string}}) {
             <div className="container posts" id="posts">
                 <h1 className="heading-large mt-5">Page {currentPage}</h1>
                 <div className="row post-list">
-                    {paginatedArticles.map(
-                        (post: PostItem, index: number | undefined) => (
-                            <PostCard
-                                post={post}
-                                style="full"
-                                index={index}
-                                key={index}
-                                authorData={
-                                    authorData.find(
-                                        author => author.email === post.email
-                                    ) as AuthorItem
-                                }
-                            />
-                        )
-                    )}
+                    {paginatedArticles.map((post: PostItem, index) => (
+                        <PostCard
+                            post={post}
+                            style="full"
+                            index={index}
+                            key={index}
+                            authorData={
+                                authorData.find(
+                                    author => author.email === post.email
+                                ) as AuthorItem
+                            }
+                        />
+                    ))}
                 </div>
                 <div className="row">
                     <div className="d-flex pagination justify-content-center">

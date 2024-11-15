@@ -52,3 +52,30 @@ export async function POST(request: Request) {
         );
     }
 }
+
+export async function DELETE(request: Request) {
+    const {searchParams} = new URL(request.url);
+    const slug = searchParams.get('slug');
+
+    if (!slug) {
+        return new Response('Missing slug parameter', {status: 400});
+    }
+
+    const dirPath = 'src/articles';
+    const filePath = path.join(process.cwd(), dirPath, `${slug}.mdx`);
+
+    if (!fs.existsSync(filePath)) {
+        return new Response('File not found', {status: 404});
+    }
+
+    try {
+        await fs.promises.rm(filePath);
+        return NextResponse.json(true, {status: 200});
+    } catch (err) {
+        console.error('File deletion error:', err);
+        return NextResponse.json(
+            {message: 'Failed to delete file'},
+            {status: 500}
+        );
+    }
+}

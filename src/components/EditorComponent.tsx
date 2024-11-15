@@ -46,12 +46,14 @@ import '@mdxeditor/editor/style.css';
 
 import {ChangeEvent, FC, FormEvent, useEffect, useRef, useState} from 'react';
 
-import PostCard from '@/components/PostCard';
 import {AuthorItem, PostItem, PostPreviewItem} from '@/types';
 
 import {createPost, formatPostDate, saveMDXContent} from '@/lib/posts';
 import React from 'react';
 import moment from 'moment';
+import dynamic from 'next/dynamic';
+
+const PostCard = dynamic(() => import('@/components/PostCard'), {ssr: false});
 
 interface EditorProps {
     markdown: string;
@@ -113,7 +115,6 @@ const Editor: FC<EditorProps> = ({
         readTime: postData?.readTime || 0,
         viewsCount: postData?.viewsCount || 0,
     };
-    console.log(moment(postData?.date).format('DD-MM-YYYY'));
 
     const PostPreview: PostPreviewItem = {
         title: postTitle,

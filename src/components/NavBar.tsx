@@ -115,6 +115,7 @@ const NavBar = () => {
                             <Link
                                 key={item.id}
                                 href={item.href}
+                                onClick={() => handleMobileNavigation()}
                                 className={`${styles.nav_link_mobile}`}
                                 id={
                                     currentPath === item.href

@@ -1,15 +1,17 @@
 'use client';
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import moment from 'moment';
 
 import styles from './PostCard.module.css';
+import bootstrap from 'react-bootstrap';
+import {Alert} from 'react-bootstrap';
 
 import type {AuthorItem, PostItem, PostPreviewItem} from '@/types';
 import {StaticImport} from 'next/dist/shared/lib/get-img-props';
 import {Modal} from 'bootstrap';
-import {formatPostDate} from '@/lib/posts';
+import {deletePost, formatPostDate} from '@/lib/posts';
 
 type PostCardProps = {
     post: PostItem;
@@ -28,9 +30,26 @@ const PostCard = ({
     index,
     setValue,
 }: PostCardProps) => {
+    const modalRef = useRef<Modal | null>(null);
+
     const showModal = () => {
-        const myModal = new Modal('#deletionModal');
-        myModal.show();
+        if (modalRef.current) {
+            modalRef.current.show();
+        }
+    };
+
+    useEffect(() => {
+        // Check for window and document to confirm we are on the client side
+        if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+            const modalElement = document.getElementById('deletionModal');
+            if (modalElement) {
+                modalRef.current = new Modal(modalElement, {backdrop: true});
+            }
+        }
+    }, []);
+
+    const handlePostDeletion = (slug: string) => {
+        const deletedPost = deletePost({slug});
     };
 
     return style === 'massive' ? (
@@ -40,27 +59,18 @@ const PostCard = ({
                     {post.imageUrl && (
                         <div className="col-lg-6">
                             <Link href={`${post.slug}`}>
-                                <picture
-                                    className={`img-fluid ${styles.massive_img}`}>
-                                    <source
-                                        type="image/png"
-                                        srcSet={`${post.imageUrl} 1140w, ${post.imageUrl} 2280w, ${post.imageUrl} 960w, ${post.imageUrl} 1920w`}
-                                        sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                                    />
-                                    <source
-                                        srcSet={`${post.imageUrl} 1140w, ${post.imageUrl} 2280w, ${post.imageUrl} 960w, ${post.imageUrl} 1920w`}
-                                        sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                                    />
-                                    <Image
-                                        className={`img-fluid ${styles.massive_img}`}
-                                        src={post.imageUrl}
-                                        priority={true}
-                                        alt="Recent post teaser"
-                                        title="Recent Post"
-                                        width={354}
-                                        height={180}
-                                    />
-                                </picture>
+                                <Image
+                                    className={`img-fluid ${styles.massive_img}`}
+                                    src={
+                                        post.imageUrl || '/img/placeholder.png'
+                                    } // Using the image URL, including the placeholder logic if needed
+                                    alt={post.title}
+                                    title={post.title}
+                                    priority={true} // Ensuring the image is preloaded and prioritized
+                                    width={354}
+                                    height={180}
+                                    sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                                />
                             </Link>
                         </div>
                     )}
@@ -106,26 +116,16 @@ const PostCard = ({
             <Link href={`/${post.slug}`}>
                 {post.imageUrl && (
                     <div className={styles.image}>
-                        <picture className="img-fluid full-image">
-                            <source
-                                type="image/png"
-                                srcSet={`${post.imageUrl} 1140w, ${post.imageUrl} 2280w, ${post.imageUrl} 960w, ${post.imageUrl} 1920w`}
-                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                            />
-                            <source
-                                srcSet={`${post.imageUrl} 1140w, ${post.imageUrl} 2280w, ${post.imageUrl} 960w, ${post.imageUrl} 1920w`}
-                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                            />
-                            <Image
-                                className="img-fluid full-image"
-                                src={post.imageUrl}
-                                alt={post.title}
-                                title={post.title}
-                                priority={true}
-                                width={354}
-                                height={180}
-                            />
-                        </picture>
+                        <Image
+                            className="img-fluid full-image"
+                            src={post.imageUrl || '/img/placeholder.png'} // Using the image URL, including the placeholder logic if needed
+                            alt={post.title}
+                            title={post.title}
+                            priority={true} // Ensuring the image is preloaded and prioritized
+                            width={354}
+                            height={180}
+                            sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                        />
                     </div>
                 )}
 
@@ -166,26 +166,16 @@ const PostCard = ({
                 data-bs-target={`#leavingModal-${post.slug}`}>
                 {post.imageUrl && (
                     <div className={styles.image} key={post.imageUrl}>
-                        <picture className="img-fluid full-image">
-                            <source
-                                type="image/png"
-                                srcSet={`${post.imageUrl} 1140w, ${post.imageUrl} 2280w, ${post.imageUrl} 960w, ${post.imageUrl} 1920w`}
-                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                            />
-                            <source
-                                srcSet={`${post.imageUrl} 1140w, ${post.imageUrl} 2280w, ${post.imageUrl} 960w, ${post.imageUrl} 1920w`}
-                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                            />
-                            <Image
-                                className="img-fluid full-image"
-                                src={post.imageUrl}
-                                alt={post.title}
-                                title={post.title}
-                                priority={true}
-                                width={354}
-                                height={180}
-                            />
-                        </picture>
+                        <Image
+                            className="img-fluid full-image"
+                            src={post.imageUrl || '/img/placeholder.png'} // Using the image URL, including the placeholder logic if needed
+                            alt={post.title}
+                            title={post.title}
+                            priority={true} // Ensuring the image is preloaded and prioritized
+                            width={354}
+                            height={180}
+                            sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                        />
                     </div>
                 )}
 
@@ -262,13 +252,6 @@ const PostCard = ({
                 </div>
             </div>
             <div className="d-flex justify-content-end mt-3 gap-3">
-                {/* <button
-                    className="btn-filled px-5 py-2"
-                    type="button"
-                    data-bs-toggle="modal"
-                    data-bs-target="#leavingModal">
-                    Edit
-                </button> */}
                 <Link href={`/admin/${post.slug}`}>
                     <button className="btn-filled px-5 py-2">Edit</button>
                 </Link>
@@ -322,7 +305,11 @@ const PostCard = ({
                                 </button>
                                 <button
                                     type="button"
-                                    className="btn-filled btn-danger py-2 px-3">
+                                    className="btn-filled btn-danger py-2 px-3"
+                                    data-bs-dismiss="modal"
+                                    onClick={() =>
+                                        handlePostDeletion(post.slug)
+                                    }>
                                     Delete post
                                 </button>
                             </div>
@@ -338,26 +325,18 @@ const PostCard = ({
                     <div className="row align-items-center justify-content-center">
                         {previewData.imageUrl && (
                             <div className="col-lg-8">
-                                <picture className="img-fluid">
-                                    <source
-                                        type="image/png"
-                                        srcSet={`${previewData.imageUrl} 1140w, ${previewData.imageUrl} 2280w, ${previewData.imageUrl} 960w, ${previewData.imageUrl} 1920w`}
-                                        sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                                    />
-                                    <source
-                                        srcSet={`${previewData.imageUrl} 1140w, ${previewData.imageUrl} 2280w, ${previewData.imageUrl} 960w, ${previewData.imageUrl} 1920w`}
-                                        sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                                    />
-                                    <Image
-                                        className="img-fluid"
-                                        src={previewData.imageUrl}
-                                        alt={previewData.title}
-                                        title={previewData.title}
-                                        priority={true}
-                                        width={354}
-                                        height={180}
-                                    />
-                                </picture>
+                                <Image
+                                    className="img-fluid"
+                                    src={
+                                        post.imageUrl || '/img/placeholder.png'
+                                    } // Using the image URL, including the placeholder logic if needed
+                                    alt={post.title}
+                                    title={post.title}
+                                    priority={true} // Ensuring the image is preloaded and prioritized
+                                    width={354}
+                                    height={180}
+                                    sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                                />
                             </div>
                         )}
 

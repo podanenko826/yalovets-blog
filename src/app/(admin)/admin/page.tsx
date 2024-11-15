@@ -1,9 +1,11 @@
 import React from 'react';
 
-import PostCard from '@/components/PostCard';
 import {getSortedPosts} from '@/lib/posts';
 import {getUsers} from '@/lib/users';
 import {AuthorItem, PostItem} from '@/types';
+import dynamic from 'next/dynamic';
+
+const PostCard = dynamic(() => import('@/components/PostCard'), {ssr: false});
 
 const AdminPage = async () => {
     const postData: PostItem[] = await getSortedPosts();
@@ -28,7 +30,7 @@ const AdminPage = async () => {
                                 }
                                 style="admin"
                                 index={index}
-                                key={post.email}
+                                key={index}
                             />
                         </div>
                     ))}
