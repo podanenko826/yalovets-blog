@@ -247,7 +247,6 @@ export const createPost = async (
 ) => {
     const {
         email,
-        title,
         description,
         date,
         modifyDate,
@@ -255,7 +254,7 @@ export const createPost = async (
         readTime,
         viewsCount,
     } = postData;
-    let {slug} = postData;
+    let {slug, title} = postData;
 
     if (!email || !title || !description || !date || !modifyDate) {
         throw new Error(
@@ -272,6 +271,25 @@ export const createPost = async (
         } else {
             throw new Error('Missing required slug identifier.');
         }
+    }
+
+    // Ensure the fileName does not exceed 255 characters, including the '.mdx' extension
+    const MAX_FILENAME_LENGTH = 150;
+    const fileExtension = '.mdx';
+    const ellipsis = '...';
+
+    // Truncate the slug if the full fileName would exceed the limit
+    if (slug.length + fileExtension.length > MAX_FILENAME_LENGTH) {
+        slug = slug.slice(
+            0,
+            MAX_FILENAME_LENGTH - fileExtension.length - ellipsis.length
+        );
+
+        title =
+            title.slice(
+                0,
+                MAX_FILENAME_LENGTH - fileExtension.length - ellipsis.length
+            ) + ellipsis;
     }
 
     const savedPostSlug = saveMDXContent(title, markdown, slug);

@@ -62,12 +62,44 @@ const PostPage: FC<PostPageProps> = async ({params}: PostPageProps) => {
                                 id="col-heading-1">
                                 {postData.title}
                             </h1>
-                            <p>
-                                {authorData.fullName} •{' '}
-                                {moment(postData.date, 'DD-MM-YYYY').format(
-                                    'D MMM YYYY'
+                            <div className="d-flex justify-content-center gap-2">
+                                <p>
+                                    {authorData.fullName} •{' '}
+                                    {moment(postData.date, 'DD-MM-YYYY').format(
+                                        'D MMM YYYY'
+                                    )}{' '}
+                                </p>
+                                {moment(
+                                    postData.modifyDate,
+                                    'DD-MM-YYYY'
+                                ).isAfter(
+                                    moment(postData.date, 'DD-MM-YYYY')
+                                ) && (
+                                    <>
+                                        <p className="d-none d-md-block">•</p>
+                                        <span className="d-none d-md-block px-2 mb-4 rounded-pill text-bg-secondary">
+                                            {'Updated ' +
+                                                moment(
+                                                    postData.modifyDate,
+                                                    'DD-MM-YYYY'
+                                                ).fromNow()}
+                                        </span>
+                                    </>
                                 )}
-                            </p>
+                            </div>
+                            {moment(postData.modifyDate, 'DD-MM-YYYY').isAfter(
+                                moment(postData.date, 'DD-MM-YYYY')
+                            ) && (
+                                <span
+                                    className="d-md-none px-2 mb-4 rounded-pill text-bg-secondary"
+                                    id="mobileUpdatedBadge">
+                                    {'Updated ' +
+                                        moment(
+                                            postData.modifyDate,
+                                            'DD-MM-YYYY'
+                                        ).fromNow()}
+                                </span>
+                            )}
                         </div>
                     </div>
                     <div className="row">

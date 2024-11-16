@@ -62,7 +62,7 @@ const PostsPage = async () => {
                                 </Link>
 
                                 <div
-                                    className={`${postCardStyles.profile_info} d-flex`}>
+                                    className={`${postCardStyles.profile_info} d-flex mb-5`}>
                                     <div className="align-content-center">
                                         <Image
                                             className={`${postCardStyles.pfp} ${postCardStyles.placeholder_pfp} img-fluid`}

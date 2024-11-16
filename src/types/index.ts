@@ -33,3 +33,13 @@ export type PostPreviewItem = {
     readTime: number;
     authorData: AuthorItem;
 };
+
+export type CategoryItem = {
+    id: number;
+    title: string;
+    shortTitle: string;
+    color: string;
+    description: string;
+    postCount: number;
+    slug: string;
+};

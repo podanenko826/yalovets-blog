@@ -127,7 +127,24 @@ const PostCard = ({
                             </div>
                         </div>
                         <a href={`/${post.slug}`}>
-                            <h1 className={styles.heading}>{post.title}</h1>
+                            <h1
+                                className={`${styles.heading} d-flex align-content-center gap-1`}
+                                id="col-heading-1">
+                                {post.title}{' '}
+                                {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(
+                                    moment(post.date, 'DD-MM-YYYY')
+                                ) &&
+                                    moment(post.modifyDate, 'DD-MM-YYYY').diff(
+                                        moment(post.date, 'DD-MM-YYYY'),
+                                        'days'
+                                    ) <= 30 && (
+                                        <>
+                                            <span className="p-2 rounded-pill text-bg-secondary">
+                                                Updated
+                                            </span>
+                                        </>
+                                    )}
+                            </h1>
                             <p className={`${styles.description} pb-2`}>
                                 {post.description}
                             </p>
@@ -157,8 +174,28 @@ const PostCard = ({
                 )}
 
                 <div className={styles.postInfo}>
-                    <h2 className={styles.heading} id="col-heading-1">
-                        {post.title}
+                    <h2
+                        className={`${styles.heading} d-flex flex-wrap align-items-center gap-1`}
+                        id="col-heading-1">
+                        {post.title}{' '}
+                        {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(
+                            moment(post.date, 'DD-MM-YYYY')
+                        ) &&
+                            moment(post.modifyDate, 'DD-MM-YYYY').diff(
+                                moment(post.date, 'DD-MM-YYYY'),
+                                'days'
+                            ) <= 30 && (
+                                <span className="px-2 py-1 mt-1 rounded-pill text-wrap text-bg-secondary">
+                                    {'Updated ' +
+                                        moment(
+                                            post.modifyDate,
+                                            'DD-MM-YYYY'
+                                        ).fromNow()}
+                                </span>
+                                // <span className="px-2 py-1 pb-1 mb-3 rounded-pill text-bg-secondary">
+                                //     Updated
+                                // </span>
+                            )}
                     </h2>
                     <p className={styles.description}>{post.description}</p>
                 </div>
@@ -222,8 +259,21 @@ const PostCard = ({
                 data-bs-toggle="modal"
                 data-bs-target={`#leavingModal-${post.slug}`}>
                 <div className={styles.postInfo}>
-                    <h2 className={styles.heading} id="col-heading-1">
-                        {post.title}
+                    <h2
+                        className={`${styles.heading} d-flex flex-wrap align-content-center gap-1`}
+                        id="col-heading-1">
+                        {post.title}{' '}
+                        {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(
+                            moment(post.date, 'DD-MM-YYYY')
+                        ) && (
+                            <span className="px-2 py-1 text-wrap rounded-pill text-bg-secondary">
+                                {'Updated ' +
+                                    moment(
+                                        post.modifyDate,
+                                        'DD-MM-YYYY'
+                                    ).fromNow()}
+                            </span>
+                        )}
                     </h2>
                     <p className={styles.description}>{post.description}</p>
                 </div>
@@ -435,12 +485,24 @@ const PostCard = ({
 
                         <div className="col-lg-8">
                             <div className={styles.postInfo}>
-                                <h2
-                                    className={styles.heading}
-                                    id="col-heading-1">
-                                    {previewData.title ||
-                                        'Enter the post title'}
-                                </h2>
+                                <div className="d-flex align-content-center m-0">
+                                    <h2
+                                        className={styles.heading}
+                                        id="col-heading-1">
+                                        {previewData.title ||
+                                            'Enter the post title'}{' '}
+                                        {moment(
+                                            post.modifyDate,
+                                            'DD-MM-YYYY'
+                                        ).isAfter(
+                                            moment(post.date, 'DD-MM-YYYY')
+                                        ) && (
+                                            <span className="px-2 py-1 mb-2 rounded-pill text-bg-secondary">
+                                                Updated
+                                            </span>
+                                        )}
+                                    </h2>
+                                </div>
                                 {setValue ? (
                                     <textarea
                                         name="description"
@@ -521,9 +583,22 @@ const PostCard = ({
                 )}
 
                 <div className={styles.postInfo}>
-                    <h2 className={styles.heading} id="col-heading-1">
-                        {post.title}
-                    </h2>
+                    <div className="d-flex align-content-center m-0">
+                        <h2 className={styles.heading} id="col-heading-1">
+                            {post.title}{' '}
+                            {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(
+                                moment(post.date, 'DD-MM-YYYY')
+                            ) &&
+                                moment(post.modifyDate, 'DD-MM-YYYY').diff(
+                                    moment(post.date, 'DD-MM-YYYY'),
+                                    'days'
+                                ) <= 30 && (
+                                    <span className="px-2 py-1 pb-1 mb-3 rounded-pill text-bg-secondary">
+                                        Updated
+                                    </span>
+                                )}
+                        </h2>
+                    </div>
                     <p className={styles.description}>{post.description}</p>
                 </div>
             </Link>

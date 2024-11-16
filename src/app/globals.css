@@ -169,12 +169,12 @@ button {
 }
 
 .btn-danger:hover {
-    background: rgb(110, 21, 21);
+    background: rgb(110, 21, 21) !important;
 }
 
 .btn-danger:active {
     outline: slategrey auto 10px;
-    background: var(--col-primary);
+    background: var(--col-primary) !important;
 }
 
 .horisontal-line {

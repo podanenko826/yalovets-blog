@@ -104,14 +104,19 @@ const Editor: FC<EditorProps> = ({
         postData ? postData.imageUrl : '/img/AWS-beginning.png'
     );
 
+    if (postData?.date === 'Invalid date') {
+        postData.date = moment(Date.now()).format('DD-MM-YYYY');
+    }
+    if (postData?.modifyDate) {
+        postData.modifyDate = moment(Date.now()).format('DD-MM-YYYY');
+    }
+
     const Post: PostItem = {
         email: selectedAuthor?.email || authorData[0].email,
         slug: slug ? slug : '',
         title: postTitle,
         description: description,
-        date:
-            moment(postData?.date).format('DD-MM-YYYY') ||
-            moment(Date.now()).format('DD-MM-YYYY'),
+        date: postData?.date || moment(Date.now()).format('DD-MM-YYYY'),
         modifyDate: moment(Date.now()).format('DD-MM-YYYY'),
         imageUrl: imageUrl,
         readTime: postData?.readTime || 0,
@@ -194,16 +199,49 @@ const Editor: FC<EditorProps> = ({
                                 </option>
                             ))}
                         </select>
-                        <p className="m-0 align-content-center">•</p>
+                        <p className="m-0">•</p>
 
-                        <p className="m-0 align-content-center">
-                            {postData
-                                ? moment(postData.date, 'DD-MM-YYYY').format(
-                                      'D MMM YYYY'
-                                  )
-                                : moment(Date.now()).format('DD MMM YYYY')}
-                        </p>
+                        <div className="d-flex justify-content-center gap-2">
+                            <p>
+                                {postData
+                                    ? moment(
+                                          postData.date,
+                                          'DD-MM-YYYY'
+                                      ).format('D MMM YYYY')
+                                    : moment(Date.now()).format('DD MMM YYYY')}
+                            </p>
+
+                            {moment(postData?.modifyDate, 'DD-MM-YYYY').isAfter(
+                                moment(postData?.date, 'DD-MM-YYYY')
+                            ) && (
+                                <>
+                                    <p className="d-none d-md-block">•</p>
+                                    <span className="d-none d-md-block px-2 mb-4 rounded-pill text-bg-secondary">
+                                        {'Updated ' +
+                                            moment(
+                                                postData?.modifyDate,
+                                                'DD-MM-YYYY'
+                                            ).fromNow()}
+                                    </span>
+                                </>
+                            )}
+                        </div>
                     </div>
+                    {moment(postData?.modifyDate, 'DD-MM-YYYY').isAfter(
+                        moment(postData?.date, 'DD-MM-YYYY')
+                    ) && (
+                        <>
+                            <span
+                                className="d-md-none px-2 mb-4 rounded-pill text-bg-secondary"
+                                id="mobileUpdatedBadge">
+                                {'Updated ' +
+                                    moment(
+                                        postData?.modifyDate,
+                                        'DD-MM-YYYY'
+                                    ).fromNow()}
+                            </span>
+                        </>
+                    )}
                 </div>
             </div>
             <div className="row">

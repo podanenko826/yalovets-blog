@@ -44,11 +44,11 @@ const AdminPage = async () => {
         },
         {
             id: 4,
-            title: 'Menage subscriptors',
+            title: 'Menage subscribers',
             description:
                 'View whoever is subscribed to your blog and remove their subscribtions in one place.',
             imageUrl: '/img/addpost.png',
-            url: '/admin/subscriptors',
+            url: '/admin/subscribers',
         },
     ];
 
@@ -91,7 +91,7 @@ const AdminPage = async () => {
                                 </Link>
 
                                 <div
-                                    className={`${postCardStyles.profile_info} d-flex`}>
+                                    className={`${postCardStyles.profile_info} d-flex mb-5`}>
                                     <div className="align-content-center">
                                         <Image
                                             className={`${postCardStyles.pfp} ${postCardStyles.placeholder_pfp} img-fluid`}
@@ -178,7 +178,7 @@ const AdminPage = async () => {
                 </div>
 
                 <div className="container-fluid">
-                    <h1 className="heading-large mt-5">Management</h1>
+                    <h1 className="heading-large">Management</h1>
                     <div>
                         <div className="row post-list">
                             {managementItems.map(item => (
