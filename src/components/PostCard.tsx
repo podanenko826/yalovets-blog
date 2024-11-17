@@ -130,7 +130,11 @@ const PostCard = ({
                             <h1
                                 className={`${styles.heading} d-flex align-content-center gap-1`}
                                 id="col-heading-1">
-                                {post.title}{' '}
+                                {post.title.length > 85 ? (
+                                    <>{post.title.slice(0, 85) + '... '}</>
+                                ) : (
+                                    post.title
+                                )}{' '}
                                 {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(
                                     moment(post.date, 'DD-MM-YYYY')
                                 ) &&
@@ -146,7 +150,17 @@ const PostCard = ({
                                     )}
                             </h1>
                             <p className={`${styles.description} pb-2`}>
-                                {post.description}
+                                {post.description.length > 140 ? (
+                                    <>
+                                        {post.description.slice(0, 140) +
+                                            '... '}
+                                        <Link href="" id="col-secondary">
+                                            Read more
+                                        </Link>
+                                    </>
+                                ) : (
+                                    post.description
+                                )}
                             </p>
 
                             <button className="btn-filled">Read on</button>
@@ -197,7 +211,18 @@ const PostCard = ({
                                 // </span>
                             )}
                     </h2>
-                    <p className={styles.description}>{post.description}</p>
+                    <p className={styles.description}>
+                        {post.description.length > 160 ? (
+                            <>
+                                {post.description.slice(0, 160) + '... '}
+                                <Link href="" id="col-secondary">
+                                    Read more
+                                </Link>
+                            </>
+                        ) : (
+                            post.description
+                        )}
+                    </p>
                 </div>
             </Link>
             <div className={`${styles.profile_info} d-flex`}>
@@ -585,7 +610,11 @@ const PostCard = ({
                 <div className={styles.postInfo}>
                     <div className="d-flex align-content-center m-0">
                         <h2 className={styles.heading} id="col-heading-1">
-                            {post.title}{' '}
+                            {post.title.length > 90 ? (
+                                <>{post.title.slice(0, 90) + '... '}</>
+                            ) : (
+                                post.title
+                            )}{' '}
                             {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(
                                 moment(post.date, 'DD-MM-YYYY')
                             ) &&
@@ -599,7 +628,18 @@ const PostCard = ({
                                 )}
                         </h2>
                     </div>
-                    <p className={styles.description}>{post.description}</p>
+                    <p className={styles.description}>
+                        {post.description.length > 140 ? (
+                            <>
+                                {post.description.slice(0, 140) + '... '}
+                                <Link href="" id="col-secondary">
+                                    Read more
+                                </Link>
+                            </>
+                        ) : (
+                            post.description
+                        )}
+                    </p>
                 </div>
             </Link>
             <div className={`${styles.profile_info} d-flex`}>

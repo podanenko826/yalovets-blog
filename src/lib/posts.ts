@@ -369,6 +369,8 @@ export const getArticleData = async (
         const markdown = mdxContent.markdown;
 
         const postData = await getPost(slug);
+        console.log(postData);
+
         const authorData = await getUsers(postData.email);
 
         return {
