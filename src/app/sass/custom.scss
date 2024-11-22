@@ -26,6 +26,8 @@ $secondary: rgb(45, 110, 164);
     }
 }
 
+$popover-border-radius: 5px !important;
+
 .row {
     display: flex !important;
     flex-wrap: wrap !important;
@@ -92,6 +94,10 @@ img {
 .offset-sm-1,
 .offset-md-5 {
     overflow: hidden !important;
+}
+
+.rounded-pill {
+    background: red !important;
 }
 
 .posts > .post-list > div {

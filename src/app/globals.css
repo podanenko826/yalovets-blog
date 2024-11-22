@@ -80,6 +80,16 @@ a {
     padding: 0;
 }
 
+a.a-btn {
+    line-height: 1rem !important;
+    border-radius: 5px;
+    align-content: center;
+}
+
+a.a-link:hover {
+    text-decoration: underline;
+}
+
 input {
     outline: none;
     border-radius: 5px;

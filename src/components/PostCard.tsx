@@ -1,19 +1,18 @@
 'use client';
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import moment from 'moment';
 import {useRouter} from 'next/navigation';
 
 import styles from '@/components/PostCard.module.css';
-import bootstrap from 'react-bootstrap';
+import * as bootstrap from 'bootstrap';
 import {Alert} from 'react-bootstrap';
-import {Offcanvas} from 'bootstrap';
+import {Modal, Offcanvas} from 'react-bootstrap';
+import {Popover} from 'bootstrap';
 
 import type {AuthorItem, PostItem, PostPreviewItem} from '@/types';
-import {StaticImport} from 'next/dist/shared/lib/get-img-props';
-import {Modal} from 'bootstrap';
-import {deletePost, formatPostDate} from '@/lib/posts';
+import {deletePost} from '@/lib/posts';
 
 type PostCardProps = {
     post: PostItem;
@@ -33,44 +32,6 @@ const PostCard = ({
     setValue,
 }: PostCardProps) => {
     const router = useRouter();
-    const modalRef = useRef<Modal | null>(null);
-    const offcanvasRef = useRef<Offcanvas | null>(null);
-
-    const showModal = () => {
-        if (modalRef.current) {
-            modalRef.current.show();
-        }
-    };
-
-    const showOffcanvas = () => {
-        if (offcanvasRef.current) {
-            offcanvasRef.current.show();
-        }
-    };
-
-    useEffect(() => {
-        // Check for window and document to confirm we are on the client side
-        if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-            const modalElement = document.getElementById('deletionModal');
-            if (modalElement) {
-                modalRef.current = new Modal(modalElement, {backdrop: true});
-            }
-        }
-    }, []);
-
-    useEffect(() => {
-        // Check for window and document to confirm we are on the client side
-        if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-            const offcanvasElement = document.getElementById(
-                `postDetails-${post.slug}`
-            );
-            if (offcanvasElement) {
-                offcanvasRef.current = new Offcanvas(offcanvasElement, {
-                    backdrop: true,
-                });
-            }
-        }
-    }, []);
 
     const handlePostDeletion = async (email: string, slug: string) => {
         const deletedPostSlug = await deletePost({email, slug});
@@ -78,6 +39,109 @@ const PostCard = ({
             router.refresh();
         }
     };
+
+    const popoverRef = useRef<Popover | null>(null);
+    const [popoverVisible, setPopoverVisible] = useState(false); // Single source of truth for visibility
+    const [currentPopover, setCurrentPopover] =
+        useState<bootstrap.Popover | null>(null);
+    const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null); // Ref for timeout to avoid state re-renders
+
+    // Initialize popover on first render
+    useEffect(() => {
+        const popoverTrigger = document.querySelector(
+            `#popover-trigger-${index}`
+        );
+
+        if (popoverTrigger && !currentPopover) {
+            const newPopover = new Popover(popoverTrigger, {
+                html: true,
+                placement: 'top',
+                customClass: 'd-none d-md-inline-block',
+                content: `
+                    <div class="row justify-content-beetween align-content-between">
+                        <div class="col-12 col-md-8">
+                            <a class="subheading a-link m-0" href="">${authorData.fullName}</a>
+                                        <h6 class="subheading-tiny py-2">${authorData.bio}</h6>
+                        </div>
+
+                        <div class="col-4 mb-2 mb-md-0 col-md-4">
+                            <Image class="${styles.popoverPfp}" src="/${authorData.profileImageUrl}" width={50} height={50} />
+                        </div>
+
+                        <div class="col-md-12 horisontal-line horisontal-line-thin"></div>
+
+                        <div class="col-12 d-flex justify-content-between align-content-center">
+                            <p class="p-0 m-0">Visit my profile</p>
+                            <a href="" class="a-btn btn-filled px-2 py-0">
+                                Visit
+                            </a>
+                        </div>
+                     </div>
+                `,
+                trigger: 'manual',
+            });
+            popoverRef.current = newPopover;
+        }
+
+        return () => {
+            // Dispose popover when component unmounts
+            if (popoverRef.current) {
+                popoverRef.current.dispose();
+            }
+        };
+    }, [authorData, index]);
+
+    // Effect to attach listeners to the dynamic popover content
+    useEffect(() => {
+        if (popoverVisible) {
+            const popoverContent = document.querySelector(
+                'div.popover'
+            ) as HTMLElement;
+            if (popoverContent) {
+                popoverContent.addEventListener('mouseenter', handleMouseEnter);
+                popoverContent.addEventListener('mouseleave', handleMouseLeave);
+            }
+        }
+    }, [popoverVisible]);
+
+    const handleMouseEnter = () => {
+        clearHideTimeout();
+
+        hideTimeoutRef.current = setTimeout(() => {
+            if (!popoverVisible) {
+                setPopoverVisible(true);
+                if (popoverRef.current) {
+                    popoverRef.current.show();
+                }
+                setPopoverVisible(true);
+            }
+        }, 300); // 0.3-second delay
+    };
+
+    const handleMouseLeave = () => {
+        startHideTimeout();
+    };
+
+    const startHideTimeout = () => {
+        clearHideTimeout();
+        hideTimeoutRef.current = setTimeout(() => {
+            if (popoverRef.current) {
+                popoverRef.current.hide();
+            }
+            setPopoverVisible(false);
+        }, 1300); // 1.3-second delay
+    };
+
+    const clearHideTimeout = () => {
+        if (hideTimeoutRef.current) {
+            clearTimeout(hideTimeoutRef.current);
+            hideTimeoutRef.current = null;
+        }
+    };
+
+    if (!post && !authorData) {
+        return <p>Hello world</p>;
+    }
 
     return style === 'massive' ? (
         <div className={styles.latest_post}>
@@ -102,7 +166,7 @@ const PostCard = ({
                         </div>
                     )}
                     <div className="col-lg-5 offset-lg-1 py-3" id="latest-post">
-                        <div
+                        {/* <div
                             className={`${styles.profile_info} d-flex pb-2 pb-sm-2`}>
                             <div className="align-content-center">
                                 <Image
@@ -124,6 +188,44 @@ const PostCard = ({
                                     )}{' '}
                                     • {post.readTime} min read
                                 </p>
+                            </div>
+                        </div> */}
+                        <div
+                            className={`${styles.profile_info} d-flex pb-2 pb-sm-2`}>
+                            <div className={styles.profile_info__details}>
+                                <span className="d-inline-block">
+                                    <div
+                                        className={`${styles.profile_info} d-flex`}>
+                                        <div className="align-content-center">
+                                            <Image
+                                                className={`${styles.pfp} img-fluid`}
+                                                src={`/${authorData.profileImageUrl}`}
+                                                alt="pfp"
+                                                width={42.5}
+                                                height={42.5}
+                                            />
+                                        </div>
+                                        <div
+                                            className={
+                                                styles.profile_info__details
+                                            }>
+                                            <Link
+                                                href={''}
+                                                className={`${styles.profile_info__text} m-0`}>
+                                                {authorData.fullName}
+                                            </Link>
+                                            <p
+                                                className={`${styles.profile_info__text} align-content-center m-0`}>
+                                                {moment(
+                                                    post.date,
+                                                    'DD-MM-YYYY'
+                                                ).format('D MMM')}{' '}
+                                                • {post.readTime?.toString()}{' '}
+                                                min read
+                                            </p>
+                                        </div>
+                                    </div>
+                                </span>
                             </div>
                         </div>
                         <a href={`/${post.slug}`}>
@@ -226,24 +328,48 @@ const PostCard = ({
                 </div>
             </Link>
             <div className={`${styles.profile_info} d-flex`}>
-                <div className="align-content-center">
-                    <Image
-                        className={`${styles.pfp} img-fluid`}
-                        src={`/${authorData.profileImageUrl}`}
-                        alt="pfp"
-                        width={42.5}
-                        height={42.5}
-                    />
-                </div>
-
                 <div className={styles.profile_info__details}>
-                    <p className={styles.profile_info__text}>
-                        {authorData.fullName}
-                    </p>
-                    <p className={styles.profile_info__text}>
-                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')} •{' '}
-                        {post.readTime?.toString()} min read
-                    </p>
+                    <span
+                        id={`popover-trigger-${index}`}
+                        className="d-inline-block"
+                        typeof="button"
+                        tabIndex={0}
+                        data-bs-toggle="popover"
+                        data-bs-trigger="manual"
+                        data-bs-container="body"
+                        data-bs-custom-class="default-author-popover">
+                        <div className={`${styles.profile_info} d-flex`}>
+                            <div className="align-content-center">
+                                <Image
+                                    onMouseEnter={handleMouseEnter}
+                                    onMouseLeave={handleMouseLeave}
+                                    data-bs-toggle="popover"
+                                    className={`${styles.pfp} img-fluid`}
+                                    src={`/${authorData.profileImageUrl}`}
+                                    alt="pfp"
+                                    width={42.5}
+                                    height={42.5}
+                                />
+                            </div>
+                            <div className={styles.profile_info__details}>
+                                <Link
+                                    href={''}
+                                    onMouseEnter={handleMouseEnter}
+                                    onMouseLeave={handleMouseLeave}
+                                    data-bs-toggle="popover"
+                                    className={`${styles.profile_info__text} m-0`}>
+                                    {authorData.fullName}
+                                </Link>
+                                <p
+                                    className={`${styles.profile_info__text} align-content-center m-0`}>
+                                    {moment(post.date, 'DD-MM-YYYY').format(
+                                        'D MMM'
+                                    )}{' '}
+                                    • {post.readTime?.toString()} min read
+                                </p>
+                            </div>
+                        </div>
+                    </span>
                 </div>
             </div>
         </div>
@@ -396,24 +522,48 @@ const PostCard = ({
                 </div>
             </div>
             <div className={`${styles.profile_info} d-flex`}>
-                <div className="align-content-center">
-                    <Image
-                        className={`${styles.pfp} img-fluid`}
-                        src={`/${authorData.profileImageUrl}`}
-                        alt="pfp"
-                        width={42.5}
-                        height={42.5}
-                    />
-                </div>
-
                 <div className={styles.profile_info__details}>
-                    <p className={styles.profile_info__text}>
-                        {authorData.fullName}
-                    </p>
-                    <p className={styles.profile_info__text}>
-                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')} •{' '}
-                        {post.readTime?.toString()} min read
-                    </p>
+                    <span
+                        id={`popover-trigger-${index}`}
+                        className="d-inline-block"
+                        typeof="button"
+                        tabIndex={0}
+                        data-bs-toggle="popover"
+                        data-bs-trigger="manual"
+                        data-bs-container="body"
+                        data-bs-custom-class="default-author-popover">
+                        <div className={`${styles.profile_info} d-flex`}>
+                            <div className="align-content-center">
+                                <Image
+                                    onMouseEnter={handleMouseEnter}
+                                    onMouseLeave={handleMouseLeave}
+                                    data-bs-toggle="popover"
+                                    className={`${styles.pfp} img-fluid`}
+                                    src={`/${authorData.profileImageUrl}`}
+                                    alt="pfp"
+                                    width={42.5}
+                                    height={42.5}
+                                />
+                            </div>
+                            <div className={styles.profile_info__details}>
+                                <Link
+                                    href={''}
+                                    onMouseEnter={handleMouseEnter}
+                                    onMouseLeave={handleMouseLeave}
+                                    data-bs-toggle="popover"
+                                    className={`${styles.profile_info__text} m-0`}>
+                                    {authorData.fullName}
+                                </Link>
+                                <p
+                                    className={`${styles.profile_info__text} align-content-center m-0`}>
+                                    {moment(post.date, 'DD-MM-YYYY').format(
+                                        'D MMM'
+                                    )}{' '}
+                                    • {post.readTime?.toString()} min read
+                                </p>
+                            </div>
+                        </div>
+                    </span>
                 </div>
             </div>
             <div className="d-flex justify-content-end mt-3 gap-3 mb-5">
@@ -544,31 +694,38 @@ const PostCard = ({
                                 )}
                             </div>
 
-                            <div className={`${styles.profile_info} d-flex`}>
-                                <div className="align-content-center">
-                                    <Image
-                                        className={`${styles.pfp} img-fluid`}
-                                        src={`/${previewData.authorData.profileImageUrl}`}
-                                        alt="pfp"
-                                        width={42.5}
-                                        height={42.5}
-                                    />
+                            <span className="d-inline-block">
+                                <div
+                                    className={`${styles.profile_info} d-flex`}>
+                                    <div className="align-content-center">
+                                        <Image
+                                            className={`${styles.pfp} img-fluid`}
+                                            src={`/${authorData.profileImageUrl}`}
+                                            alt="pfp"
+                                            width={42.5}
+                                            height={42.5}
+                                        />
+                                    </div>
+                                    <div
+                                        className={
+                                            styles.profile_info__details
+                                        }>
+                                        <p
+                                            className={`${styles.profile_info__text} m-0 p-0`}>
+                                            {authorData.fullName}
+                                        </p>
+                                        <p
+                                            className={`${styles.profile_info__text} align-content-center m-0`}>
+                                            {moment(
+                                                post.date,
+                                                'DD-MM-YYYY'
+                                            ).format('D MMM')}{' '}
+                                            • {post.readTime?.toString()} min
+                                            read
+                                        </p>
+                                    </div>
                                 </div>
-
-                                <div className={styles.profile_info__details}>
-                                    <p className={styles.profile_info__text}>
-                                        {previewData.authorData.fullName}
-                                    </p>
-                                    <p className={styles.profile_info__text}>
-                                        {moment(
-                                            previewData.date,
-                                            'DD-MM-YYYY'
-                                        ).format('D MMM')}{' '}
-                                        • {previewData.readTime?.toString()} min
-                                        read
-                                    </p>
-                                </div>
-                            </div>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -643,24 +800,48 @@ const PostCard = ({
                 </div>
             </Link>
             <div className={`${styles.profile_info} d-flex`}>
-                <div className="align-content-center">
-                    <Image
-                        className={`${styles.pfp} img-fluid`}
-                        src={`/${authorData.profileImageUrl}`}
-                        alt="pfp"
-                        width={42.5}
-                        height={42.5}
-                    />
-                </div>
-
                 <div className={styles.profile_info__details}>
-                    <p className={styles.profile_info__text}>
-                        {authorData.fullName}
-                    </p>
-                    <p className={styles.profile_info__text}>
-                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')} •{' '}
-                        {post.readTime?.toString()} min read
-                    </p>
+                    <span
+                        id={`popover-trigger-${index}`}
+                        className="d-inline-block"
+                        typeof="button"
+                        tabIndex={0}
+                        data-bs-toggle="popover"
+                        data-bs-trigger="manual"
+                        data-bs-container="body"
+                        data-bs-custom-class="default-author-popover">
+                        <div className={`${styles.profile_info} d-flex`}>
+                            <div className="align-content-center">
+                                <Image
+                                    onMouseEnter={handleMouseEnter}
+                                    onMouseLeave={handleMouseLeave}
+                                    data-bs-toggle="popover"
+                                    className={`${styles.pfp} img-fluid`}
+                                    src={`/${authorData.profileImageUrl}`}
+                                    alt="pfp"
+                                    width={42.5}
+                                    height={42.5}
+                                />
+                            </div>
+                            <div className={styles.profile_info__details}>
+                                <Link
+                                    href={''}
+                                    onMouseEnter={handleMouseEnter}
+                                    onMouseLeave={handleMouseLeave}
+                                    data-bs-toggle="popover"
+                                    className={`${styles.profile_info__text} m-0`}>
+                                    {authorData.fullName}
+                                </Link>
+                                <p
+                                    className={`${styles.profile_info__text} align-content-center m-0`}>
+                                    {moment(post.date, 'DD-MM-YYYY').format(
+                                        'D MMM'
+                                    )}{' '}
+                                    • {post.readTime?.toString()} min read
+                                </p>
+                            </div>
+                        </div>
+                    </span>
                 </div>
             </div>
         </div>

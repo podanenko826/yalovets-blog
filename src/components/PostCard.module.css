@@ -58,6 +58,7 @@
 
 .heading {
     font-size: 25px;
+    align-items: center; /* This ensures vertical alignment */
 }
 
 .description {
@@ -67,24 +68,34 @@
 }
 
 .profile_info {
+    display: flex;
+    align-items: center; /* This ensures vertical alignment */
     padding: 0;
 }
 
 .profile_info__details {
     line-height: 8px;
+
     align-content: space-around;
 }
 
 .profile_info__text {
     font-size: 14px;
     font-weight: 300;
-    margin-top: 7px !important;
-    margin-bottom: 12px !important;
-    margin-left: 10px;
+    /* margin-top: 7px !important;
+    margin-bottom: 12px !important; */
+    padding-top: 12px;
+    padding-bottom: 3px;
+    margin-left: 10px !important;
 }
 
 .pfp {
     width: 42.5px;
+    border-radius: 100%;
+}
+
+.popoverPfp {
+    min-width: 55px;
     border-radius: 100%;
 }
 

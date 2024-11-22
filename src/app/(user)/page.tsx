@@ -161,8 +161,8 @@ export default async function Home() {
                                     author => author.email === post.email
                                 ) as AuthorItem
                             }
-                            index={index}
-                            key={index}
+                            index={index + 1}
+                            key={index + 1}
                             style="standard"
                         />
                     ))}
@@ -195,8 +195,8 @@ export default async function Home() {
                                     author => author.email === post.email
                                 ) as AuthorItem
                             }
-                            index={index}
-                            key={index}
+                            index={index + 10}
+                            key={index + 10}
                             style="standard"
                         />
                     ))}

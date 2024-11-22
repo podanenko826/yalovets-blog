@@ -83,6 +83,10 @@ img {
   overflow: hidden !important;
 }
 
+.rounded-pill {
+  background: red !important;
+}
+
 .posts > .post-list > div {
   margin-top: 60px;
   margin-bottom: 60px;
@@ -5919,7 +5923,7 @@ textarea.form-control-lg {
   --bs-popover-bg: var(--bs-body-bg);
   --bs-popover-border-width: var(--bs-border-width);
   --bs-popover-border-color: var(--bs-border-color-translucent);
-  --bs-popover-border-radius: var(--bs-border-radius-lg);
+  --bs-popover-border-radius: 5px !important;
   --bs-popover-inner-border-radius: calc(var(--bs-border-radius-lg) - var(--bs-border-width));
   --bs-popover-box-shadow: var(--bs-box-shadow);
   --bs-popover-header-padding-x: 1rem;
