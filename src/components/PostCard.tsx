@@ -13,6 +13,7 @@ import {Popover} from 'bootstrap';
 
 import type {AuthorItem, PostItem, PostPreviewItem} from '@/types';
 import {deletePost} from '@/lib/posts';
+import LazyImage from './LazyImage';
 
 type PostCardProps = {
     post: PostItem;
@@ -21,7 +22,6 @@ type PostCardProps = {
     style: 'massive' | 'full' | 'preview' | 'admin' | 'standard';
     index?: number | 1;
     setValue?: React.Dispatch<React.SetStateAction<string>>;
-    isLoading?: boolean;
     onVisible?: () => void;
 };
 
@@ -36,7 +36,6 @@ const PostCard = ({
     style,
     index,
     setValue,
-    isLoading,
     onVisible,
 }: PostCardProps) => {
     useEffect(() => {
@@ -44,15 +43,6 @@ const PostCard = ({
             onVisible(); // Notify parent that the component is visible
         }
     }, [onVisible]);
-
-    // if (isLoading) {
-    //     return <PostCardPlaceholder />;
-    // }
-
-    // // Fallback for missing data
-    // if (!post || !authorData) {
-    //     return <PostCardPlaceholder />;
-    // }
 
     const router = useRouter();
 
@@ -136,7 +126,6 @@ const PostCard = ({
                 if (popoverRef.current) {
                     popoverRef.current.show();
                 }
-                setPopoverVisible(true);
             }
         }, 300); // 0.3-second delay
     };
@@ -162,10 +151,6 @@ const PostCard = ({
         }
     };
 
-    if (!post && !authorData) {
-        return <p>Hello world</p>;
-    }
-
     return style === 'massive' ? (
         <div className={styles.latest_post}>
             <div className="container">
@@ -173,44 +158,23 @@ const PostCard = ({
                     {post.imageUrl && (
                         <div className="col-lg-6">
                             <Link href={`${post.slug}`}>
-                                <Image
-                                    className={`img-fluid ${styles.massive_img}`}
-                                    src={post.imageUrl || '/ui/placeholder.png'} // Using the image URL, including the placeholder logic if needed
-                                    alt={post.title}
-                                    title={post.title}
-                                    priority={true} // Ensuring the image is preloaded and prioritized
-                                    width={354}
-                                    height={180}
-                                    sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                                />
+                                <picture className="img-fluid">
+                                    <Image
+                                        className={`img-fluid ${styles.massive_img}`}
+                                        src={
+                                            post.imageUrl || '/ui/not-found.png'
+                                        } // Using the image URL, including the placeholder logic if needed
+                                        alt={post.title}
+                                        title={post.title}
+                                        width={546}
+                                        height={307}
+                                        sizes="(min-width: 1200px) 960px, (min-width: 992px) 680px"
+                                    />
+                                </picture>
                             </Link>
                         </div>
                     )}
                     <div className="col-lg-5 offset-lg-1 py-3" id="latest-post">
-                        {/* <div
-                            className={`${styles.profile_info} d-flex pb-2 pb-sm-2`}>
-                            <div className="align-content-center">
-                                <Image
-                                    className={`${styles.pfp} img-fluid`}
-                                    src={`/${authorData.profileImageUrl}`}
-                                    alt="pfp"
-                                    width={42.5}
-                                    height={42.5}
-                                />
-                            </div>
-
-                            <div className={styles.profile_info__details}>
-                                <p className={styles.profile_info__text}>
-                                    {authorData.fullName}
-                                </p>
-                                <p className={styles.profile_info__text}>
-                                    {moment(post.date, 'DD-MM-YYYY').format(
-                                        'D MMM'
-                                    )}{' '}
-                                    • {post.readTime} min read
-                                </p>
-                            </div>
-                        </div> */}
                         <div
                             className={`${styles.profile_info} d-flex pb-2 pb-sm-2`}>
                             <div className={styles.profile_info__details}>
@@ -218,9 +182,13 @@ const PostCard = ({
                                     <div
                                         className={`${styles.profile_info} d-flex`}>
                                         <div className="align-content-center">
-                                            <Image
+                                            <LazyImage
                                                 className={`${styles.pfp} img-fluid`}
-                                                src={`/${authorData.profileImageUrl}`}
+                                                src={
+                                                    `/${authorData.profileImageUrl}` ||
+                                                    '/ui/placeholder-pfp.png'
+                                                }
+                                                placeholderUrl="/ui/placeholder-pfp.png"
                                                 alt="pfp"
                                                 width={42.5}
                                                 height={42.5}
@@ -297,16 +265,18 @@ const PostCard = ({
             <Link href={`/${post.slug}`}>
                 {post.imageUrl && (
                     <div className={styles.image}>
-                        <Image
-                            className="img-fluid full-image"
-                            src={post.imageUrl || '/ui/placeholder.png'} // Using the image URL, including the placeholder logic if needed
-                            alt={post.title}
-                            title={post.title}
-                            priority={true} // Ensuring the image is preloaded and prioritized
-                            width={354}
-                            height={180}
-                            sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                        />
+                        <picture className="img-fluid">
+                            <Image
+                                className="img-fluid full-image"
+                                src={post.imageUrl || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
+                                alt={post.title}
+                                title={post.title}
+                                loading="lazy"
+                                width={546}
+                                height={182}
+                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                            />
+                        </picture>
                     </div>
                 )}
 
@@ -361,12 +331,16 @@ const PostCard = ({
                         data-bs-custom-class="default-author-popover">
                         <div className={`${styles.profile_info} d-flex`}>
                             <div className="align-content-center">
-                                <Image
+                                <LazyImage
                                     onMouseEnter={handleMouseEnter}
                                     onMouseLeave={handleMouseLeave}
                                     data-bs-toggle="popover"
                                     className={`${styles.pfp} img-fluid`}
-                                    src={`/${authorData.profileImageUrl}`}
+                                    src={
+                                        `/${authorData.profileImageUrl}` ||
+                                        '/ui/placeholder-pfp.png'
+                                    }
+                                    placeholderUrl="/ui/placeholder-pfp.png"
                                     alt="pfp"
                                     width={42.5}
                                     height={42.5}
@@ -415,10 +389,10 @@ const PostCard = ({
                         data-bs-target={`#leavingModal-${post.slug}`}>
                         <Image
                             className="img-fluid full-image"
-                            src={post.imageUrl || '/ui/placeholder.png'} // Using the image URL, including the placeholder logic if needed
+                            src={post.imageUrl || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
                             alt={post.title}
                             title={post.title}
-                            priority={true} // Ensuring the image is preloaded and prioritized
+                            loading="lazy"
                             width={354}
                             height={180}
                             sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
@@ -555,12 +529,16 @@ const PostCard = ({
                         data-bs-custom-class="default-author-popover">
                         <div className={`${styles.profile_info} d-flex`}>
                             <div className="align-content-center">
-                                <Image
+                                <LazyImage
                                     onMouseEnter={handleMouseEnter}
                                     onMouseLeave={handleMouseLeave}
                                     data-bs-toggle="popover"
                                     className={`${styles.pfp} img-fluid`}
-                                    src={`/${authorData.profileImageUrl}`}
+                                    src={
+                                        `/${authorData.profileImageUrl}` ||
+                                        '/ui/placeholder-pfp.png'
+                                    }
+                                    placeholderUrl="/ui/placeholder-pfp.png"
                                     alt="pfp"
                                     width={42.5}
                                     height={42.5}
@@ -664,16 +642,20 @@ const PostCard = ({
                     <div className="row align-items-center justify-content-center">
                         {previewData.imageUrl && (
                             <div className="col-lg-8">
-                                <Image
-                                    className="img-fluid"
-                                    src={post.imageUrl || '/ui/placeholder.png'} // Using the image URL, including the placeholder logic if needed
-                                    alt={post.title}
-                                    title={post.title}
-                                    priority={true} // Ensuring the image is preloaded and prioritized
-                                    width={354}
-                                    height={180}
-                                    sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                                />
+                                <picture className="img-fluid">
+                                    <Image
+                                        className="img-fluid"
+                                        src={
+                                            post.imageUrl || '/ui/not-found.png'
+                                        } // Using the image URL, including the placeholder logic if needed
+                                        alt={post.title}
+                                        title={post.title}
+                                        loading="lazy"
+                                        width={354}
+                                        height={180}
+                                        sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                                    />
+                                </picture>
                             </div>
                         )}
 
@@ -717,9 +699,13 @@ const PostCard = ({
                                 <div
                                     className={`${styles.profile_info} d-flex`}>
                                     <div className="align-content-center">
-                                        <Image
+                                        <LazyImage
                                             className={`${styles.pfp} img-fluid`}
-                                            src={`/${authorData.profileImageUrl}`}
+                                            src={
+                                                `/${authorData.profileImageUrl}` ||
+                                                '/ui/placeholder-pfp.png'
+                                            }
+                                            placeholderUrl="/ui/placeholder-pfp.png"
                                             alt="pfp"
                                             width={42.5}
                                             height={42.5}
@@ -761,23 +747,15 @@ const PostCard = ({
                 {post.imageUrl && (
                     <div className={styles.image}>
                         <picture className="img-fluid">
-                            <source
-                                type="image/png"
-                                srcSet={`${post.imageUrl} 1140w, ${post.imageUrl} 2280w, ${post.imageUrl} 960w, ${post.imageUrl} 1920w`}
-                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                            />
-                            <source
-                                srcSet={`${post.imageUrl} 1140w, ${post.imageUrl} 2280w, ${post.imageUrl} 960w, ${post.imageUrl} 1920w`}
-                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                            />
                             <Image
                                 className="img-fluid"
-                                src={post.imageUrl}
+                                src={post.imageUrl || '/ui/not-found.png'}
                                 alt={post.title}
                                 title={post.title}
-                                priority
                                 width={354}
                                 height={180}
+                                loading="lazy"
+                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                             />
                         </picture>
                     </div>
@@ -831,12 +809,16 @@ const PostCard = ({
                         data-bs-custom-class="default-author-popover">
                         <div className={`${styles.profile_info} d-flex`}>
                             <div className="align-content-center">
-                                <Image
+                                <LazyImage
                                     onMouseEnter={handleMouseEnter}
                                     onMouseLeave={handleMouseLeave}
                                     data-bs-toggle="popover"
                                     className={`${styles.pfp} img-fluid`}
-                                    src={`/${authorData.profileImageUrl}`}
+                                    src={
+                                        `/${authorData.profileImageUrl}` ||
+                                        '/ui/placeholder-pfp.png'
+                                    }
+                                    placeholderUrl="/ui/placeholder-pfp.png"
                                     alt="pfp"
                                     width={42.5}
                                     height={42.5}

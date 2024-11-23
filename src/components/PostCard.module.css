@@ -128,8 +128,35 @@
     width: 18px;
     height: 4px;
     border-radius: 2px;
-    animation: blink-underscore 2.5s infinite step-start;
+    animation: blink 2.5s infinite step-start;
     animation-fill-mode: both;
+}
+
+.placeholder_image {
+    animation: blink-underscore 3.5s infinite step-start;
+    animation-fill-mode: both;
+}
+
+.placeholder_heading__dot {
+    width: 12px !important;
+    height: 12px !important;
+}
+
+.placeholder_heading__underscore {
+    width: 18px !important;
+    height: 6px;
+    align-self: flex-end;
+}
+
+.placeholder_desc__dot {
+    width: 10px !important;
+    height: 10px !important;
+}
+
+.placeholder_desc__underscore {
+    width: 16px !important;
+    height: 6px;
+    align-self: flex-end;
 }
 
 .placeholder_pfp {
