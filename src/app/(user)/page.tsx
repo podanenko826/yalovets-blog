@@ -1,5 +1,4 @@
 import * as React from 'react';
-import {useState} from 'react';
 import '@/app/page.css';
 
 import type {AuthorItem, PostItem} from '@/types';
@@ -11,6 +10,7 @@ import StartReadingButton from '@/components/Button/StartReadingButton';
 import {getLatestPost, getPopularPosts, getRecentPosts} from '@/lib/posts';
 import {getAuthorEmails, getUsers} from '@/lib/users';
 import dynamic from 'next/dynamic';
+import LazyPostCard from '@/components/LazyPostCard';
 
 const PostCard = dynamic(() => import('@/components/PostCard'), {ssr: false});
 
@@ -20,6 +20,11 @@ export default async function Home() {
     const popularPosts: PostItem[] = await getPopularPosts();
 
     const authorData: AuthorItem[] = await getUsers();
+
+    console.log(recentPosts);
+    console.log(latestPost);
+    console.log(popularPosts);
+    console.log(authorData);
 
     return (
         <main>
@@ -119,7 +124,7 @@ export default async function Home() {
 
             {/* Latest post section */}
             <div className="container-fluid posts p-0" id="posts">
-                <PostCard
+                <LazyPostCard
                     post={latestPost}
                     authorData={
                         authorData.find(
@@ -153,19 +158,20 @@ export default async function Home() {
                 </div>
 
                 <div className="row post-list">
-                    {recentPosts.map((post, index) => (
-                        <PostCard
-                            post={post}
-                            authorData={
-                                authorData.find(
-                                    author => author.email === post.email
-                                ) as AuthorItem
-                            }
-                            index={index + 1}
-                            key={index + 1}
-                            style="standard"
-                        />
-                    ))}
+                    {recentPosts.map((post, index) => {
+                        const author = authorData.find(
+                            author => author.email === post.email
+                        ) as AuthorItem;
+                        return (
+                            <LazyPostCard
+                                post={post}
+                                authorData={author}
+                                index={index + 1}
+                                key={index + 1}
+                                style="standard"
+                            />
+                        );
+                    })}
                 </div>
             </div>
 
@@ -188,7 +194,7 @@ export default async function Home() {
 
                 <div className="row post-list">
                     {popularPosts.map((post, index) => (
-                        <PostCard
+                        <LazyPostCard
                             post={post}
                             authorData={
                                 authorData.find(

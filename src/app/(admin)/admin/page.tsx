@@ -20,7 +20,7 @@ const AdminPage = async () => {
     const managementItems = [
         {
             id: 0,
-            title: 'Menage posts',
+            title: 'Manage posts',
             description:
                 'Create, update and remove posts from your blog in one place.',
             imageUrl: '/img/addpost.png',
@@ -28,7 +28,7 @@ const AdminPage = async () => {
         },
         {
             id: 1,
-            title: 'Menage authors',
+            title: 'Manage authors',
             description:
                 'Create, update and remove authors that can write posts on your blog in one place.',
             imageUrl: '/img/addpost.png',
@@ -36,7 +36,7 @@ const AdminPage = async () => {
         },
         {
             id: 3,
-            title: 'Menage categories',
+            title: 'Manage categories',
             description:
                 'Create, update and remove categories you assign to each post on your blog in one place.',
             imageUrl: '/img/addpost.png',
@@ -44,7 +44,7 @@ const AdminPage = async () => {
         },
         {
             id: 4,
-            title: 'Menage subscribers',
+            title: 'Manage subscribers',
             description:
                 'View whoever is subscribed to your blog and remove their subscribtions in one place.',
             imageUrl: '/img/addpost.png',
@@ -64,7 +64,7 @@ const AdminPage = async () => {
                                     <div className={postCardStyles.image}>
                                         <Image
                                             className={`img-fluid full-image ${postCardStyles.newPostImage}`}
-                                            src={'/img/addpost.png'} // Using the image URL, including the placeholder logic if needed
+                                            src={'/ui/addpost.png'} // Using the image URL, including the placeholder logic if needed
                                             alt={'Create new post'}
                                             title={'Create new post'}
                                             priority={true} // Ensuring the image is preloaded and prioritized
@@ -95,7 +95,7 @@ const AdminPage = async () => {
                                     <div className="align-content-center">
                                         <Image
                                             className={`${postCardStyles.pfp} ${postCardStyles.placeholder_pfp} img-fluid`}
-                                            src={`/img/placeholder-pfp.png`}
+                                            src={`/ui/placeholder-pfp.png`}
                                             alt="pfp"
                                             width={42.5}
                                             height={42.5}
@@ -107,9 +107,7 @@ const AdminPage = async () => {
                                         ${postCardStyles.profile_info__details} gap-2
                                     `}>
                                         <div
-                                            className={
-                                                postCardStyles.profile_info__text
-                                            }>
+                                            className={`${postCardStyles.placeholder_profile_info__text} m-0 m-0`}>
                                             <p
                                                 className={
                                                     postCardStyles.dot
@@ -143,7 +141,7 @@ const AdminPage = async () => {
                                         </div>
                                         <div
                                             className={
-                                                postCardStyles.profile_info__text
+                                                postCardStyles.placeholder_profile_info__text
                                             }>
                                             <p
                                                 className={
@@ -193,7 +191,7 @@ const AdminPage = async () => {
                                                 }>
                                                 <Image
                                                     className={`img-fluid full-image ${postCardStyles.newPostImage}`}
-                                                    src={'/img/addpost.png'} // Using the image URL, including the placeholder logic if needed
+                                                    src={'/ui/addpost.png'} // Using the image URL, including the placeholder logic if needed
                                                     alt={item.title}
                                                     title={item.title}
                                                     priority={true} // Ensuring the image is preloaded and prioritized

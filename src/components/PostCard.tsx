@@ -21,6 +21,12 @@ type PostCardProps = {
     style: 'massive' | 'full' | 'preview' | 'admin' | 'standard';
     index?: number | 1;
     setValue?: React.Dispatch<React.SetStateAction<string>>;
+    isLoading?: boolean;
+    onVisible?: () => void;
+};
+
+export const PostCardPlaceholder = () => {
+    return <p>Hello postcard</p>;
 };
 
 const PostCard = ({
@@ -30,7 +36,24 @@ const PostCard = ({
     style,
     index,
     setValue,
+    isLoading,
+    onVisible,
 }: PostCardProps) => {
+    useEffect(() => {
+        if (onVisible) {
+            onVisible(); // Notify parent that the component is visible
+        }
+    }, [onVisible]);
+
+    // if (isLoading) {
+    //     return <PostCardPlaceholder />;
+    // }
+
+    // // Fallback for missing data
+    // if (!post || !authorData) {
+    //     return <PostCardPlaceholder />;
+    // }
+
     const router = useRouter();
 
     const handlePostDeletion = async (email: string, slug: string) => {
@@ -152,9 +175,7 @@ const PostCard = ({
                             <Link href={`${post.slug}`}>
                                 <Image
                                     className={`img-fluid ${styles.massive_img}`}
-                                    src={
-                                        post.imageUrl || '/img/placeholder.png'
-                                    } // Using the image URL, including the placeholder logic if needed
+                                    src={post.imageUrl || '/ui/placeholder.png'} // Using the image URL, including the placeholder logic if needed
                                     alt={post.title}
                                     title={post.title}
                                     priority={true} // Ensuring the image is preloaded and prioritized
@@ -278,7 +299,7 @@ const PostCard = ({
                     <div className={styles.image}>
                         <Image
                             className="img-fluid full-image"
-                            src={post.imageUrl || '/img/placeholder.png'} // Using the image URL, including the placeholder logic if needed
+                            src={post.imageUrl || '/ui/placeholder.png'} // Using the image URL, including the placeholder logic if needed
                             alt={post.title}
                             title={post.title}
                             priority={true} // Ensuring the image is preloaded and prioritized
@@ -394,7 +415,7 @@ const PostCard = ({
                         data-bs-target={`#leavingModal-${post.slug}`}>
                         <Image
                             className="img-fluid full-image"
-                            src={post.imageUrl || '/img/placeholder.png'} // Using the image URL, including the placeholder logic if needed
+                            src={post.imageUrl || '/ui/placeholder.png'} // Using the image URL, including the placeholder logic if needed
                             alt={post.title}
                             title={post.title}
                             priority={true} // Ensuring the image is preloaded and prioritized
@@ -645,9 +666,7 @@ const PostCard = ({
                             <div className="col-lg-8">
                                 <Image
                                     className="img-fluid"
-                                    src={
-                                        post.imageUrl || '/img/placeholder.png'
-                                    } // Using the image URL, including the placeholder logic if needed
+                                    src={post.imageUrl || '/ui/placeholder.png'} // Using the image URL, including the placeholder logic if needed
                                     alt={post.title}
                                     title={post.title}
                                     priority={true} // Ensuring the image is preloaded and prioritized

@@ -35,7 +35,7 @@ const PostsPage = async () => {
                                     <div className={postCardStyles.image}>
                                         <Image
                                             className={`img-fluid full-image ${postCardStyles.newPostImage}`}
-                                            src={'/img/addpost.png'} // Using the image URL, including the placeholder logic if needed
+                                            src={'/ui/addpost.png'} // Using the image URL, including the placeholder logic if needed
                                             alt={'Create new post'}
                                             title={'Create new post'}
                                             priority={true} // Ensuring the image is preloaded and prioritized
@@ -66,7 +66,7 @@ const PostsPage = async () => {
                                     <div className="align-content-center">
                                         <Image
                                             className={`${postCardStyles.pfp} ${postCardStyles.placeholder_pfp} img-fluid`}
-                                            src={`/img/placeholder-pfp.png`}
+                                            src={`/ui/placeholder-pfp.png`}
                                             alt="pfp"
                                             width={42.5}
                                             height={42.5}
@@ -79,7 +79,7 @@ const PostsPage = async () => {
                                     `}>
                                         <div
                                             className={
-                                                postCardStyles.profile_info__text
+                                                postCardStyles.placeholder_profile_info__text
                                             }>
                                             <p
                                                 className={
@@ -114,7 +114,7 @@ const PostsPage = async () => {
                                         </div>
                                         <div
                                             className={
-                                                postCardStyles.profile_info__text
+                                                postCardStyles.placeholder_profile_info__text
                                             }>
                                             <p
                                                 className={
