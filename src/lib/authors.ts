@@ -19,6 +19,21 @@ function transformAuthorData(data: any[]): AuthorItem[] {
     }));
 }
 
+const emptyAuthorObject: AuthorItem = {
+    email: '',
+    slug: '',
+    bio: '',
+    fullName: '',
+    profileImageUrl: '',
+    socialLinks: {
+        emailAddress: '',
+        facebookUrl: '',
+        instagramUrl: '',
+        linkedInUrl: '',
+    },
+    authorKey: '',
+};
+
 export const getAuthors = async () => {
     const baseUrl =
         typeof window === 'undefined'
@@ -43,7 +58,7 @@ export const getAuthors = async () => {
     }
 };
 
-export const getAuthorByEmail = async (email: string) => {
+export const getAuthorByEmail = async (email: string): Promise<AuthorItem> => {
     const baseUrl =
         typeof window === 'undefined'
             ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
@@ -57,14 +72,17 @@ export const getAuthorByEmail = async (email: string) => {
         if (data) {
             author = data;
         }
+
         return author;
     } catch (err) {
         console.error('Failed to fetch author from the database: ', err);
-        return [];
+        return emptyAuthorObject;
     }
 };
 
-export const getAuthorByKey = async (authorKey: string) => {
+export const getAuthorByKey = async (
+    authorKey: string
+): Promise<AuthorItem> => {
     const baseUrl =
         typeof window === 'undefined'
             ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
@@ -87,7 +105,7 @@ export const getAuthorByKey = async (authorKey: string) => {
         return transformedAuthor[0];
     } catch (err) {
         console.error('Failed to fetch author from the database: ', err);
-        return [];
+        return emptyAuthorObject;
     }
 };
 
