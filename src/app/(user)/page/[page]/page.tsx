@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {getSortedPosts} from '@/lib/posts';
-import {getUsers} from '@/lib/users';
+import {getAuthors} from '@/lib/authors';
 import {AuthorItem, PostItem} from '@/types';
 import dynamic from 'next/dynamic';
 
@@ -17,7 +17,7 @@ const PostCard = dynamic(() => import('@/components/PostCard'), {ssr: false});
 export default async function BlogPage({params}: {params: {page: string}}) {
     const currentPage = parseInt(params.page, 10) || 1;
     const posts: PostItem[] = await getSortedPosts();
-    const authorData: AuthorItem[] = await getUsers();
+    const authorData: AuthorItem[] = await getAuthors();
 
     const ARTICLES_PER_PAGE = 15; // Define the number of posts per page
     const startIndex = (currentPage - 1) * ARTICLES_PER_PAGE;

@@ -5,7 +5,7 @@ import React from 'react';
 
 import {getMDXContent, getPost, getSortedPosts} from '@/lib/posts';
 import {notFound} from 'next/navigation';
-import {getUsers} from '@/lib/users';
+import {getAuthors} from '@/lib/authors';
 
 const PostEditor = dynamic(() => import('@/components/EditorComponent'), {
     ssr: false,
@@ -17,7 +17,7 @@ const EditPage = async ({params}: {params: {slug: string}}) => {
     const data = await getMDXContent(slug);
 
     const postData = await getSortedPosts();
-    const authorData = await getUsers();
+    const authorData = await getAuthors();
 
     if (!postData || !authorData) {
         return <p>Loading...</p>;

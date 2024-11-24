@@ -13,7 +13,7 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 
 import type {AuthorItem, PostItem} from '@/types';
-import {getAuthorEmails, getUsers} from './users';
+import {getAuthorEmails, getAuthorByEmail} from './authors';
 import {request} from 'http';
 
 const AWS_REGION = process.env.NEXT_PUBLIC_REGION;
@@ -353,7 +353,7 @@ export const deletePost = async (postData: {email: string; slug: string}) => {
     return slug;
 };
 
-export const getArticleData = async (
+export const getPostsData = async (
     slug: string
 ): Promise<{
     slug: string;
@@ -370,7 +370,7 @@ export const getArticleData = async (
 
         const postData = await getPost(slug);
 
-        const authorData = await getUsers(postData.email);
+        const authorData = await getAuthorByEmail(postData.email);
 
         return {
             slug,
@@ -393,6 +393,7 @@ export const getArticleData = async (
                 email: '',
                 slug: '',
                 fullName: '',
+                authorKey: '',
                 profileImageUrl: '',
                 bio: '',
                 socialLinks: {

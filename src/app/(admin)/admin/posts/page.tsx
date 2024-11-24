@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {getSortedPosts} from '@/lib/posts';
-import {getUsers} from '@/lib/users';
+import {getAuthors} from '@/lib/authors';
 import {AuthorItem, PostItem} from '@/types';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
@@ -15,7 +15,7 @@ const PostCard = dynamic(() => import('@/components/PostCard'), {ssr: false});
 const PostsPage = async () => {
     const postData: PostItem[] = await getSortedPosts();
 
-    const authorData: AuthorItem[] = await getUsers();
+    const authorData: AuthorItem[] = await getAuthors();
 
     return (
         <div>

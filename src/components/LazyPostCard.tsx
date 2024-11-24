@@ -75,7 +75,7 @@ const LazyPostCard = ({
                         </div>
 
                         <div className={`${styles.postInfo}`}>
-                            <h2
+                            <span
                                 className={`${styles.heading} d-flex gap-1`}
                                 id="col-heading-1">
                                 <p
@@ -108,11 +108,11 @@ const LazyPostCard = ({
                                     className={`${styles.underscore} ${styles.placeholder_heading__underscore}`}></p>
                                 <p
                                     className={`${styles.dot} ${styles.placeholder_heading__dot}`}></p>
-                            </h2>
+                            </span>
 
                             {/* Placeholder description */}
 
-                            <p
+                            <span
                                 className={`${styles.description} d-flex gap-1 pt-3 pb-2`}>
                                 <p
                                     className={`${styles.underscore} ${styles.placeholder_desc__underscore}`}></p>
@@ -130,7 +130,7 @@ const LazyPostCard = ({
                                     className={`${styles.underscore} ${styles.placeholder_desc__underscore}`}></p>
                                 <p
                                     className={`${styles.dot} ${styles.placeholder_desc__dot}`}></p>
-                            </p>
+                            </span>
                         </div>
                     </span>
 

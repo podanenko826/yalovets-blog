@@ -12,8 +12,7 @@ import {
 } from 'next-mdx-remote/rsc';
 import {serialize} from 'next-mdx-remote/serialize';
 
-import {getArticleData, getPost} from '@/lib/posts';
-import {getUsers} from '@/lib/users';
+import {getPostsData} from '@/lib/posts';
 import Link from 'next/link';
 
 interface PostPageProps {
@@ -30,7 +29,7 @@ const PostPage: FC<PostPageProps> = async ({params}: PostPageProps) => {
             : '';
 
     // Fetch the markdown content
-    const post = await getArticleData(slug);
+    const post = await getPostsData(slug);
     if (!post.postData || !post.markdown) {
         console.error('Failed to fetch markdown content');
         return notFound();

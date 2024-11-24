@@ -8,7 +8,7 @@ import StartReadingButton from '@/components/Button/StartReadingButton';
 // import {MdOutlineArrowForwardIos} from 'react-icons/md';
 // import {getUsers} from '@/lib/users';
 import {getLatestPost, getPopularPosts, getRecentPosts} from '@/lib/posts';
-import {getAuthorEmails, getUsers} from '@/lib/users';
+import {getAuthorEmails, getAuthors} from '@/lib/authors';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import LazyPostCard from '@/components/LazyPostCard';
@@ -20,7 +20,7 @@ export default async function Home() {
     const latestPost: PostItem = await getLatestPost();
     const popularPosts: PostItem[] = await getPopularPosts();
 
-    const authorData: AuthorItem[] = await getUsers();
+    const authorData: AuthorItem[] = await getAuthors();
 
     return (
         <main>
@@ -49,27 +49,19 @@ export default async function Home() {
             <div className="container-fluid welcome-xs d-block d-lg-none p-0 overflow-hidden">
                 <div className="row">
                     <div className="col-11 offset-1 col-sm-10 offset-sm-2 col-md-7 offset-md-5">
-                        {/* <picture className="img-fluid teaser-img">
-                            <source
-                                type="image/webp"
-                                srcSet="/img/teaser-front@1140w2x.webp 1140w, /img/teaser-front@1140w2x.webp 2280w, /img/teaser-front@1140w2x.webp 960w, /img/teaser-front@1140w2x.webp 1920w"
+                        <picture className="img-fluid teaser-img">
+                            <Image
+                                className="img-fluid teaser-img"
+                                src={'/img/teaser-front@1140w2x.webp'}
+                                style={{width: 'auto'}}
+                                alt="Teaser"
+                                title="Teaser"
+                                width={635}
+                                height={476}
+                                priority={true}
                                 sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                             />
-                            <source
-                                srcSet="/img/teaser-front@1140w2x.jpg 1140w, /img/teaser-front@1140w2x.jpg 2280w, /img/teaser-front@1140w2x.jpg 960w, /img/teaser-front@1140w2x.jpg 1920w"
-                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                            />
-                        </picture> */}
-                        <Image
-                            className="img-fluid teaser-img"
-                            src={'/img/teaser-front@1140w2x.webp'}
-                            alt="Teaser"
-                            title="Teaser"
-                            width={635}
-                            height={476}
-                            priority={true}
-                            sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                        />
+                        </picture>
                     </div>
                 </div>
             </div>
@@ -79,32 +71,18 @@ export default async function Home() {
             <div className="welcome container-fluid d-none d-lg-block overflow-hidden">
                 <div className="row">
                     <div className="col-lg-7 offset-lg-5">
-                        {/* <picture className="img-fluid teaser-img">
-                            <source
-                                type="image/webp"
-                                srcSet="/img/teaser-front@1140w2x.webp 1140w, /img/teaser-front@1140w2x.webp 2280w, /img/teaser-front@1140w2x.webp 960w, /img/teaser-front@1140w2x.webp 1920w"
-                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                            />
-                            <source
-                                srcSet="/img/teaser-front@1140w2x.jpg 1140w, /img/teaser-front@1140w2x.jpg 2280w, /img/teaser-front@1140w2x.jpg 960w, /img/teaser-front@1140w2x.jpg 1920w"
-                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                            />
-                            <img
+                        <picture className="img-fluid teaser-img">
+                            <Image
                                 className="img-fluid teaser-img"
-                                src="/img/teaser-front.jpg"
+                                src={'/img/teaser-front@1140w2x.webp'}
+                                style={{width: 'auto'}}
                                 alt="Teaser"
-                                title="Teaser"
+                                width={998}
+                                height={19}
+                                priority={true}
+                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                             />
-                        </picture> */}
-                        <Image
-                            className="img-fluid teaser-img"
-                            src={'/img/teaser-front@1140w2x.webp'}
-                            alt="Teaser"
-                            width={998}
-                            height={19}
-                            priority={true}
-                            sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                        />
+                        </picture>
                     </div>
                 </div>
                 <div>

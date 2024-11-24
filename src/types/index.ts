@@ -2,6 +2,7 @@ export type AuthorItem = {
     email: string;
     slug: string;
     fullName: string;
+    authorKey: string;
     profileImageUrl: string;
     bio: string;
     socialLinks: {

@@ -73,7 +73,7 @@ const PostCard = ({
                 content: `
                     <div class="row justify-content-beetween align-content-between">
                         <div class="col-12 col-md-8">
-                            <a class="subheading a-link m-0" href="">${authorData.fullName}</a>
+                            <a class="subheading a-link m-0" href="/author/${authorData.authorKey}">${authorData.fullName}</a>
                                         <h6 class="subheading-tiny py-2">${authorData.bio}</h6>
                         </div>
 
@@ -85,7 +85,7 @@ const PostCard = ({
 
                         <div class="col-12 d-flex justify-content-between align-content-center">
                             <p class="p-0 m-0">Visit my profile</p>
-                            <a href="" class="a-btn btn-filled px-2 py-0">
+                            <a href="/author/${authorData.authorKey}" class="a-btn btn-filled px-2 py-0">
                                 Visit
                             </a>
                         </div>
