@@ -15,6 +15,8 @@ import type {AuthorItem, PostItem, PostPreviewItem} from '@/types';
 import {deletePost} from '@/lib/posts';
 import LazyImage from './LazyImage';
 
+import {FaCoffee} from 'react-icons/fa';
+
 type PostCardProps = {
     post: PostItem;
     previewData?: PostPreviewItem;
@@ -746,7 +748,7 @@ const PostCard = ({
             <Link href={`/${post.slug}`}>
                 {post.imageUrl && (
                     <div className={styles.image}>
-                        <picture className="img-fluid">
+                        <picture className={`img-fluid ${styles.imageWrapper}`}>
                             <Image
                                 className="img-fluid"
                                 src={post.imageUrl || '/ui/not-found.png'}
@@ -757,6 +759,14 @@ const PostCard = ({
                                 loading="lazy"
                                 sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                             />
+                            <span
+                                className={`d-inline-block ${styles.articleLabel} subheading-smaller`}>
+                                <FaCoffee
+                                    className="m-1 subheading-tiny"
+                                    id={styles.labelIcon}
+                                />
+                                Article
+                            </span>
                         </picture>
                     </div>
                 )}

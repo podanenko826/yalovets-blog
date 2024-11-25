@@ -164,6 +164,61 @@
     animation-fill-mode: both;
 }
 
+.articleLabel {
+    position: absolute;
+    top: 315%;
+    left: 7.5px; /* Distance from the right of the container */
+    background-color: rgba(
+        0,
+        0,
+        0,
+        0.6
+    ); /* Optional background for better readability */
+    color: #fff; /* Text color */
+    padding: 0px 6px; /* Optional padding for styling */
+    font-size: 12px; /* Adjust the size as needed */
+    border-radius: 4px; /* Optional rounded corners */
+    font-weight: 600 !important;
+    font-size: 11px;
+    z-index: 1;
+    gap: 4px;
+}
+
+.imageWrapper {
+    position: relative; /* For the span to position relative to this */
+    width: 100%;
+    height: 180px; /* Match the fixed height for the image */
+    overflow: hidden; /* Ensure no content spills outside */
+}
+
+@media (max-width: 992px) {
+    .imageWrapper {
+        height: 140px; /* Adjust height for smaller screens */
+    }
+}
+
+@media (max-width: 767px) {
+    .imageWrapper {
+        height: 160px; /* Adjust height for even smaller screens */
+    }
+}
+
+#labelIcon {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    .articleLabel {
+        top: 260%;
+    }
+}
+
+@media (min-width: 993px) {
+    .articleLabel {
+        top: 365%;
+    }
+}
+
 @keyframes blink {
     0%,
     100% {
