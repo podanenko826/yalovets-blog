@@ -199,7 +199,7 @@ const PostCard = ({
                                                 styles.profile_info__details
                                             }>
                                             <Link
-                                                href={''}
+                                                href={`/author/${authorData.authorKey}`}
                                                 className={`${styles.profile_info__text} m-0`}>
                                                 {authorData.fullName}
                                             </Link>
@@ -348,7 +348,7 @@ const PostCard = ({
                             </div>
                             <div className={styles.profile_info__details}>
                                 <Link
-                                    href={''}
+                                    href={`/author/${authorData.authorKey}`}
                                     onMouseEnter={handleMouseEnter}
                                     onMouseLeave={handleMouseLeave}
                                     data-bs-toggle="popover"
@@ -826,7 +826,7 @@ const PostCard = ({
                             </div>
                             <div className={styles.profile_info__details}>
                                 <Link
-                                    href={''}
+                                    href={`/author/${authorData.authorKey}`}
                                     onMouseEnter={handleMouseEnter}
                                     onMouseLeave={handleMouseLeave}
                                     data-bs-toggle="popover"
