@@ -1,21 +1,22 @@
 'use client';
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import moment from 'moment';
-import {useRouter} from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import styles from '@/components/PostCard.module.css';
 import * as bootstrap from 'bootstrap';
-import {Alert} from 'react-bootstrap';
-import {Modal, Offcanvas} from 'react-bootstrap';
-import {Popover} from 'bootstrap';
+import { Alert } from 'react-bootstrap';
+import { Modal, Offcanvas } from 'react-bootstrap';
+import { Popover } from 'bootstrap';
 
-import type {AuthorItem, PostItem, PostPreviewItem} from '@/types';
-import {deletePost} from '@/lib/posts';
+import type { AuthorItem, PostItem, PostPreviewItem } from '@/types';
+import { deletePost, getMDXContent } from '@/lib/posts';
 import LazyImage from './LazyImage';
 
-import {FaCoffee} from 'react-icons/fa';
+import { FaCoffee } from 'react-icons/fa';
+import { usePostContext } from './PostContext';
 
 type PostCardProps = {
     post: PostItem;
@@ -27,19 +28,18 @@ type PostCardProps = {
     onVisible?: () => void;
 };
 
-export const PostCardPlaceholder = () => {
-    return <p>Hello postcard</p>;
-};
+const PostCard = ({ post, previewData, authorData, style, index, setValue, onVisible }: PostCardProps) => {
+    const { openModal } = usePostContext();
 
-const PostCard = ({
-    post,
-    previewData,
-    authorData,
-    style,
-    index,
-    setValue,
-    onVisible,
-}: PostCardProps) => {
+    const handlePostOpen = async () => {
+        const mdxContent = await getMDXContent(post.slug);
+
+        const markdown = mdxContent.markdown;
+        const previousPath = window.location.href;
+
+        openModal(post, markdown, previousPath);
+    };
+
     useEffect(() => {
         if (onVisible) {
             onVisible(); // Notify parent that the component is visible
@@ -49,7 +49,7 @@ const PostCard = ({
     const router = useRouter();
 
     const handlePostDeletion = async (email: string, slug: string) => {
-        const deletedPostSlug = await deletePost({email, slug});
+        const deletedPostSlug = await deletePost({ email, slug });
         if (deletedPostSlug) {
             router.refresh();
         }
@@ -57,17 +57,19 @@ const PostCard = ({
 
     const popoverRef = useRef<Popover | null>(null);
     const [popoverVisible, setPopoverVisible] = useState(false); // Single source of truth for visibility
-    const [currentPopover, setCurrentPopover] =
-        useState<bootstrap.Popover | null>(null);
+    const [currentPopover, setCurrentPopover] = useState<bootstrap.Popover | null>(null);
     const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null); // Ref for timeout to avoid state re-renders
 
     // Initialize popover on first render
     useEffect(() => {
-        const popoverTrigger = document.querySelector(
-            `#popover-trigger-${index}`
-        );
+        let Popover;
+        if (typeof window !== 'undefined') {
+            Popover = require('bootstrap/js/dist/popover'); // Or the library you use
+        }
 
-        if (popoverTrigger && !currentPopover) {
+        const popoverTrigger = document.querySelector(`#popover-trigger-${index}`);
+
+        if (popoverTrigger && !currentPopover && Popover) {
             const newPopover = new Popover(popoverTrigger, {
                 html: true,
                 placement: 'top',
@@ -76,22 +78,22 @@ const PostCard = ({
                     <div class="row justify-content-beetween align-content-between">
                         <div class="col-12 col-md-8">
                             <a class="subheading a-link m-0" href="/author/${authorData.authorKey}">${authorData.fullName}</a>
-                                        <h6 class="subheading-tiny py-2">${authorData.bio}</h6>
+                            <h6 class="subheading-tiny py-2">${authorData.bio}</h6>
                         </div>
-
+    
                         <div class="col-4 mb-2 mb-md-0 col-md-4">
                             <Image class="${styles.popoverPfp}" src="/${authorData.profileImageUrl}" width={50} height={50} />
                         </div>
-
+    
                         <div class="col-md-12 horisontal-line horisontal-line-thin"></div>
-
+    
                         <div class="col-12 d-flex justify-content-between align-content-center">
                             <p class="p-0 m-0">Visit my profile</p>
                             <a href="/author/${authorData.authorKey}" class="a-btn btn-filled px-2 py-0">
                                 Visit
                             </a>
                         </div>
-                     </div>
+                    </div>
                 `,
                 trigger: 'manual',
             });
@@ -99,7 +101,6 @@ const PostCard = ({
         }
 
         return () => {
-            // Dispose popover when component unmounts
             if (popoverRef.current) {
                 popoverRef.current.dispose();
             }
@@ -109,9 +110,7 @@ const PostCard = ({
     // Effect to attach listeners to the dynamic popover content
     useEffect(() => {
         if (popoverVisible) {
-            const popoverContent = document.querySelector(
-                'div.popover'
-            ) as HTMLElement;
+            const popoverContent = document.querySelector('div.popover') as HTMLElement;
             if (popoverContent) {
                 popoverContent.addEventListener('mouseenter', handleMouseEnter);
                 popoverContent.addEventListener('mouseleave', handleMouseLeave);
@@ -159,13 +158,11 @@ const PostCard = ({
                 <div className="row align-items-center justify-content-center">
                     {post.imageUrl && (
                         <div className="col-lg-6">
-                            <Link href={`${post.slug}`}>
+                            <a role="button" onClick={handlePostOpen}>
                                 <picture className="img-fluid">
                                     <Image
                                         className={`img-fluid ${styles.massive_img}`}
-                                        src={
-                                            post.imageUrl || '/ui/not-found.png'
-                                        } // Using the image URL, including the placeholder logic if needed
+                                        src={post.imageUrl || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
                                         alt={post.title}
                                         title={post.title}
                                         width={546}
@@ -173,83 +170,43 @@ const PostCard = ({
                                         sizes="(min-width: 1200px) 960px, (min-width: 992px) 680px"
                                     />
                                 </picture>
-                            </Link>
+                            </a>
                         </div>
                     )}
                     <div className="col-lg-5 offset-lg-1 py-3" id="latest-post">
-                        <div
-                            className={`${styles.profile_info} d-flex pb-2 pb-sm-2`}>
+                        <div className={`${styles.profile_info} d-flex pb-2 pb-sm-2`}>
                             <div className={styles.profile_info__details}>
                                 <span className="d-inline-block">
-                                    <div
-                                        className={`${styles.profile_info} d-flex`}>
+                                    <div className={`${styles.profile_info} d-flex`}>
                                         <div className="align-content-center">
-                                            <LazyImage
-                                                className={`${styles.pfp} img-fluid`}
-                                                src={
-                                                    `/${authorData.profileImageUrl}` ||
-                                                    '/ui/placeholder-pfp.png'
-                                                }
-                                                placeholderUrl="/ui/placeholder-pfp.png"
-                                                alt="pfp"
-                                                width={42.5}
-                                                height={42.5}
-                                            />
+                                            <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
                                         </div>
-                                        <div
-                                            className={
-                                                styles.profile_info__details
-                                            }>
-                                            <Link
-                                                href={`/author/${authorData.authorKey}`}
-                                                className={`${styles.profile_info__text} m-0`}>
+                                        <div className={styles.profile_info__details}>
+                                            <Link href={`/author/${authorData.authorKey}`} className={`${styles.profile_info__text} m-0`}>
                                                 {authorData.fullName}
                                             </Link>
-                                            <p
-                                                className={`${styles.profile_info__text} align-content-center m-0`}>
-                                                {moment(
-                                                    post.date,
-                                                    'DD-MM-YYYY'
-                                                ).format('D MMM')}{' '}
-                                                • {post.readTime?.toString()}{' '}
-                                                min read
+                                            <p className={`${styles.profile_info__text} align-content-center m-0`}>
+                                                {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
                                             </p>
                                         </div>
                                     </div>
                                 </span>
                             </div>
                         </div>
-                        <a href={`/${post.slug}`}>
-                            <h1
-                                className={`${styles.heading} d-flex align-content-center gap-1`}
-                                id="col-heading-1">
-                                {post.title.length > 85 ? (
-                                    <>{post.title.slice(0, 85) + '... '}</>
-                                ) : (
-                                    post.title
-                                )}{' '}
-                                {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(
-                                    moment(post.date, 'DD-MM-YYYY')
-                                ) &&
-                                    moment(post.modifyDate, 'DD-MM-YYYY').diff(
-                                        moment(post.date, 'DD-MM-YYYY'),
-                                        'days'
-                                    ) <= 30 && (
-                                        <>
-                                            <span className="p-2 rounded-pill text-bg-secondary">
-                                                Updated
-                                            </span>
-                                        </>
-                                    )}
+                        <a role="button" onClick={handlePostOpen}>
+                            <h1 className={`${styles.heading} d-flex align-content-center gap-1`} id="col-heading-1">
+                                {post.title.length > 85 ? <>{post.title.slice(0, 85) + '... '}</> : post.title}{' '}
+                                {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && (
+                                    <>
+                                        <span className="p-2 rounded-pill text-bg-secondary">Updated</span>
+                                    </>
+                                )}
                             </h1>
                             <p className={`${styles.description} pb-2`}>
                                 {post.description.length > 140 ? (
                                     <>
-                                        {post.description.slice(0, 140) +
-                                            '... '}
-                                        <Link href="" id="col-secondary">
-                                            Read more
-                                        </Link>
+                                        {post.description.slice(0, 140) + '... '}
+                                        <button id="col-secondary">Read more</button>
                                     </>
                                 ) : (
                                     post.description
@@ -264,7 +221,7 @@ const PostCard = ({
         </div>
     ) : style === 'full' ? (
         <div className="col-12 col-md-6" key={index}>
-            <Link href={`/${post.slug}`}>
+            <a role="button" onClick={handlePostOpen}>
                 {post.imageUrl && (
                     <div className={styles.image}>
                         <picture className="img-fluid">
@@ -283,86 +240,40 @@ const PostCard = ({
                 )}
 
                 <div className={styles.postInfo}>
-                    <h2
-                        className={`${styles.heading} d-flex flex-wrap align-items-center gap-1`}
-                        id="col-heading-1">
+                    <h2 className={`${styles.heading} d-flex flex-wrap align-items-center gap-1`} id="col-heading-1">
                         {post.title}{' '}
-                        {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(
-                            moment(post.date, 'DD-MM-YYYY')
-                        ) &&
-                            moment(post.modifyDate, 'DD-MM-YYYY').diff(
-                                moment(post.date, 'DD-MM-YYYY'),
-                                'days'
-                            ) <= 30 && (
-                                <span className="px-2 py-1 mt-1 rounded-pill text-wrap text-bg-secondary">
-                                    {'Updated ' +
-                                        moment(
-                                            post.modifyDate,
-                                            'DD-MM-YYYY'
-                                        ).fromNow()}
-                                </span>
-                                // <span className="px-2 py-1 pb-1 mb-3 rounded-pill text-bg-secondary">
-                                //     Updated
-                                // </span>
-                            )}
+                        {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && (
+                            <span className="px-2 py-1 mt-1 rounded-pill text-wrap text-bg-secondary">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>
+                            // <span className="px-2 py-1 pb-1 mb-3 rounded-pill text-bg-secondary">
+                            //     Updated
+                            // </span>
+                        )}
                     </h2>
                     <p className={styles.description}>
                         {post.description.length > 160 ? (
                             <>
                                 {post.description.slice(0, 160) + '... '}
-                                <Link href="" id="col-secondary">
-                                    Read more
-                                </Link>
+                                <button id="col-secondary">Read more</button>
                             </>
                         ) : (
                             post.description
                         )}
                     </p>
                 </div>
-            </Link>
+            </a>
             <div className={`${styles.profile_info} d-flex`}>
                 <div className={styles.profile_info__details}>
-                    <span
-                        id={`popover-trigger-${index}`}
-                        className="d-inline-block"
-                        typeof="button"
-                        tabIndex={0}
-                        data-bs-toggle="popover"
-                        data-bs-trigger="manual"
-                        data-bs-container="body"
-                        data-bs-custom-class="default-author-popover">
+                    <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
                         <div className={`${styles.profile_info} d-flex`}>
                             <div className="align-content-center">
-                                <LazyImage
-                                    onMouseEnter={handleMouseEnter}
-                                    onMouseLeave={handleMouseLeave}
-                                    data-bs-toggle="popover"
-                                    className={`${styles.pfp} img-fluid`}
-                                    src={
-                                        `/${authorData.profileImageUrl}` ||
-                                        '/ui/placeholder-pfp.png'
-                                    }
-                                    placeholderUrl="/ui/placeholder-pfp.png"
-                                    alt="pfp"
-                                    width={42.5}
-                                    height={42.5}
-                                />
+                                <LazyImage onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
                             </div>
                             <div className={styles.profile_info__details}>
-                                <Link
-                                    href={`/author/${authorData.authorKey}`}
-                                    onMouseEnter={handleMouseEnter}
-                                    onMouseLeave={handleMouseLeave}
-                                    data-bs-toggle="popover"
-                                    className={`${styles.profile_info__text} m-0`}>
+                                <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
                                     {authorData.fullName}
                                 </Link>
-                                <p
-                                    className={`${styles.profile_info__text} align-content-center m-0`}>
-                                    {moment(post.date, 'DD-MM-YYYY').format(
-                                        'D MMM'
-                                    )}{' '}
-                                    • {post.readTime?.toString()} min read
+                                <p className={`${styles.profile_info__text} align-content-center m-0`}>
+                                    {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
                                 </p>
                             </div>
                         </div>
@@ -373,22 +284,11 @@ const PostCard = ({
     ) : style === 'admin' ? (
         <div className="col-12" key={index}>
             {post.imageUrl && (
-                <div
-                    className={`${styles.image} position-relative`}
-                    key={post.imageUrl}>
-                    <button
-                        className="btn-filled position-absolute mt-4 px-2 py-1 top-0 end-0 translate-middle"
-                        type="button"
-                        data-bs-toggle="offcanvas"
-                        onClick={e => e.preventDefault()}
-                        data-bs-target={`#postDetails-${post.slug}`}
-                        aria-controls={`postDetails-${post.slug}`}>
+                <div className={`${styles.image} position-relative`} key={post.imageUrl}>
+                    <button className="btn-filled position-absolute mt-4 px-2 py-1 top-0 end-0 translate-middle" type="button" data-bs-toggle="offcanvas" onClick={e => e.preventDefault()} data-bs-target={`#postDetails-${post.slug}`} aria-controls={`postDetails-${post.slug}`}>
                         ...
                     </button>
-                    <Link
-                        href={''}
-                        data-bs-toggle="modal"
-                        data-bs-target={`#leavingModal-${post.slug}`}>
+                    <Link href={''} data-bs-toggle="modal" data-bs-target={`#leavingModal-${post.slug}`}>
                         <Image
                             className="img-fluid full-image"
                             src={post.imageUrl || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
@@ -402,66 +302,33 @@ const PostCard = ({
                     </Link>
                 </div>
             )}
-            <Link
-                href={''}
-                data-bs-toggle="modal"
-                data-bs-target={`#leavingModal-${post.slug}`}>
+            <Link href={''} data-bs-toggle="modal" data-bs-target={`#leavingModal-${post.slug}`}>
                 <div className={styles.postInfo}>
-                    <h2
-                        className={`${styles.heading} d-flex flex-wrap align-content-center gap-1`}
-                        id="col-heading-1">
-                        {post.title}{' '}
-                        {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(
-                            moment(post.date, 'DD-MM-YYYY')
-                        ) && (
-                            <span className="px-2 py-1 text-wrap rounded-pill text-bg-secondary">
-                                {'Updated ' +
-                                    moment(
-                                        post.modifyDate,
-                                        'DD-MM-YYYY'
-                                    ).fromNow()}
-                            </span>
-                        )}
+                    <h2 className={`${styles.heading} d-flex flex-wrap align-content-center gap-1`} id="col-heading-1">
+                        {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && <span className="px-2 py-1 text-wrap rounded-pill text-bg-secondary">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>}
                     </h2>
                     <p className={styles.description}>{post.description}</p>
                 </div>
             </Link>
 
-            <div
-                className="modal fade"
-                id={`leavingModal-${post.slug}`}
-                tabIndex={-1}
-                aria-labelledby={`leavingModalLabel-${post.slug}`}
-                aria-hidden="true">
+            <div className="modal fade" id={`leavingModal-${post.slug}`} tabIndex={-1} aria-labelledby={`leavingModalLabel-${post.slug}`} aria-hidden="true">
                 <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5
-                                className="modal-title"
-                                id={`leavingModalLabel-${post.slug}`}>
+                            <h5 className="modal-title" id={`leavingModalLabel-${post.slug}`}>
                                 You are about to leave the admin page.
                             </h5>
-                            <button
-                                type="button"
-                                className="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close"></button>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
                             <p>
-                                The post with the following title will be opened
-                                in the blog: <br />
+                                The post with the following title will be opened in the blog: <br />
                             </p>
-                            <h4 id={`leavingModalLabel-${post.slug}`}>
-                                {post.title}
-                            </h4>
+                            <h4 id={`leavingModalLabel-${post.slug}`}>{post.title}</h4>
                         </div>
                         <div className="modal-footer">
                             <Link href={`/${post.slug}`} target="_blank">
-                                <button
-                                    type="button"
-                                    className="btn-filled py-2"
-                                    data-bs-dismiss="modal">
+                                <button type="button" className="btn-filled py-2" data-bs-dismiss="modal">
                                     Open post
                                 </button>
                             </Link>
@@ -469,23 +336,12 @@ const PostCard = ({
                     </div>
                 </div>
             </div>
-            <div
-                className="offcanvas offcanvas-start"
-                data-bs-scroll="true"
-                tabIndex={-1}
-                id={`postDetails-${post.slug}`}
-                aria-labelledby={`postDetailsLabel-${post.slug}`}>
+            <div className="offcanvas offcanvas-start" data-bs-scroll="true" tabIndex={-1} id={`postDetails-${post.slug}`} aria-labelledby={`postDetailsLabel-${post.slug}`}>
                 <div className="offcanvas-header">
-                    <h5
-                        className="offcanvas-title"
-                        id={`postDetailsLabel-${post.slug}`}>
+                    <h5 className="offcanvas-title" id={`postDetailsLabel-${post.slug}`}>
                         Post Details
                     </h5>
-                    <button
-                        type="button"
-                        className="btn-close"
-                        data-bs-dismiss="offcanvas"
-                        aria-label="Close"></button>
+                    <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div className="offcanvas-body">
                     <table className="table table-bordered table-hover">
@@ -520,47 +376,17 @@ const PostCard = ({
             </div>
             <div className={`${styles.profile_info} d-flex`}>
                 <div className={styles.profile_info__details}>
-                    <span
-                        id={`popover-trigger-${index}`}
-                        className="d-inline-block"
-                        typeof="button"
-                        tabIndex={0}
-                        data-bs-toggle="popover"
-                        data-bs-trigger="manual"
-                        data-bs-container="body"
-                        data-bs-custom-class="default-author-popover">
+                    <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
                         <div className={`${styles.profile_info} d-flex`}>
                             <div className="align-content-center">
-                                <LazyImage
-                                    onMouseEnter={handleMouseEnter}
-                                    onMouseLeave={handleMouseLeave}
-                                    data-bs-toggle="popover"
-                                    className={`${styles.pfp} img-fluid`}
-                                    src={
-                                        `/${authorData.profileImageUrl}` ||
-                                        '/ui/placeholder-pfp.png'
-                                    }
-                                    placeholderUrl="/ui/placeholder-pfp.png"
-                                    alt="pfp"
-                                    width={42.5}
-                                    height={42.5}
-                                />
+                                <LazyImage onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
                             </div>
                             <div className={styles.profile_info__details}>
-                                <Link
-                                    href={''}
-                                    onMouseEnter={handleMouseEnter}
-                                    onMouseLeave={handleMouseLeave}
-                                    data-bs-toggle="popover"
-                                    className={`${styles.profile_info__text} m-0`}>
+                                <Link href={''} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
                                     {authorData.fullName}
                                 </Link>
-                                <p
-                                    className={`${styles.profile_info__text} align-content-center m-0`}>
-                                    {moment(post.date, 'DD-MM-YYYY').format(
-                                        'D MMM'
-                                    )}{' '}
-                                    • {post.readTime?.toString()} min read
+                                <p className={`${styles.profile_info__text} align-content-center m-0`}>
+                                    {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
                                 </p>
                             </div>
                         </div>
@@ -572,63 +398,30 @@ const PostCard = ({
                     <button className="btn-outlined px-5 py-2">Edit</button>
                 </Link>
 
-                <button
-                    className="btn-outlined btn-danger px-3 py-2"
-                    type="button"
-                    data-bs-toggle="modal"
-                    data-bs-target={`#deletionModal-${post.slug}`}>
+                <button className="btn-outlined btn-danger px-3 py-2" type="button" data-bs-toggle="modal" data-bs-target={`#deletionModal-${post.slug}`}>
                     Delete
                 </button>
-                <div
-                    className="modal fade"
-                    id={`deletionModal-${post.slug}`}
-                    tabIndex={-1}
-                    aria-labelledby={`deletionModalLabel-${post.slug}`}
-                    aria-hidden="true">
+                <div className="modal fade" id={`deletionModal-${post.slug}`} tabIndex={-1} aria-labelledby={`deletionModalLabel-${post.slug}`} aria-hidden="true">
                     <div className="modal-dialog modal-dialog-centered">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h5
-                                    className="modal-title"
-                                    id={`deletionModalLabel-${post.slug}`}>
+                                <h5 className="modal-title" id={`deletionModalLabel-${post.slug}`}>
                                     Are you sure you want to delete this post?
                                 </h5>
-                                <button
-                                    type="button"
-                                    className="btn-close"
-                                    data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
+                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div className="modal-body">
                                 <p>
-                                    The post with the following title will be
-                                    permanently deleted: <br />
+                                    The post with the following title will be permanently deleted: <br />
                                 </p>
-                                <h4 id={`deletionModalLabel-${post.slug}`}>
-                                    {post.title}
-                                </h4>
-                                <p className="pt-4">
-                                    (Think twice before making this desicion,
-                                    'permanently' is a long period)
-                                </p>
+                                <h4 id={`deletionModalLabel-${post.slug}`}>{post.title}</h4>
+                                <p className="pt-4">(Think twice before making this desicion, 'permanently' is a long period)</p>
                             </div>
                             <div className="modal-footer">
-                                <button
-                                    type="button"
-                                    className="btn-filled py-2 px-5"
-                                    data-bs-dismiss="modal">
+                                <button type="button" className="btn-filled py-2 px-5" data-bs-dismiss="modal">
                                     Close
                                 </button>
-                                <button
-                                    type="button"
-                                    className="btn-filled btn-danger py-2 px-3"
-                                    data-bs-dismiss="modal"
-                                    onClick={() =>
-                                        handlePostDeletion(
-                                            post.email,
-                                            post.slug
-                                        )
-                                    }>
+                                <button type="button" className="btn-filled btn-danger py-2 px-3" data-bs-dismiss="modal" onClick={() => handlePostDeletion(post.email, post.slug)}>
                                     Delete post
                                 </button>
                             </div>
@@ -647,9 +440,7 @@ const PostCard = ({
                                 <picture className="img-fluid">
                                     <Image
                                         className="img-fluid"
-                                        src={
-                                            post.imageUrl || '/ui/not-found.png'
-                                        } // Using the image URL, including the placeholder logic if needed
+                                        src={post.imageUrl || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
                                         alt={post.title}
                                         title={post.title}
                                         loading="lazy"
@@ -664,21 +455,8 @@ const PostCard = ({
                         <div className="col-lg-8">
                             <div className={styles.postInfo}>
                                 <div className="d-flex align-content-center m-0">
-                                    <h2
-                                        className={styles.heading}
-                                        id="col-heading-1">
-                                        {previewData.title ||
-                                            'Enter the post title'}{' '}
-                                        {moment(
-                                            post.modifyDate,
-                                            'DD-MM-YYYY'
-                                        ).isAfter(
-                                            moment(post.date, 'DD-MM-YYYY')
-                                        ) && (
-                                            <span className="px-2 py-1 mb-2 rounded-pill text-bg-secondary">
-                                                Updated
-                                            </span>
-                                        )}
+                                    <h2 className={styles.heading} id="col-heading-1">
+                                        {previewData.title || 'Enter the post title'} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && <span className="px-2 py-1 mb-2 rounded-pill text-bg-secondary">Updated</span>}
                                     </h2>
                                 </div>
                                 {setValue ? (
@@ -691,44 +469,19 @@ const PostCard = ({
                                         // rows={2}
                                     />
                                 ) : (
-                                    <p className={styles.description}>
-                                        {previewData.description}
-                                    </p>
+                                    <p className={styles.description}>{previewData.description}</p>
                                 )}
                             </div>
 
                             <span className="d-inline-block">
-                                <div
-                                    className={`${styles.profile_info} d-flex`}>
+                                <div className={`${styles.profile_info} d-flex`}>
                                     <div className="align-content-center">
-                                        <LazyImage
-                                            className={`${styles.pfp} img-fluid`}
-                                            src={
-                                                `/${authorData.profileImageUrl}` ||
-                                                '/ui/placeholder-pfp.png'
-                                            }
-                                            placeholderUrl="/ui/placeholder-pfp.png"
-                                            alt="pfp"
-                                            width={42.5}
-                                            height={42.5}
-                                        />
+                                        <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
                                     </div>
-                                    <div
-                                        className={
-                                            styles.profile_info__details
-                                        }>
-                                        <p
-                                            className={`${styles.profile_info__text} m-0 p-0`}>
-                                            {authorData.fullName}
-                                        </p>
-                                        <p
-                                            className={`${styles.profile_info__text} align-content-center m-0`}>
-                                            {moment(
-                                                post.date,
-                                                'DD-MM-YYYY'
-                                            ).format('D MMM')}{' '}
-                                            • {post.readTime?.toString()} min
-                                            read
+                                    <div className={styles.profile_info__details}>
+                                        <p className={`${styles.profile_info__text} m-0 p-0`}>{authorData.fullName}</p>
+                                        <p className={`${styles.profile_info__text} align-content-center m-0`}>
+                                            {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
                                         </p>
                                     </div>
                                 </div>
@@ -737,34 +490,18 @@ const PostCard = ({
                     </div>
                 </div>
             ) : (
-                <p>
-                    Preview has failed: please pass the previewData object to
-                    this component
-                </p>
+                <p>Preview has failed: please pass the previewData object to this component</p>
             )}
         </div>
     ) : (
         <div className="col-12 col-md-4" key={index}>
-            <Link href={`/${post.slug}`}>
+            <a role="button" onClick={handlePostOpen}>
                 {post.imageUrl && (
                     <div className={styles.image}>
                         <picture className={`img-fluid ${styles.imageWrapper}`}>
-                            <Image
-                                className="img-fluid"
-                                src={post.imageUrl || '/ui/not-found.png'}
-                                alt={post.title}
-                                title={post.title}
-                                width={354}
-                                height={180}
-                                loading="lazy"
-                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                            />
-                            <span
-                                className={`d-inline-block ${styles.articleLabel} subheading-smaller`}>
-                                <FaCoffee
-                                    className="m-1 subheading-tiny"
-                                    id={styles.labelIcon}
-                                />
+                            <Image className="img-fluid" src={post.imageUrl || '/ui/not-found.png'} alt={post.title} title={post.title} width={354} height={180} loading="lazy" sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
+                            <span className={`d-inline-block ${styles.articleLabel} subheading-smaller`}>
+                                <FaCoffee className="m-1 subheading-tiny" id={styles.labelIcon} />
                                 Article
                             </span>
                         </picture>
@@ -774,81 +511,34 @@ const PostCard = ({
                 <div className={styles.postInfo}>
                     <div className="d-flex align-content-center m-0">
                         <h2 className={styles.heading} id="col-heading-1">
-                            {post.title.length > 90 ? (
-                                <>{post.title.slice(0, 90) + '... '}</>
-                            ) : (
-                                post.title
-                            )}{' '}
-                            {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(
-                                moment(post.date, 'DD-MM-YYYY')
-                            ) &&
-                                moment(post.modifyDate, 'DD-MM-YYYY').diff(
-                                    moment(post.date, 'DD-MM-YYYY'),
-                                    'days'
-                                ) <= 30 && (
-                                    <span className="px-2 py-1 pb-1 mb-3 rounded-pill text-bg-secondary">
-                                        Updated
-                                    </span>
-                                )}
+                            {post.title.length > 90 ? <>{post.title.slice(0, 90) + '... '}</> : post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && <span className="px-2 py-1 pb-1 mb-3 rounded-pill text-bg-secondary">Updated</span>}
                         </h2>
                     </div>
                     <p className={styles.description}>
                         {post.description.length > 140 ? (
                             <>
                                 {post.description.slice(0, 140) + '... '}
-                                <Link href="" id="col-secondary">
-                                    Read more
-                                </Link>
+                                <button id="col-secondary">Read more</button>
                             </>
                         ) : (
                             post.description
                         )}
                     </p>
                 </div>
-            </Link>
+            </a>
             <div className={`${styles.profile_info} d-flex`}>
                 <div className={styles.profile_info__details}>
-                    <span
-                        id={`popover-trigger-${index}`}
-                        className="d-inline-block"
-                        typeof="button"
-                        tabIndex={0}
-                        data-bs-toggle="popover"
-                        data-bs-trigger="manual"
-                        data-bs-container="body"
-                        data-bs-custom-class="default-author-popover">
+                    <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
                         <div className={`${styles.profile_info} d-flex`}>
                             <div className="align-content-center">
-                                <LazyImage
-                                    onMouseEnter={handleMouseEnter}
-                                    onMouseLeave={handleMouseLeave}
-                                    data-bs-toggle="popover"
-                                    className={`${styles.pfp} img-fluid`}
-                                    src={
-                                        `/${authorData.profileImageUrl}` ||
-                                        '/ui/placeholder-pfp.png'
-                                    }
-                                    placeholderUrl="/ui/placeholder-pfp.png"
-                                    alt="pfp"
-                                    width={42.5}
-                                    height={42.5}
-                                />
+                                <LazyImage onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
                             </div>
                             <div className={styles.profile_info__details}>
-                                <Link
-                                    href={`/author/${authorData.authorKey}`}
-                                    onMouseEnter={handleMouseEnter}
-                                    onMouseLeave={handleMouseLeave}
-                                    data-bs-toggle="popover"
-                                    className={`${styles.profile_info__text} m-0`}>
+                                <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
                                     {authorData.fullName}
                                 </Link>
-                                <p
-                                    className={`${styles.profile_info__text} align-content-center m-0`}>
-                                    {moment(post.date, 'DD-MM-YYYY').format(
-                                        'D MMM'
-                                    )}{' '}
-                                    • {post.readTime?.toString()} min read
+                                <p className={`${styles.profile_info__text} align-content-center m-0`}>
+                                    {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
                                 </p>
                             </div>
                         </div>

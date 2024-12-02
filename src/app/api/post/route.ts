@@ -10,7 +10,10 @@ const dbClient = new DynamoDBClient({
     },
 });
 
+// /api/post (GET method)
 export async function GET(request: Request) {
+    console.log('calling api');
+
     const baseUrl =
         typeof window === 'undefined'
             ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
@@ -28,13 +31,14 @@ export async function GET(request: Request) {
         );
     }
 
+    // First, attempt to fetch posts if we have a specific slug
     if (postSlug) {
         try {
             const params = {
                 TableName: TABLE_NAME,
                 FilterExpression: 'slug = :slugValue',
                 ExpressionAttributeValues: {
-                    ':slugValue': {S: postSlug}, // Wrap the value in `{ S: ... }` to indicate it's a string type in DynamoDB
+                    ':slugValue': {S: postSlug},
                 },
             };
 
@@ -49,33 +53,19 @@ export async function GET(request: Request) {
         }
     } else {
         try {
-            const response = await fetch(`${baseUrl}/api/author-list`);
-            const data = await response.json();
+            const params = {
+                TableName: TABLE_NAME,
+                FilterExpression: 'slug <> :excludedSlug',
+                ExpressionAttributeValues: {
+                    ':excludedSlug': {S: 'author-account'},
+                },
+            };
 
-            let posts: any[] = [];
+            const command = new ScanCommand(params);
+            const result = await dbClient.send(command);
+            const data = result.Items;
 
-            for (const authorEmail of data) {
-                const params = {
-                    TableName: TABLE_NAME,
-                    FilterExpression: 'email = :emailValue',
-                    ExpressionAttributeValues: {
-                        ':emailValue': {S: authorEmail}, // Wrap the value in `{ S: ... }` to indicate it's a string type in DynamoDB
-                    },
-                };
-                const command = new ScanCommand(params);
-                const result = await dbClient.send(command);
-                const data = result.Items;
-
-                if (data && data.length > 0) {
-                    posts = [...posts, ...data];
-                }
-            }
-
-            const filteredPosts = posts.filter(
-                post => post.slug?.S !== 'author-account'
-            );
-
-            return NextResponse.json(filteredPosts, {status: 201});
+            return NextResponse.json(data, {status: 201});
         } catch (err) {
             console.error('Failed to fetch data from the database: ', err);
             return NextResponse.json(err, {status: 500});

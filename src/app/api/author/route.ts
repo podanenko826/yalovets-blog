@@ -61,6 +61,7 @@ export async function GET(request: Request) {
 
             return NextResponse.json(data, {status: 201});
         } catch (err) {
+            console.error('Failed to fetch data from the database: ', err);
             return NextResponse.json(err, {
                 status: 500,
             });

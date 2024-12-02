@@ -52,7 +52,7 @@ const NavBar = () => {
 
     return (
         <>
-            <header className="container">
+            <header className="container navbar-container">
                 <div className="navbar navbar-expand-lg md-nav row d-none d-lg-flex py-0">
                     <div className="container-sm col-3 py-0">
                         <Link href="/">

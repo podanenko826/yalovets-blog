@@ -9,6 +9,7 @@ import {
     DynamoDBDocumentClient,
     GetCommand,
     PutCommand,
+    ScanCommand,
     UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
 
@@ -44,62 +45,49 @@ function transformPostData(data: any[]): PostItem[] {
     }));
 }
 
-export const getSortedPosts = async (): Promise<PostItem[]> => {
-    const authorEmails: any = await getAuthorEmails();
-
-    if (!authorEmails) {
-        return [];
-    }
+export const getSortedPosts = async () => {
+    console.log('getSortedPosts called');
 
     const baseUrl =
         typeof window === 'undefined'
             ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
             : '';
 
-    let allPosts: any[] = [];
-
-    for (const authorEmail of authorEmails) {
-        try {
-            const params = {
-                TableName: DYNAMODB_TABLE_NAME, // Replace with your actual posts table name
-                KeyConditionExpression: 'email = :email', // Querying by slug in the GSI
-                ExpressionAttributeValues: {
-                    ':email': {S: authorEmail}, // The email value to search for
-                },
-            };
-
-            const command = new QueryCommand(params);
-            const result = await docClient.send(command);
-            const data = result.Items;
-
-            const filteredPost = data?.filter(
-                post => post.slug?.S !== 'author-account'
+    try {
+        const response = await fetch(`${baseUrl}/api/post`);
+        if (!response.ok) {
+            console.error(
+                'API returned an error:',
+                response.status,
+                await response.text()
             );
-
-            if (filteredPost && filteredPost.length > 0) {
-                allPosts = [...allPosts, ...filteredPost];
-            }
-        } catch (err) {
-            console.error('Error fetching content: ', err);
+            throw new Error('Failed to fetch posts');
         }
+
+        const data = await response.json();
+        console.log(data);
+
+        let posts: any[] = [];
+
+        if (data) {
+            posts = [...posts, ...data];
+        }
+
+        const transformedPostData = transformPostData(data);
+
+        const sortedPostsData = transformedPostData.sort((a, b) => {
+            const format = 'DD-MM-YYYY';
+            const dateOne = moment(a.date, format);
+            const dateTwo = moment(b.date, format);
+
+            return dateTwo.diff(dateOne); // Descending order
+        });
+
+        return sortedPostsData;
+    } catch (err) {
+        console.error('Failed to fetch posts from the database: ', err);
+        return [];
     }
-
-    const transformedPostData = transformPostData(allPosts);
-
-    const sortedPostsData = transformedPostData.sort((a, b) => {
-        const format = 'DD-MM-YYYY';
-        const dateOne = moment(a.date, format);
-        const dateTwo = moment(b.date, format);
-
-        if (dateOne.isBefore(dateTwo)) {
-            return -1;
-        } else if (dateTwo.isAfter(dateOne)) {
-            return 1;
-        } else {
-            return 0;
-        }
-    });
-    return sortedPostsData.reverse();
 };
 
 export const getPost = async (slug: string): Promise<PostItem> => {

@@ -32,6 +32,7 @@
     "mongoose": "^8.7.3",
     "next": "^14.2.7",
     "next-mdx-remote": "^5.0.0",
+    "node-fetch": "^2.7.0",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.5",
     "react-dom": "^18.3.1",
@@ -46,6 +47,7 @@
   "devDependencies": {
     "@types/bootstrap": "^5.2.10",
     "@types/node": "^20",
+    "@types/node-fetch": "^2.6.12",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "babel-plugin-styled-components": "^2.1.4",

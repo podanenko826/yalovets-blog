@@ -7,6 +7,12 @@ import '@/app/globals.css';
 
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
+import Home from './page';
+const ArticleModal = dynamic(() => import('@/components/ArticleModal'));
+
+import {PostProvider} from '@/components/PostContext';
+import React from 'react';
+import dynamic from 'next/dynamic';
 
 const inter = Inter({subsets: ['latin']});
 
@@ -22,9 +28,12 @@ export default function RootLayout({
 }>) {
     return (
         <AppRouterCacheProvider>
-            <NavBar />
-            {children}
-            <Footer />
+            <PostProvider>
+                <NavBar />
+                {children}
+                <ArticleModal />
+                <Footer />
+            </PostProvider>
         </AppRouterCacheProvider>
     );
 }
