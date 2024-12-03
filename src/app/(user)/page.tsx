@@ -16,6 +16,7 @@ import PostList from '@/components/PostList';
 import { PostProvider, usePostContext } from '@/components/PostContext';
 import { useEffect, useState } from 'react';
 import moment from 'moment';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface HomeProps {
     slug?: string; // Optional slug prop
@@ -33,6 +34,8 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
     const { authors, setAuthors } = usePostContext();
     const { selectedPost } = usePostContext();
     const { openModal } = usePostContext();
+
+    const currentPath = usePathname();
 
     useEffect(() => {
         setPosts(sortedPosts); // Populate context with initial data
@@ -89,17 +92,16 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                     .slice(0, 3);
                 console.log(mostViewed);
 
-                //? Fetches the necessary data for a post to display if the url has slug in it
                 if (slug) {
                     const post = sorted.find(post => post.slug === slug) as PostItem;
                     const MdxContent = await getMDXContent(slug);
                     const markdown = MdxContent.markdown;
                     const previousPath = window.location.href;
-                    console.log(previousPath);
 
                     if (post && markdown) {
                         openModal(post, markdown, previousPath);
                     }
+                    slug = '';
                 }
 
                 setSortedPosts(sorted);

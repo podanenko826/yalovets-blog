@@ -1,6 +1,6 @@
 'use client';
 import { AuthorItem, PostItem } from '@/types';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 // Types
@@ -34,7 +34,6 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [previousPath, setPreviousPath] = useState<string | null>(null);
     const [currentSlug, setCurrentSlug] = useState<string | null>(null);
 
-    const router = useRouter();
     const pathname = usePathname();
 
     useEffect(() => {
@@ -53,7 +52,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsModalOpen(true);
 
         // Update the URL state
-        window.history.pushState({}, '', `/${post.slug}`);
+        return window.history.pushState({}, '', `/${post.slug}`);
     };
 
     const closeModal = () => {
@@ -61,8 +60,16 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSelectedMarkdown(null);
         setIsModalOpen(false);
 
+        const currentPath = window.location.href;
+
+        if (previousPath === currentPath) {
+            return window.history.pushState({}, '', `/`);
+        }
+
         // Navigate back to the home page
-        window.history.pushState({}, '', previousPath ? previousPath : '/');
+        console.log(previousPath);
+
+        return window.history.pushState({}, '', previousPath ? previousPath : '/');
     };
 
     return (

@@ -1,7 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import styles from '@/components/ArticleModal.module.css';
-import { AuthorItem, PostItem } from '@/types';
 import NavBar from './NavBar';
 import { usePostContext } from './PostContext';
 import moment from 'moment';
@@ -9,25 +8,26 @@ import Link from 'next/link';
 import { FaFacebookF, FaLinkedin } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
 import { FaSquareInstagram } from 'react-icons/fa6';
-import { useRouter } from 'next/navigation';
 
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { serialize } from 'next-mdx-remote/serialize';
 import Footer from './Footer';
-import { getMDXContent, getPost } from '@/lib/posts';
+import { PostItem } from '@/types';
+import { getMDXContent, getSortedPosts } from '@/lib/posts';
+import { usePathname } from 'next/navigation';
+import { getAuthors } from '@/lib/authors';
 
 const ArticleModal: React.FC = () => {
     const { selectedPost, setSelectedPost } = usePostContext();
+    const { posts, setPosts } = usePostContext();
     const { authors, setAuthors } = usePostContext();
+    const { openModal } = usePostContext();
     const { selectedMarkdown, setSelectedMarkdown } = usePostContext();
-    const { previousPath, setPreviousPath } = usePostContext();
-    const { currentSlug, setCurrentSlug } = usePostContext();
     const { closeModal } = usePostContext();
     const [serializedMarkdown, setSerializedMarkdown] = useState<MDXRemoteSerializeResult<Record<string, unknown>, Record<string, unknown>>>();
 
-    const router = useRouter();
-
     console.log(selectedMarkdown);
+    const currentPath = usePathname();
 
     // useEffect(() => {
     //     const handleModalClosing = async () => {
@@ -51,6 +51,26 @@ const ArticleModal: React.FC = () => {
     //     };
     //     handleModalOpening();
     // }, [currentSlug]);
+
+    useEffect(() => {
+        //? Fetches the necessary data for a post to display if the url has slug in it
+        const returnToPost = async () => {
+            const postUrl = window.location.href;
+            const postSlug = postUrl.split('/').at(-1);
+
+            if (!selectedPost && postSlug && posts) {
+                const post = posts.find(post => post.slug === postSlug) as PostItem;
+                const MdxContent = await getMDXContent(postSlug);
+                const markdown = MdxContent.markdown;
+                const previousPath = window.location.href;
+
+                if (post && markdown) {
+                    openModal(post, markdown, previousPath);
+                }
+            } else return;
+        };
+        returnToPost();
+    }, [currentPath]);
 
     useEffect(() => {
         const processMarkdown = async () => {
