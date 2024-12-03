@@ -7,9 +7,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import styles from '@/components/PostCard.module.css';
 import * as bootstrap from 'bootstrap';
-import { Alert } from 'react-bootstrap';
-import { Modal, Offcanvas } from 'react-bootstrap';
-import { Popover } from 'bootstrap';
+import { Popover, Offcanvas, Modal } from 'bootstrap';
 
 import type { AuthorItem, PostItem, PostPreviewItem } from '@/types';
 import { deletePost, getMDXContent } from '@/lib/posts';
@@ -55,10 +53,48 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         }
     };
 
+    const modalRef = useRef<Modal | null>(null);
+    const offcanvasRef = useRef<Offcanvas | null>(null);
     const popoverRef = useRef<Popover | null>(null);
-    const [popoverVisible, setPopoverVisible] = useState(false); // Single source of truth for visibility
+
+    const [currentModal, setCurrentModal] = useState<bootstrap.Modal | null>(null);
+    const [currentOffcanvas, setCurrentOffcanvas] = useState<bootstrap.Offcanvas | null>(null);
     const [currentPopover, setCurrentPopover] = useState<bootstrap.Popover | null>(null);
+
+    const [popoverVisible, setPopoverVisible] = useState(false); // Single source of truth for visibility
     const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null); // Ref for timeout to avoid state re-renders
+
+    useEffect(() => {
+        let Modal;
+        if (typeof window !== 'undefined') {
+            Modal = require('bootstrap/js/dist/modal');
+        }
+
+        const modalTrigger = document.querySelector(`.modal`);
+        console.log('offcanvasTrigger: ', modalTrigger);
+
+        if (modalTrigger && !currentModal && Modal) {
+            const newModal = new Modal(modalTrigger);
+
+            modalRef.current = newModal;
+        }
+    }, [index]);
+
+    useEffect(() => {
+        let Offcanvas;
+        if (typeof window !== 'undefined') {
+            Offcanvas = require('bootstrap/js/dist/offcanvas');
+        }
+
+        const offcanvasTrigger = document.querySelector(`.offcanvas`);
+        console.log('offcanvasTrigger: ', offcanvasTrigger);
+
+        if (offcanvasTrigger && !currentOffcanvas && Offcanvas) {
+            const newOffcanvas = new Offcanvas(offcanvasTrigger);
+
+            offcanvasRef.current = newOffcanvas;
+        }
+    }, [index]);
 
     // Initialize popover on first render
     useEffect(() => {
@@ -106,7 +142,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 popoverRef.current.dispose();
             }
         };
-    }, [authorData, post.slug]);
+    }, [authorData, index]);
 
     // Effect to attach listeners to the dynamic popover content
     useEffect(() => {
@@ -289,7 +325,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                     <button className="btn-filled position-absolute mt-4 px-2 py-1 top-0 end-0 translate-middle" type="button" data-bs-toggle="offcanvas" onClick={e => e.preventDefault()} data-bs-target={`#postDetails-${post.slug}`} aria-controls={`postDetails-${post.slug}`}>
                         ...
                     </button>
-                    <Link href={''} data-bs-toggle="modal" data-bs-target={`#leavingModal-${post.slug}`}>
+                    <a role="button" data-bs-toggle="modal" data-bs-target={`#leavingModal-${post.slug}`}>
                         <Image
                             className="img-fluid full-image"
                             src={post.imageUrl || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
@@ -300,17 +336,17 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                             height={180}
                             sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                         />
-                    </Link>
+                    </a>
                 </div>
             )}
-            <Link href={''} data-bs-toggle="modal" data-bs-target={`#leavingModal-${post.slug}`}>
+            <a role="button" data-bs-toggle="modal" data-bs-target={`#leavingModal-${post.slug}`}>
                 <div className={styles.postInfo}>
                     <h2 className={`${styles.heading} d-flex flex-wrap align-content-center gap-1`} id="col-heading-1">
                         {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && <span className="px-2 py-1 text-wrap rounded-pill text-bg-secondary">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>}
                     </h2>
                     <p className={styles.description}>{post.description}</p>
                 </div>
-            </Link>
+            </a>
 
             <div className="modal fade" id={`leavingModal-${post.slug}`} tabIndex={-1} aria-labelledby={`leavingModalLabel-${post.slug}`} aria-hidden="true">
                 <div className="modal-dialog modal-dialog-centered">

@@ -1,8 +1,8 @@
 import React from 'react';
 
-import {getSortedPosts} from '@/lib/posts';
-import {getAuthors} from '@/lib/authors';
-import {AuthorItem, PostItem} from '@/types';
+import { getSortedPosts } from '@/lib/posts';
+import { getAuthors } from '@/lib/authors';
+import { AuthorItem, PostItem } from '@/types';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 
@@ -10,7 +10,7 @@ import postCardStyles from '@/components/PostCard.module.css';
 import moment from 'moment';
 import Link from 'next/link';
 
-const PostCard = dynamic(() => import('@/components/PostCard'), {ssr: false});
+const LazyPostCard = dynamic(() => import('@/components/LazyPostCard'), { ssr: false });
 
 const PostsPage = async () => {
     const postData: PostItem[] = await getSortedPosts();
@@ -22,9 +22,7 @@ const PostsPage = async () => {
             <div className="container-fluid posts" id="posts">
                 <div>
                     <Link href={'/admin'}>
-                        <button className="btn-filled px-3 py-3 mt-4">
-                            ←Back to console
-                        </button>
+                        <button className="btn-filled px-3 py-3 mt-4">←Back to console</button>
                     </Link>
                 </div>
                 <div className="container-lg">
@@ -46,119 +44,47 @@ const PostsPage = async () => {
                                     </div>
 
                                     <div className={postCardStyles.postInfo}>
-                                        <h2
-                                            className={postCardStyles.heading}
-                                            id="col-heading-1">
+                                        <h2 className={postCardStyles.heading} id="col-heading-1">
                                             Create new post
                                         </h2>
-                                        <p
-                                            className={
-                                                postCardStyles.description
-                                            }>
-                                            Start expressing yourself on latest
-                                            IT news and insights.
-                                        </p>
+                                        <p className={postCardStyles.description}>Start expressing yourself on latest IT news and insights.</p>
                                     </div>
                                 </Link>
 
-                                <div
-                                    className={`${postCardStyles.profile_info} d-flex mb-5`}>
+                                <div className={`${postCardStyles.profile_info} d-flex mb-5`}>
                                     <div className="align-content-center">
-                                        <Image
-                                            className={`${postCardStyles.pfp} ${postCardStyles.placeholder_pfp} img-fluid`}
-                                            src={`/ui/placeholder-pfp.png`}
-                                            alt="pfp"
-                                            width={42.5}
-                                            height={42.5}
-                                        />
+                                        <Image className={`${postCardStyles.pfp} ${postCardStyles.placeholder_pfp} img-fluid`} src={`/ui/placeholder-pfp.png`} alt="pfp" width={42.5} height={42.5} />
                                     </div>
 
                                     <div
                                         className={`
                                         ${postCardStyles.profile_info__details} gap-2
                                     `}>
-                                        <div
-                                            className={
-                                                postCardStyles.placeholder_profile_info__text
-                                            }>
-                                            <p
-                                                className={
-                                                    postCardStyles.dot
-                                                }></p>
+                                        <div className={postCardStyles.placeholder_profile_info__text}>
+                                            <p className={postCardStyles.dot}></p>
 
-                                            <p
-                                                className={
-                                                    postCardStyles.underscore
-                                                }></p>
-                                            <p
-                                                className={
-                                                    postCardStyles.underscore
-                                                }></p>
+                                            <p className={postCardStyles.underscore}></p>
+                                            <p className={postCardStyles.underscore}></p>
 
-                                            <p
-                                                className={
-                                                    postCardStyles.dot
-                                                }></p>
-                                            <p
-                                                className={
-                                                    postCardStyles.underscore
-                                                }></p>
-                                            <p
-                                                className={
-                                                    postCardStyles.dot
-                                                }></p>
-                                            <p
-                                                className={
-                                                    postCardStyles.underscore
-                                                }></p>
+                                            <p className={postCardStyles.dot}></p>
+                                            <p className={postCardStyles.underscore}></p>
+                                            <p className={postCardStyles.dot}></p>
+                                            <p className={postCardStyles.underscore}></p>
                                         </div>
-                                        <div
-                                            className={
-                                                postCardStyles.placeholder_profile_info__text
-                                            }>
-                                            <p
-                                                className={
-                                                    postCardStyles.underscore
-                                                }></p>
-                                            <p
-                                                className={
-                                                    postCardStyles.dot
-                                                }></p>{' '}
-                                            <p
-                                                className={
-                                                    postCardStyles.dot
-                                                }></p>
-                                            <p
-                                                className={
-                                                    postCardStyles.underscore
-                                                }></p>
-                                            <p
-                                                className={
-                                                    postCardStyles.underscore
-                                                }></p>
-                                            <p
-                                                className={
-                                                    postCardStyles.dot
-                                                }></p>
+                                        <div className={postCardStyles.placeholder_profile_info__text}>
+                                            <p className={postCardStyles.underscore}></p>
+                                            <p className={postCardStyles.dot}></p> <p className={postCardStyles.dot}></p>
+                                            <p className={postCardStyles.underscore}></p>
+                                            <p className={postCardStyles.underscore}></p>
+                                            <p className={postCardStyles.dot}></p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         {postData.map((post, index) => (
-                            <div className="col-md-6 col-lg-4">
-                                <PostCard
-                                    post={post}
-                                    authorData={
-                                        authorData.find(
-                                            author =>
-                                                author.email === post.email
-                                        ) as AuthorItem
-                                    }
-                                    style="admin"
-                                    index={index}
-                                    key={index}
-                                />
+                            <div className="col-md-6 col-lg-4" key={index}>
+                                <LazyPostCard post={post} authorData={authorData.find(author => author.email === post.email) as AuthorItem} style="admin" index={index} key={index} />
                             </div>
                         ))}
                     </div>
