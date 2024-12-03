@@ -15,6 +15,7 @@ const ArticleModal = dynamic(() => import('@/components/ArticleModal'), {
 import { PostProvider } from '@/components/PostContext';
 import React from 'react';
 import dynamic from 'next/dynamic';
+import LoadingBanner from '@/components/LoadingBanner';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -32,6 +33,7 @@ export default function RootLayout({
         <AppRouterCacheProvider>
             <PostProvider>
                 <NavBar />
+                <LoadingBanner />
                 {children}
                 <ArticleModal />
                 <Footer />
