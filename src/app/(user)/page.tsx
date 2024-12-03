@@ -15,6 +15,7 @@ import LazyPostCard from '@/components/LazyPostCard';
 import PostList from '@/components/PostList';
 import { PostProvider, usePostContext } from '@/components/PostContext';
 import { useEffect, useState } from 'react';
+import moment from 'moment';
 
 interface HomeProps {
     slug?: string; // Optional slug prop
@@ -28,14 +29,45 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
 
     const [authorData, setAuthorData] = useState<AuthorItem[]>([]);
 
+    const { posts, setPosts } = usePostContext();
+    const { authors, setAuthors } = usePostContext();
+    const { selectedPost } = usePostContext();
     const { openModal } = usePostContext();
+
+    useEffect(() => {
+        setPosts(sortedPosts); // Populate context with initial data
+    }, [sortedPosts, setPosts]);
+
+    useEffect(() => {
+        setAuthors(authorData); // Populate context with initial data
+    }, [authorData, setAuthors]);
+
+    useEffect(() => {
+        if (selectedPost) {
+            document.body.classList.add('overflow-hidden');
+        } else {
+            document.body.classList.remove('overflow-hidden');
+        }
+    }, [selectedPost]);
 
     useEffect(() => {
         const getData = async () => {
             try {
-                console.log('Fetching sorted posts...');
-                const sorted = await getSortedPosts();
-                console.log('Fetched sorted posts:', sorted);
+                let sorted: PostItem[] | null = null;
+                if (posts.length > 0) {
+                    const postContextData = [...posts];
+
+                    //? Sort posts gotten from usePostContext
+                    sorted = postContextData.sort((a, b) => {
+                        const format = 'DD-MM-YYYY';
+                        const dateOne = moment(a.date, format);
+                        const dateTwo = moment(b.date, format);
+
+                        return dateTwo.diff(dateOne); // Descending order
+                    });
+                } else {
+                    sorted = await getSortedPosts();
+                }
 
                 if (!Array.isArray(sorted)) {
                     console.error('Error: Sorted posts is not an array:', sorted);
@@ -84,7 +116,10 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
 
     useEffect(() => {
         const getAuthorsData = async () => {
-            if (authorData.length === 0) {
+            if (authors.length > 0 && authorData.length === 0) {
+                const authorData = [...authors];
+                setAuthorData(authorData);
+            } else if (authors.length === 0 && authorData.length === 0) {
                 const authorData = await getAuthors();
                 setAuthorData(authorData);
             }
@@ -96,7 +131,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
     return (
         <>
             {recentPosts && latestPost && popularPosts && authorData ? (
-                <main>
+                <main id="body">
                     {/* Welcome section (Mobile) */}
                     <div className="container welcome-xs d-block d-lg-none">
                         <div className="row">
@@ -178,7 +213,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                         </div>
 
                         <div className="row post-list">
-                            <PostList initialPosts={recentPosts} initialAuthors={authorData} style="standard" />
+                            <PostList initialPosts={recentPosts} initialAuthors={authorData} style="standard" indexIncrement={1} />
                         </div>
                     </div>
 
@@ -198,7 +233,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                         </div>
 
                         <div className="row post-list">
-                            <PostList initialPosts={popularPosts} initialAuthors={authorData} style="standard" />
+                            <PostList initialPosts={popularPosts} initialAuthors={authorData} style="standard" indexIncrement={10} />
                         </div>
                     </div>
                     <div className="container-fluid about-me py-5 mt-5">

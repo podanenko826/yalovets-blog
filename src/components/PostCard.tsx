@@ -68,6 +68,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         }
 
         const popoverTrigger = document.querySelector(`#popover-trigger-${index}`);
+        console.log('popover: ', popoverTrigger);
 
         if (popoverTrigger && !currentPopover && Popover) {
             const newPopover = new Popover(popoverTrigger, {
@@ -105,7 +106,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 popoverRef.current.dispose();
             }
         };
-    }, [authorData, index]);
+    }, [authorData, post.slug]);
 
     // Effect to attach listeners to the dynamic popover content
     useEffect(() => {
