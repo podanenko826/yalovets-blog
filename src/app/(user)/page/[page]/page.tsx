@@ -111,7 +111,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
             {postsData && authorData && (
                 <main>
                     <div className="container posts" id="posts">
-                        <h1 className="heading-large mt-5">Page {currentPage}</h1>
+                        <h1 className="heading heading-large mt-5">Page {currentPage}</h1>
                         <div className="row post-list">
                             {paginatedArticles.map((post: PostItem, index) => (
                                 <LazyPostCard post={post} style="full" index={index} key={index} authorData={authorData.find(author => author.email === post.email) as AuthorItem} />

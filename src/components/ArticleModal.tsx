@@ -16,6 +16,7 @@ import { PostItem } from '@/types';
 import { getMDXContent, getSortedPosts } from '@/lib/posts';
 import { usePathname } from 'next/navigation';
 import { getAuthors } from '@/lib/authors';
+import { MDXProvider } from '@mdx-js/react';
 
 const ArticleModal: React.FC = () => {
     const { selectedPost, setSelectedPost } = usePostContext();
@@ -107,7 +108,7 @@ const ArticleModal: React.FC = () => {
                                             </div>
                                         </div>
                                         <div className="col-md-8 text-center">
-                                            <h1 className="heading-xlarge w-100 col-md-11 col-lg-12 text-center" id="col-heading-1">
+                                            <h1 className="heading heading-xlarge w-100 col-md-11 col-lg-12 text-center" id="col-heading-1">
                                                 {selectedPost.title}
                                             </h1>
                                             <div className="d-flex justify-content-center gap-2">
@@ -153,7 +154,9 @@ const ArticleModal: React.FC = () => {
                                         </div>
                                         <div className="col-12 col-sm-8">
                                             <article className="article">
-                                                <MDXRemote compiledSource={serializedMarkdown?.compiledSource as string} scope={serializedMarkdown?.scope} frontmatter={serializedMarkdown?.frontmatter} />
+                                                <MDXProvider>
+                                                    <MDXRemote compiledSource={serializedMarkdown?.compiledSource as string} scope={serializedMarkdown?.scope} frontmatter={serializedMarkdown?.frontmatter} />
+                                                </MDXProvider>
                                             </article>
                                         </div>
                                     </div>

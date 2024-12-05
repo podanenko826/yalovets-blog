@@ -1,7 +1,11 @@
+import { compile } from '@mdx-js/mdx';
+import rehypeKatex from 'rehype-katex'; // Render math with KaTeX.
+import remarkFrontmatter from 'remark-frontmatter'; // YAML and such.
+import remarkGfm from 'remark-gfm'; // Tables, footnotes, strikethrough, task lists, literal URLs.
+import remarkMath from 'remark-math'; // Support math like `$so$`.
 import createMDX from '@next/mdx';
-import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
 
+console.log(compiled);
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     // Configure `pageExtensions` to include markdown and MDX files
@@ -14,10 +18,6 @@ const nextConfig = {
 };
 
 const withMDX = createMDX({
-    options: {
-        remarkPlugins: [remarkGfm],
-        // rehypePlugins: [rehypeRaw],
-    },
     extension: /.(md|mdx)$/,
     providerImportSource: '@mdx-js/react',
 });

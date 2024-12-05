@@ -114,16 +114,14 @@ input:focus {
     font-size: 36px !important;
 }
 
-h1,
 .heading {
     font-weight: 700 !important;
-    font-size: 28px !important;
+    font-size: 28px;
 }
 
-h2,
 .subheading {
     font-weight: 600 !important;
-    font-size: 23px !important;
+    font-size: 23px;
 }
 
 .subheading-small {
@@ -229,6 +227,8 @@ button {
 
 .article > p > img {
     padding: 20px 0;
+    width: auto;
+    height: auto;
 }
 
 .article > pre {

@@ -141,7 +141,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                                 <h2 className="welcome-text" id="col-heading-2">
                                     Welcome to Yalovets Blog
                                 </h2>
-                                <h1 className="welcome-heading heading-large" id="col-heading-1">
+                                <h1 className="welcome-heading heading heading-large" id="col-heading-1">
                                     AWS Unveiled: Your Gateway to Cloud Knowledge
                                 </h1>
                                 <p className="welcome-paragraph">By Ivan Yalovets. Since 2024, I published 0 articles.</p>

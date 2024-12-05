@@ -231,7 +231,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                             </div>
                         </div>
                         <a role="button" onClick={handlePostOpen}>
-                            <h1 className={`${styles.heading} d-flex align-content-center gap-1`} id="col-heading-1">
+                            <h1 className={`${styles.heading} heading d-flex align-content-center gap-1`} id="col-heading-1">
                                 {post.title.length > 85 ? <>{post.title.slice(0, 85) + '... '}</> : post.title}{' '}
                                 {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && (
                                     <>
@@ -277,7 +277,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 )}
 
                 <div className={styles.postInfo}>
-                    <h2 className={`${styles.heading} d-flex flex-wrap align-items-center gap-1`} id="col-heading-1">
+                    <h2 className={`${styles.heading} subheading d-flex flex-wrap align-items-center gap-1`} id="col-heading-1">
                         {post.title}{' '}
                         {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && (
                             <span className="px-2 py-1 mt-1 rounded-pill text-wrap text-bg-secondary">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>
@@ -341,7 +341,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             )}
             <a role="button" data-bs-toggle="modal" data-bs-target={`#leavingModal-${post.slug}`}>
                 <div className={styles.postInfo}>
-                    <h2 className={`${styles.heading} d-flex flex-wrap align-content-center gap-1`} id="col-heading-1">
+                    <h2 className={`${styles.heading} subheading d-flex flex-wrap align-content-center gap-1`} id="col-heading-1">
                         {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && <span className="px-2 py-1 text-wrap rounded-pill text-bg-secondary">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>}
                     </h2>
                     <p className={styles.description}>{post.description}</p>
@@ -492,7 +492,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                         <div className="col-lg-8">
                             <div className={styles.postInfo}>
                                 <div className="d-flex align-content-center m-0">
-                                    <h2 className={styles.heading} id="col-heading-1">
+                                    <h2 className={`${styles.heading} subheading`} id="col-heading-1">
                                         {previewData.title || 'Enter the post title'} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && <span className="px-2 py-1 mb-2 rounded-pill text-bg-secondary">Updated</span>}
                                     </h2>
                                 </div>
@@ -547,7 +547,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
 
                 <div className={styles.postInfo}>
                     <div className="d-flex align-content-center m-0">
-                        <h2 className={styles.heading} id="col-heading-1">
+                        <h2 className={`${styles.heading} subheading`} id="col-heading-1">
                             {post.title.length > 90 ? <>{post.title.slice(0, 90) + '... '}</> : post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && <span className="px-2 py-1 pb-1 mb-3 rounded-pill text-bg-secondary">Updated</span>}
                         </h2>
                     </div>
