@@ -17,6 +17,19 @@ import { getMDXContent, getSortedPosts } from '@/lib/posts';
 import { usePathname } from 'next/navigation';
 import { getAuthors } from '@/lib/authors';
 import { MDXProvider } from '@mdx-js/react';
+import { mdSerialize } from '../../mdSerializer';
+
+const components = {
+    table: (props: React.JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableElement> & React.TableHTMLAttributes<HTMLTableElement>) => (
+        <div className="container">
+            <div className="row p-md-1 p-lg-3 overflow-scroll">
+                <table className="table" {...props} />
+            </div>
+        </div>
+    ),
+    td: (props: React.JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableDataCellElement> & React.TdHTMLAttributes<HTMLTableDataCellElement>) => <td className="col-1" {...props} />,
+    // Add other custom components here
+};
 
 const ArticleModal: React.FC = () => {
     const { selectedPost, setSelectedPost } = usePostContext();
@@ -76,7 +89,7 @@ const ArticleModal: React.FC = () => {
     useEffect(() => {
         const processMarkdown = async () => {
             if (selectedMarkdown) {
-                const result = await serialize(selectedMarkdown);
+                const result = await mdSerialize(selectedMarkdown);
                 console.log(result);
 
                 setSerializedMarkdown(result);
@@ -154,7 +167,7 @@ const ArticleModal: React.FC = () => {
                                         </div>
                                         <div className="col-12 col-sm-8">
                                             <article className="article">
-                                                <MDXProvider>
+                                                <MDXProvider components={components}>
                                                     <MDXRemote compiledSource={serializedMarkdown?.compiledSource as string} scope={serializedMarkdown?.scope} frontmatter={serializedMarkdown?.frontmatter} />
                                                 </MDXProvider>
                                             </article>
