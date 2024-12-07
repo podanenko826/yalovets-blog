@@ -1,9 +1,9 @@
 'use client';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 
 import styles from './Footer.module.css';
 
-import {navigation} from './NavBar';
+import { navigation } from './NavBar';
 
 const Footer = () => {
     const [navButtons, setNavButtons] = useState(navigation);
@@ -52,77 +52,30 @@ const Footer = () => {
 
     return (
         <>
-            <div
-                className={`${styles.footer} container-fluid justify-content-center`}>
+            <div className={`${styles.footer} container-fluid justify-content-center`}>
                 <div className="container d-flex">
                     <div className="row">
                         <div className="col-md-7 pt-3">
-                            <h1
-                                className="heading-large"
-                                id={styles.subscribeText}>
+                            <h1 className="heading heading-large" id={styles.subscribeText}>
                                 Stay informed, <br />
                                 subscribe to Yalovets Blog!
                             </h1>
-                            <p className={`${styles.navText} pt-2`}>
-                                Keep in touch with latest information in tech
-                                industry
-                            </p>
+                            <p className={`${styles.navText} pt-2`}>Keep in touch with latest information in tech industry</p>
                         </div>
                         <div className="d-flex col-md-5">
                             <form className="row" id={styles.subscribeForm}>
-                                <input
-                                    type="text"
-                                    name="firstName"
-                                    placeholder="First name"
-                                    value={subscribeData?.firstName}
-                                    onChange={e =>
-                                        handleSubscribeDataChange(
-                                            e.target.value,
-                                            e.target.name
-                                        )
-                                    }
-                                    id={styles.inputBox}
-                                />
-                                <input
-                                    type="email"
-                                    name="email"
-                                    placeholder="Email address"
-                                    value={subscribeData?.email}
-                                    onChange={e =>
-                                        handleSubscribeDataChange(
-                                            e.target.value,
-                                            e.target.name
-                                        )
-                                    }
-                                    id={styles.inputBox}
-                                />
+                                <input type="text" name="firstName" placeholder="First name" value={subscribeData?.firstName} onChange={e => handleSubscribeDataChange(e.target.value, e.target.name)} id={styles.inputBox} />
+                                <input type="email" name="email" placeholder="Email address" value={subscribeData?.email} onChange={e => handleSubscribeDataChange(e.target.value, e.target.name)} id={styles.inputBox} />
                                 <div className="d-flex align-content-start">
-                                    <input
-                                        type="checkbox"
-                                        checked={agreedToTerms}
-                                        onChange={(e: any) =>
-                                            handleCheckboxChange(e)
-                                        }
-                                        id={styles.agreementCheckbox}
-                                    />
+                                    <input type="checkbox" checked={agreedToTerms} onChange={(e: any) => handleCheckboxChange(e)} id={styles.agreementCheckbox} />
                                     <p className={styles.navText}>
-                                        I want to subscribe to the newsletter
-                                        with new content and recieve
-                                        annoucements regarding new products and
-                                        services. I agree with the{' '}
+                                        I want to subscribe to the newsletter with new content and recieve annoucements regarding new products and services. I agree with the{' '}
                                         <a href="#" className={styles.navLink}>
                                             Privacy Policy.
                                         </a>
                                     </p>
                                 </div>
-                                <button
-                                    type="submit"
-                                    disabled={
-                                        !agreedToTerms ||
-                                        subscribeData.firstName === '' ||
-                                        subscribeData.email === ''
-                                    }
-                                    className={styles.btn_subscribe}>
+                                <button type="submit" disabled={!agreedToTerms || subscribeData.firstName === '' || subscribeData.email === ''} className={styles.btn_subscribe}>
                                     Subscribe
                                 </button>
                             </form>
@@ -137,10 +90,7 @@ const Footer = () => {
                             <ul className="row gap-3">
                                 {navButtons.map(item => (
                                     <li key={item.id}>
-                                        <a
-                                            href={item.href}
-                                            key={item.id}
-                                            className={styles.navLink}>
+                                        <a href={item.href} key={item.id} className={styles.navLink}>
                                             {item.label}
                                         </a>
                                     </li>
@@ -153,10 +103,7 @@ const Footer = () => {
                             <ul className="row justify-content-end gap-3">
                                 {footerLinks.map(item => (
                                     <li key={item.id}>
-                                        <a
-                                            href={item.href}
-                                            key={item.id}
-                                            className={styles.navLink}>
+                                        <a href={item.href} key={item.id} className={styles.navLink}>
                                             {item.label}
                                         </a>
                                     </li>

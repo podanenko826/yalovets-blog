@@ -1,5 +1,6 @@
 .image {
     border: 1px solid lightgrey;
+    border-radius: 8px;
 }
 
 @media (min-width: 768px) {
@@ -168,12 +169,7 @@
     position: absolute;
     top: 315%;
     left: 7.5px; /* Distance from the right of the container */
-    background-color: rgba(
-        0,
-        0,
-        0,
-        0.6
-    ); /* Optional background for better readability */
+    background-color: rgba(0, 0, 0, 0.6); /* Optional background for better readability */
     color: #fff; /* Text color */
     padding: 0px 6px; /* Optional padding for styling */
     font-size: 12px; /* Adjust the size as needed */

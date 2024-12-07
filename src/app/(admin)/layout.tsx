@@ -6,6 +6,7 @@ import '@/app/css/custom.css';
 import '@/app/globals.css';
 
 import {ThemeProvider} from '@mui/material';
+import {PostProvider} from '@/components/PostContext';
 
 const inter = Inter({subsets: ['latin']});
 
@@ -20,8 +21,10 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <AppRouterCacheProvider>
-            <ThemeProvider theme={theme}>{children}</ThemeProvider>
-        </AppRouterCacheProvider>
+        <PostProvider>
+            <AppRouterCacheProvider>
+                <ThemeProvider theme={theme}>{children}</ThemeProvider>
+            </AppRouterCacheProvider>
+        </PostProvider>
     );
 }

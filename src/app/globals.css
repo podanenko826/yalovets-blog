@@ -36,9 +36,7 @@
 
 * {
     /* font-family: 'rubik', sans-serif; */
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-        Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
-        sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-size: 16px;
 }
 
@@ -71,13 +69,6 @@ button {
     color: var(--col-text);
     transition: all 75ms;
     cursor: pointer;
-}
-
-ul,
-li,
-a {
-    list-style: none;
-    padding: 0;
 }
 
 a.a-btn {
@@ -116,16 +107,14 @@ input:focus {
     font-size: 36px !important;
 }
 
-h1,
 .heading {
     font-weight: 700 !important;
-    font-size: 28px !important;
+    font-size: 28px;
 }
 
-h2,
 .subheading {
     font-weight: 600 !important;
-    font-size: 23px !important;
+    font-size: 23px;
 }
 
 .subheading-small {
@@ -219,27 +208,76 @@ button {
     padding: 12px 0;
 }
 
-.article > ul {
+/* .article > ul {
     padding-left: 40px;
     margin: 1em 0;
-}
-
+} */
+/* 
 .article > ul > li {
     list-style-type: disc;
     margin: 0.5em 0;
-}
+} */
 
 .article > p > img {
     padding: 20px 0;
+    width: auto;
+    height: auto;
 }
 
-.article > pre {
-    padding: 20px 0;
+.article > p > a {
+    color: var(--col-secondary);
 }
 
-.article > p > code {
-    background: rgba(210, 210, 210, 0.1);
-    color: rgb(130, 130, 130);
+.article > ul > li,
+.article > ol > li {
+    padding: 4px 0;
+}
+
+.codeblock {
+    background-color: rgba(124, 138, 152, 0.1);
+    border: 0.5px solid lightgrey;
+    border-radius: 7px;
+    margin: 20px 0;
+}
+
+.codeblock__head {
+    display: flex;
+    justify-content: space-between;
+}
+
+.codeblock__head > div > p {
+    padding-left: 11px;
+    padding-top: 4px;
+    opacity: 65%;
+    font-size: 13px;
+}
+
+.codeblock__head > a {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    height: 2rem;
+    font-size: 14px;
+    margin-top: 3px;
+
+    margin-right: 10px;
+}
+
+#copyIcon {
+    font-size: 14px;
+    margin-right: 3px;
+}
+
+.codeblock > pre {
+    padding: 0 20px;
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+code {
+    background: rgba(210, 210, 210, 0.2);
+    /* color: rgb(130, 130, 130); */
+    color: var(--col-text);
     padding: 3px;
     border-radius: 5px;
 }
@@ -251,6 +289,32 @@ button {
     background: rgba(210, 210, 210, 0.1);
     color: rgb(130, 130, 130);
     border-radius: 2px;
+}
+
+.contains-task-list {
+    /* padding-left: 2rem !important; */
+    margin-top: 0 !important;
+    margin-bottom: 1rem !important;
+    padding-left: 1rem;
+}
+
+.task-list-item {
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 4px 0 !important;
+}
+
+.table {
+    overflow: scroll;
+}
+
+.table > thead > tr > th {
+    border: 1px solid lightgrey;
+    background: rgba(128, 128, 128, 0.1);
+}
+
+.table > tbody > tr > td {
+    border: 1px solid lightgrey;
 }
 
 .mdxeditor-toolbar {
@@ -295,80 +359,70 @@ button {
 
 @font-face {
     font-family: 'rubik';
-    src: url('/fonts/Rubik/rubik-black-webfont.woff2') format('woff2'),
-        url('/fonts/Rubik/rubik-black-webfont.woff') format('woff');
+    src: url('/fonts/Rubik/rubik-black-webfont.woff2') format('woff2'), url('/fonts/Rubik/rubik-black-webfont.woff') format('woff');
     font-weight: bolder;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'rubik';
-    src: url('/fonts/Rubik/rubik-blackitalic-webfont.woff2') format('woff2'),
-        url('/fonts/Rubik/rubik-blackitalic-webfont.woff') format('woff');
+    src: url('/fonts/Rubik/rubik-blackitalic-webfont.woff2') format('woff2'), url('/fonts/Rubik/rubik-blackitalic-webfont.woff') format('woff');
     font-weight: bolder;
     font-style: italic;
 }
 
 @font-face {
     font-family: 'rubik';
-    src: url('/fonts/Rubik/rubik-bold-webfont.woff2') format('woff2'),
-        url('/fonts/Rubik/rubik-bold-webfont.woff') format('woff');
+    src: url('/fonts/Rubik/rubik-bold-webfont.woff2') format('woff2'), url('/fonts/Rubik/rubik-bold-webfont.woff') format('woff');
     font-weight: bold;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'rubik';
-    src: url('/fonts/Rubik/rubik-bolditalic-webfont.woff2') format('woff2'),
-        url('/fonts/Rubik/rubik-bolditalic-webfont.woff') format('woff');
+    src: url('/fonts/Rubik/rubik-bolditalic-webfont.woff2') format('woff2'), url('/fonts/Rubik/rubik-bolditalic-webfont.woff') format('woff');
     font-weight: bold;
     font-style: italic;
 }
 
 @font-face {
     font-family: 'rubik';
-    src: url('/fonts/Rubik/rubik-italic-webfont.woff2') format('woff2'),
-        url('/fonts/Rubik/rubik-italic-webfont.woff') format('woff');
+    src: url('/fonts/Rubik/rubik-italic-webfont.woff2') format('woff2'), url('/fonts/Rubik/rubik-italic-webfont.woff') format('woff');
     font-weight: normal;
     font-style: italic;
 }
 
 @font-face {
     font-family: 'rubik';
-    src: url('/fonts/Rubik/rubik-light-webfont.woff2') format('woff2'),
-        url('/fonts/Rubik/rubik-light-webfont.woff') format('woff');
+    src: url('/fonts/Rubik/rubik-light-webfont.woff2') format('woff2'), url('/fonts/Rubik/rubik-light-webfont.woff') format('woff');
     font-weight: lighter;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'rubik';
-    src: url('/fonts/Rubik/rubik-lightitalic-webfont.woff2') format('woff2'),
-        url('/fonts/Rubik/rubik-lightitalic-webfont.woff') format('woff');
+    src: url('/fonts/Rubik/rubik-lightitalic-webfont.woff2') format('woff2'), url('/fonts/Rubik/rubik-lightitalic-webfont.woff') format('woff');
     font-weight: lighter;
     font-style: italic;
 }
 
 @font-face {
     font-family: 'rubik';
-    src: url('/fonts/Rubik/rubik-medium-webfont.woff2') format('woff2'),
-        url('/fonts/Rubik/rubik-medium-webfont.woff') format('woff');
+    src: url('/fonts/Rubik/rubik-medium-webfont.woff2') format('woff2'), url('/fonts/Rubik/rubik-medium-webfont.woff') format('woff');
     font-weight: 600;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'rubik';
-    src: url('/fonts/Rubik/rubik-mediumitalic-webfont.woff2') format('woff2'),
-        url('/fonts/Rubik/rubik-mediumitalic-webfont.woff') format('woff');
+    src: url('/fonts/Rubik/rubik-mediumitalic-webfont.woff2') format('woff2'), url('/fonts/Rubik/rubik-mediumitalic-webfont.woff') format('woff');
     font-weight: 600;
     font-style: italic;
 }
 
 @font-face {
     font-family: 'rubik';
-    src: url('/fonts/Rubik/rubik-regular-webfont.woff2') format('woff2'),
-        url('/fonts/Rubik/rubik-regular-webfont.woff') format('woff');
+    src: url('/fonts/Rubik/rubik-regular-webfont.woff2') format('woff2'), url('/fonts/Rubik/rubik-regular-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 }
