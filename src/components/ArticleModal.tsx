@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { HTMLAttributes, useEffect, useState } from 'react';
 import styles from '@/components/ArticleModal.module.css';
 import NavBar from './NavBar';
 import { usePostContext } from './PostContext';
@@ -18,18 +18,9 @@ import { usePathname } from 'next/navigation';
 import { getAuthors } from '@/lib/authors';
 import { MDXProvider } from '@mdx-js/react';
 import { mdSerialize } from '../../mdSerializer';
+import { useMDXComponents } from '../../mdx-components';
 
-const components = {
-    table: (props: React.JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableElement> & React.TableHTMLAttributes<HTMLTableElement>) => (
-        <div className="container">
-            <div className="row p-md-1 p-lg-3 overflow-scroll">
-                <table className="table" {...props} />
-            </div>
-        </div>
-    ),
-    td: (props: React.JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableDataCellElement> & React.TdHTMLAttributes<HTMLTableDataCellElement>) => <td className="col-1" {...props} />,
-    // Add other custom components here
-};
+// Ensure languages are loaded
 
 const ArticleModal: React.FC = () => {
     const { selectedPost, setSelectedPost } = usePostContext();
@@ -39,6 +30,8 @@ const ArticleModal: React.FC = () => {
     const { selectedMarkdown, setSelectedMarkdown } = usePostContext();
     const { closeModal } = usePostContext();
     const [serializedMarkdown, setSerializedMarkdown] = useState<MDXRemoteSerializeResult<Record<string, unknown>, Record<string, unknown>>>();
+
+    const components = useMDXComponents();
 
     console.log(selectedMarkdown);
     const currentPath = usePathname();
