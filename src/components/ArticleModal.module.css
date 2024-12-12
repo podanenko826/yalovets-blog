@@ -2,12 +2,25 @@
     width: 100%;
     height: 100vh;
     position: fixed;
-    background: white;
     overflow-y: scroll;
+    background: white;
     z-index: 2;
     top: 0%;
     /* bottom: 0%; */
     left: 0%;
+}
+
+.previewModal {
+    z-index: 3;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.previewModal > div {
+    max-height: 100vh;
+}
+
+.previewModal > div > div {
+    max-height: 90vh;
 }
 
 .loadingBanner {
@@ -23,4 +36,36 @@
     top: 0%;
     /* bottom: 0%; */
     left: 0%;
+}
+
+.expendedArticle {
+    overflow: scroll !important;
+    background: white;
+    border-radius: 16px;
+    max-height: 90vh;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+}
+
+.expendedArticle > article {
+    overflow: scroll !important;
+}
+
+.postDataContainer {
+    min-height: 100%;
+}
+
+.authorDataContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: white;
+    border-radius: 16px;
+    height: auto;
+    padding: 2rem;
+
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+}
+
+.authorDataContainer > div > img {
+    border-radius: 100%;
 }

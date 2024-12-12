@@ -46,14 +46,6 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
     }, [authorData, setAuthors]);
 
     useEffect(() => {
-        if (selectedPost) {
-            document.body.classList.add('overflow-hidden');
-        } else {
-            document.body.classList.remove('overflow-hidden');
-        }
-    }, [selectedPost]);
-
-    useEffect(() => {
         const getData = async () => {
             try {
                 let sorted: PostItem[] | null = null;

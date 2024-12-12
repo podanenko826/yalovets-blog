@@ -187,6 +187,25 @@
     overflow: hidden; /* Ensure no content spills outside */
 }
 
+.openedPost {
+    display: inline-block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+}
+
+.expendedContainer {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin: 2rem;
+    min-height: 100%;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+}
+
 @media (max-width: 992px) {
     .imageWrapper {
         height: 140px; /* Adjust height for smaller screens */

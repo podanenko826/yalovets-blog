@@ -11,6 +11,8 @@ interface PostContextType {
     setPosts: React.Dispatch<React.SetStateAction<PostItem[]>>;
     selectedPost: PostItem | null;
     setSelectedPost: React.Dispatch<React.SetStateAction<PostItem | null>>;
+    expandedPost: PostItem | null;
+    setExpandedPost: React.Dispatch<React.SetStateAction<PostItem | null>>;
     authors: AuthorItem[];
     setAuthors: React.Dispatch<React.SetStateAction<AuthorItem[]>>;
     selectedMarkdown: string | null; // Add markdown state
@@ -29,6 +31,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [posts, setPosts] = useState<PostItem[]>([]);
     const [selectedPost, setSelectedPost] = useState<PostItem | null>(null);
+    const [expandedPost, setExpandedPost] = useState<PostItem | null>(null);
     const [authors, setAuthors] = useState<AuthorItem[]>([]);
     const [selectedMarkdown, setSelectedMarkdown] = useState<string | null>(null);
     const [previousPath, setPreviousPath] = useState<string | null>(null);
@@ -81,6 +84,8 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 setPosts,
                 selectedPost,
                 setSelectedPost,
+                expandedPost,
+                setExpandedPost,
                 authors,
                 setAuthors,
                 selectedMarkdown,

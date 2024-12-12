@@ -16,6 +16,7 @@ import { PostProvider } from '@/components/PostContext';
 import React from 'react';
 import dynamic from 'next/dynamic';
 import LoadingBanner from '@/components/LoadingBanner';
+import PostPreviewModal from '@/components/PostPreviewModal';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -35,6 +36,7 @@ export default function RootLayout({
                 <NavBar />
                 <LoadingBanner />
                 {children}
+                <PostPreviewModal />
                 <ArticleModal />
                 <Footer />
             </PostProvider>

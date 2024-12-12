@@ -7,7 +7,7 @@ import LazyPostCard from './LazyPostCard';
 interface PostListProps {
     initialPosts: PostItem[];
     initialAuthors: AuthorItem[];
-    style: 'massive' | 'full' | 'preview' | 'admin' | 'standard';
+    style: 'massive' | 'full' | 'expanded' | 'preview' | 'admin' | 'standard';
     indexIncrement?: number;
 }
 

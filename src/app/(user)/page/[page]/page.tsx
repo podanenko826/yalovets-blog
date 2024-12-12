@@ -109,7 +109,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     return (
         <>
             {postsData && authorData && (
-                <main>
+                <main id="body">
                     <div className="container posts" id="posts">
                         <h1 className="heading heading-large mt-5">Page {currentPage}</h1>
                         <div className="row post-list">

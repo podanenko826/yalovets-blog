@@ -2,7 +2,7 @@ import LazyImage from '@/components/LazyImage';
 import type { MDXComponents } from 'mdx/types';
 import { ImageProps } from 'next/image';
 import Prism from 'prismjs';
-import React, { HTMLAttributes } from 'react';
+import React, { HTMLAttributes, JSXElementConstructor, ReactElement, useRef } from 'react';
 
 import { MdContentCopy, MdOutlineDoneAll, MdClear } from 'react-icons/md';
 
@@ -46,13 +46,16 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
         },
         pre: (props: React.JSX.IntrinsicAttributes & React.ClassAttributes<HTMLPreElement> & React.HTMLAttributes<HTMLPreElement>) => {
             const childrenArray = React.Children.toArray(props.children);
-            const codeElement = childrenArray.find(child => React.isValidElement(child) && child.type === 'code') as React.ReactElement<HTMLAttributes<HTMLElement>> | undefined;
+            const codeElement = useRef<ReactElement<HTMLAttributes<HTMLElement>, string | JSXElementConstructor<any>> | undefined>();
+            const uniqueId = `copyButton-${Math.random().toString(36).substr(2, 9)}`;
+
+            codeElement.current = childrenArray.find(child => React.isValidElement(child) && child.type === 'code') as React.ReactElement<HTMLAttributes<HTMLElement>> | undefined;
             let language: string = 'unknown';
 
             // Determine the language from the `code` element's className
 
-            if (codeElement?.props?.className) {
-                const match = codeElement.props.className.match(/language-(\w+)/);
+            if (codeElement?.current!.props?.className) {
+                const match = codeElement.current!.props.className.match(/language-(\w+)/);
                 if (match && match[1]) {
                     switch (match[1]) {
                         case 'js':
@@ -71,9 +74,9 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
                 }
             }
 
-            function copyCode() {
-                const textToCopy = codeElement?.props.children?.toString();
-                const copyButtonElement = document.querySelector('#copyButton');
+            function copyCode(id: string) {
+                const textToCopy = codeElement?.current!.props.children?.toString();
+                const copyButtonElement = document.getElementById(id);
                 if (textToCopy) {
                     if (navigator.clipboard && navigator.clipboard.writeText) {
                         // Modern API
@@ -125,7 +128,7 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
                 }
             }
 
-            const highlightedCode = Prism.highlight(codeElement?.props.children?.toString() || '', Prism.languages[language] || Prism.languages.markup, language);
+            const highlightedCode = Prism.highlight(codeElement?.current!.props.children?.toString() || '', Prism.languages[language] || Prism.languages.markup, language);
             return (
                 <div className="codeblock">
                     <div className="codeblock__head">
@@ -133,16 +136,16 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
                         <a
                             role="button"
                             className="a-button subheading-tiny"
-                            id="copyButton"
+                            id={uniqueId}
                             onClick={() => {
-                                copyCode();
+                                copyCode(uniqueId);
                             }}>
                             <MdContentCopy id="copyIcon" /> Copy code
                         </a>
                     </div>
 
                     <pre {...props}>
-                        <code className={codeElement?.props.className} dangerouslySetInnerHTML={{ __html: highlightedCode }} />
+                        <code className={codeElement?.current!.props.className} dangerouslySetInnerHTML={{ __html: highlightedCode }} />
                     </pre>
                 </div>
             );

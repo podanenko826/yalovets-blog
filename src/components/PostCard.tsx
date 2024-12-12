@@ -20,7 +20,7 @@ type PostCardProps = {
     post: PostItem;
     previewData?: PostPreviewItem;
     authorData: AuthorItem;
-    style: 'massive' | 'full' | 'preview' | 'admin' | 'standard';
+    style: 'massive' | 'full' | 'expanded' | 'preview' | 'admin' | 'standard';
     index?: number | 1;
     setValue?: React.Dispatch<React.SetStateAction<string>>;
     onVisible?: () => void;
@@ -28,6 +28,7 @@ type PostCardProps = {
 
 const PostCard = ({ post, previewData, authorData, style, index, setValue, onVisible }: PostCardProps) => {
     const { openModal } = usePostContext();
+    const { setExpandedPost } = usePostContext();
 
     const handlePostOpen = async () => {
         const mdxContent = await getMDXContent(post.slug);
@@ -51,6 +52,10 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         if (deletedPostSlug) {
             router.refresh();
         }
+    };
+
+    const handlePostExpansion = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        setExpandedPost(post);
     };
 
     const modalRef = useRef<Modal | null>(null);
@@ -216,7 +221,9 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                 <span className="d-inline-block">
                                     <div className={`${styles.profile_info} d-flex`}>
                                         <div className="align-content-center">
-                                            <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                            <a role="button" onClick={handlePostOpen}>
+                                                <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                            </a>
                                         </div>
                                         <div className={styles.profile_info__details}>
                                             <Link href={`/author/${authorData.authorKey}`} className={`${styles.profile_info__text} m-0`}>
@@ -239,17 +246,22 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                     </>
                                 )}
                             </h1>
-                            <p className={`${styles.description} pb-2`}>
-                                {post.description.length > 140 ? (
-                                    <>
+                        </a>
+                        <p className={`${styles.description} pb-2`}>
+                            {post.description.length > 140 ? (
+                                <>
+                                    <a role="button" onClick={handlePostOpen}>
                                         {post.description.slice(0, 140) + '... '}
-                                        <button id="col-secondary">Read more</button>
-                                    </>
-                                ) : (
-                                    post.description
-                                )}
-                            </p>
-
+                                    </a>
+                                    <button onClick={handlePostExpansion} id="col-secondary">
+                                        Read more
+                                    </button>
+                                </>
+                            ) : (
+                                post.description
+                            )}
+                        </p>
+                        <a role="button" onClick={handlePostOpen}>
                             <button className="btn-filled">Read on</button>
                         </a>
                     </div>
@@ -258,8 +270,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         </div>
     ) : style === 'full' ? (
         <div className="col-12 col-md-6" key={index}>
-            <a role="button" onClick={handlePostOpen}>
-                {post.imageUrl && (
+            {post.imageUrl && (
+                <a role="button" onClick={handlePostOpen}>
                     <div className={styles.image}>
                         <picture className="img-fluid">
                             <Image
@@ -274,9 +286,11 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                             />
                         </picture>
                     </div>
-                )}
+                </a>
+            )}
 
-                <div className={styles.postInfo}>
+            <div className={styles.postInfo}>
+                <a role="button" onClick={handlePostOpen}>
                     <h2 className={`${styles.heading} subheading d-flex flex-wrap align-items-center gap-1`} id="col-heading-1">
                         {post.title}{' '}
                         {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && (
@@ -286,16 +300,77 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                             // </span>
                         )}
                     </h2>
-                    <p className={styles.description}>
-                        {post.description.length > 160 ? (
-                            <>
+                </a>
+                <p className={styles.description}>
+                    {post.description.length > 160 ? (
+                        <>
+                            <a role="button" onClick={handlePostOpen}>
                                 {post.description.slice(0, 160) + '... '}
-                                <button id="col-secondary">Read more</button>
-                            </>
-                        ) : (
-                            post.description
-                        )}
-                    </p>
+                            </a>
+                            <button onClick={handlePostExpansion} id="col-secondary">
+                                Read more
+                            </button>
+                        </>
+                    ) : (
+                        post.description
+                    )}
+                </p>
+            </div>
+            <div className={`${styles.profile_info} d-flex`}>
+                <div className={styles.profile_info__details}>
+                    <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
+                        <div className={`${styles.profile_info} d-flex`}>
+                            <div className="align-content-center">
+                                <LazyImage onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                            </div>
+                            <div className={styles.profile_info__details}>
+                                <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
+                                    {authorData.fullName}
+                                </Link>
+                                <p className={`${styles.profile_info__text} align-content-center m-0`}>
+                                    {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
+                                </p>
+                            </div>
+                        </div>
+                    </span>
+                </div>
+            </div>
+        </div>
+    ) : style === 'expanded' ? (
+        <div className={`col-12 ${styles.expendedContainer}`} key={index}>
+            <a role="button" onClick={handlePostOpen}>
+                {post.imageUrl && (
+                    <Link href={`/${post.slug}`}>
+                        <div className={styles.image}>
+                            <picture className="img-fluid">
+                                <Image
+                                    className="img-fluid full-image"
+                                    src={post.imageUrl || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
+                                    alt={post.title}
+                                    title={post.title}
+                                    loading="lazy"
+                                    width={546}
+                                    height={182}
+                                    sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                                />
+                            </picture>
+                        </div>
+                    </Link>
+                )}
+
+                <div className={styles.postInfo}>
+                    <Link href={`/${post.slug}`}>
+                        <h2 className={`${styles.heading} subheading d-flex flex-wrap align-items-center gap-1`} id="col-heading-1">
+                            {post.title}{' '}
+                            {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && (
+                                <span className="px-2 py-1 mt-1 rounded-pill text-wrap text-bg-secondary">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>
+                                // <span className="px-2 py-1 pb-1 mb-3 rounded-pill text-bg-secondary">
+                                //     Updated
+                                // </span>
+                            )}
+                        </h2>
+                        <p className={styles.description}>{post.description.length > 160 ? <>{post.description}</> : post.description}</p>
+                    </Link>
                 </div>
             </a>
             <div className={`${styles.profile_info} d-flex`}>
@@ -532,8 +607,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         </div>
     ) : (
         <div className="col-12 col-md-4" key={index}>
-            <a role="button" onClick={handlePostOpen}>
-                {post.imageUrl && (
+            {post.imageUrl && (
+                <a role="button" onClick={handlePostOpen}>
                     <div className={styles.image}>
                         <picture className={`img-fluid ${styles.imageWrapper}`}>
                             <Image className="img-fluid" src={post.imageUrl || '/ui/not-found.png'} alt={post.title} title={post.title} width={354} height={180} loading="lazy" sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
@@ -543,26 +618,32 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                             </span>
                         </picture>
                     </div>
-                )}
+                </a>
+            )}
 
-                <div className={styles.postInfo}>
-                    <div className="d-flex align-content-center m-0">
+            <div className={styles.postInfo}>
+                <div className="d-flex align-content-center m-0">
+                    <a role="button" onClick={handlePostOpen}>
                         <h2 className={`${styles.heading} subheading`} id="col-heading-1">
                             {post.title.length > 90 ? <>{post.title.slice(0, 90) + '... '}</> : post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && <span className="px-2 py-1 pb-1 mb-3 rounded-pill text-bg-secondary">Updated</span>}
                         </h2>
-                    </div>
-                    <p className={styles.description}>
-                        {post.description.length > 140 ? (
-                            <>
-                                {post.description.slice(0, 140) + '... '}
-                                <button id="col-secondary">Read more</button>
-                            </>
-                        ) : (
-                            post.description
-                        )}
-                    </p>
+                    </a>
                 </div>
-            </a>
+                <p className={styles.description}>
+                    {post.description.length > 140 ? (
+                        <>
+                            <a role="button" onClick={handlePostOpen}>
+                                {post.description.slice(0, 140) + '... '}
+                            </a>
+                            <button onClick={handlePostExpansion} id="col-secondary">
+                                Read more
+                            </button>
+                        </>
+                    ) : (
+                        post.description
+                    )}
+                </p>
+            </div>
             <div className={`${styles.profile_info} d-flex`}>
                 <div className={styles.profile_info__details}>
                     <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">

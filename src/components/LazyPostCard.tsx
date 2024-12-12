@@ -1,6 +1,6 @@
 'use client';
-import {PostItem, PostPreviewItem, AuthorItem} from '@/types';
-import React, {useEffect, useRef, useState} from 'react';
+import { PostItem, PostPreviewItem, AuthorItem } from '@/types';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -13,19 +13,12 @@ type PostCardProps = {
     post: PostItem;
     previewData?: PostPreviewItem;
     authorData: AuthorItem;
-    style: 'massive' | 'full' | 'preview' | 'admin' | 'standard';
+    style: 'massive' | 'full' | 'expanded' | 'preview' | 'admin' | 'standard';
     index?: number | 1;
     setValue?: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const LazyPostCard = ({
-    post,
-    previewData,
-    authorData,
-    style,
-    index,
-    setValue,
-}: PostCardProps) => {
+const LazyPostCard = ({ post, previewData, authorData, style, index, setValue }: PostCardProps) => {
     const [isVisible, setIsVisible] = useState(false);
 
     const [articleOpened, setArticleOpened] = useState(false);
@@ -38,7 +31,7 @@ const LazyPostCard = ({
                     setIsVisible(true);
                 }
             },
-            {threshold: 0.3}
+            { threshold: 0.3 }
         );
 
         if (ref.current) {
@@ -55,13 +48,7 @@ const LazyPostCard = ({
     return (
         <>
             {isVisible ? (
-                <PostCard
-                    post={post}
-                    authorData={authorData}
-                    index={index}
-                    key={index}
-                    style={style}
-                />
+                <PostCard post={post} authorData={authorData} index={index} key={index} style={style} />
             ) : (
                 <div className="col-12 col-md-4" ref={ref}>
                     <span>
@@ -79,82 +66,45 @@ const LazyPostCard = ({
                         </div>
 
                         <div className={`${styles.postInfo}`}>
-                            <span
-                                className={`${styles.heading} d-flex gap-1`}
-                                id="col-heading-1">
-                                <p
-                                    className={`${styles.dot} ${styles.placeholder_heading__dot}`}></p>
-                                <p
-                                    className={`${styles.underscore} ${styles.placeholder_heading__underscore}`}></p>
-                                <p
-                                    className={`${styles.underscore} ${styles.placeholder_heading__underscore}`}></p>
-                                <p
-                                    className={`${styles.dot} ${styles.placeholder_heading__dot}`}></p>
-                                <p
-                                    className={`${styles.underscore} ${styles.placeholder_heading__underscore}`}></p>
-                                <p
-                                    className={`${styles.dot} ${styles.placeholder_heading__dot}`}></p>
-                                <p
-                                    className={`${styles.underscore} ${styles.placeholder_heading__underscore}`}></p>
-                                <p
-                                    className={`${styles.dot} ${styles.placeholder_heading__dot}`}></p>
-                                <p
-                                    className={`${styles.underscore} ${styles.placeholder_heading__underscore}`}></p>
-                                <p
-                                    className={`${styles.underscore} ${styles.placeholder_heading__underscore}`}></p>
-                                <p
-                                    className={`${styles.dot} ${styles.placeholder_heading__dot}`}></p>
-                                <p
-                                    className={`${styles.underscore} ${styles.placeholder_heading__underscore}`}></p>
-                                <p
-                                    className={`${styles.dot} ${styles.placeholder_heading__dot}`}></p>
-                                <p
-                                    className={`${styles.underscore} ${styles.placeholder_heading__underscore}`}></p>
-                                <p
-                                    className={`${styles.dot} ${styles.placeholder_heading__dot}`}></p>
+                            <span className={`${styles.heading} d-flex gap-1`} id="col-heading-1">
+                                <p className={`${styles.dot} ${styles.placeholder_heading__dot}`}></p>
+                                <p className={`${styles.underscore} ${styles.placeholder_heading__underscore}`}></p>
+                                <p className={`${styles.underscore} ${styles.placeholder_heading__underscore}`}></p>
+                                <p className={`${styles.dot} ${styles.placeholder_heading__dot}`}></p>
+                                <p className={`${styles.underscore} ${styles.placeholder_heading__underscore}`}></p>
+                                <p className={`${styles.dot} ${styles.placeholder_heading__dot}`}></p>
+                                <p className={`${styles.underscore} ${styles.placeholder_heading__underscore}`}></p>
+                                <p className={`${styles.dot} ${styles.placeholder_heading__dot}`}></p>
+                                <p className={`${styles.underscore} ${styles.placeholder_heading__underscore}`}></p>
+                                <p className={`${styles.underscore} ${styles.placeholder_heading__underscore}`}></p>
+                                <p className={`${styles.dot} ${styles.placeholder_heading__dot}`}></p>
+                                <p className={`${styles.underscore} ${styles.placeholder_heading__underscore}`}></p>
+                                <p className={`${styles.dot} ${styles.placeholder_heading__dot}`}></p>
+                                <p className={`${styles.underscore} ${styles.placeholder_heading__underscore}`}></p>
+                                <p className={`${styles.dot} ${styles.placeholder_heading__dot}`}></p>
                             </span>
 
                             {/* Placeholder description */}
 
-                            <span
-                                className={`${styles.description} d-flex gap-1 pt-3 pb-2`}>
-                                <p
-                                    className={`${styles.underscore} ${styles.placeholder_desc__underscore}`}></p>
-                                <p
-                                    className={`${styles.dot} ${styles.placeholder_desc__dot}`}></p>
-                                <p
-                                    className={`${styles.underscore} ${styles.placeholder_desc__underscore}`}></p>
-                                <p
-                                    className={`${styles.underscore} ${styles.placeholder_desc__underscore}`}></p>
-                                <p
-                                    className={`${styles.dot} ${styles.placeholder_desc__dot}`}></p>
-                                <p
-                                    className={`${styles.dot} ${styles.placeholder_desc__dot}`}></p>
-                                <p
-                                    className={`${styles.underscore} ${styles.placeholder_desc__underscore}`}></p>
-                                <p
-                                    className={`${styles.dot} ${styles.placeholder_desc__dot}`}></p>
+                            <span className={`${styles.description} d-flex gap-1 pt-3 pb-2`}>
+                                <p className={`${styles.underscore} ${styles.placeholder_desc__underscore}`}></p>
+                                <p className={`${styles.dot} ${styles.placeholder_desc__dot}`}></p>
+                                <p className={`${styles.underscore} ${styles.placeholder_desc__underscore}`}></p>
+                                <p className={`${styles.underscore} ${styles.placeholder_desc__underscore}`}></p>
+                                <p className={`${styles.dot} ${styles.placeholder_desc__dot}`}></p>
+                                <p className={`${styles.dot} ${styles.placeholder_desc__dot}`}></p>
+                                <p className={`${styles.underscore} ${styles.placeholder_desc__underscore}`}></p>
+                                <p className={`${styles.dot} ${styles.placeholder_desc__dot}`}></p>
                             </span>
                         </div>
                     </span>
 
                     <div className={`${styles.profile_info} d-flex mb-5`}>
                         <div className="align-content-center">
-                            <Image
-                                className={`${styles.pfp} ${styles.placeholder_pfp} img-fluid`}
-                                src={`/ui/placeholder-pfp.png`}
-                                alt="pfp"
-                                width={42.5}
-                                height={42.5}
-                                priority={true}
-                            />
+                            <Image className={`${styles.pfp} ${styles.placeholder_pfp} img-fluid`} src={`/ui/placeholder-pfp.png`} alt="pfp" width={42.5} height={42.5} priority={true} />
                         </div>
-                        <div
-                            className={`${styles.profile_info__details} gap-2`}>
-                            <div
-                                className={
-                                    styles.placeholder_profile_info__text
-                                }>
+                        <div className={`${styles.profile_info__details} gap-2`}>
+                            <div className={styles.placeholder_profile_info__text}>
                                 <p className={styles.dot}></p>
                                 <p className={styles.underscore}></p>
                                 <p className={styles.underscore}></p>
@@ -163,13 +113,9 @@ const LazyPostCard = ({
                                 <p className={styles.dot}></p>
                                 <p className={styles.underscore}></p>
                             </div>
-                            <div
-                                className={
-                                    styles.placeholder_profile_info__text
-                                }>
+                            <div className={styles.placeholder_profile_info__text}>
                                 <p className={styles.underscore}></p>
-                                <p className={styles.dot}></p>{' '}
-                                <p className={styles.dot}></p>
+                                <p className={styles.dot}></p> <p className={styles.dot}></p>
                                 <p className={styles.underscore}></p>
                                 <p className={styles.underscore}></p>
                                 <p className={styles.dot}></p>

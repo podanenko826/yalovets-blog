@@ -36,28 +36,13 @@ const ArticleModal: React.FC = () => {
     console.log(selectedMarkdown);
     const currentPath = usePathname();
 
-    // useEffect(() => {
-    //     const handleModalClosing = async () => {
-    //         if (window.history.state !== `/${selectedPost?.slug}`) {
-    //             setSelectedMarkdown(null);
-    //             setSelectedPost(null);
-    //         }
-    //     };
-    //     handleModalClosing();
-    // }, [window.history.state]);
-
-    // useEffect(() => {
-    //     const handleModalOpening = async () => {
-    //         if (currentSlug) {
-    //             const post = await getPost(currentSlug);
-    //             const markdown = await getMDXContent(currentSlug);
-
-    //             setSelectedPost(post);
-    //             setSelectedMarkdown(markdown.markdown);
-    //         }
-    //     };
-    //     handleModalOpening();
-    // }, [currentSlug]);
+    useEffect(() => {
+        if (selectedPost) {
+            document.body.classList.add('overflow-hidden');
+        } else {
+            document.body.classList.remove('overflow-hidden');
+        }
+    }, [selectedPost]);
 
     useEffect(() => {
         //? Fetches the necessary data for a post to display if the url has slug in it
