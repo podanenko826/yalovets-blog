@@ -106,6 +106,10 @@ code {
     font-size: inherit;
 }
 
+span {
+    font-size: inherit;
+}
+
 .heading-xlarge {
     font-size: 48px !important;
 }
@@ -303,12 +307,15 @@ pre > code {
     color: black;
 }
 
+blockquote,
 .quote {
     display: flex;
     align-content: center;
     background: rgba(128, 128, 128, 0.1);
 }
 
+blockquote > p,
+blockquote > span,
 .quote > p {
     margin: 1.6rem;
 }
