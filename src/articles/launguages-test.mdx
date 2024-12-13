@@ -1,7 +1,7 @@
 ```js
-const printString = (value) => {
-  console.log(value);
-}
+const printString = value => {
+    console.log(value);
+};
 ```
 
 ```jsx
@@ -20,8 +20,8 @@ export default Home;
 
 ```ts
 const printString = (value: string) => {
-  console.log(value);
-}
+    console.log(value);
+};
 ```
 
 ```tsx
@@ -40,18 +40,18 @@ export defalut Home;
 
 ```html
 <html>
-  <body>
-    <div>
-      <h1 class="helloWorldText">Hello World</h1>
-    </div>
-  </body>
+    <body>
+        <div>
+            <h1 class="helloWorldText">Hello World</h1>
+        </div>
+    </body>
 </html>
 ```
 
 ```css
 .helloWorldText {
-  font-size: 24px;
-  color: red;
+    font-size: 24px;
+    color: red;
 }
 ```
 
@@ -74,28 +74,51 @@ SELECT * FROM yalovets_blog_metadata
 
 ```json
 {
-  "content": [
-    {
-      "id": 1,
-      "title": "Hello World"
-    },
-    {
-      "id": 2,
-      "title": "Hello World 2"
-    }
-  ]
+    "content": [
+        {
+            "id": 1,
+            "title": "Hello World"
+        },
+        {
+            "id": 2,
+            "title": "Hello World 2"
+        }
+    ]
 }
 ```
 
 ```yaml
 ---
-
 website: yalovetsblog
 
 domain: www.yalovets.blog
 
 category:
-- devops
-- ai
-- devtools
+    - devops
+    - ai
+    - devtools
+```
+
+```
+npm install next-mdx-remote
+```
+
+```php
+$x = 5;
+$y = "John";
+```
+
+```sh
+mkdir test || echo “directory exists”
+```
+
+```ps1
+Get-ExecutionPolicy -List
+```
+
+```dockerfile
+FROM node:alpine
+COPY . /app
+WORKDIR /app
+CMD node app.js
 ```

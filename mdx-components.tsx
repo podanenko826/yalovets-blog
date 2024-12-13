@@ -1,29 +1,19 @@
 import LazyImage from '@/components/LazyImage';
 import type { MDXComponents } from 'mdx/types';
 import { ImageProps } from 'next/image';
-import Prism from 'prismjs';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/atom-one-light.css';
+
 import React, { HTMLAttributes, JSXElementConstructor, ReactElement, useRef } from 'react';
 
 import { MdContentCopy, MdOutlineDoneAll, MdClear } from 'react-icons/md';
-
-require('prismjs/components/prism-javascript');
-require('prismjs/components/prism-jsx');
-require('prismjs/components/prism-typescript'); // Load TypeScript grammar
-require('prismjs/components/prism-tsx');
-require('prismjs/components/prism-markup');
-require('prismjs/components/prism-css');
-require('prismjs/components/prism-python');
-require('prismjs/components/prism-bash');
-require('prismjs/components/prism-sql');
-require('prismjs/components/prism-json');
-require('prismjs/components/prism-yaml');
 
 export function useMDXComponents(components?: MDXComponents): MDXComponents {
     const ImageWidth: number | undefined = 736;
     return {
         table: (props: React.JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableElement> & React.TableHTMLAttributes<HTMLTableElement>) => (
             <div className="container">
-                <div className="row p-md-1 p-lg-3 overflow-scroll">
+                <div className="row overflow-scroll">
                     <table className="table" {...props} />
                 </div>
             </div>
@@ -50,7 +40,7 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
             const uniqueId = `copyButton-${Math.random().toString(36).substr(2, 9)}`;
 
             codeElement.current = childrenArray.find(child => React.isValidElement(child) && child.type === 'code') as React.ReactElement<HTMLAttributes<HTMLElement>> | undefined;
-            let language: string = 'unknown';
+            let language: string = '';
 
             // Determine the language from the `code` element's className
 
@@ -128,11 +118,17 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
                 }
             }
 
-            const highlightedCode = Prism.highlight(codeElement?.current!.props.children?.toString() || '', Prism.languages[language] || Prism.languages.markup, language);
+            let highlightedCode: string;
+            if (language !== '') {
+                highlightedCode = hljs.highlight(codeElement?.current!.props.children?.toString() || '', { language: language }).value;
+            } else {
+                highlightedCode = codeElement.current?.props.children?.toString() || '';
+            }
+
             return (
                 <div className="codeblock">
                     <div className="codeblock__head">
-                        <div>{language !== 'unknown' && <p style={{ userSelect: 'none' }}>{language}</p>}</div>
+                        <div>{language !== '' && <p style={{ userSelect: 'none' }}>{language}</p>}</div>
                         <a
                             role="button"
                             className="a-button subheading-tiny"

@@ -1,5 +1,4 @@
 import { serialize } from 'next-mdx-remote/serialize';
-import rehypeStringify from 'rehype-stringify';
 import remarkGfm from 'remark-gfm';
 
 const mdSerialize = async (source: string) => {

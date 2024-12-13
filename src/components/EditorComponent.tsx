@@ -1,59 +1,22 @@
 'use client';
-import {notFound, redirect, useRouter} from 'next/navigation';
+import { notFound, redirect, useRouter } from 'next/navigation';
 
-import {
-    headingsPlugin,
-    listsPlugin,
-    quotePlugin,
-    thematicBreakPlugin,
-    markdownShortcutPlugin,
-    codeMirrorPlugin,
-    linkDialogPlugin,
-    directivesPlugin,
-    imagePlugin,
-    sandpackPlugin,
-    tablePlugin,
-    diffSourcePlugin,
-    MDXEditor,
-    type MDXEditorMethods,
-    type MDXEditorProps,
-    AdmonitionDirectiveDescriptor,
-    ConditionalContents,
-    codeBlockPlugin,
-    linkPlugin,
-    ListsToggle,
-} from '@mdxeditor/editor';
+import { headingsPlugin, listsPlugin, quotePlugin, thematicBreakPlugin, markdownShortcutPlugin, codeMirrorPlugin, linkDialogPlugin, directivesPlugin, imagePlugin, sandpackPlugin, tablePlugin, diffSourcePlugin, MDXEditor, type MDXEditorMethods, type MDXEditorProps, AdmonitionDirectiveDescriptor, ConditionalContents, codeBlockPlugin, linkPlugin, ListsToggle } from '@mdxeditor/editor';
 
 /* MDXEditor toolbar components */
-import {
-    toolbarPlugin,
-    UndoRedo,
-    BoldItalicUnderlineToggles,
-    BlockTypeSelect,
-    ChangeAdmonitionType,
-    ChangeCodeMirrorLanguage,
-    CodeToggle,
-    CreateLink,
-    InsertAdmonition,
-    InsertCodeBlock,
-    InsertImage,
-    InsertTable,
-    Separator,
-    InsertThematicBreak,
-    DiffSourceToggleWrapper,
-} from '@mdxeditor/editor';
+import { toolbarPlugin, UndoRedo, BoldItalicUnderlineToggles, BlockTypeSelect, ChangeAdmonitionType, ChangeCodeMirrorLanguage, CodeToggle, CreateLink, InsertAdmonition, InsertCodeBlock, InsertImage, InsertTable, Separator, InsertThematicBreak, DiffSourceToggleWrapper } from '@mdxeditor/editor';
 import '@mdxeditor/editor/style.css';
 
-import {ChangeEvent, FC, FormEvent, useEffect, useRef, useState} from 'react';
+import { ChangeEvent, FC, FormEvent, useEffect, useRef, useState } from 'react';
 
-import {AuthorItem, PostItem, PostPreviewItem} from '@/types';
+import { AuthorItem, PostItem, PostPreviewItem } from '@/types';
 
-import {createPost, formatPostDate, saveMDXContent} from '@/lib/posts';
+import { createPost, formatPostDate, saveMDXContent } from '@/lib/posts';
 import React from 'react';
 import moment from 'moment';
 import dynamic from 'next/dynamic';
 
-const PostCard = dynamic(() => import('@/components/PostCard'), {ssr: false});
+const PostCard = dynamic(() => import('@/components/PostCard'), { ssr: false });
 
 interface EditorProps {
     markdown: string;
@@ -63,46 +26,27 @@ interface EditorProps {
     editorRef?: React.MutableRefObject<MDXEditorMethods | null>;
 }
 
-const Editor: FC<EditorProps> = ({
-    markdown,
-    slug,
-    postsData,
-    authorData,
-    editorRef,
-}) => {
+const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, editorRef }) => {
     const [currentMarkdown, setCurrentMarkdown] = useState(markdown); // Track current markdown
     if (postsData && !slug) {
-        return (
-            <p>EditorComponent error: pass the postsData to the component</p>
-        );
+        return <p>EditorComponent error: pass the postsData to the component</p>;
     }
     const postData = postsData?.find(post => post.slug === slug) || undefined;
 
-    const [selectedAuthor, setSelectedAuthor] = useState(
-        postData
-            ? authorData.find(author => author.email === postData.email)
-            : authorData[0]
-    );
+    const [selectedAuthor, setSelectedAuthor] = useState(postData ? authorData.find(author => author.email === postData.email) : authorData[0]);
 
     if (slug && !postData) {
         return (
             <>
-                <h5>
-                    The post with this identifier does not exist on the
-                    database.
-                </h5>
+                <h5>The post with this identifier does not exist on the database.</h5>
                 <p>Check the slug in URL for any spelling mistakes.</p>
             </>
         );
     }
 
     const [postTitle, setPostTitle] = useState(postData ? postData.title : '');
-    const [description, setDescription] = useState(
-        postData ? postData.description : ''
-    );
-    const [imageUrl, setImageUrl] = useState(
-        postData ? postData.imageUrl : '/img/AWS-beginning.png'
-    );
+    const [description, setDescription] = useState(postData ? postData.description : '');
+    const [imageUrl, setImageUrl] = useState(postData ? postData.imageUrl : '/img/AWS-beginning.png');
 
     if (postData?.date === 'Invalid date') {
         postData.date = moment(Date.now()).format('DD-MM-YYYY');
@@ -128,11 +72,7 @@ const Editor: FC<EditorProps> = ({
         description: description,
         imageUrl: imageUrl as string,
         date: postData?.date || moment(Date.now()).format('DD-MM-YYYY'),
-        modifyDate:
-            moment(
-                formatPostDate(moment(postData?.modifyDate).toDate()),
-                'DD-MM-YYYY'
-            ).format('DD-MM-YYYY') || moment(Date.now()).format('DD-MM-YYYY'),
+        modifyDate: moment(formatPostDate(moment(postData?.modifyDate).toDate()), 'DD-MM-YYYY').format('DD-MM-YYYY') || moment(Date.now()).format('DD-MM-YYYY'),
         readTime: postData?.readTime || 0,
         authorData: (selectedAuthor as AuthorItem) || authorData[0],
     };
@@ -141,9 +81,7 @@ const Editor: FC<EditorProps> = ({
 
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedAuthorEmail = event.target.value;
-        const author = authorData.find(
-            a => a.email === selectedAuthorEmail
-        ) as AuthorItem;
+        const author = authorData.find(a => a.email === selectedAuthorEmail) as AuthorItem;
         setSelectedAuthor(author); // Update the state with the selected author
     };
 
@@ -175,26 +113,11 @@ const Editor: FC<EditorProps> = ({
         <div>
             <div className="container col-md-9 mt-5">
                 <div className="text-center pt-4">
-                    <textarea
-                        className="heading-xlarge w-100 col-md-11 col-lg-12 text-center align-content-center"
-                        id="col-heading-1"
-                        disabled={slug ? true : false}
-                        placeholder={slug ? slug : 'Enter the post title'}
-                        onChange={e => handlePostTitleChange(e.target.value)}
-                        value={postTitle}
-                    />
+                    <textarea className="heading-xlarge w-100 col-md-11 col-lg-12 text-center align-content-center" id="col-heading-1" disabled={slug ? true : false} placeholder={slug ? slug : 'Enter the post title'} onChange={e => handlePostTitleChange(e.target.value)} value={postTitle} />
                     <div className="d-flex justify-content-center gap-1">
-                        <select
-                            className="form-select preview-author-select p-0 px-2"
-                            aria-label="Default select example"
-                            value={selectedAuthor?.email}
-                            disabled={slug ? true : false}
-                            onChange={handleChange}>
+                        <select className="form-select preview-author-select p-0 px-2" aria-label="Default select example" value={selectedAuthor?.email} disabled={slug ? true : false} onChange={handleChange}>
                             {authorData.map(author => (
-                                <option
-                                    key={author.email}
-                                    value={author.email}
-                                    className="w-auto p-0 m-0 text-center">
+                                <option key={author.email} value={author.email} className="w-auto p-0 m-0 text-center">
                                     {author.fullName}
                                 </option>
                             ))}
@@ -202,43 +125,20 @@ const Editor: FC<EditorProps> = ({
                         <p className="m-0">•</p>
 
                         <div className="d-flex justify-content-center gap-2">
-                            <p>
-                                {postData
-                                    ? moment(
-                                          postData.date,
-                                          'DD-MM-YYYY'
-                                      ).format('D MMM YYYY')
-                                    : moment(Date.now()).format('DD MMM YYYY')}
-                            </p>
+                            <p>{postData ? moment(postData.date, 'DD-MM-YYYY').format('D MMM YYYY') : moment(Date.now()).format('DD MMM YYYY')}</p>
 
-                            {moment(postData?.modifyDate, 'DD-MM-YYYY').isAfter(
-                                moment(postData?.date, 'DD-MM-YYYY')
-                            ) && (
+                            {moment(postData?.modifyDate, 'DD-MM-YYYY').isAfter(moment(postData?.date, 'DD-MM-YYYY')) && (
                                 <>
                                     <p className="d-none d-md-block">•</p>
-                                    <span className="d-none d-md-block px-2 mb-4 rounded-pill text-bg-secondary">
-                                        {'Updated ' +
-                                            moment(
-                                                postData?.modifyDate,
-                                                'DD-MM-YYYY'
-                                            ).fromNow()}
-                                    </span>
+                                    <span className="d-none d-md-block px-2 mb-4 rounded-pill text-bg-secondary">{'Updated ' + moment(postData?.modifyDate, 'DD-MM-YYYY').fromNow()}</span>
                                 </>
                             )}
                         </div>
                     </div>
-                    {moment(postData?.modifyDate, 'DD-MM-YYYY').isAfter(
-                        moment(postData?.date, 'DD-MM-YYYY')
-                    ) && (
+                    {moment(postData?.modifyDate, 'DD-MM-YYYY').isAfter(moment(postData?.date, 'DD-MM-YYYY')) && (
                         <>
-                            <span
-                                className="d-md-none px-2 mb-4 rounded-pill text-bg-secondary"
-                                id="mobileUpdatedBadge">
-                                {'Updated ' +
-                                    moment(
-                                        postData?.modifyDate,
-                                        'DD-MM-YYYY'
-                                    ).fromNow()}
+                            <span className="d-md-none px-2 mb-4 rounded-pill text-bg-secondary" id="mobileUpdatedBadge">
+                                {'Updated ' + moment(postData?.modifyDate, 'DD-MM-YYYY').fromNow()}
                             </span>
                         </>
                     )}
@@ -260,10 +160,11 @@ const Editor: FC<EditorProps> = ({
                             thematicBreakPlugin(),
                             markdownShortcutPlugin(),
                             codeBlockPlugin({
-                                defaultCodeBlockLanguage: 'js',
+                                defaultCodeBlockLanguage: '',
                             }),
                             codeMirrorPlugin({
                                 codeBlockLanguages: {
+                                    '': 'None',
                                     js: 'JavaScript',
                                     ts: 'TypeScript',
                                     jsx: 'JSX',
@@ -271,7 +172,11 @@ const Editor: FC<EditorProps> = ({
                                     html: 'HTML',
                                     css: 'CSS',
                                     py: 'Python',
+                                    php: 'PHP',
+                                    sh: 'Shell',
                                     bash: 'Bash',
+                                    ps1: 'PowerShell',
+                                    dockerfile: 'Dockerfile',
                                     sql: 'SQL',
                                     json: 'JSON',
                                     yaml: 'YAML',
@@ -280,9 +185,7 @@ const Editor: FC<EditorProps> = ({
                             linkPlugin(),
                             linkDialogPlugin(),
                             directivesPlugin({
-                                directiveDescriptors: [
-                                    AdmonitionDirectiveDescriptor,
-                                ],
+                                directiveDescriptors: [AdmonitionDirectiveDescriptor],
                             }),
                             imagePlugin(),
                             sandpackPlugin({
@@ -301,12 +204,8 @@ const Editor: FC<EditorProps> = ({
                                         <ConditionalContents
                                             options={[
                                                 {
-                                                    when: editor =>
-                                                        editor?.editorType ===
-                                                        'codeblock',
-                                                    contents: () => (
-                                                        <ChangeCodeMirrorLanguage />
-                                                    ),
+                                                    when: editor => editor?.editorType === 'codeblock',
+                                                    contents: () => <ChangeCodeMirrorLanguage />,
                                                 },
                                                 {
                                                     fallback: () => (
@@ -344,31 +243,18 @@ const Editor: FC<EditorProps> = ({
                     />
                 </div>
             </div>
-            <div
-                className="container d-flex justify-content-center col-md-9"
-                style={{marginTop: '40rem'}}>
+            <div className="container d-flex justify-content-center col-md-9" style={{ marginTop: '40rem' }}>
                 <div className="row">
                     <div className="container">
                         <h1 className="text-center py-3">Preview</h1>
-                        <PostCard
-                            post={Post}
-                            previewData={PostPreview}
-                            authorData={selectedAuthor || authorData[0]}
-                            style="preview"
-                            setValue={setDescription}
-                        />
+                        <PostCard post={Post} previewData={PostPreview} authorData={selectedAuthor || authorData[0]} style="preview" setValue={setDescription} />
                     </div>
 
                     <div className="col-12 d-flex container justify-content-center py-4">
-                        <button
-                            onClick={handleSave}
-                            className="py-2 px-3 m-3 btn-filled"
-                            type="submit">
+                        <button onClick={handleSave} className="py-2 px-3 m-3 btn-filled" type="submit">
                             {postData ? 'Update' : 'Post'}
                         </button>
-                        <button
-                            onClick={handleCancel}
-                            className="py-2 px-3 m-3 btn-outlined">
+                        <button onClick={handleCancel} className="py-2 px-3 m-3 btn-outlined">
                             Cancel
                         </button>
                     </div>
