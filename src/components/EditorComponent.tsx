@@ -177,6 +177,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, editor
                                     bash: 'Bash',
                                     ps1: 'PowerShell',
                                     dockerfile: 'Dockerfile',
+                                    terraform: 'Terraform',
                                     sql: 'SQL',
                                     json: 'JSON',
                                     yaml: 'YAML',

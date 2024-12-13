@@ -3,6 +3,9 @@ import type { MDXComponents } from 'mdx/types';
 import { ImageProps } from 'next/image';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/atom-one-light.css';
+import hljsDefineTerraform from '@/lib/terraform';
+
+hljs.registerLanguage('terraform', hljsDefineTerraform);
 
 import React, { HTMLAttributes, JSXElementConstructor, ReactElement, useRef } from 'react';
 
@@ -57,6 +60,9 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
                         case 'py':
                             language = 'python';
                             break;
+                        // case 'terraform':
+                        //     language = '';
+                        //     break;
                         default:
                             language = match[1];
                             break;
