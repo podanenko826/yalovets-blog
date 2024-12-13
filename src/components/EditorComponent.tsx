@@ -1,10 +1,10 @@
 'use client';
 import { notFound, redirect, useRouter } from 'next/navigation';
 
-import { headingsPlugin, listsPlugin, quotePlugin, thematicBreakPlugin, markdownShortcutPlugin, codeMirrorPlugin, linkDialogPlugin, directivesPlugin, imagePlugin, sandpackPlugin, tablePlugin, diffSourcePlugin, MDXEditor, type MDXEditorMethods, type MDXEditorProps, AdmonitionDirectiveDescriptor, ConditionalContents, codeBlockPlugin, linkPlugin, ListsToggle } from '@mdxeditor/editor';
+import { headingsPlugin, listsPlugin, quotePlugin, thematicBreakPlugin, markdownShortcutPlugin, codeMirrorPlugin, linkDialogPlugin, imagePlugin, sandpackPlugin, tablePlugin, diffSourcePlugin, MDXEditor, type MDXEditorMethods, type MDXEditorProps, ConditionalContents, codeBlockPlugin, linkPlugin, ListsToggle } from '@mdxeditor/editor';
 
 /* MDXEditor toolbar components */
-import { toolbarPlugin, UndoRedo, BoldItalicUnderlineToggles, BlockTypeSelect, ChangeAdmonitionType, ChangeCodeMirrorLanguage, CodeToggle, CreateLink, InsertAdmonition, InsertCodeBlock, InsertImage, InsertTable, Separator, InsertThematicBreak, DiffSourceToggleWrapper } from '@mdxeditor/editor';
+import { toolbarPlugin, UndoRedo, BoldItalicUnderlineToggles, BlockTypeSelect, ChangeCodeMirrorLanguage, CodeToggle, CreateLink, InsertCodeBlock, InsertImage, InsertTable, Separator, InsertThematicBreak, DiffSourceToggleWrapper } from '@mdxeditor/editor';
 import '@mdxeditor/editor/style.css';
 
 import { ChangeEvent, FC, FormEvent, useEffect, useRef, useState } from 'react';
@@ -185,9 +185,6 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, editor
                             }),
                             linkPlugin(),
                             linkDialogPlugin(),
-                            directivesPlugin({
-                                directiveDescriptors: [AdmonitionDirectiveDescriptor],
-                            }),
                             imagePlugin(),
                             sandpackPlugin({
                                 sandpackConfig: {
@@ -202,16 +199,16 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, editor
                                 toolbarContents: () => (
                                     <>
                                         {' '}
-                                        <ConditionalContents
-                                            options={[
-                                                {
-                                                    when: editor => editor?.editorType === 'codeblock',
-                                                    contents: () => <ChangeCodeMirrorLanguage />,
-                                                },
-                                                {
-                                                    fallback: () => (
-                                                        <>
-                                                            <DiffSourceToggleWrapper>
+                                        <DiffSourceToggleWrapper>
+                                            <ConditionalContents
+                                                options={[
+                                                    {
+                                                        when: editor => editor?.editorType === 'codeblock',
+                                                        contents: () => <ChangeCodeMirrorLanguage />,
+                                                    },
+                                                    {
+                                                        fallback: () => (
+                                                            <>
                                                                 <UndoRedo />
                                                                 <Separator />
                                                                 <BoldItalicUnderlineToggles />
@@ -228,15 +225,12 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, editor
                                                                 <InsertThematicBreak />
                                                                 <Separator />
                                                                 <InsertCodeBlock />
-                                                                <Separator />
-                                                                <InsertAdmonition />
-                                                                <Separator />
-                                                            </DiffSourceToggleWrapper>
-                                                        </>
-                                                    ),
-                                                },
-                                            ]}
-                                        />
+                                                            </>
+                                                        ),
+                                                    },
+                                                ]}
+                                            />
+                                        </DiffSourceToggleWrapper>
                                     </>
                                 ),
                             }),

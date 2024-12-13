@@ -1,13 +1,13 @@
 const remarkGfm = import('remark-gfm');
 const remarkParse = import('remark-parse');
 const remarkRehype = import('remark-rehype');
-const reactAdmonitions = import('remark-admonitions');
 const rehypeStringify = import('rehype-stringify');
+const remarkAdmonitions = import('remark-admonitions');
 
 const withMDX = require('@next/mdx')({
     extension: /\.mdx?$/,
     options: {
-        remarkPlugins: [remarkParse, remarkGfm],
+        remarkPlugins: [remarkParse, remarkGfm, remarkAdmonitions],
         rehypePlugins: [remarkRehype, rehypeStringify],
     },
 });
