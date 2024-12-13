@@ -60,9 +60,6 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
                         case 'py':
                             language = 'python';
                             break;
-                        // case 'terraform':
-                        //     language = '';
-                        //     break;
                         default:
                             language = match[1];
                             break;

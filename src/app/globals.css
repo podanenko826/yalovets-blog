@@ -56,7 +56,7 @@ svg {
 
 body {
     margin: 0;
-    line-height: 26px !important;
+    line-height: 1.6rem !important;
 }
 
 main {
@@ -97,6 +97,13 @@ textarea {
 
 input:focus {
     border: 1px solid var(--col-secondary);
+}
+
+strong,
+em,
+u,
+code {
+    font-size: inherit;
 }
 
 .heading-xlarge {
@@ -201,6 +208,7 @@ button {
 
 .article {
     line-height: 1.75rem;
+    color: var(--col-heading-1);
 }
 
 .article > h2 {
@@ -232,8 +240,11 @@ button {
     color: var(--col-secondary);
 }
 
-.article > ul > li,
 .article > ol > li {
+    padding: 4px 8px;
+}
+
+.article > ul > li {
     padding: 4px 0;
 }
 
@@ -242,7 +253,7 @@ button {
     border: 0.5px solid lightgrey;
     border-radius: 7px;
     margin: 20px 0;
-    line-height: 20px;
+    line-height: 21px;
 }
 
 .codeblock__head {
@@ -310,8 +321,8 @@ pre > code {
 
 .task-list-item {
     list-style: none !important;
-    margin: 0 !important;
-    padding: 4px 0 !important;
+    display: flex;
+    gap: 12px;
 }
 
 .table {
