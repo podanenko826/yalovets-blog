@@ -149,6 +149,16 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
                 </div>
             );
         },
+        blockquote: (props: React.DetailedHTMLProps<React.BlockquoteHTMLAttributes<HTMLQuoteElement>, HTMLQuoteElement>) => {
+            const isEmpty = !props.children || (typeof props.children === 'string' && props.children.trim() === '');
+
+            return (
+                <blockquote className={`${isEmpty ? 'd-none' : ''} quote`}>
+                    <div className="quote-separator"></div>
+                    {props.children}
+                </blockquote>
+            );
+        },
         ...components,
     };
 }

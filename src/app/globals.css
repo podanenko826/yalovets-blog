@@ -303,13 +303,20 @@ pre > code {
     color: black;
 }
 
-.article > blockquote {
-    padding-left: 2em;
-    padding-right: 0.5em;
-    width: max-content;
-    background: rgba(210, 210, 210, 0.1);
-    color: rgb(130, 130, 130);
-    border-radius: 2px;
+.quote {
+    display: flex;
+    align-content: center;
+    background: rgba(128, 128, 128, 0.1);
+}
+
+.quote > p {
+    margin: 1.6rem;
+}
+
+.quote-separator {
+    background: var(--col-secondary);
+    min-width: 8px;
+    max-width: 8px;
 }
 
 .contains-task-list {
