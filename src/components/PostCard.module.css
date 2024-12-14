@@ -60,6 +60,18 @@
 .heading {
     font-size: 25px;
     align-items: center; /* This ensures vertical alignment */
+    flex-wrap: wrap;
+    column-gap: 4px;
+}
+
+.heading > span {
+    display: inline-flex;
+    white-space: nowrap;
+    margin-bottom: 2.5px;
+    padding: 3.7px 8px;
+    vertical-align: middle;
+    align-content: center;
+    min-width: max-content;
 }
 
 .description {
