@@ -352,6 +352,11 @@ blockquote > span,
     border: 1px solid lightgrey;
 }
 
+.table > thead > tr,
+.table > tbody > tr {
+    height: 45px;
+}
+
 .mdxeditor-toolbar {
     position: fixed !important;
     width: 100% !important;
