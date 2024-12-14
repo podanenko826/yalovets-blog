@@ -83,10 +83,10 @@
     display: flex;
     width: 100% !important;
     justify-content: center;
-    background: var(--col-primary);
+    background: rgb(248, 248, 248);
 }
 
 .ivan-yalovets {
     width: 290px;
-    border-radius: 100%;
+    border-radius: 7px;
 }

@@ -69,3 +69,8 @@
 .authorDataContainer > div > img {
     border-radius: 100%;
 }
+
+.socialMediaLinks {
+    list-style: none;
+    padding-left: 1rem;
+}

@@ -236,13 +236,9 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                                 <Image className="img-fluid ivan-yalovets" src="/img/ivan-pfp.png" alt="Teaser" title="Teaser" width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
                             </div>
                             <div className="col-7 col-md-5 col-lg-5 offset-md-1 offset-lg-0">
-                                <h1 id="col-text" className="heading">
-                                    Hi, I&rsquo;m Ivan Yalovets!
-                                </h1>
-                                <p className="pt-2 subheading-smaller" id="col-text">
-                                    I started Yalovets Blog in 2024 to share the latest tools and insights on web services. My goal is to provide valuable, up-to-date content for web professionals and enthusiasts alike.
-                                </p>
-                                <p className="subheading-smaller" id="col-text">
+                                <h1 className="heading">Hi, I&rsquo;m Ivan Yalovets!</h1>
+                                <p className="pt-2 subheading-smaller">I started Yalovets Blog in 2024 to share the latest tools and insights on web services. My goal is to provide valuable, up-to-date content for web professionals and enthusiasts alike.</p>
+                                <p className="subheading-smaller">
                                     To support my work, please{' '}
                                     <a className="subheading-smaller" id="link-light" href="#">
                                         subscribe
