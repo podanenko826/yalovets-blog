@@ -155,27 +155,35 @@ const ArticleModal: React.FC = () => {
                                 </div>
                             </div>
                             <div className="container-fluid about-me py-5 mt-5">
-                                <div className="container d-flex row align-items-center">
-                                    <div className="d-flex col-sm-10 offset-md-1 col-md-5">
+                                <div className="container d-flex row align-items-center justify-content-center">
+                                    <div className="col-8 col-sm-8 offset-md-1 col-md-4">
+                                        <div className="pb-3">
+                                            <h1 className="subheading" id="col-heading-1">
+                                                {author.fullName}
+                                            </h1>
+                                        </div>
                                         <Image className="img-fluid ivan-yalovets" src={`/${author.profileImageUrl}`} alt="pfp" title={author.fullName.split(' ').at(0)} width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
                                     </div>
-                                    <div className="col-7 col-md-5 col-lg-5 offset-md-1 offset-lg-0">
-                                        <h1 className="heading">{author.fullName}</h1>
-                                        <p className="pt-2 subheading-smaller">{author.bio}</p>
-                                        <p className="subheading-smaller">You can find me on these social media:</p>
+                                    <div className="col-10 mt-3 mt-md-0 col-md-5 col-lg-6 offset-md-1 offset-lg-0">
+                                        <p className="pt-2 subheading-small" id="col-heading-1">
+                                            {author.bio}
+                                        </p>
+                                        <p className="subheading-smaller" id="col-heading-1">
+                                            You can find me on these social media:
+                                        </p>
                                         <ul className={styles.socialMediaLinks}>
                                             <li>
-                                                <Link href={author.socialLinks.instagramUrl} className="a-link" target="_blank">
+                                                <Link href={author.socialLinks.instagramUrl} className="a-link" id="col-heading-1" target="_blank">
                                                     Instagram
                                                 </Link>
                                             </li>
                                             <li>
-                                                <Link href={author.socialLinks.facebookUrl} className="a-link" target="_blank">
+                                                <Link href={author.socialLinks.facebookUrl} className="a-link" id="col-heading-1" target="_blank">
                                                     Facebook
                                                 </Link>
                                             </li>
                                             <li>
-                                                <Link href={author.socialLinks.linkedInUrl} className="a-link" target="_blank">
+                                                <Link href={author.socialLinks.linkedInUrl} className="a-link" id="col-heading-1" target="_blank">
                                                     LinkedIn
                                                 </Link>
                                             </li>

@@ -231,13 +231,19 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                         </div>
                     </div>
                     <div className="container-fluid about-me py-5 mt-5">
-                        <div className="container d-flex row align-items-center">
-                            <div className="d-flex col-sm-10 offset-md-1 col-md-5">
-                                <Image className="img-fluid ivan-yalovets" src="/img/ivan-pfp.png" alt="Teaser" title="Teaser" width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
+                        <div className="container d-flex row align-items-center justify-content-start">
+                            <div className="col-8 col-sm-8 offset-md-1 col-md-4">
+                                <div className="pb-3">
+                                    <h1 className="subheading" id="col-heading-1">
+                                        Hi, I&rsquo;m Ivan Yalovets!
+                                    </h1>
+                                </div>
+                                <Image className="img-fluid ivan-yalovets" src="/img/ivan-pfp.png" alt="Ivan" title="Ivan Yalovets" width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
                             </div>
-                            <div className="col-7 col-md-5 col-lg-5 offset-md-1 offset-lg-0">
-                                <h1 className="heading">Hi, I&rsquo;m Ivan Yalovets!</h1>
-                                <p className="pt-2 subheading-smaller">I started Yalovets Blog in 2024 to share the latest tools and insights on web services. My goal is to provide valuable, up-to-date content for web professionals and enthusiasts alike.</p>
+                            <div className="col-10 mt-3 mt-md-0 col-md-5 col-lg-6 offset-md-1 offset-lg-0">
+                                <p className="pt-2 subheading-small" id="col-heading-1">
+                                    I started Yalovets Blog in 2024 to share the latest tools and insights on web services. My goal is to provide valuable, up-to-date content for web professionals and enthusiasts alike.
+                                </p>
                                 <p className="subheading-smaller">
                                     To support my work, please{' '}
                                     <a className="subheading-smaller" id="link-light" href="#">
