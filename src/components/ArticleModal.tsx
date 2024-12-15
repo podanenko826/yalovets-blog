@@ -221,7 +221,7 @@ const ArticleModal: React.FC = () => {
                                 </div>
                             </div>
                             <div className="container-fluid read-further mb-5 py-3">
-                                <div className="container d-flex row align-items-center justify-content-center">
+                                <div className="container d-flex row align-items-center justify-content-center p-0">
                                     <div className="col-md-9 pt-2 pb-3">
                                         <h2 className="heading" id="col-heading-2">
                                             Further Reading
