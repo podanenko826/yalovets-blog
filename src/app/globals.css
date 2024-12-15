@@ -128,17 +128,29 @@ span {
     font-size: 23px;
 }
 
+.subheading-smaller {
+    font-weight: 500 !important;
+    font-size: 20px !important;
+}
+
 .subheading-small {
     font-weight: 500 !important;
     font-size: 16px !important;
 }
 
-.subheading-smaller {
+.subheading-xsmall {
     font-weight: 450 !important;
+    font-size: 14px !important;
+}
+
+.subheading-xxsmall {
+    font-weight: 450 !important;
+    font-size: 12px !important;
 }
 
 .subheading-tiny {
     font-weight: 300 !important;
+    font-size: 12px !important;
 }
 
 button {
@@ -335,8 +347,10 @@ blockquote > span,
 
 .task-list-item {
     list-style: none !important;
-    display: flex;
-    gap: 12px;
+}
+
+.task-list-item > input {
+    margin-right: 12px;
 }
 
 .table {

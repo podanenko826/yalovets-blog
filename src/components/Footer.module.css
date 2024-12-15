@@ -29,6 +29,11 @@
     color: whitesmoke;
 }
 
+.linkContainer {
+    list-style: none;
+    padding: 0;
+}
+
 .navLink {
     color: rgb(239, 239, 239);
     text-decoration: underline;

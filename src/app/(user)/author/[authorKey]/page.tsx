@@ -110,7 +110,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
                             <h2 className="p-2 m-0">{authorData!.fullName}</h2>
                         </div>
                         <div className="my-4 d-flex justify-content-center">
-                            <h5 className="m-0 p-0 col-9 subheading-tiny text-center">{authorData!.bio}</h5>
+                            <h5 className="m-0 p-0 col-9 subheading-small text-center">{authorData!.bio}</h5>
                         </div>
                     </div>
 

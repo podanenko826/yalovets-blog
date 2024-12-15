@@ -111,27 +111,39 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         const popoverTrigger = document.querySelector(`#popover-trigger-${index}`);
         console.log('popover: ', popoverTrigger);
 
+        const navigate = (path: string, event?: React.MouseEvent<HTMLAnchorElement>) => {
+            const router = useRouter();
+
+            return (event?: React.MouseEvent<HTMLAnchorElement>) => {
+                if (event) {
+                    event.preventDefault(); // Prevent default anchor click behavior
+                }
+
+                router.push(path); // Navigate to the given path
+            };
+        };
+
         if (popoverTrigger && !currentPopover && Popover) {
             const newPopover = new Popover(popoverTrigger, {
                 html: true,
                 placement: 'top',
                 customClass: 'd-none d-md-inline-block',
                 content: `
-                    <div class="row justify-content-beetween align-content-between">
-                        <div class="col-12 col-md-8">
-                            <a class="subheading a-link m-0" href="/author/${authorData.authorKey}">${authorData.fullName}</a>
-                            <h6 class="subheading-tiny py-2">${authorData.bio}</h6>
+                    <div class="row mx-3 mt-2">
+                        <div class="col-12 col-md-9 p-0">
+                            <a role="button" class="subheading-smaller a-link m-0" id="author-link-${index}">${authorData.fullName}</a>
+                            <p class="subheading-xsmall py-2" id="col-heading-1">${authorData.bio}</p>
                         </div>
     
-                        <div class="col-4 mb-2 mb-md-0 col-md-4">
+                        <div class="col-md-3 p-0 mr-2">
                             <Image class="${styles.popoverPfp}" src="/${authorData.profileImageUrl}" width={50} height={50} />
                         </div>
     
                         <div class="col-md-12 horisontal-line horisontal-line-thin"></div>
     
-                        <div class="col-12 d-flex justify-content-between align-content-center">
+                        <div class="col-12 d-flex justify-content-between p-0 align-content-center">
                             <p class="p-0 m-0">Visit my profile</p>
-                            <a href="/author/${authorData.authorKey}" class="a-btn btn-filled px-2 py-0">
+                            <a role="button" class="a-btn btn-outlined px-2 py-0" id="visit-button-${index}">
                                 Visit
                             </a>
                         </div>
@@ -141,6 +153,16 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             });
             popoverRef.current = newPopover;
         }
+        // Add event listeners to mimic Next.js Link behavior
+        document.addEventListener('click', e => {
+            const target = e.target as HTMLElement;
+
+            if (target.id === `author-link-${index}` || target.id === `visit-button-${index}`) {
+                e.preventDefault(); // Prevent default anchor behavior
+                // const path = target.getAttribute('href');
+                router.push(`/author/${authorData.authorKey}`, { scroll: true }); // Navigate using Next.js router
+            }
+        });
 
         return () => {
             if (popoverRef.current) {
@@ -170,7 +192,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                     popoverRef.current.show();
                 }
             }
-        }, 300); // 0.3-second delay
+        }, 400); // 0.4-second delay
     };
 
     const handleMouseLeave = () => {
@@ -184,7 +206,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 popoverRef.current.hide();
             }
             setPopoverVisible(false);
-        }, 1300); // 1.3-second delay
+        }, 1100); // 1.1-second delay
     };
 
     const clearHideTimeout = () => {
@@ -612,8 +634,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                     <div className={styles.image}>
                         <picture className={`img-fluid ${styles.imageWrapper}`}>
                             <Image className="img-fluid" src={post.imageUrl || '/ui/not-found.png'} alt={post.title} title={post.title} width={354} height={180} loading="lazy" sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
-                            <span className={`d-inline-block ${styles.articleLabel} subheading-smaller`}>
-                                <FaCoffee className="m-1 subheading-tiny" id={styles.labelIcon} />
+                            <span className={`d-inline-block ${styles.articleLabel} subheading-xxsmall`}>
+                                <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
                                 Article
                             </span>
                         </picture>

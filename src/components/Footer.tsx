@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import styles from './Footer.module.css';
 
 import { navigation } from './NavBar';
+import Link from 'next/link';
 
 const Footer = () => {
     const [navButtons, setNavButtons] = useState(navigation);
@@ -70,9 +71,9 @@ const Footer = () => {
                                     <input type="checkbox" checked={agreedToTerms} onChange={(e: any) => handleCheckboxChange(e)} id={styles.agreementCheckbox} />
                                     <p className={styles.navText}>
                                         I want to subscribe to the newsletter with new content and recieve annoucements regarding new products and services. I agree with the{' '}
-                                        <a href="#" className={styles.navLink}>
+                                        <Link href="#" className={styles.navLink}>
                                             Privacy Policy.
-                                        </a>
+                                        </Link>
                                     </p>
                                 </div>
                                 <button type="submit" disabled={!agreedToTerms || subscribeData.firstName === '' || subscribeData.email === ''} className={styles.btn_subscribe}>
@@ -87,12 +88,12 @@ const Footer = () => {
                         <div className="col-md-3 pt-">
                             <h4 className={styles.navText}>Links</h4>
                             <div className="horisontal-line horisontal-line-thin" />
-                            <ul className="row gap-3">
+                            <ul className={`${styles.linkContainer} row gap-3`}>
                                 {navButtons.map(item => (
                                     <li key={item.id}>
-                                        <a href={item.href} key={item.id} className={styles.navLink}>
+                                        <Link href={item.href} key={item.id} className={styles.navLink}>
                                             {item.label}
-                                        </a>
+                                        </Link>
                                     </li>
                                 ))}
                             </ul>
@@ -100,12 +101,12 @@ const Footer = () => {
                         <div className="col-md-3 pt-4">
                             <h4 className={styles.navText}>Legal</h4>
                             <div className="horisontal-line horisontal-line-thin" />
-                            <ul className="row justify-content-end gap-3">
+                            <ul className={`${styles.linkContainer} row justify-content-end gap-3`}>
                                 {footerLinks.map(item => (
                                     <li key={item.id}>
-                                        <a href={item.href} key={item.id} className={styles.navLink}>
+                                        <Link href={item.href} key={item.id} className={styles.navLink}>
                                             {item.label}
-                                        </a>
+                                        </Link>
                                     </li>
                                 ))}
                             </ul>

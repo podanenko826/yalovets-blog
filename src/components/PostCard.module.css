@@ -80,6 +80,10 @@
     opacity: 75%;
 }
 
+.description > a {
+    font-size: inherit;
+}
+
 .profile_info {
     display: flex;
     align-items: center; /* This ensures vertical alignment */

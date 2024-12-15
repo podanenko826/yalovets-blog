@@ -200,7 +200,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                                 </a> */}
                                 <h4 className="subheading-smaller">Recent posts</h4>
                                 <div className="horisontal-line" />
-                                <h6 className="subheading-tiny" id="col-heading-1">
+                                <h6 className="subheading-small" id="col-heading-1">
                                     Subscribe to keep in touch with latest information in tech industry
                                 </h6>
                             </div>
@@ -220,7 +220,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                                     Popular posts
                                 </h4>
                                 <div className="horisontal-line" />
-                                <h6 className="subheading-tiny" id="col-heading-1">
+                                <h6 className="subheading-small" id="col-heading-1">
                                     Those posts are most beloved ones by our subscribers
                                 </h6>
                             </div>
@@ -244,9 +244,9 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                                 <p className="pt-2 subheading-small" id="col-heading-1">
                                     I started Yalovets Blog in 2024 to share the latest tools and insights on web services. My goal is to provide valuable, up-to-date content for web professionals and enthusiasts alike.
                                 </p>
-                                <p className="subheading-smaller">
+                                <p className="subheading-small">
                                     To support my work, please{' '}
-                                    <a className="subheading-smaller" id="link-light" href="#">
+                                    <a className="subheading-small" id="link-light" href="#">
                                         subscribe
                                     </a>{' '}
                                     to the newsletter and share it with your friends or colleagues.

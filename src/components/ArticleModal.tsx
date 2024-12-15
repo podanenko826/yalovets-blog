@@ -168,7 +168,7 @@ const ArticleModal: React.FC = () => {
                                         <p className="pt-2 subheading-small" id="col-heading-1">
                                             {author.bio}
                                         </p>
-                                        <p className="subheading-smaller" id="col-heading-1">
+                                        <p className="subheading-small" id="col-heading-1">
                                             You can find me on these social media:
                                         </p>
                                         <ul className={styles.socialMediaLinks}>
