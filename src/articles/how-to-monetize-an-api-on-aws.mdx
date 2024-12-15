@@ -1,0 +1,222 @@
+Did you develop an API and want to sell access? Here is how I combined [Amazon’s API Gateway (REST APIs)](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-rest-api.html) and [FastSpring](https://fastspring.com/), a payment and subscription platform, to monetize our API for malware scanning. Luckily, you can apply the pattern to any REST API.
+
+![How to monetize an API on AWS?](https://cloudonaut.io/images/2024/05/how-to-monetize-an-api-on-aws-title@730w2x.webp "How to monetize an API on AWS?")
+
+## The problem: payments, subscription, and access control
+
+I’m building a [WordPress plugin to protect blogs from malware](https://attachmentav.com/solution/malware-protection-for-wordpress/). Whenever an editor uploads a new attachment, the plugin sends the file to our API, which scans it for malware. The infrastructure consists of an Application Load Balancer (ALB) and EC2 instances running the malware engine. So, how do we charge customers for accessing the API?
+
+![](https://cloudonaut.io/images/2024/05/monetize-api-problem@730w2x.webp)
+
+Let’s break down the problem into requirements.
+
+* Manage a subscription (create, pause, cancel, …)
+* Handle payments (different payment methods, worldwide, …)
+* Control access to API (API key, throttling, …)
+
+## The options: API marketplaces and payment and subscription platforms
+
+My first idea was to use an API marketplace. The [AWS Marketplace supports selling API Gateway APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/sell-api-as-saas-on-aws-marketplace.html). We are already selling products through the AWS Marketplace and are pretty happy with the solution. However, the AWS Marketplace works best if potential customers are already AWS customers. As I’m aiming to sell API access to WordPress users, the hurdle of creating an AWS account seems too high.
+
+What about more generic API marketplaces? There are a few providers out there. I had a deeper look into [Rapid API](https://rapidapi.com/). From a technical point of view, the solution looks solid. However, Rapid API targets developers who want to integrate an API into their application. I could not find a way to integrate Rapid API into the checkout process for the users of our WordPress plugin. Besides that, I concluded that Rapid API is in the early stages of collecting payments and deducting taxes worldwide.
+
+To have complete control over the checkout process, I looked into generic payment and subscription platforms. So, I looked into [Stripe](https://stripe.com/) and a few other solutions. My pain point with all those solutions is tax compliance. It’s quite tricky to comply with all the tax laws worldwide. Therefore, I ended up with a provider we have used for years: [FastSpring](https://fastspring.com/). From a technical and look and feel perspective, FastSpring is getting a bit long in the tooth. But FastSpring acts as a reseller. Therefore, FastSpring is responsible for tax deductions with customers from all over the world.
+
+I decided to use FastSpring to handle payments and subscriptions. Next, I looked for the simplest possible implementation on AWS.
+
+## The solution: API Gateway (REST APIs), usage plans, API keys, and FastSpring
+
+After all, I came up with the following solution to monetize a REST API.
+
+1. The customer goes to the storefront provided by FastSpring to create a subscription. FastSpring generates a license key.
+2. FastSpring sends a webhook event to the API Gateway, including the subscription ID and license key.
+3. The API Gateway invokes a Lambda function. The Lambda function creates an API key using the value of the license key and assigns the API key to a usage plan.
+4. The customer sends a request to the API Gatway. The request includes the license key (= API key) in the header.
+5. The API Gateway validates the API key and usage plan and then forwards the request to the ALB.
+
+![](https://cloudonaut.io/images/2024/05/monetize-api-solution@730w2x.webp)
+
+What I like most about the solution is its simplicity.
+
+> API Gateway REST APIs have two major limitations: the payload size is limited to 10 MB, and the request timeout is limited to 30 seconds.
+
+Next, let’s dive into some implementation details.
+
+The Amazon API Gateway REST APIs support [usage plans](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html) and API keys. A usage plan allows you to define the target request rate per customer, which is crucial to protecting your infrastructure from accidental or malicious request flooding. Additionally, it is possible to define a quota for the maximum number of requests per day, week, or month. The following CloudFormation snippet shows how to create a usage plan limiting access to 1 request per second and 10,000 per day, for example.
+
+It’s important to mention, that AWS does not guarantee to apply throttling and quotas 100% accuartely. Here is what the [AWS documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html#api-gateway-api-usage-plans-overview) says: “Usage plan throttling and quotas are not hard limits, and are applied on a best-effort basis. In some cases, clients can exceed the quotas that you set. Don’t rely on usage plan quotas or throttling to control costs or block access to an API.” In our scenario, that’s a limitation we can live with.
+
+```yaml
+UsagePlan:
+  Type: 'AWS::ApiGateway::UsagePlan'
+  Properties:
+    UsagePlanName: 'demo'
+    Description: '1 req/sec and 10,000 req/day'
+    ApiStages:
+    - ApiId: !Ref ApiGateway
+      Stage: !Ref ApiStage
+    Throttle:
+      BurstLimit: 5
+      RateLimit: 1
+    Quota:
+      Limit: 10000
+      Period: DAY
+```
+
+> The “new” Amazon API Gateway HTTP APIs still do not support usage plans. I’m using the “legacy” option REST APIs here.
+
+As described above, FastSpring sends webhook events whenever customers create or cancel a subscription. The following JavaScript snippet shows how a Lambda function parses the webhook event, creates an API key, and attaches the API key to the usage plan.
+
+```js
+import { APIGatewayClient, CreateApiKeyCommand, GetApiKeysCommand, UpdateApiKeyCommand, CreateUsagePlanKeyCommand } from '@aws-sdk/client-api-gateway';
+import { createHmac } from 'node:crypto';
+
+const apigw = new APIGatewayClient();
+
+const WEBHOOK_SECRET = '...';
+const USAGE_PLAN_ID = '...';
+
+function isValidSignature (event) {
+  const fsSignature = event.headers['X-FS-Signature'];
+  const computedSignature = createHmac('sha256', WEBHOOK_SECRET).update(event.body).digest().toString('base64');
+  return fsSignature === computedSignature;
+}
+
+export const handler = async (event) => {
+  if (event.path === '/v1/fastspring/webhook' && event.httpMethod === 'POST') {
+    if (isValidSignature(event)) {
+      const body = JSON.parse(event.body);
+      for (const e of body.events) {
+        if (e.type === 'subscription.activated') { // Customer subscribed via FastSpring
+          const apiKey = await apigw.send(new CreateApiKeyCommand({
+            name: `subscription-${e.data.subscription}`,
+            description: `The license and API key for FastSpring subscription ${e.data.subscription}.`,
+            enabled: true,
+            value: e.data.fulfillments['license_0'][0].license
+          }));
+          await apigw.send(new CreateUsagePlanKeyCommand({
+            usagePlanId: USAGE_PLAN_ID,
+            keyId: apiKey.id,
+            keyType: 'API_KEY'
+          }));
+        }
+      }
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+      };
+    } else {
+      return {
+        statusCode: 403,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({error: 'Invalid signature.'})
+      };  
+    } 
+  } else {
+    return {
+      statusCode: 404,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body:  JSON.stringify({error: 'Not found.'})
+    };    
+  }
+};
+```
+
+Last but not least, the API Gateway must be configured to validate the API key and usage plan. The following CloudFormation snippet shows how to configure the API Gateway.
+
+```yaml
+ApiGateway:
+  Type: 'AWS::ApiGateway::RestApi'
+  Properties:
+    ApiKeySourceType: HEADER
+    Body:
+      'Fn::Transform':
+        Name: 'AWS::Include'
+        Parameters:
+          Location: './api-schema.yml'
+    Description: 'A cloudonaut.io example.'
+    Name: 'demo'
+    EndpointConfiguration:
+      Types: [ 'REGIONAL']
+```
+
+Details are defined in the Swagger configuration file `api-schema.yml` references from the previous CloudFormation snippet. Note that the path `/v1/demo` requires an `api_key` to grant access. The API Gateway forwards `POST` requests to `/v1/demo` to the backend system [`https://example.com/api/v1/demo`.](https://example.com/api/v1/demo.)
+
+
+
+
+
+```yaml
+---
+swagger: '2.0'
+basePath: '/'
+schemes:
+- https
+info:
+  title: 'demo-api'
+  version: '1.0.0'
+x-amazon-apigateway-request-validators:
+  basic:
+    validateRequestBody: false
+    validateRequestParameters: true
+x-amazon-apigateway-request-validator: basic
+securityDefinitions:
+  api_key:
+    type: "apiKey"
+    name: "x-api-key"
+    in: "header"
+x-amazon-apigateway-gateway-responses:
+  INVALID_API_KEY:
+    statusCode: 401
+    responseTemplates:
+      'application/json': '{"error": "Invalid API key."}'
+  THROTTLED:
+    statusCode: 429
+    responseTemplates:
+      'application/json': '{"error": "Rate limit exceeded."}'
+  QUOTA_EXCEEDED:
+    statusCode: 429
+    responseTemplates:
+      'application/json': '{"error": "Quota exceeded."}'
+paths:
+  '/v1/demo':
+    post:
+      security:
+      - api_key: []
+      responses:
+        "200":
+          description: OK
+      x-amazon-apigateway-integration:
+        type: 'http'
+        httpMethod: 'POST'
+        uri: 'https://example.com/api/v1/demo'
+        responses:
+          default:
+            statusCode: '200'
+        passthroughBehavior: 'when_no_match'
+        contentHandling: 'CONVERT_TO_BINARY'
+definitions:
+  Error:
+    properties:
+      error:
+        type: string
+    required:
+    - error
+```
+
+
+
+> Need help with implementing a similar solution? Let me know!
+
+
+
+## Summary
+
+When selling APIs to potential customers who are most likely already AWS customers, AWS Marketplace is a great choice. However, when selling to potential customers without an AWS account, a solution consisting of API Gateway, usage plans, API keys, Lambda, and FastSpring is a simple but powerful alternative.

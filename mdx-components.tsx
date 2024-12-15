@@ -26,15 +26,26 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
             return <li className={isEmpty ? 'd-none' : ''} {...props} />;
         },
         a: (props: React.JSX.IntrinsicAttributes & React.ClassAttributes<HTMLAnchorElement> & React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
-            const splitUrl: string[] | undefined = props.href?.split('/');
-            let url: string | undefined = props.href;
-            if (splitUrl && splitUrl[0] !== 'https:' && splitUrl[0] !== 'http:') {
-                url = 'https://' + splitUrl.join('/');
+            const href = props.href;
+
+            if (!href) {
+                return <p>{props.children}</p>; // Return paragraph if no href is provided
             }
-            if (url) {
-                return <a className="a-btn a-link" target="_blank" {...props} href={`${url}`} />;
+
+            // Ensure the URL starts with `http` or `https`
+            const splitUrl = href.split('/');
+            let url = href;
+            if (!href.startsWith('http://') && !href.startsWith('https://')) {
+                url = `https://${href}`;
             }
-            return <p>{props.children}</p>;
+
+            // Detect "example" or "localhost" in the URL
+            if (splitUrl.some(part => part.includes('example') || part.includes('local') || part.includes('127.0') || part.includes('0.0.0.0') || part.includes('192.168') || part.includes('10.0'))) {
+                return <p>{props.children}</p>;
+            }
+
+            // Return the anchor with processed URL
+            return <a className="a-btn a-link" target="_blank" {...props} href={url} />;
         },
         pre: (props: React.JSX.IntrinsicAttributes & React.ClassAttributes<HTMLPreElement> & React.HTMLAttributes<HTMLPreElement>) => {
             const childrenArray = React.Children.toArray(props.children);
