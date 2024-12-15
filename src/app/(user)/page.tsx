@@ -230,6 +230,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                             <PostList initialPosts={popularPosts} initialAuthors={authorData} style="standard" indexIncrement={10} />
                         </div>
                     </div>
+
                     <div className="container-fluid about-me py-5 mt-5">
                         <div className="container d-flex row align-items-center justify-content-start">
                             <div className="col-8 col-sm-8 offset-md-1 col-md-4">

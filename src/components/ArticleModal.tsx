@@ -31,6 +31,8 @@ const ArticleModal: React.FC = () => {
     const { closeModal } = usePostContext();
     const [serializedMarkdown, setSerializedMarkdown] = useState<MDXRemoteSerializeResult<Record<string, unknown>, Record<string, unknown>>>();
 
+    const [popularPosts, setPopularPosts] = useState<PostItem[]>([]);
+
     //? Encoded link and text for sharing purpose on social media
     // const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
     const baseShareUrl = 'https://yalovets.blog';
@@ -41,6 +43,16 @@ const ArticleModal: React.FC = () => {
 
     console.log(selectedMarkdown);
     const currentPath = usePathname();
+
+    useEffect(() => {
+        const sortedByViews = posts
+            .filter(post => post.viewsCount !== undefined) // Filter out posts with undefined viewsCount
+            .sort((a, b) => (b.viewsCount ?? 0) - (a.viewsCount ?? 0));
+
+        const mostPopular = sortedByViews.slice(0, 30).filter(post => post.slug !== undefined);
+
+        setPopularPosts(mostPopular);
+    }, [posts]);
 
     useEffect(() => {
         if (selectedPost) {
@@ -189,6 +201,26 @@ const ArticleModal: React.FC = () => {
                                             </li>
                                         </ul>
                                     </div>
+                                </div>
+                            </div>
+                            <div className="container-fluid read-further mb-5 py-3">
+                                <div className="container d-flex row align-items-center justify-content-center">
+                                    <div className="col-md-9 pt-2 pb-3">
+                                        <h2 className="heading" id="col-heading-2">
+                                            Further Reading
+                                        </h2>
+                                    </div>
+                                    {popularPosts
+                                        .filter(post => post.slug !== selectedPost.slug)
+                                        .sort(() => Math.random() - 0.5)
+                                        .slice(0, 4)
+                                        .map((post, index) => (
+                                            <Link href={`/${post.slug}`} className="col-md-9" key={index}>
+                                                <div>
+                                                    <h5 id="col-heading-1">Article: {post.title}</h5>
+                                                </div>
+                                            </Link>
+                                        ))}
                                 </div>
                             </div>
                         </section>
