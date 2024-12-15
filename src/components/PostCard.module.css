@@ -107,9 +107,10 @@
 .placeholder_profile_info__text {
     font-size: 14px;
     font-weight: 300;
-    margin-top: 7px !important;
+    /* margin-top: 7px !important;
     margin-bottom: 12px !important;
-    margin-left: 10px !important;
+    margin-left: 10px !important; */
+    max-height: min-content !important;
 }
 
 .pfp {
@@ -152,6 +153,15 @@
 .placeholder_image {
     animation: blink-underscore 3.5s infinite step-start;
     animation-fill-mode: both;
+    max-height: 180px;
+    border-radius: 7px;
+}
+
+.placeholder_image_massive {
+    animation: blink-underscore 3.5s infinite step-start;
+    animation-fill-mode: both;
+    max-height: 307px;
+    border-radius: 7px;
 }
 
 .placeholder_heading__dot {
