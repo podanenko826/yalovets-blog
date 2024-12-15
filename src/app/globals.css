@@ -387,7 +387,7 @@ blockquote > span,
     background-image: none;
 }
 
-@media (min-width: 576px) {
+@media (min-width: 768px) {
     .social-links {
         display: flex;
         flex-direction: column !important;

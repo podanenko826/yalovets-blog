@@ -127,7 +127,7 @@ const ArticleModal: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="row">
-                                        <div className="col-12 col-sm-2 social-links">
+                                        <div className="col-12 col-md-2 social-links">
                                             <Link href={`https://x.com/share?url=${postUrl}&text=${postText}`} title="Share on X" target="_blank">
                                                 <FaXTwitter className="fs-1 p-1" />
                                             </Link>
@@ -144,7 +144,7 @@ const ArticleModal: React.FC = () => {
                                                 <FaFacebookF className="fs-1 p-1" />
                                             </Link>
                                         </div>
-                                        <div className="col-12 col-sm-8">
+                                        <div className="col-12 col-md-8">
                                             <article className="article">
                                                 <MDXProvider components={components}>
                                                     <MDXRemote compiledSource={serializedMarkdown?.compiledSource as string} scope={serializedMarkdown?.scope} frontmatter={serializedMarkdown?.frontmatter} />
