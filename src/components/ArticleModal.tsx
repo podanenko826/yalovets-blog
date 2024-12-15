@@ -185,7 +185,7 @@ const ArticleModal: React.FC = () => {
                             </div>
                             <div className="container-fluid about-me py-5 mt-5">
                                 <div className="container d-flex row align-items-center justify-content-center">
-                                    <div className="col-8 col-sm-8 offset-md-1 col-md-4">
+                                    <div className="col-7 col-md-4 col-lg-3">
                                         <div className="pb-3">
                                             <h1 className="subheading" id="col-heading-1">
                                                 {author.fullName}
@@ -193,7 +193,7 @@ const ArticleModal: React.FC = () => {
                                         </div>
                                         <Image className="img-fluid ivan-yalovets" src={`/${author.profileImageUrl}`} alt="pfp" title={author.fullName.split(' ').at(0)} width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
                                     </div>
-                                    <div className="col-10 mt-3 mt-md-0 col-md-5 col-lg-6 offset-md-1 offset-lg-0">
+                                    <div className="col-9 mt-3 mt-md-0 col-md-5 offset-md-1">
                                         <p className="pt-2 subheading-small" id="col-heading-1">
                                             {author.bio}
                                         </p>

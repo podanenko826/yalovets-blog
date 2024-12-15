@@ -39,6 +39,16 @@
     color: var(--col-secondary) !important;
 }
 
+#link-dark {
+    color: var(--col-primary);
+    text-decoration: underline;
+    transition-duration: 75ms;
+}
+
+#link-dark:hover {
+    color: var(--col-secondary) !important;
+}
+
 .category-heading {
     display: flex;
     flex-direction: column;
