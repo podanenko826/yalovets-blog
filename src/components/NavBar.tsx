@@ -23,14 +23,19 @@ export const navigation = [
         id: 1,
     },
     {
-        label: 'Skills',
-        href: '/skills',
+        label: 'Podcasts',
+        href: '/podcasts',
         id: 2,
     },
     {
-        label: 'Books',
-        href: '/books-and-courses',
+        label: 'YouTube',
+        href: '/youtube',
         id: 3,
+    },
+    {
+        label: 'Books',
+        href: '/books-recomendation',
+        id: 4,
     },
 ];
 
