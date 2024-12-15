@@ -19,6 +19,7 @@ import { getAuthors } from '@/lib/authors';
 import { MDXProvider } from '@mdx-js/react';
 import { mdSerialize } from '../../mdSerializer';
 import { useMDXComponents } from '../../mdx-components';
+import Head from 'next/head';
 
 // Ensure languages are loaded
 
@@ -101,6 +102,20 @@ const ArticleModal: React.FC = () => {
 
     return (
         <>
+            <Head>
+                {/* Dynamic Meta Tags */}
+                <title>{selectedPost.title}</title>
+                <meta name="description" content={selectedPost.description} />
+                <meta property="og:title" content={selectedPost.title} />
+                <meta property="og:description" content={selectedPost.description} />
+                <meta property="og:image" content={selectedPost.imageUrl} />
+                <meta property="og:url" content={postUrl} />
+                <meta property="og:type" content="article" />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={selectedPost.title} />
+                <meta name="twitter:description" content={selectedPost.description} />
+                <meta name="twitter:image" content={selectedPost.imageUrl} />
+            </Head>
             <div className={styles.articlePage} id="modal">
                 <NavBar />
                 {selectedPost && authors && selectedMarkdown && serializedMarkdown && (
