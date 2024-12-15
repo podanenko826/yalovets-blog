@@ -80,7 +80,7 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
 
                                     copyButtonElement.innerHTML = `
                                         <a role="button"
-                                            className="a-button subheading-xsmall"
+                                            className="a-button subheading-xxsmall"
                                             id="copyButton"
                                         >
                                             <svg class="mb-1" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" id="copyIcon" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
@@ -101,7 +101,7 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
 
                                     copyButtonElement.innerHTML = `
                                         <a role="button"
-                                            className="a-button subheading-xsmall"
+                                            className="a-button subheading-xxsmall"
                                             id="copyButton"
                                         >
                                             <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" id="copyIcon" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
@@ -133,7 +133,7 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
                         <div>{language !== '' && <p style={{ userSelect: 'none' }}>{language}</p>}</div>
                         <a
                             role="button"
-                            className="a-button subheading-xsmall"
+                            className="a-button subheading-xxsmall"
                             id={uniqueId}
                             onClick={() => {
                                 copyCode(uniqueId);
