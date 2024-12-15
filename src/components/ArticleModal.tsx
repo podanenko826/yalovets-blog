@@ -101,7 +101,7 @@ const ArticleModal: React.FC = () => {
 
     return (
         <>
-            <div className={styles.articlePage}>
+            <div className={styles.articlePage} id="modal">
                 <NavBar />
                 {selectedPost && authors && selectedMarkdown && serializedMarkdown && (
                     <>
