@@ -6,9 +6,8 @@ import NavBar from './NavBar';
 import { usePostContext } from './PostContext';
 import moment from 'moment';
 import Link from 'next/link';
-import { FaFacebookF, FaLinkedin } from 'react-icons/fa';
-import { MdEmail } from 'react-icons/md';
-import { FaSquareInstagram } from 'react-icons/fa6';
+import { FaXTwitter } from 'react-icons/fa6';
+import { FaFacebookF, FaLinkedin, FaRedditAlien } from 'react-icons/fa';
 
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { serialize } from 'next-mdx-remote/serialize';
@@ -31,6 +30,12 @@ const ArticleModal: React.FC = () => {
     const { selectedMarkdown, setSelectedMarkdown } = usePostContext();
     const { closeModal } = usePostContext();
     const [serializedMarkdown, setSerializedMarkdown] = useState<MDXRemoteSerializeResult<Record<string, unknown>, Record<string, unknown>>>();
+
+    //? Encoded link and text for sharing purpose on social media
+    // const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+    const baseShareUrl = 'https://yalovets.blog';
+    const postUrl = encodeURIComponent(baseShareUrl + '/' + selectedPost?.slug);
+    const postText = encodeURIComponent(selectedPost?.title as string);
 
     const components = useMDXComponents();
 
@@ -123,26 +128,21 @@ const ArticleModal: React.FC = () => {
                                     </div>
                                     <div className="row">
                                         <div className="col-12 col-sm-2 social-links">
-                                            {author.socialLinks.emailAddress && (
-                                                <Link href={author.socialLinks.emailAddress} target="_blank">
-                                                    <MdEmail className="fs-1 p-1" />
-                                                </Link>
-                                            )}
-                                            {author.socialLinks.linkedInUrl && (
-                                                <Link href={author.socialLinks.linkedInUrl} target="_blank">
-                                                    <FaLinkedin className="fs-1 p-1" />
-                                                </Link>
-                                            )}
-                                            {author.socialLinks.instagramUrl && (
-                                                <Link href={author.socialLinks.instagramUrl} target="_blank">
-                                                    <FaSquareInstagram className="fs-1 p-1" />
-                                                </Link>
-                                            )}
-                                            {author.socialLinks.facebookUrl && (
-                                                <Link href={author.socialLinks.facebookUrl} target="_blank">
-                                                    <FaFacebookF className="fs-1 p-1" />
-                                                </Link>
-                                            )}
+                                            <Link href={`https://x.com/share?url=${postUrl}&text=${postText}`} title="Share on X" target="_blank">
+                                                <FaXTwitter className="fs-1 p-1" />
+                                            </Link>
+
+                                            <Link href={`https://www.linkedin.com/cws/share?url=${postUrl}`} title="Share on LinkedIn" target="_blank">
+                                                <FaLinkedin className="fs-1 p-1" />
+                                            </Link>
+
+                                            <Link href={`https://www.reddit.com/submit?url=${postUrl}`} title="Share on Reddit" target="_blank">
+                                                <FaRedditAlien className="fs-1 p-1" />
+                                            </Link>
+
+                                            <Link href={`https://www.facebook.com/sharer/sharer.php?u=${postUrl}`} title="Share on Facebook" target="_blank">
+                                                <FaFacebookF className="fs-1 p-1" />
+                                            </Link>
                                         </div>
                                         <div className="col-12 col-sm-8">
                                             <article className="article">
