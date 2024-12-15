@@ -83,7 +83,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
 
             modalRef.current = newModal;
         }
-    }, [index]);
+    }, [index, currentModal]);
 
     useEffect(() => {
         let Offcanvas;
@@ -99,7 +99,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
 
             offcanvasRef.current = newOffcanvas;
         }
-    }, [index]);
+    }, [index, currentOffcanvas]);
 
     // Initialize popover on first render
     useEffect(() => {
@@ -112,8 +112,6 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         console.log('popover: ', popoverTrigger);
 
         const navigate = (path: string, event?: React.MouseEvent<HTMLAnchorElement>) => {
-            const router = useRouter();
-
             return (event?: React.MouseEvent<HTMLAnchorElement>) => {
                 if (event) {
                     event.preventDefault(); // Prevent default anchor click behavior
@@ -169,18 +167,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 popoverRef.current.dispose();
             }
         };
-    }, [authorData, index]);
-
-    // Effect to attach listeners to the dynamic popover content
-    useEffect(() => {
-        if (popoverVisible) {
-            const popoverContent = document.querySelector('div.popover') as HTMLElement;
-            if (popoverContent) {
-                popoverContent.addEventListener('mouseenter', handleMouseEnter);
-                popoverContent.addEventListener('mouseleave', handleMouseLeave);
-            }
-        }
-    }, [popoverVisible]);
+    }, [authorData, index, currentPopover, router]);
 
     const handleMouseEnter = () => {
         clearHideTimeout();
@@ -198,6 +185,17 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
     const handleMouseLeave = () => {
         startHideTimeout();
     };
+
+    // Effect to attach listeners to the dynamic popover content
+    useEffect(() => {
+        if (popoverVisible) {
+            const popoverContent = document.querySelector('div.popover') as HTMLElement;
+            if (popoverContent) {
+                popoverContent.addEventListener('mouseenter', handleMouseEnter);
+                popoverContent.addEventListener('mouseleave', handleMouseLeave);
+            }
+        }
+    }, [popoverVisible, handleMouseEnter, handleMouseLeave]);
 
     const startHideTimeout = () => {
         clearHideTimeout();
@@ -549,7 +547,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                     The post with the following title will be permanently deleted: <br />
                                 </p>
                                 <h4 id={`deletionModalLabel-${post.slug}`}>{post.title}</h4>
-                                <p className="pt-4">(Think twice before making this desicion, 'permanently' is a long period)</p>
+                                <p className="pt-4">(Think twice before making this desicion, &apos;permanently&apos; is a long period)</p>
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn-filled py-2 px-5" data-bs-dismiss="modal">

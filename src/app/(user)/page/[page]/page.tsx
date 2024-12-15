@@ -67,7 +67,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
         };
 
         getData();
-    }, []);
+    }, [posts, setPosts]);
 
     useEffect(() => {
         const getAuthorsData = async () => {
@@ -82,7 +82,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
         };
 
         getAuthorsData();
-    }, [authorData]);
+    }, [authorData, authors, setAuthors]);
 
     const ARTICLES_PER_PAGE = 15; // Define the number of posts per page //? (should be 15 by design and adjustable to 30)
     const startIndex = (currentPage - 1) * ARTICLES_PER_PAGE;

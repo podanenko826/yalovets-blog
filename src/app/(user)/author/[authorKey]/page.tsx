@@ -28,8 +28,6 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     let author: AuthorItem | null = null;
     if (authors) {
         author = authors.find(author => author.authorKey === authorKey) as AuthorItem;
-
-        setAuthors(authors);
     }
 
     const [authorData, setAuthorData] = useState<AuthorItem | null>(null);
@@ -39,6 +37,9 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
         if (author) {
             setAuthorData(author);
         }
+    }, [author, setAuthorData]);
+
+    useEffect(() => {
         if (posts) {
             const authorPosts = posts
                 .map(post => {
@@ -48,7 +49,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
 
             setPostsData(authorPosts as PostItem[]);
         }
-    }, []);
+    }, [posts, setPostsData]);
 
     useEffect(() => {
         const getAuthorData = async () => {
@@ -65,7 +66,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
             }
         };
         getAuthorData();
-    }, []);
+    }, [author, authorKey, setAuthors]);
 
     useEffect(() => {
         const getPostData = async () => {
@@ -98,7 +99,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
             }
         };
         getPostData();
-    }, []);
+    }, [authorKey, authors, posts.length, setPosts]);
 
     return (
         <>

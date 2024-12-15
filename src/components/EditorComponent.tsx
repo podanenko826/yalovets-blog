@@ -28,25 +28,25 @@ interface EditorProps {
 
 const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, editorRef }) => {
     const [currentMarkdown, setCurrentMarkdown] = useState(markdown); // Track current markdown
-    if (postsData && !slug) {
-        return <p>EditorComponent error: pass the postsData to the component</p>;
-    }
     const postData = postsData?.find(post => post.slug === slug) || undefined;
-
     const [selectedAuthor, setSelectedAuthor] = useState(postData ? authorData.find(author => author.email === postData.email) : authorData[0]);
-
-    if (slug && !postData) {
-        return (
-            <>
-                <h5>The post with this identifier does not exist on the database.</h5>
-                <p>Check the slug in URL for any spelling mistakes.</p>
-            </>
-        );
-    }
-
     const [postTitle, setPostTitle] = useState(postData ? postData.title : '');
     const [description, setDescription] = useState(postData ? postData.description : '');
+
     const [imageUrl, setImageUrl] = useState(postData ? postData.imageUrl : '/img/AWS-beginning.png');
+
+    // Determine postData and set states conditionally inside useEffect
+    useEffect(() => {
+        if (postsData && slug) {
+            const postData = postsData.find(post => post.slug === slug);
+            if (postData) {
+                setPostTitle(postData.title);
+                setDescription(postData.description);
+                setImageUrl(postData.imageUrl || '/img/AWS-beginning.png');
+                setSelectedAuthor(authorData.find(author => author.email === postData.email) || authorData[0]);
+            }
+        }
+    }, [slug, postsData, authorData]);
 
     if (postData?.date === 'Invalid date') {
         postData.date = moment(Date.now()).format('DD-MM-YYYY');
@@ -108,6 +108,8 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, editor
     const handleCancel = () => {
         router.push('/admin/posts');
     };
+
+    if (!selectedAuthor) return null;
 
     return (
         <div>

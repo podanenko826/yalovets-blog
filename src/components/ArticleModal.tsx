@@ -81,7 +81,7 @@ const ArticleModal: React.FC = () => {
             } else return;
         };
         returnToPost();
-    }, [currentPath]);
+    }, [currentPath, openModal, posts, selectedPost]);
 
     useEffect(() => {
         const processMarkdown = async () => {

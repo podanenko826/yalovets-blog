@@ -14,7 +14,7 @@ import Image from 'next/image';
 import LazyPostCard from '@/components/LazyPostCard';
 import PostList from '@/components/PostList';
 import { PostProvider, usePostContext } from '@/components/PostContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import moment from 'moment';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -23,6 +23,8 @@ interface HomeProps {
 }
 
 const Home: React.FC<HomeProps> = ({ slug }) => {
+    const currentSlug = useRef<string | undefined>(slug);
+
     const [sortedPosts, setSortedPosts] = useState<PostItem[]>([]);
     const [recentPosts, setRecentPosts] = useState<PostItem[]>([]);
     const [latestPost, setLatestPost] = useState<PostItem | null>(null);
@@ -84,16 +86,16 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                     .slice(0, 3);
                 console.log(mostViewed);
 
-                if (slug) {
-                    const post = sorted.find(post => post.slug === slug) as PostItem;
-                    const MdxContent = await getMDXContent(slug);
+                if (currentSlug.current) {
+                    const post = sorted.find(post => post.slug === currentSlug.current) as PostItem;
+                    const MdxContent = await getMDXContent(currentSlug.current);
                     const markdown = MdxContent.markdown;
                     const previousPath = window.location.href;
 
                     if (post && markdown) {
                         openModal(post, markdown, previousPath);
                     }
-                    slug = '';
+                    currentSlug.current = '';
                 }
 
                 setSortedPosts(sorted);
@@ -120,7 +122,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
         };
 
         getAuthorsData();
-    }, [authorData]);
+    }, [authorData, authors]);
 
     return (
         <>
