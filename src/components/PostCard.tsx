@@ -175,7 +175,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         hideTimeoutRef.current = setTimeout(() => {
             if (!popoverVisible) {
                 setPopoverVisible(true);
-                if (popoverRef.current) {
+                if (popoverRef && popoverRef.current) {
                     popoverRef.current.show();
                 }
             }
@@ -249,7 +249,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                             <Link href={`/author/${authorData.authorKey}`} className={`${styles.profile_info__text} m-0`}>
                                                 {authorData.fullName}
                                             </Link>
-                                            <p className={`${styles.profile_info__text} align-content-center m-0`}>
+                                            <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
                                                 {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
                                             </p>
                                         </div>
@@ -307,7 +307,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             <div className={styles.postInfo}>
                 <a role="button" onClick={handlePostOpen}>
                     <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                        {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && <span className="rounded-pill text-wrap text-bg-secondary">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>}
+                        {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && <span className="rounded-pill text-wrap text-bg-secondary">Updated</span>}
                     </h2>
                 </a>
                 <p className={styles.description}>
@@ -338,7 +338,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                 <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
                                     {authorData.fullName}
                                 </Link>
-                                <p className={`${styles.profile_info__text} align-content-center m-0`}>
+                                <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
                                     {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
                                 </p>
                             </div>
@@ -504,7 +504,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                 <Link href={''} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
                                     {authorData.fullName}
                                 </Link>
-                                <p className={`${styles.profile_info__text} align-content-center m-0`}>
+                                <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
                                     {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
                                 </p>
                             </div>
@@ -599,7 +599,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                     </div>
                                     <div className={styles.profile_info__details}>
                                         <p className={`${styles.profile_info__text} m-0 p-0`}>{authorData.fullName}</p>
-                                        <p className={`${styles.profile_info__text} align-content-center m-0`}>
+                                        <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
                                             {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
                                         </p>
                                     </div>
@@ -664,7 +664,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                 <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
                                     {authorData.fullName}
                                 </Link>
-                                <p className={`${styles.profile_info__text} align-content-center m-0`}>
+                                <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
                                     {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
                                 </p>
                             </div>

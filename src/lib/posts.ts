@@ -1,21 +1,15 @@
 import matter from 'gray-matter';
 import moment from 'moment';
-import {remark} from 'remark';
+import { remark } from 'remark';
 import html from 'remark-html';
+import Cookies from 'js-cookie'; // Use js-cookie library for easy cookie handling
 
-import {DynamoDB, QueryCommand} from '@aws-sdk/client-dynamodb';
-import {
-    DeleteCommand,
-    DynamoDBDocumentClient,
-    GetCommand,
-    PutCommand,
-    ScanCommand,
-    UpdateCommand,
-} from '@aws-sdk/lib-dynamodb';
+import { DynamoDB, QueryCommand } from '@aws-sdk/client-dynamodb';
+import { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, ScanCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 
-import type {AuthorItem, PostItem} from '@/types';
-import {getAuthorEmails, getAuthorByEmail} from './authors';
-import {request} from 'http';
+import type { AuthorItem, PostItem } from '@/types';
+import { getAuthorEmails, getAuthorByEmail } from './authors';
+import { request } from 'http';
 
 const AWS_REGION = process.env.NEXT_PUBLIC_REGION;
 const DYNAMODB_TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
@@ -48,19 +42,12 @@ function transformPostData(data: any[]): PostItem[] {
 export const getSortedPosts = async () => {
     console.log('getSortedPosts called');
 
-    const baseUrl =
-        typeof window === 'undefined'
-            ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
-            : '';
+    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
     try {
         const response = await fetch(`${baseUrl}/api/post`);
         if (!response.ok) {
-            console.error(
-                'API returned an error:',
-                response.status,
-                await response.text()
-            );
+            console.error('API returned an error:', response.status, await response.text());
             throw new Error('Failed to fetch posts');
         }
 
@@ -101,8 +88,8 @@ export const getPost = async (slug: string): Promise<PostItem> => {
                 TableName: DYNAMODB_TABLE_NAME, // Replace with your actual posts table name
                 KeyConditionExpression: 'email = :email AND slug = :slug', // Querying by slug in the GSI
                 ExpressionAttributeValues: {
-                    ':email': {S: authorEmail}, // The email value to search for
-                    ':slug': {S: slug},
+                    ':email': { S: authorEmail }, // The email value to search for
+                    ':slug': { S: slug },
                 },
             };
 
@@ -157,15 +144,9 @@ export const formatPostDate = (date: Date) => {
     return `${day}-${month}-${year}`;
 };
 
-export const getMDXContent = async (
-    slug: string
-): Promise<{slug: string; markdown: string}> => {
+export const getMDXContent = async (slug: string): Promise<{ slug: string; markdown: string }> => {
     try {
-        const baseUrl =
-            typeof window === 'undefined'
-                ? process.env.NEXT_PUBLIC_API_BASE_URL ||
-                  'http://localhost:3000'
-                : '';
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
         // Fetch the markdown content
         const response = await fetch(`${baseUrl}/api/mdx?slug=${slug}`, {
@@ -173,16 +154,16 @@ export const getMDXContent = async (
         });
         if (!response.ok) {
             console.error('Failed to fetch markdown content');
-            return {slug, markdown: ''};
+            return { slug, markdown: '' };
         }
 
-        const {content} = await response.json();
+        const { content } = await response.json();
 
         const markdown = content;
 
         if (!markdown) {
             console.error('No content found for the given key.');
-            return {slug, markdown: ''};
+            return { slug, markdown: '' };
         }
 
         return {
@@ -191,15 +172,11 @@ export const getMDXContent = async (
         };
     } catch (err) {
         console.error('Failed to fetch post from server: ', err);
-        return {slug, markdown: ''};
+        return { slug, markdown: '' };
     }
 };
 
-export const saveMDXContent = async (
-    postTitle: string,
-    markdown: string,
-    slug?: string
-) => {
+export const saveMDXContent = async (postTitle: string, markdown: string, slug?: string) => {
     if (!slug) {
         slug = `${postTitle
             .replace(/[^a-zA-Z0-9 ]/g, '')
@@ -215,7 +192,7 @@ export const saveMDXContent = async (
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({fileName, content: markdown}),
+            body: JSON.stringify({ fileName, content: markdown }),
         });
 
         if (!response.ok) {
@@ -229,25 +206,12 @@ export const saveMDXContent = async (
     }
 };
 
-export const createPost = async (
-    postData: Partial<PostItem>,
-    markdown: string
-) => {
-    const {
-        email,
-        description,
-        date,
-        modifyDate,
-        imageUrl,
-        readTime,
-        viewsCount,
-    } = postData;
-    let {slug, title} = postData;
+export const createPost = async (postData: Partial<PostItem>, markdown: string) => {
+    const { email, description, date, modifyDate, imageUrl, readTime, viewsCount } = postData;
+    let { slug, title } = postData;
 
     if (!email || !title || !description || !date || !modifyDate) {
-        throw new Error(
-            'Missing required post data: email, slug, title, description, date or modifyDate.'
-        );
+        throw new Error('Missing required post data: email, slug, title, description, date or modifyDate.');
     }
 
     if (!slug) {
@@ -268,16 +232,9 @@ export const createPost = async (
 
     // Truncate the slug if the full fileName would exceed the limit
     if (slug.length + fileExtension.length > MAX_FILENAME_LENGTH) {
-        slug = slug.slice(
-            0,
-            MAX_FILENAME_LENGTH - fileExtension.length - ellipsis.length
-        );
+        slug = slug.slice(0, MAX_FILENAME_LENGTH - fileExtension.length - ellipsis.length);
 
-        title =
-            title.slice(
-                0,
-                MAX_FILENAME_LENGTH - fileExtension.length - ellipsis.length
-            ) + ellipsis;
+        title = title.slice(0, MAX_FILENAME_LENGTH - fileExtension.length - ellipsis.length) + ellipsis;
     }
 
     const savedPostSlug = saveMDXContent(title, markdown, slug);
@@ -308,8 +265,8 @@ export const createPost = async (
     }
 };
 
-export const deletePost = async (postData: {email: string; slug: string}) => {
-    const {email, slug} = postData;
+export const deletePost = async (postData: { email: string; slug: string }) => {
+    const { email, slug } = postData;
     // Check that the required slug is provided
     if (!slug) {
         throw new Error('Missing required identifier: slug.');

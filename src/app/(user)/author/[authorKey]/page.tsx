@@ -10,6 +10,7 @@ import postCardStyles from '@/components/PostCard.module.css';
 import { getPost, getSortedPosts } from '@/lib/posts';
 import { usePostContext } from '@/components/PostContext';
 import dynamic from 'next/dynamic';
+import moment from 'moment';
 
 const LazyPostCard = dynamic(() => import('@/components/LazyPostCard'));
 interface AuthorPageProps {
@@ -22,8 +23,6 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
 
     const { posts, setPosts } = usePostContext();
     const { authors, setAuthors } = usePostContext();
-    console.log(posts);
-    console.log(authors.length);
 
     let author: AuthorItem | null = null;
     if (authors) {
@@ -69,23 +68,46 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     }, [author, authorKey, setAuthors]);
 
     useEffect(() => {
-        const getPostData = async () => {
-            if (posts.length === 0) {
-                const sortedPosts = await getSortedPosts();
-                let author: AuthorItem | null = null;
-                if (authors.length > 0) {
-                    author = authors.find(author => author.authorKey === authorKey) as AuthorItem;
+        const getData = async () => {
+            try {
+                let sorted: PostItem[] | null = null;
+                if (posts.length > 0) {
+                    const postContextData = [...posts];
+
+                    //? Sort posts gotten from usePostContext
+                    sorted = postContextData.sort((a, b) => {
+                        const format = 'DD-MM-YYYY';
+                        const dateOne = moment(a.date, format);
+                        const dateTwo = moment(b.date, format);
+
+                        return dateTwo.diff(dateOne); // Descending order
+                    });
                 } else {
+                    sorted = await getSortedPosts();
+
+                    if (sorted.length > 0) {
+                        setPosts(sorted);
+                    } else {
+                        return notFound();
+                    }
+                }
+
+                if (!Array.isArray(sorted)) {
+                    console.error('Error: Sorted posts is not an array:', sorted);
+                    return;
+                }
+                // Ensure all posts have the expected structure
+                sorted.forEach((post, index) => {
+                    if (typeof post !== 'object' || post === null) {
+                        console.error(`Post at index ${index} is invalid:`, post);
+                    }
+                });
+
+                if (!author) {
                     author = await getAuthorByKey(authorKey);
                 }
 
-                if (sortedPosts.length > 0) {
-                    setPosts(sortedPosts);
-                } else {
-                    return notFound();
-                }
-
-                const authorPosts = sortedPosts
+                const authorPosts = sorted
                     .map(post => {
                         if (post.email === author?.email) return post;
                     })
@@ -96,10 +118,13 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
                 } else {
                     return notFound();
                 }
+            } catch (error) {
+                console.error('Error in getData:', error);
             }
         };
-        getPostData();
-    }, [authorKey, authors, posts.length, setPosts]);
+
+        getData();
+    }, [posts, setPosts, author, authors]);
 
     return (
         <>

@@ -25,7 +25,6 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     useEffect(() => {
         const getData = async () => {
             try {
-                console.log('Fetching sorted posts...');
                 let sorted: PostItem[] | null = null;
                 if (posts.length > 0) {
                     const postContextData = [...posts];
@@ -38,27 +37,24 @@ export default function BlogPage({ params }: { params: { page: string } }) {
 
                         return dateTwo.diff(dateOne); // Descending order
                     });
-                    console.log('Got posts from PostContext:', sorted);
                 } else {
                     sorted = await getSortedPosts();
-                    console.log('Fetched sorted posts:', sorted);
+
+                    if (posts.length === 0) {
+                        setPosts(sorted);
+                    }
                 }
 
                 if (!Array.isArray(sorted)) {
                     console.error('Error: Sorted posts is not an array:', sorted);
                     return;
                 }
-
                 // Ensure all posts have the expected structure
                 sorted.forEach((post, index) => {
                     if (typeof post !== 'object' || post === null) {
                         console.error(`Post at index ${index} is invalid:`, post);
                     }
                 });
-
-                if (posts.length === 0) {
-                    setPosts(sorted);
-                }
 
                 setPostsData(sorted);
             } catch (error) {
