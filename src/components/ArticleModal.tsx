@@ -143,8 +143,8 @@ const ArticleModal: React.FC = () => {
                                                 <p className="m-0">{moment(selectedPost.date, 'DD-MM-YYYY').format('D MMM YYYY')} </p>
                                                 {moment(selectedPost.modifyDate, 'DD-MM-YYYY').isAfter(moment(selectedPost.date, 'DD-MM-YYYY')) && (
                                                     <>
-                                                        <p className="d-none d-md-block">•</p>
-                                                        <span className="d-none d-md-block px-2 mb-4 rounded-pill text-bg-secondary">{'Updated ' + moment(selectedPost.modifyDate, 'DD-MM-YYYY').fromNow()}</span>
+                                                        <p className="d-none d-md-block m-0">•</p>
+                                                        <span className="d-none d-md-block px-2 m-0 rounded-pill text-bg-secondary">{'Updated ' + moment(selectedPost.modifyDate, 'DD-MM-YYYY').fromNow()}</span>
                                                     </>
                                                 )}
                                             </div>

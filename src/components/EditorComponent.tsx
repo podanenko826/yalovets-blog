@@ -32,6 +32,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, editor
     const [selectedAuthor, setSelectedAuthor] = useState(postData ? authorData.find(author => author.email === postData.email) : authorData[0]);
     const [postTitle, setPostTitle] = useState(postData ? postData.title : '');
     const [description, setDescription] = useState(postData ? postData.description : '');
+    const [readTime, setReadTime] = useState<number>(0);
 
     const [imageUrl, setImageUrl] = useState(postData ? postData.imageUrl : '/img/AWS-beginning.png');
 
@@ -44,6 +45,10 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, editor
                 setDescription(postData.description);
                 setImageUrl(postData.imageUrl || '/img/AWS-beginning.png');
                 setSelectedAuthor(authorData.find(author => author.email === postData.email) || authorData[0]);
+
+                if (postData.readTime && postData.readTime > 0) {
+                    setReadTime(postData.readTime);
+                }
             }
         }
     }, [slug, postsData, authorData]);
@@ -63,7 +68,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, editor
         date: postData?.date || moment(Date.now()).format('DD-MM-YYYY'),
         modifyDate: moment(Date.now()).format('DD-MM-YYYY'),
         imageUrl: imageUrl,
-        readTime: postData?.readTime || 0,
+        readTime: readTime,
         viewsCount: postData?.viewsCount || 0,
     };
 
@@ -73,11 +78,26 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, editor
         imageUrl: imageUrl as string,
         date: postData?.date || moment(Date.now()).format('DD-MM-YYYY'),
         modifyDate: moment(formatPostDate(moment(postData?.modifyDate).toDate()), 'DD-MM-YYYY').format('DD-MM-YYYY') || moment(Date.now()).format('DD-MM-YYYY'),
-        readTime: postData?.readTime || 0,
+        readTime: readTime,
         authorData: (selectedAuthor as AuthorItem) || authorData[0],
     };
 
     const router = useRouter();
+
+    function calculateReadingTime(markdown: string, avgReadingSpeed = 1200): number {
+        // Remove spaces and special characters, keep only letters
+        const cleanedText = markdown.replace(/[^a-zA-Z]/g, '');
+
+        // Count the number of letters
+        const letterCount = cleanedText.length;
+
+        // Calculate reading time in minutes
+        const readingTime = letterCount / avgReadingSpeed;
+
+        // Return rounded value
+        setReadTime(Math.ceil(readingTime));
+        return Math.ceil(readingTime);
+    }
 
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedAuthorEmail = event.target.value;
@@ -127,19 +147,19 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, editor
                         <p className="m-0">•</p>
 
                         <div className="d-flex justify-content-center gap-2">
-                            <p>{postData ? moment(postData.date, 'DD-MM-YYYY').format('D MMM YYYY') : moment(Date.now()).format('DD MMM YYYY')}</p>
+                            <p className="m-0">{postData ? moment(postData.date, 'DD-MM-YYYY').format('D MMM YYYY') : moment(Date.now()).format('DD MMM YYYY')}</p>
 
                             {moment(postData?.modifyDate, 'DD-MM-YYYY').isAfter(moment(postData?.date, 'DD-MM-YYYY')) && (
                                 <>
-                                    <p className="d-none d-md-block">•</p>
-                                    <span className="d-none d-md-block px-2 mb-4 rounded-pill text-bg-secondary">{'Updated ' + moment(postData?.modifyDate, 'DD-MM-YYYY').fromNow()}</span>
+                                    <p className="d-none d-md-block m-0">•</p>
+                                    <span className="d-none d-md-block px-2 m-0 rounded-pill text-bg-secondary">{'Updated ' + moment(postData?.modifyDate, 'DD-MM-YYYY').fromNow()}</span>
                                 </>
                             )}
                         </div>
                     </div>
                     {moment(postData?.modifyDate, 'DD-MM-YYYY').isAfter(moment(postData?.date, 'DD-MM-YYYY')) && (
                         <>
-                            <span className="d-md-none px-2 mb-4 rounded-pill text-bg-secondary" id="mobileUpdatedBadge">
+                            <span className="d-md-none px-2 m-0 rounded-pill text-bg-secondary" id="mobileUpdatedBadge">
                                 {'Updated ' + moment(postData?.modifyDate, 'DD-MM-YYYY').fromNow()}
                             </span>
                         </>
@@ -151,6 +171,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, editor
                     <MDXEditor
                         onChange={e => {
                             setCurrentMarkdown(e); // Update current markdown when the editor content changes
+                            calculateReadingTime(e); // Update read time in real time when the editor content changes
                         }}
                         ref={editorRef}
                         markdown={currentMarkdown}
