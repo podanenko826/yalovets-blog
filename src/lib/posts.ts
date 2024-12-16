@@ -351,3 +351,43 @@ export const getPostsData = async (
         };
     }
 };
+
+const VIEW_COOKIE_NAME = 'viewed_articles';
+const COOKIE_EXPIRATION_DAYS = 1; // Cookie expires in 1 day
+
+async function incrementViewCount(email: string, slug: string) {
+    try {
+        const response = await fetch('/api/incrementViewCount', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, slug }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to increment view count');
+        }
+    } catch (error) {
+        console.error('Error incrementing view count:', error);
+    }
+}
+
+export async function trackView(email: string, slug: string) {
+    // Read the existing viewed articles from the cookie
+    const viewedArticles = Cookies.get(VIEW_COOKIE_NAME) ? JSON.parse(Cookies.get(VIEW_COOKIE_NAME) as string) : [];
+
+    // Check if this article has already been viewed
+    if (viewedArticles.includes(slug)) {
+        console.log('View already tracked for this article.');
+        return;
+    }
+
+    // Add the article to the viewed list
+    viewedArticles.push(slug);
+    Cookies.set(VIEW_COOKIE_NAME, JSON.stringify(viewedArticles), {
+        expires: COOKIE_EXPIRATION_DAYS,
+        path: '/', // Ensure cookie is accessible site-wide
+    });
+
+    // Increment the view count in DynamoDB
+    await incrementViewCount(email, slug);
+}

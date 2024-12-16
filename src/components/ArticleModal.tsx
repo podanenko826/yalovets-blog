@@ -13,7 +13,7 @@ import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { serialize } from 'next-mdx-remote/serialize';
 import Footer from './Footer';
 import { PostItem } from '@/types';
-import { getMDXContent, getSortedPosts } from '@/lib/posts';
+import { getMDXContent, getSortedPosts, trackView } from '@/lib/posts';
 import { usePathname } from 'next/navigation';
 import { getAuthors } from '@/lib/authors';
 import { MDXProvider } from '@mdx-js/react';
@@ -60,6 +60,13 @@ const ArticleModal: React.FC = () => {
             document.body.classList.add('overflow-hidden');
         } else {
             document.body.classList.remove('overflow-hidden');
+        }
+    }, [selectedPost]);
+
+    //? Update post's viewsCount when it gets opened
+    useEffect(() => {
+        if (selectedPost) {
+            trackView(selectedPost?.email, selectedPost?.slug);
         }
     }, [selectedPost]);
 
