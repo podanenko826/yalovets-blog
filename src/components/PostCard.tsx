@@ -219,9 +219,9 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             <div className="container">
                 <div className="row align-items-center justify-content-center">
                     {post.imageUrl && (
-                        <div className="col-lg-6">
-                            <a role="button" onClick={handlePostOpen}>
-                                <picture className="img-fluid">
+                        <a role="button" className="col-lg-6" onClick={handlePostOpen}>
+                            <div className={styles.image}>
+                                <picture className={`img-fluid ${styles.imageWrapper}`}>
                                     <Image
                                         className={`img-fluid ${styles.massive_img}`}
                                         src={post.imageUrl || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
@@ -232,8 +232,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                         sizes="(min-width: 1200px) 960px, (min-width: 992px) 680px"
                                     />
                                 </picture>
-                            </a>
-                        </div>
+                            </div>
+                        </a>
                     )}
                     <div className="col-lg-5 offset-lg-1 py-3" id="latest-post">
                         <div className={`${styles.profile_info} d-flex pb-2 pb-sm-2`}>
@@ -241,9 +241,9 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                 <span className="d-inline-block">
                                     <div className={`${styles.profile_info} d-flex`}>
                                         <div className="align-content-center">
-                                            <a role="button" onClick={handlePostOpen}>
+                                            <Link href={`/author/${authorData.authorKey}`} className="m-0 p-0">
                                                 <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
-                                            </a>
+                                            </Link>
                                         </div>
                                         <div className={styles.profile_info__details}>
                                             <Link href={`/author/${authorData.authorKey}`} className={`${styles.profile_info__text} m-0`}>
@@ -293,17 +293,12 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             {post.imageUrl && (
                 <a role="button" onClick={handlePostOpen}>
                     <div className={styles.image}>
-                        <picture className="img-fluid">
-                            <Image
-                                className="img-fluid full-image"
-                                src={post.imageUrl || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
-                                alt={post.title}
-                                title={post.title}
-                                loading="lazy"
-                                width={546}
-                                height={182}
-                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                            />
+                        <picture className={`img-fluid ${styles.imageWrapper}`}>
+                            <Image className="img-fluid" src={post.imageUrl || '/ui/not-found.png'} alt={post.title} title={post.title} width={546} height={182} loading="lazy" sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
+                            <span className={`d-inline-block ${styles.articleLabel} subheading-xxsmall`}>
+                                <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
+                                Article
+                            </span>
                         </picture>
                     </div>
                 </a>
@@ -312,13 +307,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             <div className={styles.postInfo}>
                 <a role="button" onClick={handlePostOpen}>
                     <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                        {post.title}{' '}
-                        {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && (
-                            <span className="rounded-pill text-wrap text-bg-secondary">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>
-                            // <span className="px-2 py-1 pb-1 mb-3 rounded-pill text-bg-secondary">
-                            //     Updated
-                            // </span>
-                        )}
+                        {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && <span className="rounded-pill text-wrap text-bg-secondary">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>}
                     </h2>
                 </a>
                 <p className={styles.description}>
@@ -341,7 +330,9 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                     <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
                         <div className={`${styles.profile_info} d-flex`}>
                             <div className="align-content-center">
-                                <LazyImage onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
+                                    <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                </Link>
                             </div>
                             <div className={styles.profile_info__details}>
                                 <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
@@ -381,13 +372,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 <div className={styles.postInfo}>
                     <Link href={`/${post.slug}`}>
                         <h2 className={`${styles.heading} subheading d-flex flex-wrap align-items-center gap-1`} id="col-heading-1">
-                            {post.title}{' '}
-                            {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && (
-                                <span className="rounded-pill text-wrap text-bg-secondary">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>
-                                // <span className="px-2 py-1 pb-1 mb-3 rounded-pill text-bg-secondary">
-                                //     Updated
-                                // </span>
-                            )}
+                            {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && <span className="rounded-pill text-wrap text-bg-secondary">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>}
                         </h2>
                         <p className={styles.description}>{post.description.length > 160 ? <>{post.description}</> : post.description}</p>
                     </Link>
@@ -395,16 +380,18 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             </a>
             <div className={`${styles.profile_info} d-flex`}>
                 <div className={styles.profile_info__details}>
-                    <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
+                    <span className="d-inline-block" typeof="button">
                         <div className={`${styles.profile_info} d-flex`}>
                             <div className="align-content-center">
-                                <LazyImage onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                <Link href={`/author/${authorData.authorKey}`} className={`m-0 p-0`}>
+                                    <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                </Link>
                             </div>
                             <div className={styles.profile_info__details}>
-                                <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
+                                <Link href={`/author/${authorData.authorKey}`} className={`${styles.profile_info__text} m-0`}>
                                     {authorData.fullName}
                                 </Link>
-                                <p className={`${styles.profile_info__text} align-content-center m-0`}>
+                                <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
                                     {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
                                 </p>
                             </div>
@@ -669,7 +656,9 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                     <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
                         <div className={`${styles.profile_info} d-flex`}>
                             <div className="align-content-center">
-                                <LazyImage onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
+                                    <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                </Link>
                             </div>
                             <div className={styles.profile_info__details}>
                                 <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
