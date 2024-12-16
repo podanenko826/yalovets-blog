@@ -130,7 +130,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                     <div class="row mx-3 mt-2">
                         <div class="col-12 col-md-9 p-0">
                             <a role="button" class="subheading-smaller a-link m-0" id="author-link-${index}">${authorData.fullName}</a>
-                            <p class="subheading-xsmall py-2" id="col-heading-1">${authorData.bio}</p>
+                            <h6 class="subheading-xsmall text-thinner py-2" id="col-heading-1">${authorData.bio}</h6>
                         </div>
     
                         <div class="col-md-3 p-0 mr-2">

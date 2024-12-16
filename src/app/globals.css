@@ -153,6 +153,10 @@ span {
     font-size: 12px !important;
 }
 
+.text-thinner {
+    font-weight: 300 !important;
+}
+
 button {
     border-radius: 5px;
     border: none;
