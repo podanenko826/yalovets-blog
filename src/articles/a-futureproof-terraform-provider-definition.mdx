@@ -1,0 +1,134 @@
+When defining the version of a Terraform provider, do not use `>` or `=>` conditions. You will run into troubles caused by breaking changes with the next major release. Instead, lock the major version of the Terraform provider by using a `~>` condition.
+
+![How to define the Terraform provider version in the right way](https://cloudonaut.io/images/2023/09/right-way-title@730w2x.webp "How to define the Terraform provider version in the right way")
+
+But let’s start at the beginning.
+
+## Problem
+
+When running `terraform apply` to deploy a small change to a code base that I had not touched for a while, I ran into the following error.
+
+
+
+```sh
+An argument named "enable_classiclink" is not expected here.
+```
+
+While debugging the issue, I learned a lot about Terraform version constraints that you should also be aware of to avoid unpleasant surprises.
+
+What happened?
+
+I wrote the following code a few years ago to create a VPC and some other resources.
+
+
+
+```terraform
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = "3.76.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "eu-west-1"
+}
+
+module "vpc" {
+  source = "terraform-aws-modules/vpc/aws"
+  version = "3.19.0"
+
+  name = "demo"
+  cidr = "10.0.0.0/16"
+
+  azs = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  public_subnets = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
+}
+
+# ...
+But, after updating to the latest AWS provider version, I was stuck with an An argument named "enable_classiclink" is not expected here. error.
+
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = "5.9.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "eu-west-1"
+}
+
+module "vpc" {
+  source = "terraform-aws-modules/vpc/aws"
+  version = "3.19.0"
+
+  name = "demo"
+  cidr = "10.0.0.0/16"
+
+  azs = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  public_subnets = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
+}
+
+# ...
+```
+
+After a while, I found out that the major release [5.0.0](https://github.com/hashicorp/terraform-provider-aws/releases/tag/v5.0.0) of the AWS provider introduced a few breaking changes. The change log includes the following entry.
+
+```sh
+resource/aws_default_vpc: With the retirement of EC2-Classic the enable_classiclink and enable_classiclink_dns_support attributes have been removed (#30966)
+```
+
+But, the `terraform-aws-modules/vpc/aws` module in version `3.19.0` still used the `enable_classiclink_dns_support` attribute, which caused the error.
+
+It turns out that the [terraform-aws-modules/vpc/aws](https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/latest) module follows the major release cycle of the AWS provider. However, the module does not enforce using an AWS provider with the supported major version.
+
+Here is how the `terraform-aws-modules/vpc/aws` module specifies the AWS provider version.
+
+
+
+```terraform
+terraform {
+  required_version = ">= 0.13.1"
+
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = ">= 3.73"
+    }
+  }
+}
+```
+
+The version condition states that the module works with any AWS provider version greater or equal to `3.73`. But that is not the case because each major version of the AWS provider introduces breaking changes.
+
+## Solution
+
+When defining the required version, use the `~>` condition instead, which the Terraform documentation describes as follows:
+
+“Allows only the rightmost version component to increment. For example, to allow new patch releases within a specific minor release, use the full version number: \~> 1.0.4 will allow installation of 1.0.5 and 1.0.10 but not 1.1.0. This is usually called the pessimistic constraint operator.” (see [Terraform: Version Constraints](https://developer.hashicorp.com/terraform/language/expressions/version-constraints))
+
+Back to the example from above, the `terraform-aws-modules/vpc/aws` module should specify the AWS provider as follows.
+
+```terraform
+terraform {
+  required_version = ">= 0.13.1"
+
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = "~> 3.0"
+    }
+  }
+}
+```
+
+Doing so would pick the latest version of the AWS provider with major version 3. Newer major versions (4 or 5) with potential breaking changes are not supported.
+
+Note that this approach requires all parts of your Terraform configuration -including all the modules you use- to use the same major provider versions. Alternatively, you could use tools like [terragrunt](https://terragrunt.gruntwork.io/) that execute modules separately.

@@ -1,0 +1,120 @@
+Did you recently switch to a Mac with Apple Silicon (ARM processor architecture)? The chances are high that you will see an `Error: Incompatible provider version` when running `terraform init` the next time. That’s because Hashicorp does not provide the `template` provider for the ARM platform. Luckily, there is an easy way to fix the issue.
+
+![Deprecated Terraform provider template causes \`Incompatible provider version\` error](https://cloudonaut.io/images/2022/05/problem@730w2x.webp "Deprecated Terraform provider template causes `Incompatible provider version` error")
+
+## Terraform Error: Incompatible provider version
+
+I got the following error when running `terraform init` on my new MacBook Pro for the first time.
+
+
+
+```sh
+$ terraform init
+
+Initializing the backend...
+
+Initializing provider plugins...
+- Reusing previous version of hashicorp/template from the dependency lock file
+- Reusing previous version of hashicorp/aws from the dependency lock file
+- Installing hashicorp/aws v4.15.1...
+- Installed hashicorp/aws v4.15.1 (signed by HashiCorp)
+
+Error: Incompatible provider version
+
+Provider registry.terraform.io/hashicorp/template v2.2.0 does not have a package available for your current platform, darwin_arm64.
+
+Provider releases are separate from Terraform CLI releases, so not all providers are available for all platforms. Other versions of this provider may have different platforms supported.
+```
+
+I understood from the error message that the `template` provider with version `v2.2.0` is not available for the ARM architecture.
+
+So, I looked into my Terraform configuration. The `user_data` for `aws_instance` gets rendered by the data source `template_file`. The `template_file` data source reads the template file `userdata.sh.tpl` and replaces the placeholders with the variables (see `vars`).
+
+```terraform
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = "4.15.1"
+    }
+  }
+}
+
+provider "aws" {
+  region = "us-east-1"
+}
+
+resource "aws_instance" "demo" {
+  ami = "ami-0022f774911c1d690"
+  instance_type = "t3.micro"
+  user_data = data.template_file.userdata.rendered
+}
+
+data "template_file" "userdata" {
+  template = "${file("${path.module}/userdata.sh.tpl")}"
+  vars = {
+    msg = "Hello World"
+  }
+}
+```
+
+The template file `userdata.sh.tpl` contains a shell script.
+
+```bash
+#!/bin/bash
+
+echo "${msg}"
+```
+
+But, the `template` provider which implements the data source `template_file` is deprecated. Therefore, Hashicorp does not provide a version supporting the ARM platform.
+
+## Terraform: Replace deprecated template\_file with templatefile()
+
+Therefore, I looked for a way to replace the data source `template_file` and found the `templatefile` function. The following snippet shows my Terraform config after substituting `template_file` with `templatefile`.
+
+
+
+```terraform
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = "4.15.1"
+    }
+  }
+}
+
+provider "aws" {
+  region = "us-east-1"
+}
+
+resource "aws_instance" "demo" {
+  ami = "ami-0022f774911c1d690"
+  instance_type = "t3.micro"
+  user_data = templatefile("${path.module}/userdata.sh.tpl", {msg = "Hello World"})
+}
+```
+
+That wasn’t too hard.
+
+## Terraform Error: Incompatible provider version persists
+
+But, when I tried to run `terraform init` again, I still got the same error message as before.
+
+
+
+```sh
+Error: Incompatible provider version
+
+Provider registry.terraform.io/hashicorp/template v2.2.0 does not have a package available for your current platform, darwin_arm64.
+```
+
+It turns out that I had to remove the data source from my Terraform state. To do so, I used the following command.
+
+```sh
+$ terraform state rm data.template_file.userdata
+Removed data.template_file.userdata
+Successfully removed 1 resource instance(s).
+```
+
+After that, I ran `terraform init` and `terraform apply` without issues on my MacBook Pro.
