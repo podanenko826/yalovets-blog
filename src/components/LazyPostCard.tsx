@@ -51,7 +51,7 @@ const LazyPostCard = ({ post, previewData, authorData, style, index, setValue }:
             {isVisible ? (
                 <PostCard post={post} authorData={authorData} index={index} key={index} style={style} />
             ) : style === 'massive' ? (
-                <div className={`${styles.latest_post} col-12`} ref={ref}>
+                <div className={`${styles.latest_post} col-12`} id="latest-post" ref={ref}>
                     <div className="container row p-0">
                         <span className="col-md-6">
                             <div className={styles.image}>
