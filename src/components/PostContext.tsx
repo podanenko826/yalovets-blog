@@ -55,7 +55,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsModalOpen(true);
 
         // Update the URL state
-        return window.history.pushState({}, '', `/${post.slug}`);
+        window.history.pushState({}, '', `/${post.slug}`);
     };
 
     const closeModal = () => {
@@ -66,13 +66,10 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const currentPath = window.location.href;
 
         if (previousPath === currentPath) {
-            return window.history.pushState({}, '', `/`);
+            window.history.pushState({}, '', `/`);
+        } else {
+            window.history.pushState({}, '', previousPath ? previousPath : '/');
         }
-
-        // Navigate back to the home page
-        console.log(previousPath);
-
-        return window.history.pushState({}, '', previousPath ? previousPath : '/');
     };
 
     return (

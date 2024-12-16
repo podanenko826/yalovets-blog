@@ -626,7 +626,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             )}
         </div>
     ) : (
-        <div className="col-12 col-md-4" key={index}>
+        <div className="col-12 col-md-6 col-lg-4" key={index}>
             {post.imageUrl && (
                 <a role="button" onClick={handlePostOpen}>
                     <div className={styles.image}>
