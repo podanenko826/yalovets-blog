@@ -40,6 +40,12 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
     const currentPath = usePathname();
 
     useEffect(() => {
+        if (!selectedPost) {
+            document.title = 'Home / Yalovets Blog';
+        }
+    }, [selectedPost]);
+
+    useEffect(() => {
         setPosts(sortedPosts); // Populate context with initial data
     }, [sortedPosts, setPosts]);
 

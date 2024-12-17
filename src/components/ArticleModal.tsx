@@ -57,6 +57,12 @@ const ArticleModal: React.FC = () => {
 
     useEffect(() => {
         if (selectedPost) {
+            document.title = `${selectedPost?.title} / Yalovets Blog`;
+        }
+    }, [selectedPost]);
+
+    useEffect(() => {
+        if (selectedPost) {
             document.body.classList.add('overflow-hidden');
         } else {
             document.body.classList.remove('overflow-hidden');

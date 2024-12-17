@@ -1,5 +1,10 @@
 import React from 'react';
 
+export const metadata = {
+    title: 'Books / Yalovets Blog',
+    description: 'Recomendation of books by Ivan Yalovets',
+};
+
 const BooksRecomendationPage = () => {
     return (
         <>

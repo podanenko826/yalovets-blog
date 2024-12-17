@@ -18,9 +18,16 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     const currentPage = parseInt(params.page, 10) || 1;
     const { posts, setPosts } = usePostContext();
     const { authors, setAuthors } = usePostContext();
+    const { selectedPost } = usePostContext();
 
     const [postsData, setPostsData] = useState<PostItem[]>([]);
     const [authorData, setAuthorData] = useState<AuthorItem[]>([]);
+
+    useEffect(() => {
+        if (!selectedPost) {
+            document.title = `Page ${currentPage || 1} / Yalovets Blog`;
+        }
+    }, [currentPage, selectedPost]);
 
     useEffect(() => {
         const getData = async () => {

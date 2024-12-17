@@ -22,7 +22,11 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
     title: 'Yalovets Blog',
-    description: 'Ivan Yalovets Blog Website',
+    description: 'AWS Unveiled: Your Gateway to Cloud Knowledge',
+    icons: {
+        icon: '/favicon.ico',
+        apple: '/apple-touch-icon.png',
+    },
 };
 
 export default function RootLayout({

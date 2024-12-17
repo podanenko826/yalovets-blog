@@ -1,0 +1,209 @@
+Writing unit tests for code that interacts with the AWS JavaScript SDK v3 comes with two major benefits. Obviously, writing unit tests ensures you catch bugs early and therefore increase the quality of your code. Also, writing unit tests enables you to run your code locally without the need to reach out to the AWS service APIs. But how do you write unit tests for code interacting with the AWS JavaScript SDK v3?
+
+![How to write unit tests when using the AWS JavaScript SDK v3?](https://cloudonaut.io/images/2024/06/how-to-unit-test-aws-javascript-sdk-v3-title@730w2x.webp "How to write unit tests when using the AWS JavaScript SDK v3?")
+
+In the following, I will share my learnings from writing unit tests by using [aws-sdk-client-mock](https://github.com/m-radzikowski/aws-sdk-client-mock) by [Maciej Radzikowski](https://betterdev.blog/).
+
+## aws-sdk-client-mock is simple to use!
+
+Let’s start with a simple example.
+
+The following code snippet shows the `index.js` file containing a `handler()` function, which could be deployed as a Lambda function. The `handler()` function lists all buckets belonging to an AWS account.
+
+```js
+import { S3Client, ListBucketsCommand } from '@aws-sdk/client-s3';
+
+export async function handler(event, context) {
+  const s3Client = new S3Client();
+  const response = await s3Client.send(new ListBucketsCommand({}));
+  return response.Buckets;
+}
+```
+
+So, how do I write a unit test? I prefer using the test framework [mocha](https://mochajs.org/) to write JavaScript tests. The following snippet shows the `test/test.index.js` file containing the skeleton to implement a test.
+
+```js
+import { deepStrictEqual } from 'node:assert';
+
+import { handler } from '../index.js';
+
+describe('demo', () => {
+  it('handler', async () => {
+    const now = new Date().toISOString();
+    const result = await handler({}, {}); // Call the handler() function
+    deepStrictEqual(result, [{ // Verify the response
+      Name: 'bucket-demo-1',
+      CreationDate: now
+    }])
+  });
+});
+```
+
+When executing the test, the `handler()` function will send a request to the S3 API. But doing so is not feasible for unit testing, as it is very challenging to ensure the response matches the assumptions in the unit test.
+
+Instead of sending requests to the AWS APIs use a common testing technique called **mocking**. A **mock** simulates a dependency. So let’s mock the AWS Java Script SDK v3 by extending the `test/test.index.js` file.
+
+```js
+import { S3Client, ListBucketsCommand } from '@aws-sdk/client-s3';
+import { mockClient } from 'aws-sdk-client-mock';
+import { deepStrictEqual } from 'node:assert';
+
+import {handler} from '../index.js';
+
+const s3Mock = mockClient(S3Client); // Creates a mock
+
+beforeEach(() => {
+  s3Mock.reset(); // Reset the mock before each test
+});
+
+describe('demo', () => {
+  it('handler', async () => {
+    const now = new Date().toISOString();
+    s3Mock.on(ListBucketsCommand).resolvesOnce({ // Mock the ListBucketsCommand and return hard-coded result
+      Buckets: [{
+        Name: 'bucket-demo-1',
+        CreationDate: now
+      }]
+    });
+    const result = await handler({}, {});
+    deepStrictEqual(result, [{
+      Name: 'bucket-demo-1',
+      CreationDate: now
+    }]);
+  });
+});
+```
+
+Want to run the example yourself? Here is the `package.json` that you need to setup the example.
+
+```json
+{
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.583.0",
+    "aws-sdk-client-mock": "^4.0.0"
+  },
+  "name": "aws-mock-demo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {
+    "aws-sdk-client-mock": "^4.0.0",
+    "mocha": "^10.2.0"
+    
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "type": "module",
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
+```
+
+Finally, run the test.
+
+```sh
+npm i
+npm test
+```
+
+The testing framework outputs the following results.
+
+```sh
+> aws-mock-demo@1.0.0 test
+> mocha
+  demo
+    ✔ handler
+
+  1 passing (5ms)
+```
+
+Next, let me share a some lessons learned.
+
+## Creating a mock with aws-sdk-client-mock
+
+It took me a little bit to understand that there are two ways to create a mock.
+
+The following code creates a mock for a given client instance.
+
+```js
+const s3Client = new S3Client({});
+const s3Mock = mockClient(s3Client);
+```
+
+However, in many scenarios, you don’t have access to the AWS SDK client instances. In those scenarios, here is how you globally mock a client.
+
+```js
+const s3Mock = mockClient(S3Client);
+```
+
+## Testing pagination
+
+The AWS JavaScript SDK v3 comes with built-in paginators. The following snippet shows how to page through all items stored in a DynamoDB table.
+
+```js
+import { DynamoDBClient, paginateScan } from '@aws-sdk/client-dynamodb';
+
+const dynamodbClient = new DynamoDBClient();
+
+export async function handler(event, context) {
+  let result = '';
+  const paginator = paginateScan({ // pageinateScan calls ScanCommand multiple times to iterate over all result pages
+    client: dynamodbClient
+  }, {
+    TableName: 'demo'
+  });
+  for await (const page of paginator) {
+    result = result + page.Items[0].Data.S;
+  }
+  return result;
+}
+```
+
+To write a unit test override the underlying command, `ScanCommand` in this example.
+
+```js
+import { DynamoDBClient, ScanCommand } from '@aws-sdk/client-dynamodb';
+import { mockClient } from 'aws-sdk-client-mock';
+import { deepStrictEqual } from 'node:assert';
+
+const dynamodbMock = mockClient(DynamoDBClient);
+import { handler } from '../index.js';
+
+beforeEach(() => {
+  dynamodbMock.reset();
+});
+
+describe('demo', () => {
+  it('handler', async () => {
+    dynamodbMock.on(ScanCommand, {ExclusiveStartKey: undefined}).resolvesOnce({
+      Items: [{Key: {S: '1'}, Data: {S: 'Hello '}}],
+      Count: 1,
+      LastEvaluatedKey: {Key: {S: '1'}}
+    });
+    dynamodbMock.on(ScanCommand, {ExclusiveStartKey: {Key: {S: '1'}}}).resolvesOnce({
+      Items: [{Key: {S: '2'}, Data: {S: 'World'}}],
+      Count: 1,
+      LastEvaluatedKey: {Key: {S: '2'}}
+    });
+    dynamodbMock.on(ScanCommand, {ExclusiveStartKey: {Key: {S: '2'}}}).resolvesOnce({
+      Items: [{Key: {S: '3'}, Data: {S: '!'}}],
+      Count: 1
+    });
+    const result = await handler({}, {});
+    deepStrictEqual(result, 'Hello World!');
+  });
+});
+```
+
+
+
+## Mocks vs. real-world
+
+The tricky part when writing mocks for the AWS SDK is to ensure comatiblity with the real-world. That’s why I do not rely on unit testing. On top of that, integration testing against the AWS APIs is necessary.
+
+
+
+## Summary
+
+[aws-sdk-client-mock](https://github.com/m-radzikowski/aws-sdk-client-mock) is a handy tool when it comes to writing unit tests for code that interacts with the AWS JavaScript SDK v3. It has never been easier to write unit tests!

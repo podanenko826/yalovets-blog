@@ -1,4 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+
+export const metadata = {
+    title: 'Podcasts / Yalovets Blog',
+    description: 'Listen to podcasts on Yalovets Blog',
+};
 
 const PodcastsPage = () => {
     return (

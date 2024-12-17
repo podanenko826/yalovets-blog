@@ -1,5 +1,10 @@
 import React from 'react';
 
+export const metadata = {
+    title: 'YouTube / Yalovets Blog',
+    description: 'Videos on YouTube from Yalovets Blog',
+};
+
 const YouTubePage = () => {
     return (
         <>

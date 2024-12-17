@@ -23,6 +23,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
 
     const { posts, setPosts } = usePostContext();
     const { authors, setAuthors } = usePostContext();
+    const { selectedPost } = usePostContext();
 
     let author: AuthorItem | null = null;
     if (authors) {
@@ -31,6 +32,12 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
 
     const [authorData, setAuthorData] = useState<AuthorItem | null>(null);
     const [postsData, setPostsData] = useState<PostItem[]>([]);
+
+    useEffect(() => {
+        if (!selectedPost) {
+            document.title = `${author?.fullName} / Yalovets Blog`;
+        }
+    }, [author, selectedPost]);
 
     useEffect(() => {
         if (author) {
