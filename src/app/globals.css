@@ -111,11 +111,18 @@ span {
 }
 
 .heading-xlarge {
+    font-weight: 750 !important;
     font-size: 48px !important;
 }
 
 .heading-large {
+    font-weight: 800 !important;
     font-size: 36px !important;
+}
+
+.heading-larger {
+    font-weight: 800 !important;
+    font-size: 32px;
 }
 
 .heading {
@@ -407,7 +414,7 @@ blockquote > span,
     }
 }
 
-@media (min-width: 820px) {
+@media (min-width: 768px) {
     .btn-outlined {
         border: dimgray solid 1px;
         padding: 12px 20px;

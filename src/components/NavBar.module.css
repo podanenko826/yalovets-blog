@@ -30,7 +30,6 @@
 }
 
 .navLogo_icon {
-    /* margin: 3px 0px 6px 3px; */
     align-self: center;
     font-size: 26px;
 }
@@ -42,7 +41,6 @@
 .navbar_nav {
     display: flex !important;
     justify-content: flex-end !important;
-    /* column-gap: 30px; */
     column-gap: 42.5px;
 }
 

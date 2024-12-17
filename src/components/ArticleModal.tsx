@@ -128,7 +128,7 @@ const ArticleModal: React.FC = () => {
                 {selectedPost && authors && selectedMarkdown && serializedMarkdown && (
                     <>
                         <section>
-                            <div className="mt-5">
+                            <div className="mt-md-5">
                                 <div className="container pt-1">
                                     <div className="row">
                                         <div className="col-md-2">
@@ -139,7 +139,13 @@ const ArticleModal: React.FC = () => {
                                             </div>
                                         </div>
                                         <div className="col-md-8 text-center">
-                                            <h1 className="heading heading-xlarge w-100 col-md-11 col-lg-12 text-center" id="col-heading-1">
+                                            <h1 className="d-none d-lg-block px-2 heading-xlarge w-100 col-md-11 col-lg-12 text-center" id="col-heading-1">
+                                                {selectedPost.title}
+                                            </h1>
+                                            <h1 className="d-none d-md-block d-lg-none px-2 heading-large w-100 col-md-11 col-lg-12 text-center" id="col-heading-1">
+                                                {selectedPost.title}
+                                            </h1>
+                                            <h1 className="d-block d-md-none px-2 heading-larger w-100 col-md-11 col-lg-12 text-center" id="col-heading-1">
                                                 {selectedPost.title}
                                             </h1>
                                             <div className="d-flex justify-content-center gap-2">

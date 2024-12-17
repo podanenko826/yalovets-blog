@@ -73,3 +73,14 @@
 .socialMediaLinks {
     padding-left: 1rem;
 }
+
+.navbar_brand {
+    font-family: 'rubik', sans-serif !important;
+    font-weight: 500;
+    font-size: 2rem;
+}
+
+.navLogo_icon {
+    align-self: center;
+    font-size: 32px;
+}
