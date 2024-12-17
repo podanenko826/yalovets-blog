@@ -144,7 +144,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                                 <h1 className="welcome-heading heading heading-large" id="col-heading-1">
                                     AWS Unveiled: Your Gateway to Cloud Knowledge
                                 </h1>
-                                <p className="welcome-paragraph">By Ivan Yalovets. Since 2024, I published 0 articles.</p>
+                                <p className="welcome-paragraph">By Ivan Yalovets. Since 2024, I published {sortedPosts.length} articles.</p>
                                 <StartReadingButton />
                             </div>
                         </div>
@@ -180,7 +180,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                                         <h1 className="welcome-heading" id="col-heading-1">
                                             AWS Unveiled: Your Gateway to Cloud Knowledge
                                         </h1>
-                                        <p className="welcome-paragraph">By Ivan Yalovets. Since 2024, I published 0 articles.</p>
+                                        <p className="welcome-paragraph">By Ivan Yalovets. Since 2024, I published {sortedPosts.length} articles.</p>
                                         <StartReadingButton />
                                     </div>
                                 </div>
