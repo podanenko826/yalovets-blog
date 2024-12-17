@@ -318,7 +318,6 @@ code {
     background: rgba(210, 210, 210, 0.2);
     /* color: rgb(130, 130, 130); */
     color: var(--col-text);
-    padding: 3px;
     border-radius: 5px;
 }
 
