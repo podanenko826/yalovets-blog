@@ -262,7 +262,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                 {post.title.length > 85 ? <>{post.title.slice(0, 85) + '... '}</> : post.title}{' '}
                                 {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && (
                                     <>
-                                        <span className="rounded-pill text-bg-secondary">Updated</span>
+                                        <span className="badge">Updated</span>
                                     </>
                                 )}
                             </h1>
@@ -307,7 +307,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             <div className={styles.postInfo}>
                 <a role="button" onClick={handlePostOpen}>
                     <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                        {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && <span className="rounded-pill text-wrap text-bg-secondary">Updated</span>}
+                        {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && <span className="badge text-wrap">Updated</span>}
                     </h2>
                 </a>
                 <p className={styles.description}>
@@ -372,7 +372,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 <div className={styles.postInfo}>
                     <Link href={`/${post.slug}`}>
                         <h2 className={`${styles.heading} subheading d-flex flex-wrap align-items-center gap-1`} id="col-heading-1">
-                            {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && <span className="rounded-pill text-wrap text-bg-secondary">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>}
+                            {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && <span className="badge text-wrap">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>}
                         </h2>
                         <p className={styles.description}>{post.description.length > 160 ? <>{post.description}</> : post.description}</p>
                     </Link>
@@ -424,7 +424,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             <a role="button" data-bs-toggle="modal" data-bs-target={`#leavingModal-${post.slug}`}>
                 <div className={styles.postInfo}>
                     <h2 className={`${styles.heading} subheading d-flex flex-wrap align-content-center gap-1`} id="col-heading-1">
-                        {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && <span className="px-2 py-1 text-wrap rounded-pill text-bg-secondary">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>}
+                        {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && <span className="px-2 py-1 text-wrap badge">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>}
                     </h2>
                     <p className={styles.description}>{post.description}</p>
                 </div>
@@ -575,7 +575,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                             <div className={styles.postInfo}>
                                 <div className="d-flex align-content-center m-0">
                                     <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                                        {previewData.title || 'Enter the post title'} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && <span className="rounded-pill text-bg-secondary">Updated</span>}
+                                        {previewData.title || 'Enter the post title'} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && <span className="badge">Updated</span>}
                                     </h2>
                                 </div>
                                 {setValue ? (
@@ -632,7 +632,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 <div className="d-flex align-content-center m-0">
                     <a role="button" onClick={handlePostOpen}>
                         <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                            {post.title.length > 90 ? <>{post.title.slice(0, 90) + '... '}</> : post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && <span className="rounded-pill text-bg-secondary">Updated</span>}
+                            {post.title.length > 90 ? <>{post.title.slice(0, 90) + '... '}</> : post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && <span className="badge">Updated</span>}
                         </h2>
                     </a>
                 </div>
