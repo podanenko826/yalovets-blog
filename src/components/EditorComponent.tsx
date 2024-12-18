@@ -169,6 +169,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, editor
             <div className="row">
                 <div className="col-md-8 offset-md-2 container">
                     <MDXEditor
+                        contentEditableClassName="article"
                         onChange={e => {
                             setCurrentMarkdown(e); // Update current markdown when the editor content changes
                             calculateReadingTime(e); // Update read time in real time when the editor content changes

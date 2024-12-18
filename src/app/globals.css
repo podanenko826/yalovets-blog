@@ -259,9 +259,27 @@ button {
     color: var(--col-heading-1);
 }
 
-.article > h2 {
+.article > h1 {
+    margin-bottom: 16px;
+    font-weight: 600;
+}
+
+.article > h2,
+.article > h3 {
     color: var(--col-heading-1);
-    padding: 12px 0;
+    padding-top: 32px;
+    padding-bottom: 12px;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.article > h4,
+.article > h5,
+.article > h6 {
+    color: var(--col-heading-1);
+    padding-top: 32px;
+    padding-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 /* .article > ul {
@@ -288,6 +306,11 @@ button {
     color: var(--col-secondary);
 }
 
+.article > ul,
+.article > ol {
+    margin-bottom: 50px;
+}
+
 .article > ol > li {
     padding: 4px 8px;
 }
@@ -300,7 +323,7 @@ button {
     background-color: rgba(124, 138, 152, 0.1);
     border: 0.5px solid lightgrey;
     border-radius: 7px;
-    margin: 20px 0;
+    margin: 25px 0;
     line-height: 21px;
 }
 
@@ -342,7 +365,7 @@ code {
     background: rgba(210, 210, 210, 0.2);
     /* color: rgb(130, 130, 130); */
     color: var(--col-text);
-    border-radius: 5px;
+    border-radius: 2.5px;
 }
 
 pre > code {
@@ -386,15 +409,19 @@ blockquote > span,
 
 .table {
     overflow: scroll;
+    margin-bottom: 32px;
 }
 
 .table > thead > tr > th {
     border: 1px solid lightgrey;
     background: rgba(128, 128, 128, 0.1);
+    width: max-content;
 }
 
 .table > tbody > tr > td {
     border: 1px solid lightgrey;
+    max-width: 50vh;
+    width: max-content;
 }
 
 .table > thead > tr,
@@ -428,6 +455,23 @@ blockquote > span,
     .social-links > a {
         padding: 0;
         margin: 0;
+    }
+
+    .table {
+        width: auto;
+    }
+
+    .table > thead > tr > th {
+        width: min-content;
+    }
+
+    .table > tbody > tr > td {
+        width: min-content;
+    }
+
+    .table > thead > tr,
+    .table > tbody > tr {
+        width: min-content;
     }
 }
 

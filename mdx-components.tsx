@@ -16,7 +16,9 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
         table: (props: React.JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableElement> & React.TableHTMLAttributes<HTMLTableElement>) => (
             <div className="container">
                 <div className="row overflow-scroll">
-                    <table className="table" {...props} />
+                    <div className="col-12 p-0">
+                        <table className="table" {...props} />
+                    </div>
                 </div>
             </div>
         ),
