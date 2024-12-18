@@ -138,9 +138,12 @@ const ArticleModal: React.FC = () => {
                                 <div className="container pt-1">
                                     <div className="row">
                                         <div className="col-md-2">
-                                            <div className="h-min mt-md-2 d-flex justify-content-md-center">
-                                                <button onClick={() => closeModal()} className="btn-outlined py-2 px-3">
-                                                    ←Back
+                                            <div className="h-min mt-md-2 mb-2 mb-md-0 d-flex justify-content-md-center">
+                                                <button onClick={() => closeModal()} className="d-block d-md-none btn-outlined py-2 px-md-3">
+                                                    ← Back
+                                                </button>
+                                                <button onClick={() => closeModal()} className="d-none d-md-block btn-pill py-2 px-md-3">
+                                                    ←
                                                 </button>
                                             </div>
                                         </div>
