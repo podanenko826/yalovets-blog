@@ -81,40 +81,51 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
                 const textToCopy = codeElement?.current!.props.children?.toString();
                 const copyButtonElement = document.getElementById(id);
 
-                if (!textToCopy) {
+                if (!textToCopy || !copyButtonElement) {
                     return;
                 }
 
-                // Modern clipboard API
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard
                         .writeText(textToCopy)
-                        .then(() => handleCopySuccess(copyButtonElement))
-                        .catch(() => handleCopyFailure(copyButtonElement));
+                        .then(() => {
+                            injectHTML(copyButtonElement, 'Copied', 'success');
+                        })
+                        .catch(() => {
+                            injectHTML(copyButtonElement, 'Failed', 'error');
+                        });
                 } else {
-                    // Fallback for older browsers and iOS
+                    // Fallback for older browsers
                     const textarea = document.createElement('textarea');
                     textarea.value = textToCopy;
-                    textarea.style.position = 'fixed'; // Prevent scrolling to the bottom
-                    textarea.style.opacity = '0'; // Invisible textarea
+                    textarea.setAttribute('readonly', ''); // Make it readonly to prevent keyboard popping up
+                    textarea.style.position = 'absolute';
+                    textarea.style.left = '-9999px'; // Move it off-screen
+                    textarea.style.top = '0'; // Ensure it's within the viewport but off-screen
                     document.body.appendChild(textarea);
-                    textarea.select();
+
+                    const selection = document.getSelection();
+                    const range = document.createRange();
+                    range.selectNodeContents(textarea);
+                    selection?.removeAllRanges();
+                    selection?.addRange(range);
 
                     try {
-                        const successful = document.execCommand('copy');
-                        successful ? handleCopySuccess(copyButtonElement) : handleCopyFailure(copyButtonElement);
+                        document.execCommand('copy'); // Perform the copy operation
+                        injectHTML(copyButtonElement, 'Copied', 'success');
                     } catch (err) {
-                        handleCopyFailure(copyButtonElement);
+                        injectHTML(copyButtonElement, 'Failed', 'error');
                     }
 
-                    document.body.removeChild(textarea); // Clean up
+                    selection?.removeAllRanges(); // Cleanup selection
+                    document.body.removeChild(textarea);
                 }
             }
 
-            function handleCopySuccess(copyButtonElement: HTMLElement | null) {
-                if (copyButtonElement) {
-                    const previousInnerHTML = copyButtonElement.innerHTML;
-                    copyButtonElement.innerHTML = `
+            function injectHTML(element: HTMLElement, text: string, status: 'success' | 'error') {
+                if (status === 'success') {
+                    const previousInnerHTML = element.innerHTML;
+                    element.innerHTML = `
                         <a role="button" class="a-button subheading-xxsmall" id=${uniqueId}>
                             <svg class="mb-1" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" id="copyIcon" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                 <path fill="none" d="M0 0h24v24H0V0z"></path>
@@ -124,15 +135,11 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
                         </a>
                     `;
                     setTimeout(() => {
-                        copyButtonElement.innerHTML = previousInnerHTML;
+                        element.innerHTML = previousInnerHTML;
                     }, 2000);
-                }
-            }
-
-            function handleCopyFailure(copyButtonElement: HTMLElement | null) {
-                if (copyButtonElement) {
-                    const previousInnerHTML = copyButtonElement.innerHTML;
-                    copyButtonElement.innerHTML = `
+                } else if (status === 'error') {
+                    const previousInnerHTML = element.innerHTML;
+                    element.innerHTML = `
                         <a role="button" class="a-button subheading-xxsmall" id=${uniqueId}>
                             <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" id="copyIcon" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                 <path fill="none" d="M0 0h24v24H0z"></path>
@@ -142,7 +149,7 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
                         </a>
                     `;
                     setTimeout(() => {
-                        copyButtonElement.innerHTML = previousInnerHTML;
+                        element.innerHTML = previousInnerHTML;
                     }, 2000);
                 }
             }
