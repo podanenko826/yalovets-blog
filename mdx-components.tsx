@@ -80,54 +80,70 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
             function copyCode(id: string) {
                 const textToCopy = codeElement?.current!.props.children?.toString();
                 const copyButtonElement = document.getElementById(id);
-                if (textToCopy) {
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        // Modern API
-                        return navigator.clipboard
-                            .writeText(textToCopy)
-                            .then(() => {
-                                if (copyButtonElement) {
-                                    const previousInnerHTML = copyButtonElement.innerHTML;
 
-                                    copyButtonElement.innerHTML = `
-                                        <a role="button"
-                                            className="a-button subheading-xxsmall"
-                                            id="copyButton"
-                                        >
-                                            <svg class="mb-1" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" id="copyIcon" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill="none" d="M0 0h24v24H0V0z"></path>
-                                                <path d="m18 7-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41 6 19l1.41-1.41L1.83 12 .41 13.41z"></path>
-                                            </svg>
-                                            Copied
-                                        </a>
-                                    `;
-                                    setTimeout(() => {
-                                        copyButtonElement.innerHTML = previousInnerHTML;
-                                    }, 2000);
-                                }
-                            })
-                            .catch(() => {
-                                if (copyButtonElement) {
-                                    const previousInnerHTML = copyButtonElement.innerHTML;
+                if (!textToCopy) {
+                    return;
+                }
 
-                                    copyButtonElement.innerHTML = `
-                                        <a role="button"
-                                            className="a-button subheading-xxsmall"
-                                            id="copyButton"
-                                        >
-                                            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" id="copyIcon" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill="none" d="M0 0h24v24H0z"></path>
-                                                <path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
-                                            </svg>
-                                            Failed
-                                        </a>
-                                    `;
-                                    setTimeout(() => {
-                                        copyButtonElement.innerHTML = previousInnerHTML;
-                                    }, 2000);
-                                }
-                            });
+                // Modern clipboard API
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard
+                        .writeText(textToCopy)
+                        .then(() => handleCopySuccess(copyButtonElement))
+                        .catch(() => handleCopyFailure(copyButtonElement));
+                } else {
+                    // Fallback for older browsers and iOS
+                    const textarea = document.createElement('textarea');
+                    textarea.value = textToCopy;
+                    textarea.style.position = 'fixed'; // Prevent scrolling to the bottom
+                    textarea.style.opacity = '0'; // Invisible textarea
+                    document.body.appendChild(textarea);
+                    textarea.select();
+
+                    try {
+                        const successful = document.execCommand('copy');
+                        successful ? handleCopySuccess(copyButtonElement) : handleCopyFailure(copyButtonElement);
+                    } catch (err) {
+                        handleCopyFailure(copyButtonElement);
                     }
+
+                    document.body.removeChild(textarea); // Clean up
+                }
+            }
+
+            function handleCopySuccess(copyButtonElement: HTMLElement | null) {
+                if (copyButtonElement) {
+                    const previousInnerHTML = copyButtonElement.innerHTML;
+                    copyButtonElement.innerHTML = `
+                        <a role="button" class="a-button subheading-xxsmall" id=${uniqueId}>
+                            <svg class="mb-1" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" id="copyIcon" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                <path fill="none" d="M0 0h24v24H0V0z"></path>
+                                <path d="m18 7-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41 6 19l1.41-1.41L1.83 12 .41 13.41z"></path>
+                            </svg>
+                            Copied
+                        </a>
+                    `;
+                    setTimeout(() => {
+                        copyButtonElement.innerHTML = previousInnerHTML;
+                    }, 2000);
+                }
+            }
+
+            function handleCopyFailure(copyButtonElement: HTMLElement | null) {
+                if (copyButtonElement) {
+                    const previousInnerHTML = copyButtonElement.innerHTML;
+                    copyButtonElement.innerHTML = `
+                        <a role="button" class="a-button subheading-xxsmall" id=${uniqueId}>
+                            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" id="copyIcon" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                <path fill="none" d="M0 0h24v24H0z"></path>
+                                <path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+                            </svg>
+                            Failed
+                        </a>
+                    `;
+                    setTimeout(() => {
+                        copyButtonElement.innerHTML = previousInnerHTML;
+                    }, 2000);
                 }
             }
 
