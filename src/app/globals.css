@@ -366,6 +366,7 @@ code {
     /* color: rgb(130, 130, 130); */
     color: var(--col-text);
     border-radius: 2.5px;
+    font-family: monospace !important;
 }
 
 pre > code {
