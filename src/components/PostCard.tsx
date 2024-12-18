@@ -54,7 +54,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         }
     };
 
-    const handlePostExpansion = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handlePostExpansion = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
         setExpandedPost(post);
     };
 
@@ -273,9 +273,9 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                     <a role="button" onClick={handlePostOpen}>
                                         {post.description.slice(0, 140) + '... '}
                                     </a>
-                                    <button onClick={handlePostExpansion} id="col-secondary">
+                                    <a role="button" onClick={handlePostExpansion} className="a-link" id="col-secondary">
                                         Read more
-                                    </button>
+                                    </a>
                                 </>
                             ) : (
                                 post.description
@@ -316,9 +316,9 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                             <a role="button" onClick={handlePostOpen}>
                                 {post.description.slice(0, 160) + '... '}
                             </a>
-                            <button onClick={handlePostExpansion} id="col-secondary">
+                            <a role="button" onClick={handlePostExpansion} className="a-link a-button" id="col-secondary">
                                 Read more
-                            </button>
+                            </a>
                         </>
                     ) : (
                         post.description
@@ -642,9 +642,9 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                             <a role="button" onClick={handlePostOpen}>
                                 {post.description.slice(0, 140) + '... '}
                             </a>
-                            <button onClick={handlePostExpansion} id="col-secondary">
+                            <a role="button" onClick={handlePostExpansion} className="a-link a-button" id="col-secondary">
                                 Read more
-                            </button>
+                            </a>
                         </>
                     ) : (
                         post.description
