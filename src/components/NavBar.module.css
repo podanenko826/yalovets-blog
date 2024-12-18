@@ -55,6 +55,11 @@
     z-index: 1050;
 }
 
+.nav_menu_mobile > div {
+    overflow-y: scroll;
+    height: 70vh;
+}
+
 .mobileNavIcon {
     width: 2.6em;
     height: 2.6em;
@@ -88,6 +93,8 @@
 
 .btn_subscribe {
     text-decoration: none;
+    padding: 0;
+    margin: 0;
 
     &:active {
         text-decoration: underline;
@@ -100,7 +107,7 @@
 
 #mobileNavigation {
     font-size: xx-large;
-    padding: 10px;
+    padding: 0;
     width: 3rem;
     border: none;
     background: transparent;

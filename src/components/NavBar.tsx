@@ -81,19 +81,19 @@ const NavBar = () => {
                         <button className="btn-outlined">Subscribe</button>
                     </div>
                 </div>
-                <div className="navbar navbar-expand-lg xs-nav row d-flex d-lg-none container">
+                <div className="navbar navbar-expand-lg xs-nav p-0 row d-flex justify-content-center d-lg-none container">
                     <div className="col-3 d-flex">
                         <button id={styles.mobileNavigation} type="button" aria-controls="mobileNavigation" aria-expanded={mobileMenuOpened} aria-label="Toggle navigation" onClick={handleMobileNavigation}>
                             {mobileMenuOpened ? <IoMdClose className={styles.mobileNavIcon} id={styles.menu_opened} /> : <IoMdMenu className={styles.mobileNavIcon} />}
                         </button>
                     </div>
-                    <div className="d-flex col-9 justify-content-end">
+                    <div className="d-flex col-9 justify-content-end p-0 m-0">
                         <Link className={styles.btn_subscribe} href="#">
                             Subscribe
                         </Link>
                     </div>
                 </div>
-                <div className={`${mobileMenuOpened ? 'd-flex' : 'd-none'} ${styles.nav_menu_mobile}`}>
+                <div className={`${mobileMenuOpened ? 'd-flex d-lg-none' : 'd-none'} ${styles.nav_menu_mobile}`}>
                     <div className="pt-3 d-flex flex-column">
                         {navigation.map(item => (
                             <Link key={item.id} href={item.href} onClick={() => handleMobileNavigation()} className={`${styles.nav_link_mobile}`} id={currentPath === item.href ? 'col-secondary' : 'col-primary'}>
