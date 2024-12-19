@@ -128,13 +128,11 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
                 if (status === 'success') {
                     const previousInnerHTML = element.innerHTML;
                     element.innerHTML = `
-                        <a role="button" class="a-button subheading-xxsmall" id=${uniqueId}>
-                            <svg class="mb-1" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" id="copyIcon" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" id="copyIcon" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                 <path fill="none" d="M0 0h24v24H0V0z"></path>
                                 <path d="m18 7-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41 6 19l1.41-1.41L1.83 12 .41 13.41z"></path>
                             </svg>
                             Copied
-                        </a>
                     `;
                     setTimeout(() => {
                         element.innerHTML = previousInnerHTML;
@@ -142,13 +140,11 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
                 } else if (status === 'error') {
                     const previousInnerHTML = element.innerHTML;
                     element.innerHTML = `
-                        <a role="button" class="a-button subheading-xxsmall" id=${uniqueId}>
                             <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" id="copyIcon" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                 <path fill="none" d="M0 0h24v24H0z"></path>
                                 <path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
                             </svg>
                             Failed
-                        </a>
                     `;
                     setTimeout(() => {
                         element.innerHTML = previousInnerHTML;
@@ -165,17 +161,21 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
 
             return (
                 <div className="codeblock">
-                    <div className="codeblock__head">
-                        <div>{language !== '' && <p style={{ userSelect: 'none' }}>{language}</p>}</div>
-                        <a
-                            role="button"
-                            className="a-button subheading-xxsmall"
-                            id={uniqueId}
-                            onClick={() => {
-                                copyCode(uniqueId);
-                            }}>
-                            <MdContentCopy id="copyIcon" /> Copy code
-                        </a>
+                    <div className="row m-0">
+                        <div className="codeblock__head">
+                            <div>{language !== '' && <p style={{ userSelect: 'none' }}>{language}</p>}</div>
+                            <div className="copyCode">
+                                <a
+                                    role="button"
+                                    className="a-button subheading-xxsmall copyCodeButton"
+                                    id={uniqueId}
+                                    onClick={() => {
+                                        copyCode(uniqueId);
+                                    }}>
+                                    <MdContentCopy id="copyIcon" /> Copy code
+                                </a>
+                            </div>
+                        </div>
                     </div>
 
                     <pre {...props}>

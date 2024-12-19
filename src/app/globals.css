@@ -320,34 +320,51 @@ button {
 }
 
 .codeblock {
-    background-color: rgba(124, 138, 152, 0.1);
+    background-color: #ececec80;
     border: 0.5px solid lightgrey;
     border-radius: 7px;
-    margin: 25px 0;
     line-height: 21px;
+    overflow-y: auto;
+    position: relative;
+    margin: 30px 0;
 }
 
 .codeblock__head {
     display: flex;
+    align-items: center;
     justify-content: space-between;
+    position: relative;
+
+    padding: 0.5rem 1rem;
 }
 
 .codeblock__head > div > p {
-    padding-left: 11px;
-    padding-top: 4px;
+    margin: 0;
     opacity: 65%;
     font-size: 13px;
+
+    height: max-content;
 }
 
-.codeblock__head > a {
+.copyCode {
+    top: 0;
+    position: sticky;
     display: flex;
     align-items: center;
-    text-align: center;
-    height: 2rem;
-    font-size: 14px;
-    margin-top: 3px;
+    justify-content: end;
 
-    margin-right: 10px;
+    width: 80px;
+    height: 100%;
+}
+
+.copyCodeButton {
+    display: flex;
+    align-items: center;
+    height: max-content;
+    position: absolute;
+
+    width: max-content;
+    font-size: 14px;
 }
 
 #copyIcon {
@@ -356,9 +373,8 @@ button {
 }
 
 .codeblock > pre {
-    padding: 0 20px;
-    padding-top: 10px;
-    padding-bottom: 20px;
+    padding: 1rem;
+    margin: 0 !important;
 }
 
 code {
