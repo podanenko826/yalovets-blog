@@ -57,6 +57,10 @@
     margin: 4rem 0px;
 }
 
+.card {
+    box-sizing: border-box;
+}
+
 .heading {
     font-size: 25px;
     align-items: center; /* This ensures vertical alignment */
@@ -223,13 +227,24 @@
     background: black;
 }
 
-.expendedContainer {
+.expandedContainer {
     background: white;
     border-radius: 16px;
-    padding: 1.5rem;
-    margin: 2rem;
-    min-height: 100%;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+    box-sizing: border-box;
+}
+
+.expandedPostCloseBtn {
+    margin: 5px 0;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon {
+    width: 2em;
+    height: 2em;
+    color: var(--col-primary);
 }
 
 @media (max-width: 992px) {
@@ -251,6 +266,13 @@
 @media (min-width: 768px) {
     .articleLabel {
         top: 260%;
+    }
+
+    .expandedContainer {
+        background: white;
+        border-radius: 16px;
+        /* padding: 0.3rem 0.3rem; */
+        overflow-y: scroll;
     }
 }
 

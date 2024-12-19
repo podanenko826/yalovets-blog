@@ -16,6 +16,8 @@ import LazyImage from './LazyImage';
 import { FaCoffee } from 'react-icons/fa';
 import { usePostContext } from './PostContext';
 
+import { IoMdClose } from 'react-icons/io';
+
 type PostCardProps = {
     post: PostItem;
     previewData?: PostPreviewItem;
@@ -27,6 +29,7 @@ type PostCardProps = {
 };
 
 const PostCard = ({ post, previewData, authorData, style, index, setValue, onVisible }: PostCardProps) => {
+    const cardRef = useRef<HTMLDivElement>(null);
     const { openModal } = usePostContext();
     const { setExpandedPost } = usePostContext();
 
@@ -55,7 +58,17 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
     };
 
     const handlePostExpansion = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-        setExpandedPost(post);
+        if (cardRef.current) {
+            // Scroll to the card
+            // cardRef.current.scrollIntoView({
+            //     behavior: 'smooth', // Smooth scrolling effect
+            //     block: 'center', // Align the card to the center of the viewport
+            // });
+
+            // Get the bounding rectangle of the card
+            const rect = cardRef.current!.getBoundingClientRect();
+            setExpandedPost({ post: post, boundingBox: rect });
+        }
     };
 
     const modalRef = useRef<Modal | null>(null);
@@ -235,7 +248,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                             </div>
                         </a>
                     )}
-                    <div className="col-lg-5 offset-lg-1 py-3" id="latest-post">
+                    <div ref={cardRef} className="col-lg-5 offset-lg-1 py-3" id="latest-post">
                         <div className={`${styles.profile_info} d-flex pb-2 pb-sm-2`}>
                             <div className={styles.profile_info__details}>
                                 <span className="d-inline-block">
@@ -289,7 +302,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             </div>
         </div>
     ) : style === 'full' ? (
-        <div className="col-12 col-md-6" key={index}>
+        <div ref={cardRef} className="col-12 col-md-6" key={index}>
             {post.imageUrl && (
                 <a role="button" onClick={handlePostOpen}>
                     <div className={styles.image}>
@@ -348,7 +361,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             </div>
         </div>
     ) : style === 'expanded' ? (
-        <div className={`col-12 ${styles.expendedContainer}`} key={index}>
+        <div className={`col-12 ${styles.expandedContainer}`} key={index}>
             <a role="button" onClick={handlePostOpen}>
                 {post.imageUrl && (
                     <Link href={`/${post.slug}`}>
@@ -613,7 +626,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             )}
         </div>
     ) : (
-        <div className="col-12 col-md-4" key={index}>
+        <div ref={cardRef} className={`${styles.card} col-12 col-md-4`} key={index}>
             {post.imageUrl && (
                 <a role="button" onClick={handlePostOpen}>
                     <div className={styles.image}>

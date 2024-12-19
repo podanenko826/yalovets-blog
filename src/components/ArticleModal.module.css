@@ -1,28 +1,3 @@
-.articlePage {
-    width: 100%;
-    height: 100vh;
-    position: fixed;
-    overflow-y: scroll;
-    background: white;
-    z-index: 2000;
-    top: 0%;
-    /* bottom: 0%; */
-    left: 0%;
-}
-
-.previewModal {
-    z-index: 3;
-    background: rgba(0, 0, 0, 0.1);
-}
-
-.previewModal > div {
-    max-height: 100vh;
-}
-
-.previewModal > div > div {
-    max-height: 90vh;
-}
-
 .loadingBanner {
     width: 100%;
     height: 100vh;
@@ -38,36 +13,75 @@
     left: 0%;
 }
 
-.expendedArticle {
-    overflow: scroll !important;
+.articlePage {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    overflow-y: scroll;
     background: white;
-    border-radius: 16px;
-    max-height: 90vh;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+    z-index: 2000;
+    top: 0;
+    left: 0;
 }
 
-.expendedArticle > article {
-    overflow: scroll !important;
+.previewModal {
+    z-index: 2000;
+    background: rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+.previewModal > div {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center horizontally */
 }
 
 .postDataContainer {
-    min-height: 100%;
-}
-
-.authorDataContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: white;
-    border-radius: 16px;
-    height: auto;
-    padding: 2rem;
-
+    transition: all 0.3s ease-in-out;
+    position: absolute;
+    will-change: transform;
+    overflow: hidden;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+    background: white;
+    height: min-content;
+    border-radius: 16px;
+    padding-top: 5rem !important;
 }
 
-.authorDataContainer > div > img {
-    border-radius: 100%;
+.expandedPostCloseBtn {
+    /* margin: 5px 0; */
+    font-size: 10px;
+    /* display: flex; */
+    top: 1rem;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    transition: all 0.3s ease-in-out;
+    animation: buttonAppear forwards ease-in-out;
+    animation-duration: 100ms;
+}
+
+@keyframes buttonAppear {
+    0% {
+        opacity: 0%;
+        display: none;
+    }
+    50% {
+        opacity: 50%;
+    }
+    100% {
+        opacity: 100%;
+        display: flex;
+    }
+}
+
+.icon {
+    width: 2em;
+    height: 2em;
+    color: var(--col-primary);
 }
 
 .socialMediaLinks {
