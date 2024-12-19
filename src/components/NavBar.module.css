@@ -58,6 +58,7 @@
 .nav_menu_mobile > div {
     overflow-y: scroll;
     height: 70vh;
+    width: 100%;
 }
 
 .mobileNavIcon {
