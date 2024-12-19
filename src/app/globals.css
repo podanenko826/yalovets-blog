@@ -244,6 +244,8 @@ button {
     text-align: center;
     justify-content: center;
     row-gap: 30px;
+
+    margin-top: 1.5rem;
 }
 
 .social-links > a {
@@ -267,8 +269,7 @@ button {
 .article > h2,
 .article > h3 {
     color: var(--col-heading-1);
-    padding-top: 32px;
-    padding-bottom: 12px;
+    margin-top: 60px;
     margin-bottom: 8px;
     font-weight: 600;
 }
@@ -294,12 +295,13 @@ button {
 
 .article > p {
     color: var(--col-heading-1);
+    margin-top: 1.3rem;
+    margin-bottom: 1.2rem;
 }
 
+.article > img,
 .article > p > img {
-    padding: 20px 0;
-    width: auto;
-    height: auto;
+    width: max-content;
 }
 
 .article > p > a {
@@ -308,7 +310,8 @@ button {
 
 .article > ul,
 .article > ol {
-    margin-bottom: 50px;
+    margin-top: 1.5rem;
+    margin-bottom: 1.2rem;
 }
 
 .article > ol > li {
@@ -426,7 +429,7 @@ blockquote > span,
 
 .table {
     overflow: scroll;
-    margin-bottom: 32px;
+    margin-bottom: 1rem;
 }
 
 .table > thead > tr > th {
