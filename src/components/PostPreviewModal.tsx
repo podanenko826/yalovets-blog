@@ -51,26 +51,29 @@ const PostPreviewModal = () => {
             setTimeout(() => {
                 modal.style.opacity = '5%';
             }, 150);
+            setTimeout(() => {
+                const viewportHeight = window.innerHeight; // Viewport height
+                const viewportWidth = window.innerWidth; // Viewport width
+
+                // Calculate the target height and Y position for centering
+                const targetHeight = Math.min(viewportHeight, height * 1.5); // Adjust size as necessary
+                const targetY = top - (viewportHeight / 2 - targetHeight / 2);
+
+                // Calculate the target X position for horizontal centering (optional)
+                const targetX = left - (viewportWidth / 2 - width / 2);
+
+                // Scroll to the calculated position
+                scrollBy({
+                    top: targetY,
+                    left: targetX,
+                    behavior: 'smooth', // Smooth scrolling animation
+                });
+            }, 50);
 
             const onTransitionEnd = (e: TransitionEvent) => {
                 if (['transform', 'width', 'padding', 'height', 'opacity'].includes(e.propertyName)) {
                     setExpandedPost(null); // Reset expandedPost after animation is complete
-                    const viewportHeight = window.innerHeight; // Viewport height
-                    const viewportWidth = window.innerWidth; // Viewport width
 
-                    // Calculate the target height and Y position for centering
-                    const targetHeight = Math.min(viewportHeight, height * 1.5); // Adjust size as necessary
-                    const targetY = top - (viewportHeight / 2 - targetHeight / 2);
-
-                    // Calculate the target X position for horizontal centering (optional)
-                    const targetX = left - (viewportWidth / 2 - width / 2);
-
-                    // Scroll to the calculated position
-                    scrollBy({
-                        top: targetY,
-                        left: targetX,
-                        behavior: 'smooth', // Smooth scrolling animation
-                    });
                     modal.removeEventListener('transitionend', onTransitionEnd);
                 }
             };
