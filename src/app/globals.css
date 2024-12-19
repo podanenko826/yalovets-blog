@@ -244,15 +244,11 @@ button {
     text-align: center;
     justify-content: center;
     row-gap: 30px;
-
-    margin-top: 1.5rem;
 }
 
 .social-links > a {
-    padding: 0 7.5px;
+    padding: 7.5px;
     margin: 0 7.5px;
-    padding-bottom: 15px;
-    margin-bottom: 15px;
     width: min-content;
 }
 
@@ -471,10 +467,13 @@ blockquote > span,
         flex-direction: column !important;
         justify-content: flex-start;
         align-items: center;
+
+        margin-top: 1.5rem;
     }
     .social-links > a {
         padding: 0;
         margin: 0;
+        height: max-content;
     }
 
     .table {
