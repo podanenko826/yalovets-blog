@@ -29,6 +29,7 @@
     background: rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease-in-out;
     overflow: hidden;
+    overflow-y: scroll;
 }
 
 .previewModal > div {
@@ -36,7 +37,7 @@
     height: 100vh;
     display: flex;
     align-items: center;
-    justify-content: center; /* Center horizontally */
+    justify-content: center;
 }
 
 .postDataContainer {
@@ -46,9 +47,11 @@
     overflow: hidden;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
     background: white;
-    height: min-content;
+    /* height: min-content; */
+    height: 100vh;
     border-radius: 16px;
     padding-top: 5rem !important;
+    height: max-content;
 }
 
 .expandedPostCloseBtn {
