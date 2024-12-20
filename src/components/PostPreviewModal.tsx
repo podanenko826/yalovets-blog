@@ -33,6 +33,10 @@ const PostPreviewModal = () => {
     const handleClose = () => {
         const modal = document.querySelector(`.${styles.postDataContainer}`) as HTMLElement | null;
 
+        if (modal) {
+            document.body.classList.remove('overflow-hidden'); // Only remove when appropriate
+        }
+
         if (expandedPost && modal) {
             const { top, left, width, height } = expandedPost.boundingBox;
 
@@ -133,7 +137,7 @@ const PostPreviewModal = () => {
             };
             modal.addEventListener('transitionend', onTransitionEnd);
         } else {
-            document.body.classList.remove('overflow-hidden');
+            // document.body.classList.remove('overflow-hidden');
         }
 
         return () => {
