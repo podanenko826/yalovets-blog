@@ -178,7 +178,7 @@ const ArticleModal: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="row mt-5">
-                                        <div className="col-12 col-md-2 social-links">
+                                        <div className={`col-12 col-md-2 ${styles.socialLinks}`}>
                                             <Link href={`https://x.com/share?url=${postUrl}&text=${postText}`} title="Share on X" target="_blank">
                                                 <FaXTwitter className="fs-1 p-1" />
                                             </Link>

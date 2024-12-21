@@ -246,25 +246,13 @@ button {
     opacity: 50%;
 }
 
-.social-links {
-    display: flex;
-    text-align: center;
-    justify-content: center;
-    row-gap: 30px;
-}
-
-.social-links > a {
-    padding: 7.5px;
-    margin: 0 7.5px;
-    width: min-content;
-}
-
 .article {
     line-height: 1.75rem;
     color: var(--col-heading-1);
 }
 
 .article > h1 {
+    margin-top: 1.3rem;
     margin-bottom: 16px;
     font-weight: 600;
 }
@@ -313,7 +301,7 @@ button {
 
 .article > ul,
 .article > ol {
-    margin-top: 1.5rem;
+    margin-top: 1.3rem;
     margin-bottom: 1.2rem;
 }
 
@@ -332,7 +320,8 @@ button {
     line-height: 21px;
     overflow-y: auto;
     position: relative;
-    margin: 30px 0;
+    margin-top: 1.3rem;
+    margin-bottom: 1.2rem;
 }
 
 .codeblock__head {
@@ -401,6 +390,8 @@ blockquote,
     display: flex;
     align-content: center;
     background: rgba(128, 128, 128, 0.1);
+    margin-top: 1.3rem;
+    margin-bottom: 1.2rem;
 }
 
 blockquote > p,
@@ -469,20 +460,6 @@ blockquote > span,
 }
 
 @media (min-width: 768px) {
-    .social-links {
-        display: flex;
-        flex-direction: column !important;
-        justify-content: flex-start;
-        align-items: center;
-
-        margin-top: 1.5rem;
-    }
-    .social-links > a {
-        padding: 0;
-        margin: 0;
-        height: max-content;
-    }
-
     .table {
         width: auto;
     }
