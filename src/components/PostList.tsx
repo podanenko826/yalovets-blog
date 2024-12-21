@@ -17,8 +17,6 @@ const PostList: React.FC<PostListProps> = ({ initialPosts, initialAuthors, style
 
     if (!indexIncrement) indexIncrement = 0;
 
-    console.log(initialAuthors);
-
     // useEffect(() => {
     //     setPosts(initialPosts); // Populate context with initial data
     // }, [initialPosts, setPosts]);

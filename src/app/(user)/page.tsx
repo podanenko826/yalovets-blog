@@ -90,7 +90,6 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                 const mostViewed = sorted
                     .sort((a, b) => (b.viewsCount ?? 0) - (a.viewsCount ?? 0)) // Sort by viewsCount in descending order
                     .slice(0, 3);
-                console.log(mostViewed);
 
                 if (currentSlug.current) {
                     const post = sorted.find(post => post.slug === currentSlug.current) as PostItem;

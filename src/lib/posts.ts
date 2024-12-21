@@ -40,8 +40,6 @@ function transformPostData(data: any[]): PostItem[] {
 }
 
 export const getSortedPosts = async () => {
-    console.log('getSortedPosts called');
-
     const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
     try {
@@ -52,7 +50,6 @@ export const getSortedPosts = async () => {
         }
 
         const data = await response.json();
-        console.log(data);
 
         let posts: any[] = [];
 
@@ -377,7 +374,6 @@ export async function trackView(email: string, slug: string) {
 
     // Check if this article has already been viewed
     if (viewedArticles.includes(slug)) {
-        console.log('View already tracked for this article.');
         return;
     }
 

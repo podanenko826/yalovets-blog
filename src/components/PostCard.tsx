@@ -59,12 +59,6 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
 
     const handlePostExpansion = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
         if (cardRef.current) {
-            // Scroll to the card
-            // cardRef.current.scrollIntoView({
-            //     behavior: 'smooth', // Smooth scrolling effect
-            //     block: 'center', // Align the card to the center of the viewport
-            // });
-
             // Get the bounding rectangle of the card
             const rect = cardRef.current!.getBoundingClientRect();
             setExpandedPost({ post: post, boundingBox: rect });
@@ -89,7 +83,6 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         }
 
         const modalTrigger = document.querySelector(`.modal`);
-        console.log('offcanvasTrigger: ', modalTrigger);
 
         if (modalTrigger && !currentModal && Modal) {
             const newModal = new Modal(modalTrigger);
@@ -105,7 +98,6 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         }
 
         const offcanvasTrigger = document.querySelector(`.offcanvas`);
-        console.log('offcanvasTrigger: ', offcanvasTrigger);
 
         if (offcanvasTrigger && !currentOffcanvas && Offcanvas) {
             const newOffcanvas = new Offcanvas(offcanvasTrigger);
@@ -122,7 +114,6 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         }
 
         const popoverTrigger = document.querySelector(`#popover-trigger-${index}`);
-        console.log('popover: ', popoverTrigger);
 
         const navigate = (path: string, event?: React.MouseEvent<HTMLAnchorElement>) => {
             return (event?: React.MouseEvent<HTMLAnchorElement>) => {
@@ -286,7 +277,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                     <a role="button" onClick={handlePostOpen}>
                                         {post.description.slice(0, 140) + '... '}
                                     </a>
-                                    <a role="button" onClick={handlePostExpansion} className="a-link" id="col-secondary">
+                                    <a role="button" onClick={handlePostExpansion} className="a-link a-button" id="col-secondary">
                                         Read more
                                     </a>
                                 </>
@@ -362,35 +353,33 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         </div>
     ) : style === 'expanded' ? (
         <div className={`col-12 ${styles.expandedContainer}`} key={index}>
-            <a role="button" onClick={handlePostOpen}>
-                {post.imageUrl && (
-                    <Link href={`/${post.slug}`}>
-                        <div className={styles.image}>
-                            <picture className="img-fluid">
-                                <Image
-                                    className="img-fluid full-image"
-                                    src={post.imageUrl || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
-                                    alt={post.title}
-                                    title={post.title}
-                                    loading="lazy"
-                                    width={546}
-                                    height={182}
-                                    sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                                />
-                            </picture>
-                        </div>
-                    </Link>
-                )}
+            {post.imageUrl && (
+                <a role="button" onClick={handlePostOpen}>
+                    <div className={styles.image}>
+                        <picture className="img-fluid">
+                            <Image
+                                className="img-fluid full-image"
+                                src={post.imageUrl || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
+                                alt={post.title}
+                                title={post.title}
+                                loading="lazy"
+                                width={546}
+                                height={182}
+                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                            />
+                        </picture>
+                    </div>
+                </a>
+            )}
 
-                <div className={styles.postInfo}>
-                    <Link href={`/${post.slug}`}>
-                        <h2 className={`${styles.heading} subheading d-flex flex-wrap align-items-center gap-1`} id="col-heading-1">
-                            {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && <span className="badge text-wrap">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>}
-                        </h2>
-                        <p className={styles.description}>{post.description.length > 160 ? <>{post.description}</> : post.description}</p>
-                    </Link>
-                </div>
-            </a>
+            <div className={styles.postInfo}>
+                <a role="button" onClick={handlePostOpen}>
+                    <h2 className={`${styles.heading} subheading d-flex flex-wrap align-items-center gap-1`} id="col-heading-1">
+                        {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && <span className="badge text-wrap">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>}
+                    </h2>
+                    <p className={styles.description}>{post.description.length > 160 ? <>{post.description}</> : post.description}</p>
+                </a>
+            </div>
             <div className={`${styles.profile_info} d-flex`}>
                 <div className={styles.profile_info__details}>
                     <span className="d-inline-block" typeof="button">

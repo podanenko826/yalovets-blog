@@ -21,10 +21,9 @@ import { mdSerialize } from '../../mdSerializer';
 import { useMDXComponents } from '../../mdx-components';
 import Head from 'next/head';
 
-// Ensure languages are loaded
-
 const ArticleModal: React.FC = () => {
     const { selectedPost, setSelectedPost } = usePostContext();
+    const { expandedPost, setExpandedPost } = usePostContext();
     const { posts, setPosts } = usePostContext();
     const { authors, setAuthors } = usePostContext();
     const { openModal } = usePostContext();
@@ -42,7 +41,6 @@ const ArticleModal: React.FC = () => {
 
     const components = useMDXComponents();
 
-    console.log(selectedMarkdown);
     const currentPath = usePathname();
 
     useEffect(() => {
@@ -77,30 +75,30 @@ const ArticleModal: React.FC = () => {
     }, [selectedPost]);
 
     useEffect(() => {
-        //? Fetches the necessary data for a post to display if the url has slug in it
         const returnToPost = async () => {
             const postUrl = window.location.href;
             const postSlug = postUrl.split('/').at(-1);
 
-            if (!selectedPost && postSlug && posts) {
+            if (selectedPost === null && postSlug) {
                 const post = posts.find(post => post.slug === postSlug) as PostItem;
                 const MdxContent = await getMDXContent(postSlug);
                 const markdown = MdxContent.markdown;
                 const previousPath = window.location.href;
 
                 if (post && markdown) {
+                    setSelectedPost(post);
                     openModal(post, markdown, previousPath);
                 }
-            } else return;
+            }
         };
+
         returnToPost();
-    }, [currentPath, openModal, posts, selectedPost]);
+    }, [window.location.href]);
 
     useEffect(() => {
         const processMarkdown = async () => {
             if (selectedMarkdown) {
                 const result = await mdSerialize(selectedMarkdown);
-                console.log(result);
 
                 setSerializedMarkdown(result);
             }
@@ -111,6 +109,8 @@ const ArticleModal: React.FC = () => {
     if (!selectedPost || !selectedMarkdown) return null;
 
     const author = authors.find(author => author.email === selectedPost.email);
+
+    if (typeof window === 'undefined') return null;
     if (!author) return null;
 
     return (

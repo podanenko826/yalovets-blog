@@ -81,6 +81,11 @@ a.a-link:hover {
     text-decoration: underline;
 }
 
+a.a-button {
+    display: inline-block;
+    white-space: nowrap;
+}
+
 input {
     outline: none;
     border-radius: 5px;

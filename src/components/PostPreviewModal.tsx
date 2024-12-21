@@ -6,6 +6,8 @@ import LazyPostCard from './LazyPostCard';
 import { IoMdClose } from 'react-icons/io';
 
 const useWindowSize = () => {
+    if (typeof window === 'undefined') return { width: 0, height: 0 };
+
     const [size, setSize] = useState({ width: window.innerWidth, height: window.innerHeight });
 
     useEffect(() => {
@@ -31,6 +33,8 @@ const PostPreviewModal = () => {
     const authorData = authors.find(author => author.email === expandedPost?.post.email);
 
     const handleClose = () => {
+        if (!window) return;
+
         const modal = document.querySelector(`.${styles.postDataContainer}`) as HTMLElement | null;
 
         if (modal) {
@@ -93,11 +97,13 @@ const PostPreviewModal = () => {
     };
 
     useEffect(() => {
+        if (!window) return;
+
         const modal = document.querySelector(`.${styles.postDataContainer}`) as HTMLElement | null;
 
         if (expandedPost && modal && expandedPost.boundingBox) {
             document.body.classList.add('overflow-hidden');
-            setExpanded(false);
+            // setExpanded(false);
 
             const { top, left, width, height } = expandedPost.boundingBox;
 
@@ -106,9 +112,9 @@ const PostPreviewModal = () => {
             modal.style.left = `${left}px`;
             modal.style.width = `${width}px`;
             modal.style.height = `${height}px`;
-            modal.style.padding = '0.3rem';
+            // modal.style.padding = '0.3rem';
             modal.style.transform = 'translate(0, 0)';
-            modal.style.transition = 'transform 0.3s ease, width 0.3s ease, height 0.3s ease';
+            modal.style.transition = 'transform 0.3s ease, width 0.3s ease, height 0.3s ease, padding 0.3s ease';
 
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
@@ -119,32 +125,22 @@ const PostPreviewModal = () => {
             const targetX = (viewportWidth - targetWidth) / 2 - left;
             const targetY = (viewportHeight - targetHeight) / 2 - top;
 
+            setExpanded(true);
+
             setTimeout(() => {
                 modal.style.transform = `translate(${targetX}px, ${targetY}px)`;
                 modal.style.width = `${targetWidth}px`;
                 modal.style.height = ``;
             }, 0);
             setTimeout(() => {
-                modal.style.padding = '1.5rem';
-            }, 200);
-
-            // Ensure expanded state is only set after transition ends
-            const onTransitionEnd = (e: TransitionEvent) => {
-                if (['transform', 'width', 'padding'].includes(e.propertyName)) {
-                    setExpanded(true);
-                    modal.removeEventListener('transitionend', onTransitionEnd);
-                }
-            };
-            modal.addEventListener('transitionend', onTransitionEnd);
+                modal.style.padding = '0 1.2rem';
+                modal.style.paddingTop = '4.5rem';
+                modal.style.paddingBottom = '1.3rem';
+            }, 50);
+            setTimeout(() => {}, 200);
         } else {
-            // document.body.classList.remove('overflow-hidden');
+            document.body.classList.remove('overflow-hidden');
         }
-
-        return () => {
-            if (modal) {
-                modal.removeEventListener('transitionend', () => {});
-            }
-        };
     }, [expandedPost]);
 
     useEffect(() => {
@@ -157,7 +153,7 @@ const PostPreviewModal = () => {
         <div className={`${styles.articlePage} ${styles.previewModal}`} onClick={() => handleClose()}>
             {expandedPost && authorData ? (
                 <div className="container">
-                    <div className={`col-12 ${styles.postDataContainer}`}>
+                    <div className={`${styles.postDataContainer}`}>
                         {expanded && (
                             <button className={`${styles.expandedPostCloseBtn} btn-pill`} onClick={() => handleClose()}>
                                 <IoMdClose className={styles.icon} />

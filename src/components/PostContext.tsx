@@ -19,8 +19,6 @@ interface PostContextType {
     setSelectedMarkdown: React.Dispatch<React.SetStateAction<string | null>>;
     previousPath: string | null;
     setPreviousPath: React.Dispatch<React.SetStateAction<string | null>>;
-    currentSlug: string | null;
-    setCurrentSlug: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 // Create Context
@@ -35,7 +33,6 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [authors, setAuthors] = useState<AuthorItem[]>([]);
     const [selectedMarkdown, setSelectedMarkdown] = useState<string | null>(null);
     const [previousPath, setPreviousPath] = useState<string | null>(null);
-    const [currentSlug, setCurrentSlug] = useState<string | null>(null);
 
     const pathname = usePathname();
 
@@ -89,8 +86,6 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 setSelectedMarkdown,
                 previousPath,
                 setPreviousPath,
-                currentSlug,
-                setCurrentSlug,
             }}>
             {children}
         </PostContext.Provider>
