@@ -54,7 +54,6 @@ const PostPreviewModal = () => {
                 modal.style.height = `${height}px`;
                 modal.style.padding = '0.3rem';
                 modal.style.transform = 'translate(0, 0)';
-                modal.style.transition = 'transform 0.3s ease, width 0.3s ease, height 0.3s ease, padding 0.3s ease';
             }, 0);
             setTimeout(() => {
                 modal.style.opacity = '5%';
@@ -112,9 +111,8 @@ const PostPreviewModal = () => {
             modal.style.left = `${left}px`;
             modal.style.width = `${width}px`;
             modal.style.height = `${height}px`;
-            // modal.style.padding = '0.3rem';
+            modal.style.padding = '';
             modal.style.transform = 'translate(0, 0)';
-            modal.style.transition = 'transform 0.3s ease, width 0.3s ease, height 0.3s ease, padding 0.3s ease';
 
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
@@ -137,7 +135,6 @@ const PostPreviewModal = () => {
                 modal.style.paddingTop = '4.5rem';
                 modal.style.paddingBottom = '1.3rem';
             }, 50);
-            setTimeout(() => {}, 200);
         } else {
             document.body.classList.remove('overflow-hidden');
         }

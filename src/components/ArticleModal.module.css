@@ -58,6 +58,12 @@
     transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
+@media (min-width: 992px) {
+    .postDataContainer {
+        transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease, padding 0.3s ease; /* Add padding animations on bigger screens */
+    }
+}
+
 .expandedPostCloseBtn {
     /* margin: 5px 0; */
     font-size: 10px;
