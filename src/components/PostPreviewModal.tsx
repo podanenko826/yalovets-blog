@@ -132,7 +132,7 @@ const PostPreviewModal = () => {
         <div className={`${styles.articlePage} ${styles.previewModal}`} onClick={() => handleClose()}>
             {expandedPost && authorData ? (
                 <div className="container">
-                    <div className={`${styles.postDataContainer}`}>
+                    <div className={`${styles.postDataContainer}`} onClick={e => e.stopPropagation()}>
                         {expanded && (
                             <button className={`${styles.expandedPostCloseBtn} btn-pill`} onClick={() => handleClose()}>
                                 <IoMdClose className={styles.icon} />

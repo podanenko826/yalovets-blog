@@ -61,6 +61,12 @@ const ArticleModal: React.FC = () => {
 
     useEffect(() => {
         if (selectedPost) {
+            setExpandedPost(null); // Clears Expanded Post value to authomatically close the Read More modal when user opens the full article
+        }
+    }, [selectedPost]);
+
+    useEffect(() => {
+        if (selectedPost) {
             document.body.classList.add('overflow-hidden');
         } else {
             document.body.classList.remove('overflow-hidden');
