@@ -27,74 +27,116 @@ const PostPreviewModal = () => {
     const { expandedPost, setExpandedPost } = usePostContext();
     const { authors } = usePostContext();
 
-    const { width, height } = useWindowSize();
+    const { width } = useWindowSize();
     const [expanded, setExpanded] = useState<boolean>(false);
+    const [startY, setStartY] = useState<number | null>(null);
 
     const authorData = authors.find(author => author.email === expandedPost?.post.email);
 
     const handleClose = () => {
         if (!window) return;
 
-        const modal = document.querySelector(`.${styles.postDataContainer}`) as HTMLElement | null;
+        const card = document.querySelector(`.${styles.postDataContainer}`) as HTMLElement | null;
+        const modal = document.querySelector(`.${styles.previewModal}`) as HTMLElement | null;
 
-        if (modal) {
+        if (card) {
             document.body.classList.remove('overflow-hidden'); // Only remove when appropriate
         }
 
-        if (expandedPost && modal) {
+        if (expandedPost && card && modal) {
             const { top, left, width, height } = expandedPost.boundingBox;
 
             setExpanded(false); // Start collapsing the modal
 
             setTimeout(() => {
-                modal.style.position = 'absolute';
-                modal.style.top = `${top}px`;
-                modal.style.left = `${left}px`;
-                modal.style.width = `${width}px`;
-                modal.style.height = `${height}px`;
-                modal.style.padding = '0.3rem';
-                modal.style.transform = 'translate(0, 0)';
+                card.style.position = 'absolute';
+                card.style.top = `${top}px`;
+                card.style.left = `${left}px`;
+                card.style.width = `${width}px`;
+                card.style.height = `${height}px`;
+                card.style.padding = '0.3rem';
+                card.style.transform = 'translate(0, 0)';
             }, 0);
             setTimeout(() => {
-                modal.style.opacity = '5%';
+                card.style.opacity = '5%';
             }, 150);
+
+            modal.classList.add(`${styles.previewModalClose}`);
 
             const onTransitionEnd = (e: TransitionEvent) => {
                 if (['transform', 'width', 'padding', 'height', 'opacity'].includes(e.propertyName)) {
                     setExpandedPost(null); // Reset expandedPost after animation is complete
 
-                    modal.removeEventListener('transitionend', onTransitionEnd);
+                    card.removeEventListener('transitionend', onTransitionEnd);
                 }
             };
 
-            modal.addEventListener('transitionend', onTransitionEnd);
+            card.addEventListener('transitionend', onTransitionEnd);
 
             return () => {
-                if (modal) {
-                    modal.removeEventListener('transitionend', onTransitionEnd);
+                if (card) {
+                    card.removeEventListener('transitionend', onTransitionEnd);
                 }
             };
+        }
+    };
+
+    const handleTouchStart = (e: React.TouchEvent) => {
+        setStartY(e.touches[0].clientY);
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        if (startY !== null) {
+            const currentY = e.touches[0].clientY;
+            const diffY = currentY - startY;
+
+            if (diffY > 135) {
+                handleClose();
+            }
+        }
+    };
+
+    const handleTouchEnd = () => {
+        setStartY(null);
+    };
+
+    const handleScroll = (e: React.UIEvent) => {
+        setStartY(e.currentTarget.scrollTop);
+        console.log(e.currentTarget.scrollTop);
+    };
+
+    const handleScrollCapture = (e: React.UIEvent) => {
+        if (startY !== null) {
+            const currentY = e.currentTarget.scrollTop;
+
+            const diffY = currentY - startY;
+
+            if (diffY > 125) {
+                handleClose();
+            }
         }
     };
 
     useEffect(() => {
         if (!window) return;
 
-        const modal = document.querySelector(`.${styles.postDataContainer}`) as HTMLElement | null;
+        const isMobile = window.innerWidth <= 768;
 
-        if (expandedPost && modal && expandedPost.boundingBox) {
+        const card = document.querySelector(`.${styles.postDataContainer}`) as HTMLElement | null;
+        const modal = document.querySelector(`.${styles.previewModal}`) as HTMLElement | null;
+
+        if (expandedPost && card && modal && expandedPost.boundingBox) {
             document.body.classList.add('overflow-hidden');
-            // setExpanded(false);
 
             const { top, left, width, height } = expandedPost.boundingBox;
 
-            modal.style.position = 'absolute';
-            modal.style.top = `${top}px`;
-            modal.style.left = `${left}px`;
-            modal.style.width = `${width}px`;
-            modal.style.height = `${height}px`;
-            modal.style.padding = '';
-            modal.style.transform = 'translate(0, 0)';
+            card.style.position = 'absolute';
+            card.style.top = isMobile ? '25vh' : `${top}px`;
+            card.style.left = `${left}px`;
+            card.style.width = `${width}px`;
+            card.style.height = `${height}px`;
+            card.style.padding = '';
+            card.style.transform = 'translate(0, 0)';
 
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
@@ -105,18 +147,20 @@ const PostPreviewModal = () => {
             const targetX = (viewportWidth - targetWidth) / 2 - left;
             const targetY = (viewportHeight - targetHeight) / 2 - top;
 
+            modal.classList.remove(`${styles.previewModalClose}`);
+
             setExpanded(true);
 
             setTimeout(() => {
-                modal.style.transform = `translate(${targetX}px, ${targetY}px)`;
-                modal.style.width = `${targetWidth}px`;
-                modal.style.height = ``;
+                card.style.transform = !isMobile ? `translate(${targetX}px, ${targetY}px)` : '';
+                card.style.width = `${targetWidth}px`;
             }, 0);
             setTimeout(() => {
-                modal.style.padding = '0 1.2rem';
-                modal.style.paddingTop = '4.5rem';
-                modal.style.paddingBottom = '1.3rem';
-            }, 50);
+                card.style.height = ``;
+                card.style.padding = '0 1.2rem';
+                card.style.paddingTop = '4.5rem';
+                card.style.paddingBottom = '1.3rem';
+            }, 0);
         } else {
             document.body.classList.remove('overflow-hidden');
         }
@@ -124,14 +168,14 @@ const PostPreviewModal = () => {
 
     useEffect(() => {
         handleClose();
-    }, [width, height]);
+    }, [width]);
 
-    if (!expandedPost || !authorData) return null;
+    if (!authorData) return null;
 
     return (
-        <div className={`${styles.articlePage} ${styles.previewModal}`} onClick={() => handleClose()}>
+        <div className={`${styles.articlePage} ${styles.previewModal}`} onClick={() => handleClose()} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
             {expandedPost && authorData ? (
-                <div className="container">
+                <div className="container" onScrollCapture={handleScrollCapture} onScroll={handleScroll} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
                     <div className={`${styles.postDataContainer}`} onClick={e => e.stopPropagation()}>
                         {expanded && (
                             <button className={`${styles.expandedPostCloseBtn} btn-pill`} onClick={() => handleClose()}>

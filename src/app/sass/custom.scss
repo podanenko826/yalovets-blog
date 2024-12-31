@@ -67,7 +67,7 @@ img {
 
 .img-fluid img {
     height: 180px;
-    border-radius: 7px;
+    border-radius: 7px !important;
 }
 
 @media (max-width: 992px) {

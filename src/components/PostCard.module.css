@@ -1,6 +1,6 @@
 .image {
-    border: 1px solid lightgrey;
-    border-radius: 8px;
+    border: 1px solid lightgrey !important;
+    border-radius: 8px !important;
 }
 
 @media (min-width: 768px) {
@@ -270,7 +270,7 @@
 
     .expandedContainer {
         background: white;
-        border-radius: 16px;
+        border-radius: 8px;
         /* padding: 0.3rem 0.3rem; */
         overflow-y: scroll;
     }

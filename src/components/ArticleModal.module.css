@@ -26,18 +26,88 @@
 
 .previewModal {
     z-index: 2000;
-    background: rgba(0, 0, 0, 0.1);
+    height: 100vh;
+    border-radius: 16px 16px 0 0;
+    display: flex;
+
     transition: all 0.3s ease-in-out;
     overflow: hidden;
     overflow-y: scroll;
+    background: rgba(0, 0, 0, 0.1);
+    animation: screenTint 0.3s ease;
+    animation-duration: 300ms;
 }
 
 .previewModal > div {
     width: 100%;
-    height: 100vh;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow-y: scroll;
+}
+
+.previewModalClose {
+    animation: screenUnshade 0.3s ease forwards;
+    pointer-events: none;
+}
+
+.postDataContainer {
+    position: absolute;
+    will-change: transform, opacity, padding;
+    overflow: hidden;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+    background: white;
+    min-height: min-content;
+    border-radius: 16px;
+    transform: scale(1);
+    opacity: 1;
+    min-width: 100%;
+    /* Transition only GPU-accelerated properties */
+    transition: transform 0.3s ease, opacity 0.3s ease, width 0.3s ease, height 0.3s ease;
+
+    padding: 1rem;
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+}
+
+.expandedPostCloseBtn {
+    display: flex;
+    font-size: 10px;
+    top: 10px;
+    right: 10px;
+    animation: none;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    transition: all 0.3s ease-in-out;
+}
+
+@keyframes screenTint {
+    0% {
+        background: rgba(0, 0, 0, 0);
+    }
+    50% {
+        background: rgba(0, 0, 0, 0.05);
+    }
+    100% {
+        background: rgba(0, 0, 0, 0.1);
+    }
+}
+
+@keyframes screenUnshade {
+    0% {
+        opacity: 1;
+        background: rgba(0, 0, 0, 0.1);
+    }
+    50% {
+        opacity: 0.5;
+        background: rgba(0, 0, 0, 0.25);
+    }
+    100% {
+        opacity: 0;
+        background: rgba(0, 0, 0, 0);
+    }
 }
 
 .socialLinks {
@@ -67,42 +137,24 @@
         margin: 0;
         height: max-content;
     }
-}
 
-.postDataContainer {
-    position: absolute;
-    will-change: transform, opacity, padding;
-    overflow: hidden;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
-    background: white;
-    min-height: min-content;
-    border-radius: 16px;
-    transform: scale(1);
-    opacity: 1;
-    /* Transition only GPU-accelerated properties */
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    .postDataContainer {
+        min-width: min-content;
+        border-radius: 16px;
+    }
 }
 
 @media (min-width: 992px) {
     .postDataContainer {
-        height: min-content;
+        height: auto;
         min-height: auto;
-
-        transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease, padding 0.3s ease; /* Add padding animations on bigger screens */
+        transition: transform 0.3s ease, opacity 0.3s ease, width 0.3s ease, height 0.3s ease, padding 0.3s ease; /* Add padding animations on bigger screens */
     }
-}
 
-.expandedPostCloseBtn {
-    /* margin: 5px 0; */
-    font-size: 10px;
-    /* display: flex; */
-    top: 12px;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    transition: all 0.3s ease-in-out;
-    animation: buttonAppear forwards ease-in-out;
-    animation-duration: 300ms;
+    .expandedPostCloseBtn {
+        animation: buttonAppear forwards ease-in-out;
+        animation-duration: 300ms;
+    }
 }
 
 @keyframes buttonAppear {

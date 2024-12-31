@@ -77,26 +77,28 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
     const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null); // Ref for timeout to avoid state re-renders
 
     useEffect(() => {
-        let Modal;
-        if (typeof window !== 'undefined') {
-            Modal = require('bootstrap/js/dist/modal');
-        }
+        if (typeof window === 'undefined') return;
 
-        const modalTrigger = document.querySelector(`.modal`);
+        const Modal = require('bootstrap/js/dist/modal');
+        const modalTrigger = document.querySelector('.modal');
 
-        if (modalTrigger && !currentModal && Modal) {
+        if (modalTrigger && !currentModal) {
             const newModal = new Modal(modalTrigger);
-
             modalRef.current = newModal;
         }
+
+        return () => {
+            if (modalRef.current) {
+                modalRef.current.dispose();
+                modalRef.current = null;
+            }
+        };
     }, [index, currentModal]);
 
     useEffect(() => {
-        let Offcanvas;
-        if (typeof window !== 'undefined') {
-            Offcanvas = require('bootstrap/js/dist/offcanvas');
-        }
+        if (typeof window === 'undefined') return;
 
+        const Offcanvas = require('bootstrap/js/dist/offcanvas');
         const offcanvasTrigger = document.querySelector(`.offcanvas`);
 
         if (offcanvasTrigger && !currentOffcanvas && Offcanvas) {
@@ -108,11 +110,9 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
 
     // Initialize popover on first render
     useEffect(() => {
-        let Popover;
-        if (typeof window !== 'undefined') {
-            Popover = require('bootstrap/js/dist/popover'); // Or the library you use
-        }
+        if (typeof window === 'undefined') return;
 
+        const Popover = require('bootstrap/js/dist/popover');
         const popoverTrigger = document.querySelector(`#popover-trigger-${index}`);
 
         const navigate = (path: string, event?: React.MouseEvent<HTMLAnchorElement>) => {
@@ -356,7 +356,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             {post.imageUrl && (
                 <a role="button" onClick={handlePostOpen}>
                     <div className={styles.image}>
-                        <picture className="img-fluid">
+                        <picture className={`img-fluid ${styles.imageWrapper}`}>
                             <Image
                                 className="img-fluid full-image"
                                 src={post.imageUrl || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
@@ -367,6 +367,10 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                 height={182}
                                 sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                             />
+                            {/* <span className={`d-inline-block ${styles.articleLabel} subheading-xxsmall`}>
+                                <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
+                                Article
+                            </span> */}
                         </picture>
                     </div>
                 </a>
@@ -385,12 +389,12 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                     <span className="d-inline-block" typeof="button">
                         <div className={`${styles.profile_info} d-flex`}>
                             <div className="align-content-center">
-                                <Link href={`/author/${authorData.authorKey}`} className={`m-0 p-0`}>
+                                <Link href={`/author/${authorData.authorKey}`} scroll={true} onClick={() => setExpandedPost(null)} className={`m-0 p-0`}>
                                     <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
                                 </Link>
                             </div>
                             <div className={styles.profile_info__details}>
-                                <Link href={`/author/${authorData.authorKey}`} className={`${styles.profile_info__text} m-0`}>
+                                <Link href={`/author/${authorData.authorKey}`} scroll={true} onClick={() => setExpandedPost(null)} className={`${styles.profile_info__text} m-0`}>
                                     {authorData.fullName}
                                 </Link>
                                 <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
