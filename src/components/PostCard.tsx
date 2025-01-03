@@ -217,9 +217,6 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             hideTimeoutRef.current = null;
         }
     };
-    // console.log(moment(post.modifyDate).isAfter(moment(post.date))); // Should be true if post.modifyDate is after post.date
-
-    console.log(moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(), 'days'));
 
     return style === 'massive' ? (
         <div className={styles.latest_post}>
@@ -297,10 +294,12 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                     <div className={styles.image}>
                         <picture className={`img-fluid ${styles.imageWrapper}`}>
                             <Image className="img-fluid" src={post.imageUrl || '/ui/not-found.png'} alt={post.title} title={post.title} width={546} height={182} loading="lazy" sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
-                            <span className={`d-inline-block ${styles.articleLabel} subheading-xxsmall`}>
-                                <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
-                                Article
-                            </span>
+                            {post.postType && (
+                                <span className={`d-inline-block ${styles.articleLabel} ${post.postType === 'Guide' ? styles.articleLabel_Guide : post.postType === 'Review' ? styles.articleLabel_Review : post.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
+                                    <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
+                                    {post.postType} {/* Display the post type */}
+                                </span>
+                            )}
                         </picture>
                     </div>
                 </a>
@@ -365,10 +364,12 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                 height={182}
                                 sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                             />
-                            {/* <span className={`d-inline-block ${styles.articleLabel} subheading-xxsmall`}>
-                                <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
-                                Article
-                            </span> */}
+                            {post.postType && (
+                                <span className={`d-inline-block ${styles.articleLabel} ${post.postType === 'Guide' ? styles.articleLabel_Guide : post.postType === 'Review' ? styles.articleLabel_Review : post.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
+                                    <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
+                                    {post.postType} {/* Display the post type */}
+                                </span>
+                            )}
                         </picture>
                     </div>
                 </a>
@@ -623,10 +624,12 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                     <div className={styles.image}>
                         <picture className={`img-fluid ${styles.imageWrapper}`}>
                             <Image className="img-fluid" src={post.imageUrl || '/ui/not-found.png'} alt={post.title} title={post.title} width={354} height={180} loading="lazy" sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
-                            <span className={`d-inline-block ${styles.articleLabel} subheading-xxsmall`}>
-                                <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
-                                Article
-                            </span>
+                            {post.postType && (
+                                <span className={`d-inline-block ${styles.articleLabel} ${post.postType === 'Guide' ? styles.articleLabel_Guide : post.postType === 'Review' ? styles.articleLabel_Review : post.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
+                                    <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
+                                    {post.postType} {/* Display the post type */}
+                                </span>
+                            )}
                         </picture>
                     </div>
                 </a>

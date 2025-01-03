@@ -198,16 +198,38 @@
 .articleLabel {
     position: absolute;
     top: 315%;
-    left: 7.5px; /* Distance from the right of the container */
-    background-color: rgba(0, 0, 0, 0.6); /* Optional background for better readability */
-    color: #fff; /* Text color */
-    padding: 0px 6px; /* Optional padding for styling */
-    font-size: 12px; /* Adjust the size as needed */
-    border-radius: 4px; /* Optional rounded corners */
+    left: 7.5px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 0px 6px;
+    font-size: 12px;
+    border-radius: 4px;
     font-weight: 600 !important;
     font-size: 11px;
     z-index: 1;
     gap: 4px;
+    border: 0.5px solid rgba(128, 128, 128, 0.35);
+}
+
+.articleLabel_Guide {
+    /* background: rgba(40, 167, 69, 0.6); */
+    /* background-color: rgba(0, 128, 128, 0.6); */
+    /* background-color: rgba(128, 0, 128, 0.6); */
+    background-color: rgba(106, 90, 205, 0.6);
+    background-color: rgba(210, 180, 140, 0.6);
+}
+
+.articleLabel_Review {
+    /* background: rgba(255, 193, 7, 0.6); */
+    /* background-color: rgba(255, 221, 51, 0.6); */
+    background-color: rgba(128, 128, 0, 0.6);
+
+    /* color: rgb(30, 30, 30); */
+}
+
+.articleLabel_News {
+    /* background: rgba(220, 53, 69, 0.6); */
+    background-color: rgba(112, 128, 144, 0.6);
 }
 
 .imageWrapper {

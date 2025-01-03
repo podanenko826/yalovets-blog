@@ -21,6 +21,7 @@ export type PostItem = {
     imageUrl?: string;
     date?: string;
     modifyDate?: string;
+    postType?: string;
     readTime?: number;
     viewsCount?: number;
 };
@@ -31,6 +32,7 @@ export type PostPreviewItem = {
     imageUrl: string;
     date: string;
     modifyDate: string;
+    postType: string;
     readTime: number;
     authorData: AuthorItem;
 };

@@ -34,6 +34,7 @@ function transformPostData(data: any[]): PostItem[] {
         imageUrl: post.imageUrl?.S,
         date: post.date?.S,
         modifyDate: post.modifyDate?.S,
+        postType: post.postType?.S,
         readTime: parseInt(post.readTime?.N || '0'),
         viewsCount: parseInt(post.viewsCount?.N || '0'),
     }));

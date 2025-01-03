@@ -1,0 +1,113 @@
+The most reliable way to automate creating, updating, and deleting your cloud resources is to describe the target state of your infrastructure and use a tool to apply it to the current state of your infrastructure (see [Understanding Infrastructure as Code](https://cloudonaut.io/understanding-infrastructure-as-code/)). [AWS CloudFormation](https://aws.amazon.com/cloudformation/) and [Terraform](https://www.terraform.io/) are the most valuable tools to implement Infrastructure as Code on AWS.
+
+I have worked with CloudFormation and Terraform in various projects. You will learn about the differences between CloudFormation and Terraform in this article.
+
+> Do you prefer listening to a podcast episode over reading a blog post? Here you go!
+
+Before we start, both tools are following a very similar approach.
+
+1. You define a template (CloudFormation) or configuration (Terraform) describing the target state of your infrastructure.
+2. The tool (CloudFormation or Terraform) calculates the necessary steps to reach the defined target.
+3. The tool (CloudFormation or Terraform) executes the changes.
+
+But what are the differences between both tools?
+
+## Scope
+
+CloudFormation covers most parts of AWS and needs some time to support new service capabilities. Terraform covers most AWS resources as well and is often faster than CloudFormation when it comes to supporting new AWS features. On top of that, Terraform supports other cloud providers as well as 3rd party services. A shortened list of vendors supported by Terraform: [Google Cloud Platform](https://registry.terraform.io/providers/hashicorp/google/latest/docs), [Azure](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs), [GitHub](https://registry.terraform.io/providers/integrations/github/latest/docs), [GitLab](https://registry.terraform.io/providers/gitlabhq/gitlab/latest/docs), [Datadog](https://registry.terraform.io/providers/DataDog/datadog/latest/docs), [many more](https://developer.hashicorp.com/terraform/language/providers).
+
+![Scope](https://cloudonaut.io/images/2017/08/cf-tf-scope@730w2x.webp "Scope")
+
+Depending on your infrastructure, a big or at least small plus for Terraform.
+
+> Update: CloudFormation released [Resource Providers](https://aws.amazon.com/blogs/aws/cloudformation-update-cli-third-party-resource-support-registry/) in November 2019 to allow 3rd party integrations. So far, this new feature is not used very much and not very user-friendly.
+
+## License and Support
+
+CloudFormation is a service offered by AWS for free. The AWS support plans include support for CloudFormation.
+
+Terraform is an Open Source project. Hashicorp, the company behind Terraform, is offering support plans as well.
+
+![Licence and Support](https://cloudonaut.io/images/2017/08/cf-tf-licence@730w2x.webp "Licence and Support")
+
+When already subscribed to an AWS support plan, that might be a plus for CloudFormation. If you prefer Open Source, that is a plus for Terraform.
+
+## State Management
+
+Both tools need to keep track of all the resources under management. CloudFormation is managing its state with so-called stacks. By default, Terraform is storing its state on disk. Terraform is offering remote state as well, for example, based on [S3 and DynamoDB](https://developer.hashicorp.com/terraform/language/backend/s3) or [Terraform Cloud](https://developer.hashicorp.com/terraform/cloud-docs). It is advisable to use remote state when multiple users are working on the same infrastructure in parallel.
+
+![State](https://cloudonaut.io/images/2017/08/cf-tf-state@730w2x.webp "State")
+
+CloudFormation manages state within the managed service out-of-the-box, which is a small plus compared to Terraform, where you need to configure remote state yourself.
+
+## Modularization
+
+Infrastructure for a typical web application consists of a lot of resources: VPC, Subnets, Security Groups, Auto Scaling Group, Elastic Load Balancer, to name a few. Specifying all these resources in a single blueprint will cause you headaches when maintaining the system in the future. Using small modules that you stick together as needed is a common approach. Terraform comes with native support for [modules](https://developer.hashicorp.com/terraform/language/modules). You can find open-source modules in the [Terraform Registry](https://registry.terraform.io/). CloudFormation does not have first-class support for modules. It provides some features that you can use to modularize your templates, but it is up to you to do so. The biggest challenge is to pass values from one “module” to another. The export feature of CloudFormation provides a way to share outputs, but they are not allowed to change! CloudFormation lacks a central place where templates are shared.
+
+![Modularization](https://cloudonaut.io/images/2017/08/cf-tf-modularization@730w2x.webp "Modularization")
+
+Handling modules with Terraform is simple. CloudFormation is lacking a standard way to implement “modules”. I’d award Terraform with a plus for usability.
+
+## Verify Changes
+
+CloudFormation and Terraform do not only allow you to create your infrastructure from scratch automatically. You can use both tools to update your infrastructure later as well.
+
+CloudFormation offers [change sets](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-changesets.html) that you can use to verify changes. Terraform provides a command named `plan`, which gives you a very detailed overview of what will be modified if you apply your blueprint.
+
+![Verify Changes](https://cloudonaut.io/images/2017/08/cf-tf-verify-changes@730w2x.webp "Verify Changes")
+
+Terraform presents a detailed and readable summary of the changes that will be applied. That’s a big plus compared to the basic overview CloudFormation is providing with a change set.
+
+## Wait Conditions
+
+It is useful to be able to add wait conditions to your infrastructure automation from time to time. For example, if you want to wait until a service has been started on a virtual machine. Using [wait conditions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-waitcondition.html) allows you to wait for signals sent via HTTPS before dependent resources are created or updated when using CloudFormation.
+
+![Wait Conditions](https://cloudonaut.io/images/2017/08/cf-tf-wait-conditions@730w2x.webp "Wait Conditions")
+
+Being able to use wait conditions is a plus for CloudFormation. Terraform does not support wait conditions.
+
+## Rolling Update
+
+What happens when you change a Launch Configuration of an Auto Scaling Group within your blueprint? When using an [update policy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html), CloudFormation will perform a rolling update, including a rollback in case of a failure. Terraform does not support rolling updates for Auto Scaling Groups out-of-the-box. With Terraform’s [create\_before\_destroy](https://developer.hashicorp.com/terraform/language/meta-arguments/lifecycle#create_before_destroy), you can implement a way to deploy new AMIs without downtime in a blue/green fashion, but you will run into issues if you have a dynamic number (auto-scaling) of instances in the ASG.
+
+![Rolling Update](https://cloudonaut.io/images/2017/08/cf-tf-rolling-update@730w2x.webp "Rolling Update")
+
+Supporting rolling updates for Auto Scaling Groups is a plus for CloudFormation.
+
+## Rollback & Safeguards
+
+When CloudFormation fails to modify your infrastructure, it rolls back to the previous working state automatically (you can [disable rollbacks](https://aws.amazon.com/blogs/aws/new-for-aws-cloudformation-quickly-retry-stack-operations-from-the-point-of-failure/) if you wish to speed up development). Terraform does not support rollbacks out of the box. Either you decide to fix the problem and deploy it again, or you have to apply the previous configuration yourself.
+
+Both CloudFormation and Terraform support a “prevent from deletion” feature. This is handy to ensure that a resource can never be deleted by accident. CloudFormation goes one step further and can perform a backup of many data stores before it deletes or replaces them.
+
+## Handle Existing Resources
+
+CloudFormation can import existing resources for a [small number of resource types](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import-supported-resources.html). Terraform allows you to import existing resources. On top of that data, providers enable you to query attributes from existing resources.
+
+Handling existing resources is better supported in Terraform.
+
+## Secrets
+
+CloudFormation can import encrypted secrets from AWS Secrets Manager and AWS SSM. The secret values are never stored in CloudFormation. Terraform supports reading secrets from remote backends and environment files. The big risk is that Terraform always stores the unencrypted secret value in the state file!
+
+CloudFormation is better at handling secrets such as database passwords!
+
+## Loops and conditions
+
+CloudFormation comes with first-class support to enable or disable resources if a condition is met. There is no way to loop in CloudFormation over an array natively. Terraform comes with support for loops and also uses those loops to enable or disable a resource if a condition is met.
+
+Conditions are slightly easier in CloudFormation, while loops are only possible in Terraform.
+
+## Tagging of resources
+
+CloudFormation can tag many resources in a stack with a set of tags out-of-the-box. In Terraform, you can configure [default\_tags](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#default_tags-configuration-block) for the `aws` provider to achieve the same.
+
+## Linting
+
+You can find linters for both CloudFormation and Terraform. The [CloudFormation Linter](https://github.com/aws-cloudformation/cfn-python-lint) catches many errors and ensures certain best practices across your templates. [TFLint](https://github.com/terraform-linters/tflint) does the same for Terraform.
+
+While using both tools to spin up AWS infrastructure, I believe that the CloudFormation Linter detects more issues.
+
+## Summary
+
+CloudFormation and Terraform are both powerful and mature tools. Going through the differences listed above will help you to make a decision. I select the tool depending on the requirements for every project. If there is no clear winner, I tend to use CloudFormation.
