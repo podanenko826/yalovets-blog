@@ -217,6 +217,9 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             hideTimeoutRef.current = null;
         }
     };
+    // console.log(moment(post.modifyDate).isAfter(moment(post.date))); // Should be true if post.modifyDate is after post.date
+
+    console.log(moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(), 'days'));
 
     return style === 'massive' ? (
         <div className={styles.latest_post}>
@@ -263,12 +266,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                         </div>
                         <a role="button" onClick={handlePostOpen}>
                             <h1 className={`${styles.heading} heading`} id="col-heading-1">
-                                {post.title.length > 85 ? <>{post.title.slice(0, 85) + '... '}</> : post.title}{' '}
-                                {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && (
-                                    <>
-                                        <span className="badge">Updated</span>
-                                    </>
-                                )}
+                                {post.title.length > 85 ? <>{post.title.slice(0, 85) + '... '}</> : post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(Date.now(), 'days') >= -30 && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
                             </h1>
                         </a>
                         <p className={`${styles.description} pb-2`}>
@@ -311,7 +309,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             <div className={styles.postInfo}>
                 <a role="button" onClick={handlePostOpen}>
                     <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                        {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && <span className="badge text-wrap">Updated</span>}
+                        {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(), 'days') >= -30 && <span className="badge text-wrap">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>} {/* Add a badge if the post was updated within the last 30 days */}
                     </h2>
                 </a>
                 <p className={styles.description}>
@@ -638,7 +636,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 <div className="d-flex align-content-center m-0">
                     <a role="button" onClick={handlePostOpen}>
                         <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                            {post.title.length > 90 ? <>{post.title.slice(0, 90) + '... '}</> : post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && <span className="badge">Updated</span>}
+                            {post.title.length > 90 ? <>{post.title.slice(0, 90) + '... '}</> : post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(Date.now(), 'days') >= -30 && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
                         </h2>
                     </a>
                 </div>
