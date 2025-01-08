@@ -24,10 +24,8 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     const [authorData, setAuthorData] = useState<AuthorItem[]>([]);
 
     useEffect(() => {
-        if (!selectedPost) {
-            document.title = `Page ${currentPage || 1} / Yalovets Blog`;
-        }
-    }, [currentPage, selectedPost]);
+        document.title = `Page ${currentPage || 1} / Yalovets Blog`;
+    }, [document.URL]);
 
     useEffect(() => {
         const getData = async () => {

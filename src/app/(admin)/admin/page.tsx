@@ -1,8 +1,8 @@
 import React from 'react';
 
-import {getSortedPosts} from '@/lib/posts';
-import {getAuthors} from '@/lib/authors';
-import {AuthorItem, PostItem} from '@/types';
+import { getSortedPosts } from '@/lib/posts';
+import { getAuthors } from '@/lib/authors';
+import { AuthorItem, PostItem } from '@/types';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 
@@ -10,7 +10,7 @@ import postCardStyles from '@/components/PostCard.module.css';
 import moment from 'moment';
 import Link from 'next/link';
 
-const PostCard = dynamic(() => import('@/components/PostCard'), {ssr: false});
+const PostCard = dynamic(() => import('@/components/PostCard'), { ssr: false });
 
 const AdminPage = async () => {
     const postData: PostItem[] = await getSortedPosts();
@@ -19,34 +19,30 @@ const AdminPage = async () => {
 
     const managementItems = [
         {
-            id: 0,
+            id: 1,
             title: 'Manage posts',
-            description:
-                'Create, update and remove posts from your blog in one place.',
+            description: 'Create, update and remove posts from your blog in one place.',
             imageUrl: '/img/addpost.png',
             url: '/admin/posts',
         },
         {
-            id: 1,
+            id: 2,
+            title: 'Manage tags',
+            description: 'Create, update and remove tags you assign to each post on your blog in one place.',
+            imageUrl: '/img/addpost.png',
+            url: '/admin/tags',
+        },
+        {
+            id: 3,
             title: 'Manage authors',
-            description:
-                'Create, update and remove authors that can write posts on your blog in one place.',
+            description: 'Create, update and remove authors that can write posts on your blog in one place.',
             imageUrl: '/img/addpost.png',
             url: '/admin/authors',
         },
         {
-            id: 3,
-            title: 'Manage categories',
-            description:
-                'Create, update and remove categories you assign to each post on your blog in one place.',
-            imageUrl: '/img/addpost.png',
-            url: '/admin/categories',
-        },
-        {
             id: 4,
             title: 'Manage subscribers',
-            description:
-                'View whoever is subscribed to your blog and remove their subscribtions in one place.',
+            description: 'View whoever is subscribed to your blog and remove their subscribtions in one place.',
             imageUrl: '/img/addpost.png',
             url: '/admin/subscribers',
         },
@@ -75,98 +71,39 @@ const AdminPage = async () => {
                                     </div>
 
                                     <div className={postCardStyles.postInfo}>
-                                        <h2
-                                            className={postCardStyles.heading}
-                                            id="col-heading-1">
+                                        <h2 className={postCardStyles.heading} id="col-heading-1">
                                             Create new post
                                         </h2>
-                                        <p
-                                            className={
-                                                postCardStyles.description
-                                            }>
-                                            Start expressing yourself on latest
-                                            IT news and insights.
-                                        </p>
+                                        <p className={postCardStyles.description}>Start expressing yourself on latest IT news and insights.</p>
                                     </div>
                                 </Link>
 
-                                <div
-                                    className={`${postCardStyles.profile_info} d-flex mb-5`}>
+                                <div className={`${postCardStyles.profile_info} d-flex mb-5`}>
                                     <div className="align-content-center">
-                                        <Image
-                                            className={`${postCardStyles.pfp} ${postCardStyles.placeholder_pfp} img-fluid`}
-                                            src={`/ui/placeholder-pfp.png`}
-                                            alt="pfp"
-                                            width={42.5}
-                                            height={42.5}
-                                        />
+                                        <Image className={`${postCardStyles.pfp} ${postCardStyles.placeholder_pfp} img-fluid`} src={`/ui/placeholder-pfp.png`} alt="pfp" width={42.5} height={42.5} />
                                     </div>
 
                                     <div
                                         className={`
                                         ${postCardStyles.profile_info__details} gap-2
                                     `}>
-                                        <div
-                                            className={`${postCardStyles.placeholder_profile_info__text} m-0 m-0`}>
-                                            <p
-                                                className={
-                                                    postCardStyles.dot
-                                                }></p>
+                                        <div className={`${postCardStyles.placeholder_profile_info__text} m-0 m-0`}>
+                                            <p className={postCardStyles.dot}></p>
 
-                                            <p
-                                                className={
-                                                    postCardStyles.underscore
-                                                }></p>
-                                            <p
-                                                className={
-                                                    postCardStyles.underscore
-                                                }></p>
+                                            <p className={postCardStyles.underscore}></p>
+                                            <p className={postCardStyles.underscore}></p>
 
-                                            <p
-                                                className={
-                                                    postCardStyles.dot
-                                                }></p>
-                                            <p
-                                                className={
-                                                    postCardStyles.underscore
-                                                }></p>
-                                            <p
-                                                className={
-                                                    postCardStyles.dot
-                                                }></p>
-                                            <p
-                                                className={
-                                                    postCardStyles.underscore
-                                                }></p>
+                                            <p className={postCardStyles.dot}></p>
+                                            <p className={postCardStyles.underscore}></p>
+                                            <p className={postCardStyles.dot}></p>
+                                            <p className={postCardStyles.underscore}></p>
                                         </div>
-                                        <div
-                                            className={
-                                                postCardStyles.placeholder_profile_info__text
-                                            }>
-                                            <p
-                                                className={
-                                                    postCardStyles.underscore
-                                                }></p>
-                                            <p
-                                                className={
-                                                    postCardStyles.dot
-                                                }></p>{' '}
-                                            <p
-                                                className={
-                                                    postCardStyles.dot
-                                                }></p>
-                                            <p
-                                                className={
-                                                    postCardStyles.underscore
-                                                }></p>
-                                            <p
-                                                className={
-                                                    postCardStyles.underscore
-                                                }></p>
-                                            <p
-                                                className={
-                                                    postCardStyles.dot
-                                                }></p>
+                                        <div className={postCardStyles.placeholder_profile_info__text}>
+                                            <p className={postCardStyles.underscore}></p>
+                                            <p className={postCardStyles.dot}></p> <p className={postCardStyles.dot}></p>
+                                            <p className={postCardStyles.underscore}></p>
+                                            <p className={postCardStyles.underscore}></p>
+                                            <p className={postCardStyles.dot}></p>
                                         </div>
                                     </div>
                                 </div>
@@ -180,15 +117,10 @@ const AdminPage = async () => {
                     <div>
                         <div className="row post-list">
                             {managementItems.map(item => (
-                                <div
-                                    className="col-12 col-md-6 col-lg-3"
-                                    key={item.id}>
+                                <div className="col-12 col-md-6 col-lg-3" key={item.id}>
                                     <div className="col-12">
                                         <Link href={item.url}>
-                                            <div
-                                                className={
-                                                    postCardStyles.image
-                                                }>
+                                            <div className={postCardStyles.image}>
                                                 <Image
                                                     className={`img-fluid full-image ${postCardStyles.newPostImage}`}
                                                     src={'/ui/addpost.png'} // Using the image URL, including the placeholder logic if needed
@@ -201,23 +133,11 @@ const AdminPage = async () => {
                                                 />
                                             </div>
 
-                                            <div
-                                                className={
-                                                    postCardStyles.postInfo
-                                                }>
-                                                <h2
-                                                    className={
-                                                        postCardStyles.heading
-                                                    }
-                                                    id="col-heading-1">
+                                            <div className={postCardStyles.postInfo}>
+                                                <h2 className={postCardStyles.heading} id="col-heading-1">
                                                     {item.title}
                                                 </h2>
-                                                <p
-                                                    className={
-                                                        postCardStyles.description
-                                                    }>
-                                                    {item.description}
-                                                </p>
+                                                <p className={postCardStyles.description}>{item.description}</p>
                                             </div>
                                         </Link>
                                     </div>

@@ -12,7 +12,7 @@ import { FaFacebookF, FaLinkedin, FaRedditAlien } from 'react-icons/fa';
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { serialize } from 'next-mdx-remote/serialize';
 import Footer from './Footer';
-import { PostItem } from '@/types';
+import { PostItem, TagItem } from '@/types';
 import { getMDXContent, getSortedPosts, trackView } from '@/lib/posts';
 import { usePathname } from 'next/navigation';
 import { getAuthors } from '@/lib/authors';
@@ -20,6 +20,7 @@ import { MDXProvider } from '@mdx-js/react';
 import { mdSerialize } from '../../mdSerializer';
 import { useMDXComponents } from '../../mdx-components';
 import Head from 'next/head';
+import { getTagsData } from '@/lib/tags';
 
 const ArticleModal: React.FC = () => {
     const { selectedPost, setSelectedPost } = usePostContext();
@@ -87,7 +88,9 @@ const ArticleModal: React.FC = () => {
 
             if (selectedPost === null && postSlug) {
                 const post = posts.find(post => post.slug === postSlug) as PostItem;
-                const MdxContent = await getMDXContent(postSlug);
+                if (!post) return;
+
+                const MdxContent = await getMDXContent(post.slug);
                 const markdown = MdxContent.markdown;
                 const previousPath = window.location.href;
 
@@ -248,26 +251,38 @@ const ArticleModal: React.FC = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="container-fluid read-further mb-5 py-3">
-                                <div className="container d-flex row align-items-center justify-content-center p-0">
-                                    <div className="col-md-9 pt-2 pb-3">
-                                        <h2 className="heading" id="col-heading-2">
-                                            Further Reading
-                                        </h2>
+                            {popularPosts && (
+                                <div className="container-fluid read-further mb-5 py-3">
+                                    <div className="container d-flex row align-items-center justify-content-center p-0">
+                                        <div className="col-md-9 pt-2 pb-3">
+                                            <h2 className="heading" id="col-heading-2">
+                                                Further Reading
+                                            </h2>
+                                        </div>
+                                        {popularPosts
+                                            .filter(post => post.slug !== selectedPost.slug)
+                                            .sort(() => Math.random() - 0.5)
+                                            .slice(0, 3)
+                                            .map((post, index) => (
+                                                <Link href={`/${post.slug}`} className="col-md-9" key={index}>
+                                                    <div>
+                                                        <h5 id="col-heading-1">Article: {post.title}</h5>
+                                                    </div>
+                                                </Link>
+                                            ))}
+
+                                        {selectedPost.tags &&
+                                            selectedPost.tags[0] !== '' &&
+                                            selectedPost.tags?.slice(0, 3).map((tag, index) => (
+                                                <Link href={`/tag/${tag}`} className="col-md-9" key={index}>
+                                                    <div>
+                                                        <h5 id="col-heading-1">Tag: {tag}</h5>
+                                                    </div>
+                                                </Link>
+                                            ))}
                                     </div>
-                                    {popularPosts
-                                        .filter(post => post.slug !== selectedPost.slug)
-                                        .sort(() => Math.random() - 0.5)
-                                        .slice(0, 4)
-                                        .map((post, index) => (
-                                            <Link href={`/${post.slug}`} className="col-md-9" key={index}>
-                                                <div>
-                                                    <h5 id="col-heading-1">Article: {post.title}</h5>
-                                                </div>
-                                            </Link>
-                                        ))}
                                 </div>
-                            </div>
+                            )}
                         </section>
                         <Footer />
                     </>

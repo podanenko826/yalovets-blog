@@ -1,0 +1,88 @@
+{
+    "tags": [
+        {
+            "id": 1,
+            "tag": "ai",
+            "title": "Artificial Intelligence",
+            "description": "Latest innovations in Artificial Intelligence field.",
+            "postCount": 0
+        },
+        {
+            "id": 2,
+            "tag": "tech-news",
+            "title": "Tech News",
+            "description": "Latest news and insights about tech companies and products.",
+            "postCount": 0
+        },
+        {
+            "id": 3,
+            "tag": "dev-tools",
+            "title": "Developement Tools",
+            "description": "Learn about efficient developement tools that would change your perspective about coding.",
+            "postCount": 0
+        },
+        {
+            "id": 4,
+            "tag": "stocks",
+            "title": "Stocks and Marketshare",
+            "description": "Learn more about marketshare changes of world-wide tech companies.",
+            "postCount": 0
+        },
+        {
+            "id": 5,
+            "tag": "cloud",
+            "title": "Cloud Computing",
+            "description": "Learn about cloud computing and services offered by AWS or Azure.",
+            "postCount": 0
+        },
+        {
+            "id": 6,
+            "tag": "terraform",
+            "title": "HashiCorp Terraform",
+            "description": "Learn about terraform.",
+            "postCount": 0
+        },
+        {
+            "id": 7,
+            "tag": "cloudformation",
+            "title": "AWS Cloudformation",
+            "description": "Learn about AWS Cloudformation.",
+            "postCount": 0
+        },
+        {
+            "id": 8,
+            "tag": "aws",
+            "title": "Amazon Web Services",
+            "description": "Learn about cloud computing services offered by AWS.",
+            "postCount": 0
+        },
+        {
+            "id": 9,
+            "tag": "api",
+            "title": "API",
+            "description": "Learn mode about APIs.",
+            "postCount": 0
+        },
+        {
+            "id": 10,
+            "tag": "rest",
+            "title": "REST API",
+            "description": "Learn mode about REST APIs.",
+            "postCount": 0
+        },
+        {
+            "id": 11,
+            "tag": "s3",
+            "title": "Amazon S3",
+            "description": "Learn mode about S3 services provided by AWS.",
+            "postCount": 0
+        },
+        {
+            "id": 12,
+            "tag": "ec2",
+            "title": "Amazon EC2",
+            "description": "Learn mode about EC2 services provided by AWS.",
+            "postCount": 0
+        }
+    ]
+}

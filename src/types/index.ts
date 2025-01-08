@@ -22,6 +22,7 @@ export type PostItem = {
     date?: string;
     modifyDate?: string;
     postType?: string;
+    tags?: string[];
     readTime?: number;
     viewsCount?: number;
 };
@@ -37,12 +38,10 @@ export type PostPreviewItem = {
     authorData: AuthorItem;
 };
 
-export type CategoryItem = {
+export type TagItem = {
     id: number;
+    tag: string;
     title: string;
-    shortTitle: string;
-    color: string;
     description: string;
     postCount: number;
-    slug: string;
 };

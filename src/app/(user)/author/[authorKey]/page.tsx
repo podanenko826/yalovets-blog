@@ -34,10 +34,8 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     const [postsData, setPostsData] = useState<PostItem[]>([]);
 
     useEffect(() => {
-        if (!selectedPost) {
-            document.title = `${author?.fullName} / Yalovets Blog`;
-        }
-    }, [author, selectedPost]);
+        document.title = `${author?.fullName} / Yalovets Blog`;
+    }, [document.URL]);
 
     useEffect(() => {
         if (author) {

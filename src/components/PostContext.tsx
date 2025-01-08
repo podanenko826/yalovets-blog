@@ -1,5 +1,5 @@
 'use client';
-import { AuthorItem, PostItem } from '@/types';
+import { AuthorItem, PostItem, TagItem } from '@/types';
 import { usePathname } from 'next/navigation';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
@@ -19,6 +19,8 @@ interface PostContextType {
     setSelectedMarkdown: React.Dispatch<React.SetStateAction<string | null>>;
     previousPath: string | null;
     setPreviousPath: React.Dispatch<React.SetStateAction<string | null>>;
+    tags: TagItem[];
+    setTags: React.Dispatch<React.SetStateAction<TagItem[]>>;
 }
 
 // Create Context
@@ -33,6 +35,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [authors, setAuthors] = useState<AuthorItem[]>([]);
     const [selectedMarkdown, setSelectedMarkdown] = useState<string | null>(null);
     const [previousPath, setPreviousPath] = useState<string | null>(null);
+    const [tags, setTags] = useState<TagItem[]>([]);
 
     const pathname = usePathname();
 
@@ -86,6 +89,8 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 setSelectedMarkdown,
                 previousPath,
                 setPreviousPath,
+                tags,
+                setTags,
             }}>
             {children}
         </PostContext.Provider>

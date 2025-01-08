@@ -35,6 +35,7 @@ function transformPostData(data: any[]): PostItem[] {
         date: post.date?.S,
         modifyDate: post.modifyDate?.S,
         postType: post.postType?.S,
+        tags: post.tags?.L ? post.tags.L.map((tag: { S: any }) => tag.S) : [],
         readTime: parseInt(post.readTime?.N || '0'),
         viewsCount: parseInt(post.viewsCount?.N || '0'),
     }));
@@ -185,7 +186,8 @@ export const saveMDXContent = async (postTitle: string, markdown: string, slug?:
     const fileName = `${slug}.mdx`;
 
     try {
-        const response = await fetch('/api/mdx', {
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+        const response = await fetch(`${baseUrl}/api/mdx`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -205,7 +207,7 @@ export const saveMDXContent = async (postTitle: string, markdown: string, slug?:
 };
 
 export const createPost = async (postData: Partial<PostItem>, markdown: string) => {
-    const { email, description, date, modifyDate, imageUrl, readTime, viewsCount } = postData;
+    const { email, description, date, modifyDate, imageUrl, readTime, postType, tags, viewsCount } = postData;
     let { slug, title } = postData;
 
     if (!email || !title || !description || !date || !modifyDate) {
@@ -245,6 +247,8 @@ export const createPost = async (postData: Partial<PostItem>, markdown: string) 
         imageUrl: imageUrl ?? '', // Optional imageUrl, default to an empty string if not provided
         date: date,
         modifyDate: modifyDate, // Automatically generated modifyDate
+        postType: postType || 'Article',
+        tags: tags || [],
         readTime: readTime || 0, // Default readTime
         viewsCount: viewsCount || 0, // Default viewsCount
     };
@@ -287,7 +291,9 @@ export const deletePost = async (postData: { email: string; slug: string }) => {
         throw new Error('Error deleting post.');
     }
 
-    const response = await fetch(`/api/mdx?slug=${slug}`, {
+    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+    const response = await fetch(`${baseUrl}/api/mdx?slug=${slug}`, {
         method: 'DELETE',
     });
     if (!response.ok) {
@@ -355,7 +361,9 @@ const COOKIE_EXPIRATION_DAYS = 1; // Cookie expires in 1 day
 
 async function incrementViewCount(email: string, slug: string) {
     try {
-        const response = await fetch('/api/incrementViewCount', {
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+        const response = await fetch(`${baseUrl}/api/incrementViewCount`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, slug }),
