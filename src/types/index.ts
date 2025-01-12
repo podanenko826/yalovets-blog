@@ -7,9 +7,12 @@ export type AuthorItem = {
     bio: string;
     socialLinks: {
         emailAddress: string;
-        linkedInUrl: string;
+        githubUrl: string;
         instagramUrl: string;
+        linkedInUrl: string;
+        xUrl: string;
         facebookUrl: string;
+        redditUrl: string;
     };
 };
 

@@ -347,9 +347,12 @@ export const getPostsData = async (
                 bio: '',
                 socialLinks: {
                     emailAddress: '',
-                    linkedInUrl: '',
+                    githubUrl: '',
                     instagramUrl: '',
+                    linkedInUrl: '',
+                    xUrl: '',
                     facebookUrl: '',
+                    redditUrl: '',
                 },
             },
         };

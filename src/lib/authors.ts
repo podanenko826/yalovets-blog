@@ -1,6 +1,6 @@
-import {NextResponse} from 'next/server';
+import { NextResponse } from 'next/server';
 
-import type {AuthorItem} from '@/types';
+import type { AuthorItem } from '@/types';
 
 function transformAuthorData(data: any[]): AuthorItem[] {
     return data.map(author => ({
@@ -11,9 +11,12 @@ function transformAuthorData(data: any[]): AuthorItem[] {
         profileImageUrl: author.profileImageUrl?.S,
         socialLinks: {
             emailAddress: author.socialLinks?.M.emailAddress?.S,
-            facebookUrl: author.socialLinks?.M.facebookUrl?.S,
+            githubUrl: author.socialLinks?.M.githubUrl?.S,
             instagramUrl: author.socialLinks?.M.instagramUrl?.S,
             linkedInUrl: author.socialLinks?.M.linkedInUrl?.S,
+            xUrl: author.socialLinks?.M.xUrl?.S,
+            facebookUrl: author.socialLinks?.M.facebookUrl?.S,
+            redditUrl: author.socialLinks?.M.redditUrl?.S,
         },
         authorKey: author.authorKey?.S,
     }));
@@ -27,18 +30,18 @@ const emptyAuthorObject: AuthorItem = {
     profileImageUrl: '',
     socialLinks: {
         emailAddress: '',
-        facebookUrl: '',
+        githubUrl: '',
         instagramUrl: '',
         linkedInUrl: '',
+        xUrl: '',
+        facebookUrl: '',
+        redditUrl: '',
     },
     authorKey: '',
 };
 
 export const getAuthors = async () => {
-    const baseUrl =
-        typeof window === 'undefined'
-            ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
-            : '';
+    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
     try {
         const response = await fetch(`${baseUrl}/api/author`);
@@ -59,10 +62,7 @@ export const getAuthors = async () => {
 };
 
 export const getAuthorByEmail = async (email: string): Promise<AuthorItem> => {
-    const baseUrl =
-        typeof window === 'undefined'
-            ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
-            : '';
+    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
     try {
         const response = await fetch(`${baseUrl}/api/author?email=${email}`);
@@ -80,13 +80,8 @@ export const getAuthorByEmail = async (email: string): Promise<AuthorItem> => {
     }
 };
 
-export const getAuthorByKey = async (
-    authorKey: string
-): Promise<AuthorItem> => {
-    const baseUrl =
-        typeof window === 'undefined'
-            ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
-            : '';
+export const getAuthorByKey = async (authorKey: string): Promise<AuthorItem> => {
+    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
     try {
         const response = await fetch(`${baseUrl}/api/author`);
@@ -96,9 +91,7 @@ export const getAuthorByKey = async (
         if (data) {
             authors = data;
         }
-        const author = authors.find(
-            (author: any) => author.authorKey.S === authorKey
-        );
+        const author = authors.find((author: any) => author.authorKey.S === authorKey);
 
         const transformedAuthor = transformAuthorData([author]);
 
@@ -110,10 +103,7 @@ export const getAuthorByKey = async (
 };
 
 export const getAuthorEmails = async (): Promise<String[]> => {
-    const baseUrl =
-        typeof window === 'undefined'
-            ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
-            : '';
+    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
     try {
         const response = await fetch(`${baseUrl}/api/author-list`);
@@ -126,4 +116,70 @@ export const getAuthorEmails = async (): Promise<String[]> => {
     }
 };
 
-export const createUser = async (email: string) => {};
+export const createAuthor = async (author: AuthorItem) => {
+    const newAuthor = {
+        email: author.email,
+        slug: 'author-account',
+        authorKey: '',
+        bio: author.bio,
+        fullName: author.fullName,
+        profileImageUrl: author.profileImageUrl,
+        socialLinks: {
+            emailAddress: author.socialLinks.emailAddress,
+            githubUrl: author.socialLinks.githubUrl,
+            instagramUrl: author.socialLinks.instagramUrl,
+            linkedInUrl: author.socialLinks.linkedInUrl,
+            xUrl: author.socialLinks.xUrl,
+            facebookUrl: author.socialLinks.facebookUrl,
+            redditUrl: author.socialLinks.redditUrl,
+        },
+    };
+
+    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+    const response = await fetch(`${baseUrl}/api/author`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newAuthor),
+    });
+
+    const content = await response.json();
+
+    return content;
+};
+
+export const updateAuthor = async (author: AuthorItem) => {
+    const updatedAuthor = {
+        email: author.email,
+        slug: 'author-account',
+        authorKey: '',
+        bio: author.bio,
+        fullName: author.fullName,
+        profileImageUrl: author.profileImageUrl,
+        socialLinks: {
+            emailAddress: author.socialLinks.emailAddress,
+            githubUrl: author.socialLinks.githubUrl,
+            instagramUrl: author.socialLinks.instagramUrl,
+            linkedInUrl: author.socialLinks.linkedInUrl,
+            xUrl: author.socialLinks.xUrl,
+            facebookUrl: author.socialLinks.facebookUrl,
+            redditUrl: author.socialLinks.redditUrl,
+        },
+    };
+
+    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+    const response = await fetch(`${baseUrl}/api/author`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedAuthor),
+    });
+
+    const content = await response.json();
+
+    return content;
+};

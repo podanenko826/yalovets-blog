@@ -83,6 +83,13 @@
             "title": "Amazon EC2",
             "description": "Learn mode about EC2 services provided by AWS.",
             "postCount": 0
+        },
+        {
+            "id": 13,
+            "tag": "kubernetes",
+            "title": "Kubernetes",
+            "description": "bla bla bla",
+            "postCount": 0
         }
     ]
 }
