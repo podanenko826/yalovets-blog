@@ -17,7 +17,7 @@ import { getMDXContent, getSortedPosts, trackView } from '@/lib/posts';
 import { usePathname } from 'next/navigation';
 import { getAuthors } from '@/lib/authors';
 import { MDXProvider } from '@mdx-js/react';
-import { mdSerialize } from '../../mdSerializer';
+import { mdSerialize } from '../services/mdSerializer';
 import { useMDXComponents } from '../../mdx-components';
 import Head from 'next/head';
 import { getTagsData } from '@/lib/tags';
