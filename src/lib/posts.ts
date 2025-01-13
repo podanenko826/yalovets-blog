@@ -183,7 +183,7 @@ export const saveMDXContent = async (postTitle: string, markdown: string, slug?:
             .toLowerCase()}`;
     }
 
-    const fileName = `${slug}.mdx`;
+    const fileName = `${slug}`;
 
     try {
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';

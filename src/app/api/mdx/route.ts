@@ -1,25 +1,25 @@
 // app/api/save-mdx/route.js
 
 import fs from 'fs';
-import {NextResponse} from 'next/server';
+import { NextResponse } from 'next/server';
 import path from 'path';
 
 export async function GET(request: Request) {
-    const {searchParams} = new URL(request.url);
+    const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');
     if (!slug) {
-        return new Response('Missing slug parameter', {status: 400});
+        return new Response('Missing slug parameter', { status: 400 });
     }
 
-    const filePath = path.join(process.cwd(), 'src/articles', `${slug}.mdx`);
+    const filePath = path.join(process.cwd(), 'src/articles', slug, `${slug}.mdx`);
 
     if (!fs.existsSync(filePath)) {
-        return new Response('File not found', {status: 404});
+        return new Response('File not found', { status: 404 });
     }
 
     const content = fs.readFileSync(filePath, 'utf8');
 
-    return new Response(JSON.stringify({content}), {
+    return new Response(JSON.stringify({ content }), {
         status: 200,
         headers: {
             'Content-Type': 'text/markdown',
@@ -28,7 +28,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-    const {fileName, content} = await request.json();
+    const { fileName, content } = await request.json();
 
     // Define the directory to save the file
     // const dirPath = path.join(process.cwd(), 'saved_files');
@@ -39,43 +39,37 @@ export async function POST(request: Request) {
         fs.mkdirSync(dirPath);
     }
 
-    const filePath = path.join(dirPath, fileName);
+    const filePath = path.join(dirPath, fileName, `${fileName}.mdx`);
 
     // Write the file to the filesystem
     try {
         fs.writeFileSync(filePath, content);
-        return NextResponse.json(filePath, {status: 200});
+        return NextResponse.json(filePath, { status: 200 });
     } catch (err) {
-        return NextResponse.json(
-            {message: 'Failed to save file'},
-            {status: 500}
-        );
+        return NextResponse.json({ message: 'Failed to save file' }, { status: 500 });
     }
 }
 
 export async function DELETE(request: Request) {
-    const {searchParams} = new URL(request.url);
+    const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');
 
     if (!slug) {
-        return new Response('Missing slug parameter', {status: 400});
+        return new Response('Missing slug parameter', { status: 400 });
     }
 
     const dirPath = 'src/articles';
-    const filePath = path.join(process.cwd(), dirPath, `${slug}.mdx`);
+    const filePath = path.join(process.cwd(), dirPath, slug, `${slug}.mdx`);
 
     if (!fs.existsSync(filePath)) {
-        return NextResponse.json(true, {status: 200});
+        return NextResponse.json(true, { status: 200 });
     }
 
     try {
         await fs.promises.rm(filePath);
-        return NextResponse.json(true, {status: 200});
+        return NextResponse.json(true, { status: 200 });
     } catch (err) {
         console.error('File deletion error:', err);
-        return NextResponse.json(
-            {message: 'Failed to delete file'},
-            {status: 500}
-        );
+        return NextResponse.json({ message: 'Failed to delete file' }, { status: 500 });
     }
 }
