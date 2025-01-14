@@ -33,6 +33,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, tagsDa
     const [selectedAuthor, setSelectedAuthor] = useState(postData ? authorData.find(author => author.email === postData.email) : authorData[0]);
     const [postTitle, setPostTitle] = useState(postData ? postData.title : '');
     const [description, setDescription] = useState(postData ? postData.description : '');
+    const [postType, setPostType] = useState<string>('Article');
     const [readTime, setReadTime] = useState<number>(0);
     const [tags, setTags] = useState<string[]>([]);
 
@@ -47,6 +48,10 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, tagsDa
                 setDescription(postData.description);
                 setImageUrl(postData.imageUrl || '/img/AWS-beginning.png');
                 setSelectedAuthor(authorData.find(author => author.email === postData.email) || authorData[0]);
+
+                if (postData.postType) {
+                    setPostType(postData.postType);
+                }
 
                 if (postData.readTime && postData.readTime > 0) {
                     setReadTime(postData.readTime);
@@ -75,6 +80,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, tagsDa
         modifyDate: moment(Date.now()).format('DD-MM-YYYY'),
         imageUrl: imageUrl,
         tags: tags || [],
+        postType: postType,
         readTime: readTime,
         viewsCount: postData?.viewsCount || 0,
     };
@@ -133,17 +139,23 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, tagsDa
 
     const handleSave = async () => {
         if (slug) {
-            const redirectSlug = await createPost(Post, currentMarkdown);
-            window.open(`/${redirectSlug}`, '_blank', 'noopener,noreferrer');
-            setTimeout(() => {
-                return router.push(`/admin/posts`);
-            }, 12000);
+            const { markdown, slug } = await createPost(Post, currentMarkdown);
+
+            if (markdown && slug) {
+                window.open(`/${slug}`, '_blank', 'noopener,noreferrer');
+                setTimeout(() => {
+                    return router.push(`/admin/posts`);
+                }, 12000);
+            }
         } else {
-            const redirectSlug = await createPost(Post, currentMarkdown);
-            window.open(`/${redirectSlug}`, '_blank', 'noopener,noreferrer');
-            setTimeout(() => {
-                return router.push(`/admin/posts`);
-            }, 12000);
+            const { markdown, slug } = await createPost(Post, currentMarkdown);
+
+            if (markdown && slug) {
+                window.open(`/${slug}`, '_blank', 'noopener,noreferrer');
+                setTimeout(() => {
+                    return router.push(`/admin/posts`);
+                }, 12000);
+            }
         }
     };
 

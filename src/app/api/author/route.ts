@@ -105,12 +105,12 @@ export async function POST(request: Request) {
                 socialLinks: formattedSocialLinks,
             };
 
-            const command = new PutCommand({
-                TableName: TABLE_NAME,
-                Item: newAuthor,
-            });
-
             try {
+                const command = new PutCommand({
+                    TableName: TABLE_NAME,
+                    Item: newAuthor,
+                });
+
                 const response = await docClient.send(command);
                 console.log('Author successfully created:', newAuthor);
                 return new Response(JSON.stringify(response), { status: 200 });

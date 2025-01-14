@@ -31,15 +31,14 @@ export async function POST(request: Request) {
     const { fileName, content } = await request.json();
 
     // Define the directory to save the file
-    // const dirPath = path.join(process.cwd(), 'saved_files');
-    const dirPath = 'src/articles';
+    const dirPath = `src/articles/${fileName}`;
 
     // Ensure the directory exists
     if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath);
     }
-
-    const filePath = path.join(dirPath, fileName, `${fileName}.mdx`);
+    
+    const filePath = path.join(dirPath, `${fileName}.mdx`);
 
     // Write the file to the filesystem
     try {
@@ -54,22 +53,23 @@ export async function DELETE(request: Request) {
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');
 
-    if (!slug) {
-        return new Response('Missing slug parameter', { status: 400 });
+    if (!slug || slug === '') {
+        console.error('Missing slug paramether');
+        return NextResponse.json(false, { status: 400 });
     }
 
     const dirPath = 'src/articles';
-    const filePath = path.join(process.cwd(), dirPath, slug, `${slug}.mdx`);
+    const filePath = path.join(process.cwd(), dirPath, slug);
 
     if (!fs.existsSync(filePath)) {
-        return NextResponse.json(true, { status: 200 });
+        return NextResponse.json(false, { status: 404 });
     }
 
     try {
-        await fs.promises.rm(filePath);
+        await fs.promises.rm(filePath, { recursive: true, force: true });
         return NextResponse.json(true, { status: 200 });
     } catch (err) {
         console.error('File deletion error:', err);
-        return NextResponse.json({ message: 'Failed to delete file' }, { status: 500 });
+        return NextResponse.json(false, { status: 500 });
     }
 }

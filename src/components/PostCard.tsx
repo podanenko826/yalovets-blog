@@ -125,7 +125,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             };
         };
 
-        if (popoverTrigger && !currentPopover && Popover) {
+        if (popoverTrigger && !currentPopover && Popover && authorData) {
             const newPopover = new Popover(popoverTrigger, {
                 html: true,
                 placement: 'top',
@@ -241,25 +241,27 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                     )}
                     <div ref={cardRef} className="col-lg-5 offset-lg-1 py-3" id="latest-post">
                         <div className={`${styles.profile_info} d-flex pb-2 pb-sm-2`}>
-                            <div className={styles.profile_info__details}>
-                                <span className="d-inline-block">
-                                    <div className={`${styles.profile_info} d-flex`}>
-                                        <div className="align-content-center">
-                                            <Link href={`/author/${authorData.authorKey}`} className="m-0 p-0">
-                                                <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
-                                            </Link>
+                            {authorData && (
+                                <div className={styles.profile_info__details}>
+                                    <span className="d-inline-block">
+                                        <div className={`${styles.profile_info} d-flex`}>
+                                            <div className="align-content-center">
+                                                <Link href={`/author/${authorData.authorKey}`} className="m-0 p-0">
+                                                    <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                                </Link>
+                                            </div>
+                                            <div className={styles.profile_info__details}>
+                                                <Link href={`/author/${authorData.authorKey}`} className={`${styles.profile_info__text} m-0`}>
+                                                    {authorData.fullName}
+                                                </Link>
+                                                <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
+                                                    {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div className={styles.profile_info__details}>
-                                            <Link href={`/author/${authorData.authorKey}`} className={`${styles.profile_info__text} m-0`}>
-                                                {authorData.fullName}
-                                            </Link>
-                                            <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                                {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
-                                            </p>
-                                        </div>
-                                    </div>
-                                </span>
-                            </div>
+                                    </span>
+                                </div>
+                            )}
                         </div>
                         <a role="button" onClick={handlePostOpen}>
                             <h1 className={`${styles.heading} heading`} id="col-heading-1">
@@ -277,7 +279,9 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                     </a>
                                 </>
                             ) : (
-                                post.description
+                                <a role="button" onClick={handlePostOpen}>
+                                    {post.description}
+                                </a>
                             )}
                         </p>
                         <a role="button" onClick={handlePostOpen}>
@@ -322,30 +326,34 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                             </a>
                         </>
                     ) : (
-                        post.description
+                        <a role="button" onClick={handlePostOpen}>
+                            {post.description}
+                        </a>
                     )}
                 </p>
             </div>
             <div className={`${styles.profile_info} d-flex`}>
-                <div className={styles.profile_info__details}>
-                    <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
-                        <div className={`${styles.profile_info} d-flex`}>
-                            <div className="align-content-center">
-                                <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
-                                    <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
-                                </Link>
+                {authorData && (
+                    <div className={styles.profile_info__details}>
+                        <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
+                            <div className={`${styles.profile_info} d-flex`}>
+                                <div className="align-content-center">
+                                    <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
+                                        <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                    </Link>
+                                </div>
+                                <div className={styles.profile_info__details}>
+                                    <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
+                                        {authorData.fullName}
+                                    </Link>
+                                    <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
+                                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
+                                    </p>
+                                </div>
                             </div>
-                            <div className={styles.profile_info__details}>
-                                <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
-                                    {authorData.fullName}
-                                </Link>
-                                <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                    {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
-                                </p>
-                            </div>
-                        </div>
-                    </span>
-                </div>
+                        </span>
+                    </div>
+                )}
             </div>
         </div>
     ) : style === 'expanded' ? (
@@ -384,25 +392,27 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 </a>
             </div>
             <div className={`${styles.profile_info} d-flex`}>
-                <div className={styles.profile_info__details}>
-                    <span className="d-inline-block" typeof="button">
-                        <div className={`${styles.profile_info} d-flex`}>
-                            <div className="align-content-center">
-                                <Link href={`/author/${authorData.authorKey}`} scroll={true} onClick={() => setExpandedPost(null)} className={`m-0 p-0`}>
-                                    <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
-                                </Link>
+                {authorData && (
+                    <div className={styles.profile_info__details}>
+                        <span className="d-inline-block" typeof="button">
+                            <div className={`${styles.profile_info} d-flex`}>
+                                <div className="align-content-center">
+                                    <Link href={`/author/${authorData.authorKey}`} scroll={true} onClick={() => setExpandedPost(null)} className={`m-0 p-0`}>
+                                        <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                    </Link>
+                                </div>
+                                <div className={styles.profile_info__details}>
+                                    <Link href={`/author/${authorData.authorKey}`} scroll={true} onClick={() => setExpandedPost(null)} className={`${styles.profile_info__text} m-0`}>
+                                        {authorData.fullName}
+                                    </Link>
+                                    <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
+                                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
+                                    </p>
+                                </div>
                             </div>
-                            <div className={styles.profile_info__details}>
-                                <Link href={`/author/${authorData.authorKey}`} scroll={true} onClick={() => setExpandedPost(null)} className={`${styles.profile_info__text} m-0`}>
-                                    {authorData.fullName}
-                                </Link>
-                                <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                    {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
-                                </p>
-                            </div>
-                        </div>
-                    </span>
-                </div>
+                        </span>
+                    </div>
+                )}
             </div>
         </div>
     ) : style === 'admin' ? (
@@ -499,23 +509,25 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 </div>
             </div>
             <div className={`${styles.profile_info} d-flex`}>
-                <div className={styles.profile_info__details}>
-                    <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
-                        <div className={`${styles.profile_info} d-flex`}>
-                            <div className="align-content-center">
-                                <LazyImage onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                {authorData && (
+                    <div className={styles.profile_info__details}>
+                        <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
+                            <div className={`${styles.profile_info} d-flex`}>
+                                <div className="align-content-center">
+                                    <LazyImage onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                </div>
+                                <div className={styles.profile_info__details}>
+                                    <Link href={''} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
+                                        {authorData.fullName}
+                                    </Link>
+                                    <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
+                                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
+                                    </p>
+                                </div>
                             </div>
-                            <div className={styles.profile_info__details}>
-                                <Link href={''} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
-                                    {authorData.fullName}
-                                </Link>
-                                <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                    {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
-                                </p>
-                            </div>
-                        </div>
-                    </span>
-                </div>
+                        </span>
+                    </div>
+                )}
             </div>
             <div className="d-flex justify-content-end mt-3 gap-3 mb-5">
                 <Link href={`/admin/posts/${post.slug}`}>
@@ -654,30 +666,34 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                             </a>
                         </>
                     ) : (
-                        post.description
+                        <a role="button" onClick={handlePostOpen}>
+                            {post.description}
+                        </a>
                     )}
                 </p>
             </div>
             <div className={`${styles.profile_info} d-flex`}>
-                <div className={styles.profile_info__details}>
-                    <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
-                        <div className={`${styles.profile_info} d-flex`}>
-                            <div className="align-content-center">
-                                <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
-                                    <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
-                                </Link>
+                {authorData && (
+                    <div className={styles.profile_info__details}>
+                        <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
+                            <div className={`${styles.profile_info} d-flex`}>
+                                <div className="align-content-center">
+                                    <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
+                                        <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                    </Link>
+                                </div>
+                                <div className={styles.profile_info__details}>
+                                    <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
+                                        {authorData.fullName}
+                                    </Link>
+                                    <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
+                                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
+                                    </p>
+                                </div>
                             </div>
-                            <div className={styles.profile_info__details}>
-                                <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
-                                    {authorData.fullName}
-                                </Link>
-                                <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                    {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
-                                </p>
-                            </div>
-                        </div>
-                    </span>
-                </div>
+                        </span>
+                    </div>
+                )}
             </div>
         </div>
     );

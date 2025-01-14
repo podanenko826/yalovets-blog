@@ -69,6 +69,8 @@ export const getSortedPosts = async () => {
             return dateTwo.diff(dateOne); // Descending order
         });
 
+        console.log(sortedPostsData);
+
         return sortedPostsData;
     } catch (err) {
         console.error('Failed to fetch posts from the database: ', err);
@@ -107,33 +109,6 @@ export const getPost = async (slug: string): Promise<PostItem> => {
     const transformedPostData = transformPostData(post);
 
     return transformedPostData[0];
-};
-
-export const getLatestPost = async (): Promise<PostItem> => {
-    const sortedPosts = await getSortedPosts();
-    const latestArticle: PostItem = sortedPosts[0];
-
-    return latestArticle;
-};
-
-export const getRecentPosts = async (): Promise<PostItem[]> => {
-    const sortedPosts = await getSortedPosts();
-
-    const recentPosts: PostItem[] = sortedPosts.slice(0, 9);
-
-    return recentPosts;
-};
-
-export const getPopularPosts = async (): Promise<PostItem[]> => {
-    const sortedPosts = await getSortedPosts();
-
-    // Sort posts by viewsCount in descending order
-    const sortedByViews = sortedPosts
-        .filter(post => post.viewsCount !== undefined) // Filter out posts with undefined viewsCount
-        .sort((a, b) => (b.viewsCount ?? 0) - (a.viewsCount ?? 0));
-
-    const mostPopularPosts = sortedByViews.slice(0, 3); // Returs an array of 3 most popular posts by views
-    return mostPopularPosts;
 };
 
 export const formatPostDate = (date: Date) => {
@@ -175,7 +150,7 @@ export const getMDXContent = async (slug: string): Promise<{ slug: string; markd
     }
 };
 
-export const saveMDXContent = async (postTitle: string, markdown: string, slug?: string) => {
+export const saveMDXContent = async (postTitle: string, markdown: string, slug?: string): Promise<{ content: string; slug: string }> => {
     if (!slug) {
         slug = `${postTitle
             .replace(/[^a-zA-Z0-9 ]/g, '')
@@ -199,107 +174,140 @@ export const saveMDXContent = async (postTitle: string, markdown: string, slug?:
             throw new Error('Failed to save file');
         }
 
-        const data = await response.text();
-        return slug;
+        const content = await response.text();
+        return {content, slug};
     } catch (error) {
         console.error('Error:', error);
     }
+
+    return {content: '', slug: ''};
 };
 
-export const createPost = async (postData: Partial<PostItem>, markdown: string) => {
-    const { email, description, date, modifyDate, imageUrl, readTime, postType, tags, viewsCount } = postData;
-    let { slug, title } = postData;
+export const deleteMDXContent = async (slug: string): Promise<{ success: boolean; slug: string }> => {
+    try {
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+        const response = await fetch(`${baseUrl}/api/mdx?slug=${slug}`, {
+            method: 'DELETE',
+        });
 
-    if (!email || !title || !description || !date || !modifyDate) {
-        throw new Error('Missing required post data: email, slug, title, description, date or modifyDate.');
+        if (!response.ok) {
+            throw new Error('Failed to delete file');
+        }
+
+        const success = await response.json();
+        return { success, slug };
+    } catch (error) {
+        console.error('Error:', error);
+    }
+
+    return {success: false, slug: ''};
+};
+
+export const createPost = async (postData: Partial<PostItem>, markdown: string): Promise<{ slug: string; markdown: string }> => {
+    const { email, title, description, date, imageUrl, readTime, postType, tags } = postData;
+    let { slug } = postData;
+    
+    if (!email || !title || !description || !date || !imageUrl || !readTime || !postType) {
+        console.error('Recieved invalid or incomplete post data');
+        return {slug: '', markdown: ''};
     }
 
     if (!slug) {
-        if (title) {
-            slug = `${title
-                .replace(/[^a-zA-Z0-9 ]/g, '')
-                .replaceAll(' ', '-')
-                .toLowerCase()}`;
-        } else {
-            throw new Error('Missing required slug identifier.');
-        }
+        slug = `${title
+            .replace(/[^a-zA-Z0-9 ]/g, '')
+            .replaceAll(' ', '-')
+            .toLowerCase()}`;
     }
-
-    // Ensure the fileName does not exceed 255 characters, including the '.mdx' extension
-    const MAX_FILENAME_LENGTH = 150;
-    const fileExtension = '.mdx';
-    const ellipsis = '...';
-
-    // Truncate the slug if the full fileName would exceed the limit
-    if (slug.length + fileExtension.length > MAX_FILENAME_LENGTH) {
-        slug = slug.slice(0, MAX_FILENAME_LENGTH - fileExtension.length - ellipsis.length);
-
-        title = title.slice(0, MAX_FILENAME_LENGTH - fileExtension.length - ellipsis.length) + ellipsis;
-    }
-
-    const savedPostSlug = saveMDXContent(title, markdown, slug);
-
-    const newPost: PostItem = {
-        email,
-        slug,
-        title,
-        description,
-        imageUrl: imageUrl ?? '', // Optional imageUrl, default to an empty string if not provided
-        date: date,
-        modifyDate: modifyDate, // Automatically generated modifyDate
-        postType: postType || 'Article',
-        tags: tags || [],
-        readTime: readTime || 0, // Default readTime
-        viewsCount: viewsCount || 0, // Default viewsCount
-    };
-
-    const command = new PutCommand({
-        TableName: DYNAMODB_TABLE_NAME,
-        Item: newPost,
-    });
 
     try {
-        const response = await docClient.send(command);
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+        const savedMarkdown = await saveMDXContent(title, markdown, slug);
+
+        if (savedMarkdown.content === '' || savedMarkdown.slug === '') {
+            console.error('Failed to save markdown content to file system. Post creation aborted.')
+            return { slug: '', markdown: '' };
+        }
+
+        const newPost: PostItem = {
+            email,
+            slug: slug,
+            title,
+            description,
+            imageUrl,
+            date: date,
+            modifyDate: date,
+            postType: postType,
+            tags: tags || [],
+            readTime: readTime,
+            viewsCount: 0,
+        };
+        
+
+        const response = await fetch(`${baseUrl}/api/post`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newPost),
+        });
+
+        if (!response.ok) {
+            console.error('Failed to upload post metadata to DB. Post creation aborted.');
+            await deleteMDXContent(slug);
+            return { slug: '', markdown: '' };  // Return a failed result
+        }
+
         console.log('Post successfully uploaded:', newPost);
-        return savedPostSlug;
+        return {slug, markdown: savedMarkdown.slug};
     } catch (error) {
         console.error('Failed to upload post:', error);
     }
+
+    return {slug: '', markdown: ''};
 };
 
-export const deletePost = async (postData: { email: string; slug: string }) => {
-    const { email, slug } = postData;
-    // Check that the required slug is provided
-    if (!slug) {
-        throw new Error('Missing required identifier: slug.');
-    }
-
-    // Create the delete command with the specified TableName and Key (slug in this case)
-    const command = new DeleteCommand({
-        TableName: DYNAMODB_TABLE_NAME,
-        Key: {
-            email,
-            slug,
-        },
-    });
-
+export const deletePost = async (postData: { email: string; slug: string }): Promise<string> => {
     try {
-        const response = await docClient.send(command);
+        const { email, slug } = postData;
+
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+        // Check that the required slug is provided
+        if (!email) {
+            console.error('Missing required identifier: email.');
+            return '';
+        }
+        if (!slug) {
+            console.error('Missing required identifier: slug.');
+            return '';
+        }
+
+        const response = await fetch(`${baseUrl}/api/post`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, slug }),
+        })
+
+        if (!response.ok) {
+            console.error('Failed to delete post metadata to DB. Post deleting aborted.');
+            return ''; // Return empty slug
+        }
         console.log('Post successfully deleted:', slug);
+        
+        // Deletes the Article folder in file system after successful metadata deletion
+        const deletedPost = await deleteMDXContent(slug);
+
+        if (!deletedPost.success || !deletedPost.slug) {
+            return '';
+        }
+
+        return deletedPost.slug;
     } catch (error) {
         console.error('Failed to delete post:', error);
-        throw new Error('Error deleting post.');
+        return '';
     }
-
-    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
-
-    const response = await fetch(`${baseUrl}/api/mdx?slug=${slug}`, {
-        method: 'DELETE',
-    });
-    if (!response.ok) {
-        throw new Error('Failed to delete file');
-    }
-    return slug;
 };
 
 export const getPostsData = async (
