@@ -21,15 +21,14 @@ const PostCard = dynamic(() => import('@/components/PostCard'), { ssr: false });
 interface EditorProps {
     markdown: string;
     slug?: string;
-    postsData?: PostItem[];
+    postData?: PostItem;
     authorData: AuthorItem[];
     tagsData: TagItem[];
     editorRef?: React.MutableRefObject<MDXEditorMethods | null>;
 }
 
-const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, tagsData, editorRef }) => {
+const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsData, editorRef }) => {
     const [currentMarkdown, setCurrentMarkdown] = useState(markdown); // Track current markdown
-    const postData = postsData?.find(post => post.slug === slug) || undefined;
     const [selectedAuthor, setSelectedAuthor] = useState(postData ? authorData.find(author => author.email === postData.email) : authorData[0]);
     const [postTitle, setPostTitle] = useState(postData ? postData.title : '');
     const [description, setDescription] = useState(postData ? postData.description : '');
@@ -39,10 +38,11 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, tagsDa
 
     const [imageUrl, setImageUrl] = useState(postData ? postData.imageUrl : '/img/AWS-beginning.png');
 
+    const format = 'YYYY-MM-DD';
+
     // Determine postData and set states conditionally inside useEffect
     useEffect(() => {
-        if (postsData && slug) {
-            const postData = postsData.find(post => post.slug === slug);
+        if (postData && slug) {
             if (postData) {
                 setPostTitle(postData.title);
                 setDescription(postData.description);
@@ -62,13 +62,10 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, tagsDa
                 }
             }
         }
-    }, [slug, postsData, authorData]);
+    }, [slug, postData, authorData]);
 
     if (postData?.date === 'Invalid date') {
-        postData.date = moment(Date.now()).format('DD-MM-YYYY');
-    }
-    if (postData?.modifyDate) {
-        postData.modifyDate = moment(Date.now()).format('DD-MM-YYYY');
+        postData.date = moment.utc().toISOString();
     }
 
     const Post: PostItem = {
@@ -76,21 +73,22 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, tagsDa
         slug: slug ? slug : '',
         title: postTitle,
         description: description,
-        date: postData?.date || moment(Date.now()).format('DD-MM-YYYY'),
-        modifyDate: moment(Date.now()).format('DD-MM-YYYY'),
+        date: postData?.date || moment.utc().toISOString(),
+        modifyDate: moment.utc().toISOString(),
         imageUrl: imageUrl,
         tags: tags || [],
         postType: postType,
         readTime: readTime,
         viewsCount: postData?.viewsCount || 0,
+        postGroup: 'ALL_POSTS',
     };
 
     const PostPreview: PostPreviewItem = {
         title: postTitle,
         description: description,
         imageUrl: imageUrl as string,
-        date: postData?.date || moment(Date.now()).format('DD-MM-YYYY'),
-        modifyDate: moment(formatPostDate(moment(postData?.modifyDate).toDate()), 'DD-MM-YYYY').format('DD-MM-YYYY') || moment(Date.now()).format('DD-MM-YYYY'),
+        date: postData?.date || moment(Date.now()).format(format),
+        modifyDate: moment(formatPostDate(moment(postData?.modifyDate).toDate()), format).format(format) || moment(Date.now()).format(format),
         postType: postData?.postType || 'Article',
         readTime: readTime,
         authorData: (selectedAuthor as AuthorItem) || authorData[0],
@@ -181,20 +179,20 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postsData, authorData, tagsDa
                         <p className="m-0">•</p>
 
                         <div className="d-flex justify-content-center gap-2">
-                            <p className="m-0">{postData ? moment(postData.date, 'DD-MM-YYYY').format('D MMM YYYY') : moment(Date.now()).format('DD MMM YYYY')}</p>
+                            <p className="m-0">{postData ? moment(postData.date, format).format('D MMM YYYY') : moment(Date.now()).format('DD MMM YYYY')}</p>
 
-                            {moment(postData?.modifyDate, 'DD-MM-YYYY').isAfter(moment(postData?.date, 'DD-MM-YYYY')) && (
+                            {moment(postData?.modifyDate, format).isAfter(moment(postData?.date, format)) && (
                                 <>
                                     <p className="d-none d-md-block m-0">•</p>
-                                    <span className="d-none d-md-block px-2 m-0 rounded-pill text-bg-secondary">{'Updated ' + moment(postData?.modifyDate, 'DD-MM-YYYY').fromNow()}</span>
+                                    <span className="d-none d-md-block px-2 m-0 rounded-pill text-bg-secondary">{'Updated ' + moment(postData?.modifyDate, format).fromNow()}</span>
                                 </>
                             )}
                         </div>
                     </div>
-                    {moment(postData?.modifyDate, 'DD-MM-YYYY').isAfter(moment(postData?.date, 'DD-MM-YYYY')) && (
+                    {moment(postData?.modifyDate, format).isAfter(moment(postData?.date, format)) && (
                         <>
                             <span className="d-md-none px-2 m-0 rounded-pill text-bg-secondary" id="mobileUpdatedBadge">
-                                {'Updated ' + moment(postData?.modifyDate, 'DD-MM-YYYY').fromNow()}
+                                {'Updated ' + moment(postData?.modifyDate, format).fromNow()}
                             </span>
                         </>
                     )}

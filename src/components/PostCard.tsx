@@ -33,9 +33,11 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
     const { openModal } = usePostContext();
     const { setExpandedPost } = usePostContext();
 
+    const format = 'YYYY-MM-DD'
+
     const handlePostOpen = async () => {
         const mdxContent = await getMDXContent(post.slug);
-
+        
         const markdown = mdxContent.markdown;
         const previousPath = window.location.href;
 
@@ -255,7 +257,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                                     {authorData.fullName}
                                                 </Link>
                                                 <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                                    {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
+                                                    {moment(post.date, format).format('D MMM')} • {post.readTime?.toString()} min read
                                                 </p>
                                             </div>
                                         </div>
@@ -265,11 +267,11 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                         </div>
                         <a role="button" onClick={handlePostOpen}>
                             <h1 className={`${styles.heading} heading`} id="col-heading-1">
-                                {post.title.length > 85 ? <>{post.title.slice(0, 85) + '... '}</> : post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(Date.now(), 'days') >= -30 && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
+                                {post.title && post.title.length > 85 ? <>{post.title.slice(0, 85) + '... '}</> : post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && moment(post.modifyDate, format).diff(Date.now(), 'days') >= -30 && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
                             </h1>
                         </a>
                         <p className={`${styles.description} pb-2`}>
-                            {post.description.length > 140 ? (
+                            {post.description && post.description.length > 140 ? (
                                 <>
                                     <a role="button" onClick={handlePostOpen}>
                                         {post.description.slice(0, 140) + '... '}
@@ -312,7 +314,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             <div className={styles.postInfo}>
                 <a role="button" onClick={handlePostOpen}>
                     <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                        {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(), 'days') >= -30 && <span className="badge text-wrap">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>} {/* Add a badge if the post was updated within the last 30 days */}
+                        {post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && moment(post.modifyDate, format).diff(moment(), 'days') >= -30 && <span className="badge text-wrap">{'Updated ' + moment(post.modifyDate, format).fromNow()}</span>} {/* Add a badge if the post was updated within the last 30 days */}
                     </h2>
                 </a>
                 <p className={styles.description}>
@@ -347,7 +349,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                         {authorData.fullName}
                                     </Link>
                                     <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
+                                        {moment(post.date, format).format('D MMM')} • {post.readTime?.toString()} min read
                                     </p>
                                 </div>
                             </div>
@@ -386,7 +388,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             <div className={styles.postInfo}>
                 <a role="button" onClick={handlePostOpen}>
                     <h2 className={`${styles.heading} subheading d-flex flex-wrap align-items-center gap-1`} id="col-heading-1">
-                        {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && <span className="badge text-wrap">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>}
+                        {post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && moment(post.modifyDate, format).diff(moment(post.date, format), 'days') <= 30 && <span className="badge text-wrap">{'Updated ' + moment(post.modifyDate, format).fromNow()}</span>}
                     </h2>
                     <p className={styles.description}>{post.description.length > 160 ? <>{post.description}</> : post.description}</p>
                 </a>
@@ -406,7 +408,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                         {authorData.fullName}
                                     </Link>
                                     <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
+                                        {moment(post.date, format).format('D MMM')} • {post.readTime?.toString()} min read
                                     </p>
                                 </div>
                             </div>
@@ -439,7 +441,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             <a role="button" data-bs-toggle="modal" data-bs-target={`#leavingModal-${post.slug}`}>
                 <div className={styles.postInfo}>
                     <h2 className={`${styles.heading} subheading d-flex flex-wrap align-content-center gap-1`} id="col-heading-1">
-                        {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && <span className="px-2 py-1 text-wrap badge">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>}
+                        {post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && <span className="px-2 py-1 text-wrap badge">{'Updated ' + moment(post.modifyDate, format).fromNow()}</span>}
                     </h2>
                     <p className={styles.description}>{post.description}</p>
                 </div>
@@ -521,7 +523,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                         {authorData.fullName}
                                     </Link>
                                     <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
+                                        {moment(post.date, format).format('D MMM')} • {post.readTime?.toString()} min read
                                     </p>
                                 </div>
                             </div>
@@ -592,7 +594,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                             <div className={styles.postInfo}>
                                 <div className="d-flex align-content-center m-0">
                                     <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                                        {previewData.title || 'Enter the post title'} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && <span className="badge">Updated</span>}
+                                        {previewData.title || 'Enter the post title'} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && <span className="badge">Updated</span>}
                                     </h2>
                                 </div>
                                 {setValue ? (
@@ -617,7 +619,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                     <div className={styles.profile_info__details}>
                                         <p className={`${styles.profile_info__text} m-0 p-0`}>{authorData.fullName}</p>
                                         <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                            {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
+                                            {moment(post.date, format).format('D MMM')} • {post.readTime?.toString()} min read
                                         </p>
                                     </div>
                                 </div>
@@ -651,12 +653,12 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 <div className="d-flex align-content-center m-0">
                     <a role="button" onClick={handlePostOpen}>
                         <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                            {post.title.length > 90 ? <>{post.title.slice(0, 90) + '... '}</> : post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(Date.now(), 'days') >= -30 && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
+                            {post.title && post.title.length > 90 ? <>{post.title.slice(0, 90) + '... '}</> : post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && moment(post.modifyDate, format).diff(Date.now(), 'days') >= -30 && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
                         </h2>
                     </a>
                 </div>
                 <p className={styles.description}>
-                    {post.description.length > 140 ? (
+                    {post.description && post.description.length > 140 ? (
                         <>
                             <a role="button" onClick={handlePostOpen}>
                                 {post.description.slice(0, 140) + '... '}
@@ -687,7 +689,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                         {authorData.fullName}
                                     </Link>
                                     <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                        {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
+                                        {moment(post.date, format).format('D MMM')} • {post.readTime?.toString()} min read
                                     </p>
                                 </div>
                             </div>

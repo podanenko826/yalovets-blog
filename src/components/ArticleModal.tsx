@@ -24,6 +24,12 @@ import { getTagsData } from '@/lib/tags';
 
 const ArticleModal: React.FC = () => {
     const { selectedPost, setSelectedPost } = usePostContext();
+
+    const transformedSlug = `${selectedPost?.slug
+        .replace(/[^a-zA-Z0-9 ]/g, '')
+        .replaceAll(' ', '-')
+        .toLowerCase()}`;
+
     const { expandedPost, setExpandedPost } = usePostContext();
     const { posts, setPosts } = usePostContext();
     const { authors, setAuthors } = usePostContext();
@@ -43,6 +49,8 @@ const ArticleModal: React.FC = () => {
     const components = useMDXComponents();
 
     const currentPath = usePathname();
+
+    const format = 'YYYY-MM-DD';
 
     useEffect(() => {
         const sortedByViews = posts
@@ -86,6 +94,8 @@ const ArticleModal: React.FC = () => {
             const postUrl = window.location.href;
             const postSlug = postUrl.split('/').at(-1);
 
+            if (posts.length < 1) return;
+
             if (selectedPost === null && postSlug) {
                 const post = posts.find(post => post.slug === postSlug) as PostItem;
                 if (!post) return;
@@ -102,7 +112,7 @@ const ArticleModal: React.FC = () => {
         };
 
         returnToPost();
-    }, [window.location.href]);
+    }, [window.location.href, posts]);
 
     useEffect(() => {
         const processMarkdown = async () => {
@@ -171,17 +181,17 @@ const ArticleModal: React.FC = () => {
                                                     {author.fullName}
                                                 </Link>
                                                 <p className="m-0">•</p>
-                                                <p className="m-0">{moment(selectedPost.date, 'DD-MM-YYYY').format('D MMM YYYY')} </p>
-                                                {moment(selectedPost.modifyDate, 'DD-MM-YYYY').isAfter(moment(selectedPost.date, 'DD-MM-YYYY')) && (
+                                                <p className="m-0">{moment(selectedPost.date, format).format('D MMM YYYY')} </p>
+                                                {moment(selectedPost.modifyDate, format).isAfter(moment(selectedPost.date, format)) && (
                                                     <>
                                                         <p className="d-none d-md-block m-0">•</p>
-                                                        <span className="d-none d-md-block px-2 m-0 rounded-pill text-bg-secondary">{'Updated ' + moment(selectedPost.modifyDate, 'DD-MM-YYYY').fromNow()}</span>
+                                                        <span className="d-none d-md-block px-2 m-0 rounded-pill text-bg-secondary">{'Updated ' + moment(selectedPost.modifyDate, format).fromNow()}</span>
                                                     </>
                                                 )}
                                             </div>
-                                            {moment(selectedPost.modifyDate, 'DD-MM-YYYY').isAfter(moment(selectedPost.date, 'DD-MM-YYYY')) && (
+                                            {moment(selectedPost.modifyDate, format).isAfter(moment(selectedPost.date, format)) && (
                                                 <span className="d-md-none px-2 mb-4 rounded-pill text-bg-secondary" id="mobileUpdatedBadge">
-                                                    {'Updated ' + moment(selectedPost.modifyDate, 'DD-MM-YYYY').fromNow()}
+                                                    {'Updated ' + moment(selectedPost.modifyDate, format).fromNow()}
                                                 </span>
                                             )}
                                         </div>

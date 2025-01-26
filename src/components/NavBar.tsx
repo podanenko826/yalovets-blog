@@ -9,7 +9,6 @@ import { usePathname } from 'next/navigation';
 import { FaCoffee } from 'react-icons/fa';
 import { IoMdMenu } from 'react-icons/io';
 import { IoMdClose } from 'react-icons/io';
-import { usePostContext } from './PostContext';
 
 export const navigation = [
     {
@@ -42,7 +41,6 @@ export const navigation = [
 const NavBar = () => {
     const currentPath = usePathname();
     const [mobileMenuOpened, setMobileMenuOpened] = useState<boolean>(false);
-    const { selectedPost } = usePostContext();
 
     const handleMobileNavigation = () => {
         setMobileMenuOpened(!mobileMenuOpened);

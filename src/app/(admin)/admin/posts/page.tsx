@@ -9,11 +9,12 @@ import dynamic from 'next/dynamic';
 import postCardStyles from '@/components/PostCard.module.css';
 import moment from 'moment';
 import Link from 'next/link';
+import PostList from '@/components/PostList';
 
 const LazyPostCard = dynamic(() => import('@/components/LazyPostCard'), { ssr: false });
 
 const PostsPage = async () => {
-    const postData: PostItem[] = await getSortedPosts();
+    const postData = await getSortedPosts(5);
 
     const authorData: AuthorItem[] = await getAuthors();
 
@@ -82,11 +83,15 @@ const PostsPage = async () => {
                                 </div>
                             </div>
                         </div>
-                        {postData.map((post, index) => (
+                        {/* {postData.posts.map((post, index) => (
                             <div className="col-md-6 col-lg-4" key={index}>
-                                <LazyPostCard post={post} authorData={authorData.find(author => author.email === post.email) as AuthorItem} style="admin" index={index} key={index} />
+                            <LazyPostCard post={post} authorData={authorData.find(author => author.email === post.email) as AuthorItem} style="admin" index={index} key={index} />
                             </div>
-                        ))}
+                        ))} */}
+                            <PostList postsData={postData.posts} displayMode='linear' style='admin' limit={30} infiniteScroll />
+                        <div className="col-md-6 col-lg-4">
+                                
+                        </div>
                     </div>
                 </div>
             </div>

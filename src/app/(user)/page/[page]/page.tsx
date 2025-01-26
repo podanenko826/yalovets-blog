@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 
-import { getSortedPosts } from '@/lib/posts';
+import { getPostsCount, getSortedPosts } from '@/lib/posts';
 import { getAuthors } from '@/lib/authors';
 import { AuthorItem, PostItem } from '@/types';
 import dynamic from 'next/dynamic';
@@ -11,6 +11,7 @@ import { MdOutlineKeyboardDoubleArrowLeft, MdOutlineKeyboardDoubleArrowRight } f
 import Link from 'next/link';
 import { usePostContext } from '@/components/PostContext';
 import moment from 'moment';
+import PostList from '@/components/PostList';
 
 const LazyPostCard = dynamic(() => import('@/components/LazyPostCard'), { ssr: false });
 
@@ -18,57 +19,64 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     const currentPage = parseInt(params.page, 10) || 1;
     const { posts, setPosts } = usePostContext();
     const { authors, setAuthors } = usePostContext();
-    const { selectedPost } = usePostContext();
+    const { lastKey } = usePostContext();
+    const { fetchPosts } = usePostContext();
 
     const [postsData, setPostsData] = useState<PostItem[]>([]);
     const [authorData, setAuthorData] = useState<AuthorItem[]>([]);
+
+    const [postsCount, setPostsCount] = useState<number>(0);
 
     useEffect(() => {
         document.title = `Page ${currentPage || 1} / Yalovets Blog`;
     }, [document.URL]);
 
+    // useEffect(() => {
+    //     const getData = async () => {
+    //         try {
+    //             let sorted: PostItem[] | null = null;
+    //             if (posts.length > 0) {
+    //                 const postContextData = [...posts];
+
+    //                 //? Sort posts gotten from usePostContext
+    //                 sorted = postContextData.sort((a, b) => {
+    //                     const format = 'DD-MM-YYYY';
+    //                     const dateOne = moment(a.date, format);
+    //                     const dateTwo = moment(b.date, format);
+
+    //                     return dateTwo.diff(dateOne); // Descending order
+    //                 });
+    //             } else {
+    //                 sorted = await getSortedPosts();
+
+    //                 if (posts.length === 0) {
+    //                     setPosts(sorted);
+    //                 }
+    //             }
+
+    //             if (!Array.isArray(sorted)) {
+    //                 console.error('Error: Sorted posts is not an array:', sorted);
+    //                 return;
+    //             }
+    //             // Ensure all posts have the expected structure
+    //             sorted.forEach((post, index) => {
+    //                 if (typeof post !== 'object' || post === null) {
+    //                     console.error(`Post at index ${index} is invalid:`, post);
+    //                 }
+    //             });
+
+    //             setPostsData(sorted);
+    //         } catch (error) {
+    //             console.error('Error in getData:', error);
+    //         }
+    //     };
+
+    //     getData();
+    // }, [posts, setPosts]);
+
     useEffect(() => {
-        const getData = async () => {
-            try {
-                let sorted: PostItem[] | null = null;
-                if (posts.length > 0) {
-                    const postContextData = [...posts];
-
-                    //? Sort posts gotten from usePostContext
-                    sorted = postContextData.sort((a, b) => {
-                        const format = 'DD-MM-YYYY';
-                        const dateOne = moment(a.date, format);
-                        const dateTwo = moment(b.date, format);
-
-                        return dateTwo.diff(dateOne); // Descending order
-                    });
-                } else {
-                    sorted = await getSortedPosts();
-
-                    if (posts.length === 0) {
-                        setPosts(sorted);
-                    }
-                }
-
-                if (!Array.isArray(sorted)) {
-                    console.error('Error: Sorted posts is not an array:', sorted);
-                    return;
-                }
-                // Ensure all posts have the expected structure
-                sorted.forEach((post, index) => {
-                    if (typeof post !== 'object' || post === null) {
-                        console.error(`Post at index ${index} is invalid:`, post);
-                    }
-                });
-
-                setPostsData(sorted);
-            } catch (error) {
-                console.error('Error in getData:', error);
-            }
-        };
-
-        getData();
-    }, [posts, setPosts]);
+        fetchPosts(14);
+    }, [])
 
     useEffect(() => {
         const getAuthorsData = async () => {
@@ -85,10 +93,20 @@ export default function BlogPage({ params }: { params: { page: string } }) {
         getAuthorsData();
     }, [authorData, authors, setAuthors]);
 
-    const ARTICLES_PER_PAGE = 15; // Define the number of posts per page //? (should be 15 by design and adjustable to 30)
+    useEffect(() => {
+        const getPostsLength = async () => {
+            const count = await getPostsCount();
+
+            if (count) setPostsCount(count);
+        }
+
+        getPostsLength();
+    }, [])
+
+    const ARTICLES_PER_PAGE = 14; // Define the number of posts per page //? (should be 14 by design and adjustable to 29)
     const startIndex = (currentPage - 1) * ARTICLES_PER_PAGE;
-    const paginatedArticles = postsData.slice(startIndex, startIndex + ARTICLES_PER_PAGE);
-    const pageCount = Math.ceil(posts.length / ARTICLES_PER_PAGE);
+    const paginatedArticles = posts.slice(startIndex, startIndex + ARTICLES_PER_PAGE);
+    const pageCount = Math.ceil(postsCount / ARTICLES_PER_PAGE);
 
     // Pagination logic
     const rangeStart = Math.max(currentPage - 2, 1); // At least 2 pages to the left
@@ -109,15 +127,23 @@ export default function BlogPage({ params }: { params: { page: string } }) {
 
     return (
         <>
-            {postsData && authorData && (
+            {posts.length > 0 && paginatedArticles.length > 0 && authorData ? (
                 <main id="body">
                     <div className="container posts" id="posts">
                         <h1 className="heading heading-large mt-5">Page {currentPage}</h1>
+                        <button onClick={() => console.log(postsCount)}>
+                            Print Count
+                        </button>
+                        <button onClick={() => console.log(posts)}>
+                            Print Posts
+                        </button>
+                        <button onClick={() => console.log(lastKey)}>
+                            Print Last Key
+                        </button>
                         <div className="row post-list">
-                            {paginatedArticles.map((post: PostItem, index) => (
-                                <LazyPostCard post={post} style="full" index={index} key={index} authorData={authorData.find(author => author.email === post.email) as AuthorItem} />
-                            ))}
+                            <PostList displayMode='linear' limit={14} style='full' postsData={paginatedArticles} infiniteScroll />
                         </div>
+
                         <div className="container">
                             <div className="d-flex justify-content-center">
                                 {/* First page button */}
@@ -176,6 +202,16 @@ export default function BlogPage({ params }: { params: { page: string } }) {
                         </div>
                     </div>
                 </main>
+            ): (
+                <>
+                    <main id='body'>        
+                        <div className='container'>
+                            <h1 className="heading heading-large mt-5">Page {currentPage}</h1>
+
+                            <div className='loading-spinning my-5'></div>
+                        </div>
+                    </main>
+                </>
             )}
         </>
     );

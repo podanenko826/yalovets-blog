@@ -4,7 +4,7 @@ import { remark } from 'remark';
 import html from 'remark-html';
 import Cookies from 'js-cookie'; // Use js-cookie library for easy cookie handling
 
-import { DynamoDB, QueryCommand } from '@aws-sdk/client-dynamodb';
+import { DescribeTableCommand, DynamoDB, QueryCommand } from '@aws-sdk/client-dynamodb';
 import { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, ScanCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 
 import type { AuthorItem, PostItem } from '@/types';
@@ -26,55 +26,64 @@ const dbClient = new DynamoDB({
 const docClient = DynamoDBDocumentClient.from(dbClient);
 
 function transformPostData(data: any[]): PostItem[] {
-    return data.map(post => ({
-        email: post.email?.S,
-        slug: post.slug?.S,
-        title: post.title?.S,
-        description: post.description?.S,
-        imageUrl: post.imageUrl?.S,
-        date: post.date?.S,
-        modifyDate: post.modifyDate?.S,
-        postType: post.postType?.S,
-        tags: post.tags?.L ? post.tags.L.map((tag: { S: any }) => tag.S) : [],
-        readTime: parseInt(post.readTime?.N || '0'),
-        viewsCount: parseInt(post.viewsCount?.N || '0'),
-    }));
+    return data.map(post => {
+        return {
+            email: post.email?.S,
+            slug: post.slug?.S,
+            title: post.title?.S,
+            description: post.description?.S,
+            imageUrl: post.imageUrl?.S,
+            date: post.date?.S,
+            modifyDate: post.modifyDate?.S,
+            postType: post.postType?.S,
+            tags: post.tags?.L ? post.tags.L.map((tag: { S: any }) => tag.S) : [],
+            readTime: parseInt(post.readTime?.N || '0'),
+            viewsCount: parseInt(post.viewsCount?.N || '0'),
+            postGroup: post.postGroup?.S,
+        }
+    });
 }
 
-export const getSortedPosts = async () => {
-    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+type FetchPostsResponse = {
+    posts: PostItem[];
+    lastKey: string; // The last key is the exclusive start key for pagination
+};
+
+export const getSortedPosts = async (limit: number, lastKey?: string ): Promise<{ posts: PostItem[], lastKey: string }> => {
+    if (!limit) return { posts: [], lastKey: '' };
 
     try {
-        const response = await fetch(`${baseUrl}/api/post`);
+        console.log('RECIEVED LAstKey:', lastKey);
+        
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+        const response = lastKey ? await fetch(`${baseUrl}/api/post?limit=${limit}&lastKey=${moment(lastKey).format('YYYY-MM-DD')}`) 
+                    : await fetch(`${baseUrl}/api/post?limit=${limit}&lastKey=${moment().format('YYYY-MM-DD')}`);
+
         if (!response.ok) {
             console.error('API returned an error:', response.status, await response.text());
-            throw new Error('Failed to fetch posts');
+            return { posts: [], lastKey: '' };
         }
 
-        const data = await response.json();
+        const data: FetchPostsResponse = await response.json();
 
-        let posts: any[] = [];
-
-        if (data) {
-            posts = [...posts, ...data];
-        }
-
-        const transformedPostData = transformPostData(data);
+        const transformedPostData = transformPostData(data.posts);
 
         const sortedPostsData = transformedPostData.sort((a, b) => {
-            const format = 'DD-MM-YYYY';
-            const dateOne = moment(a.date, format);
-            const dateTwo = moment(b.date, format);
+            // const format = 'YYYY-MM-DD';
+            const dateOne = moment(a.date);
+            const dateTwo = moment(b.date);
 
             return dateTwo.diff(dateOne); // Descending order
         });
 
-        console.log(sortedPostsData);
-
-        return sortedPostsData;
+        console.log('NORMALL SORTED:', sortedPostsData);
+        console.log('LASTKey fetched:', data.lastKey);
+        
+        return { posts: sortedPostsData, lastKey: data.lastKey };
     } catch (err) {
         console.error('Failed to fetch posts from the database: ', err);
-        return [];
+        return { posts: [], lastKey: '' };
     }
 };
 
@@ -111,11 +120,32 @@ export const getPost = async (slug: string): Promise<PostItem> => {
     return transformedPostData[0];
 };
 
+export const getPostsCount = async (): Promise<number> => {
+    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+    const authorLengthResponse = await fetch(`${baseUrl}/api/author-list`);
+    const authorLength = await authorLengthResponse.json() || [];
+
+    const params = {
+        TableName: DYNAMODB_TABLE_NAME,
+    };
+
+    const command = new DescribeTableCommand(params);
+    const response = await docClient.send(command);
+
+    if (!response.Table?.ItemCount) return 0;
+
+    const postsCount = Number(response.Table.ItemCount) - authorLength.length;
+    
+    return postsCount || 0;
+}
+
 export const formatPostDate = (date: Date) => {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
+    // const year = date.getFullYear();
+    // const month = String(date.getMonth() + 1).padStart(2, '0');
+    // const day = String(date.getDate()).padStart(2, '0');
+    // return `${year}-${month}-${day}`;
+
+    return moment(date).utc().toISOString();
 };
 
 export const getMDXContent = async (slug: string): Promise<{ slug: string; markdown: string }> => {
@@ -241,6 +271,7 @@ export const createPost = async (postData: Partial<PostItem>, markdown: string):
             tags: tags || [],
             readTime: readTime,
             viewsCount: 0,
+            postGroup: 'ALL_POSTS',
         };
         
 
@@ -345,6 +376,7 @@ export const getPostsData = async (
                 slug: '',
                 title: '',
                 description: '',
+                postGroup: '',
             },
             authorData: {
                 email: '',

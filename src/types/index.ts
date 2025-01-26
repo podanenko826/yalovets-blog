@@ -28,6 +28,7 @@ export type PostItem = {
     tags?: string[];
     readTime?: number;
     viewsCount?: number;
+    postGroup: string;
 };
 
 export type PostPreviewItem = {

@@ -1,6 +1,8 @@
+import { getAuthorEmails } from '@/lib/authors';
 import { PostItem } from '@/types';
-import { DynamoDBClient, ScanCommand } from '@aws-sdk/client-dynamodb';
+import { AttributeValue, DynamoDBClient, QueryCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
 import { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
+import moment from 'moment';
 import { NextResponse } from 'next/server';
 
 const dbClient = new DynamoDBClient({
@@ -10,19 +12,24 @@ const dbClient = new DynamoDBClient({
     },
 });
 
-const TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
+const TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME || '';
 
 // /api/post (GET method)
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
-    const postSlug = searchParams.get('slug')?.split('/').at(-1);
 
-    // A limit to determine how many posts to be fetched after the last fetched post by date
-    const limit = searchParams.get('limit') || 10;
-    const lastKey = searchParams.get('limit');
+    const postSlug = searchParams.get('slug')?.split('/').at(-1);
+    const limit: number = Number(searchParams.get('limit')) >= 6 ? Number(searchParams.get('limit')) : 6;
+    let lastKey = searchParams.get('lastKey') || '';
+
+    // let lastKey: { email: { S: string }; slug: { S: string } } | undefined = undefined;
+    console.log('LASTKEY:', lastKey);
 
     if (!TABLE_NAME) {
-        return NextResponse.json({ error: 'Table name is not defined in environment variables' }, { status: 500 });
+        return NextResponse.json({
+            posts: [],
+            lastKey: '',
+        }, { status: 500 });
     }
 
     // First, attempt to fetch posts if we have a specific slug
@@ -36,7 +43,7 @@ export async function GET(request: Request) {
                 },
             };
 
-            const command = new ScanCommand(params);
+            const command = new QueryCommand(params);
             const result = await dbClient.send(command);
             const data = result.Items?.at(0);
 
@@ -47,27 +54,70 @@ export async function GET(request: Request) {
         }
     } else {
         try {
+            // const lastKeys: Record<string, { email: { S: string }; slug: { S: string } } | undefined> = {};
+
             const params = {
                 TableName: TABLE_NAME,
-                FilterExpression: 'slug <> :excludedSlug',
+                IndexName: 'GSI_PostsByDate',
+                KeyConditionExpression: 'postGroup = :postGroup',
                 ExpressionAttributeValues: {
-                    ':excludedSlug': { S: 'author-account' },
+                    ':postGroup': { S: 'ALL_POSTS' },
                 },
-                // ExclusiveStartKey: lastKey ? JSON.parse(lastKey) : undefined,
-                // Limit: Number(limit),
+                ExclusiveStartKey: {
+                    date: { S: lastKey }, //? The primary value that defines the start key of a Query (others don't matter)
+                    postGroup: { S: 'ALL_POSTS' },
+                    email: { S: 'ANY_EMAIL' },
+                    slug: { S: 'ANY_SLUG' },
+                },
+                ScanIndexForward: false, // Descending order
+                Limit: limit, // Fetch only the required number of items.
             };
 
-            const command = new ScanCommand(params);
+            const command = new QueryCommand(params);
             const result = await dbClient.send(command);
-            const data = result.Items;
+            const postsData = result.Items;
 
-            return NextResponse.json(data, { status: 201 });
+            console.log(`FETCH OF ${lastKey}`, postsData);
+            
+            
+            if (postsData && postsData?.length >= 1) {
+                const sortedPosts = postsData.sort((a, b) => {
+                    // const format = 'YYYY-MM-DD';
+                    const dateOne = moment(a.date.S);
+                    const dateTwo = moment(b.date.S);
+        
+                    return dateTwo.diff(dateOne); // Descending order
+                });
+                console.log(`LAST ITEM OF: `, sortedPosts[-1]);
+                
+                
+                const lastEvaluatedKey = sortedPosts.at(-1);
+                if (lastEvaluatedKey) {
+                    lastKey = lastEvaluatedKey.date.S || '';
+                }
+            }
+
+            if (!postsData || postsData.length === 0) {
+                return NextResponse.json({
+                    posts: [],
+                    lastKey: ''
+                }, { status: 201 });
+            }
+
+            console.log('LAAAAAAST:', lastKey);
+            
+
+            return NextResponse.json({
+                posts: postsData,
+                lastKey: lastKey,
+            }, { status: 201 });
         } catch (err) {
             console.error('Failed to fetch data from the database: ', err);
             return NextResponse.json(err, { status: 500 });
         }
     }
 }
+
 
 export async function POST(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -119,6 +169,7 @@ export async function POST(request: Request) {
         tags: tags || [],
         readTime: readTime,
         viewsCount: viewsCount || 0,
+        postGroup: 'ALL_POSTS'
     };
     
     try {
