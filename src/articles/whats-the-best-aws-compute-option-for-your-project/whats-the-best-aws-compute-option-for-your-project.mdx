@@ -1,0 +1,45 @@
+There are many good reasons why you should move to the cloud and AWS in particular. Benefit from the latest innovations or consume sophisticated technology as a commodity (relational databases, Hadoop clusters, data warehouses, …) to lower your time to market. You can automate every single task to increase the quality of your operations. Pay as you go by default for maximum freedom with options for longer-term commitments for lower prices. An elastic world allows new services and processes that will transform the way you think IT. Last but not least, you get the same capabilities across the globe. The only downside: AWS offers so many choices and freedom! What’s the best option to run your applications?
+
+![Decision Tree](https://cloudonaut.io/images/2020/02/decision-tree.jpg "Decision Tree")
+
+> Do you prefer listening to a podcast episode over reading a blog post? Here you go!
+
+You can run your application on virtual machines using EC2. If you prefer containers, ECS Fargate is your choice. But you can also use the latest Serverless capabilities to run your application on Lambda. But what’s the difference?
+
+## EC2 in a nutshell
+
+[Amazon EC2](https://aws.amazon.com/ec2/) is the service to spin up (virtual) machines in minutes. Windows and Linux are supported. Up to 448 cores, 26 TB memory, and 100 Gbps network, GPUs, and massive amounts of storage. Billed per second (Linux only). You will not find a missing feature. EC2 is the most mature option and has you covered!
+
+## Fargate in a nutshell
+
+[AWS Fargate](https://aws.amazon.com/fargate/) runs your Docker containers. No need to install, configure, or patch a cluster. It feels like EC2, but you get lightweight containers. Up to 4 cores, and 30 GB memory. With flexible per second billing. Fargate is the easiest way to run Docker containers on AWS. You have to use either the ECS or Kubernetes (EKS) API to interact with Fargate.
+
+## Lambda in a nutshell
+
+[AWS Lambda](https://aws.amazon.com/lambda/) is the latest technology and evolves quickly. Upload your source code, and AWS runs it for you. Lambda is to most convenient way to execute source code on AWS. The convenience comes with limitations: You have to follow the event-driven programming paradigm, 15 minutes are all you get in a single execution, and the number of supported programming languages is limited.
+
+With so many choices, you need guidance. That’s why I created a decision tree!
+
+Download the free [**AWS Compute Decision Tree**](https://cloudonaut.io/download/files/aws-compute-decision-tree.pdf) (PDF format). I hope you find it useful!
+
+The following list helps you to choose the best compute option for your project:
+
+| Criteria                                | Possible Options  |
+| --------------------------------------- | ----------------- |
+| Windows only?                           | EC2               |
+| > 30 GB memory required                 | EC2               |
+| > 4 cores required                      | EC2               |
+| > 1 Gbits networking required           | EC2               |
+| Requires GPUs                           | EC2               |
+| Stateful application                    | EC2               |
+| Shared file system                      | EC2               |
+| Many concurrent users                   | EC2               |
+| Risk-averse when using new technologies | EC2 or Fargate    |
+| Lift\&Shift project                     | EC2 or Fargate    |
+| New In-house development                | Fargate or Lambda |
+| Stateless application                   | Fargate or Lambda |
+| Infrequently used                       | Lambda            |
+
+## Summary
+
+AWS offers many choices to run your application. As AWS users, we have to pick the option that is best for us. Lucky you, if your requirements map to a single choice (e.g., Windows workload => EC2). Otherwise, choose the option that matches most often.

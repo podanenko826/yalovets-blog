@@ -49,3 +49,12 @@ export type TagItem = {
     description: string;
     postCount: number;
 };
+
+export type PaginationEntry = {
+    date: string
+};
+
+export type PaginationState = {
+    totalPages: number;
+    paginationData: Record<number, PaginationEntry>;
+};

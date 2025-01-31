@@ -1,0 +1,170 @@
+SSH is great. But the AWS Session Manager - whose full name is AWS Systems Manager Session Manager - matches the needs for interacting with your EC2 instances even better.
+
+![Goodbye SSH!](https://cloudonaut.io/images/2019/03/terminal.jpg "Goodbye SSH!")
+
+## Benefits
+
+You should think about replacing SSH with the AWS Session Manager because of the following benefits.
+
+### Simple Authentication
+
+Unfortunately, AWS deploys a single key pair for authenticating via SSH to each EC2 instances. As sharing keys between engineers is a no go, you need to find a way to distribute a key pair per engineer to your EC2 instances. We have implemented this with [widdix/aws-ec2-ssh](https://github.com/widdix/aws-ec2-ssh), which admittedly is a handicraft solution.
+
+The AWS Session Manager uses the Identity and Access Management (IAM) for authentication and authorization. Therefore, you can reuse IAM users or SSO with Azure AD, SAML, … to authenticate and authorize engineers when logging into EC2 instances as well.
+
+Multi-factor authentication (MFA) is built into IAM by default. Therefore, it is simple to require administrators to authenticate with a second factor - e.g., an OTP app - before establishing a remote session with an EC2 instance.
+
+### Built-in Audit Log
+
+Tracking each command an administrator executes on an EC2 instance is a common security and compliance requirement. I don’t know of an easy to implement and tamper-proof way to do so with Linux onboard resources.
+
+However, the AWS Session Manager offers audit logs by default. Each command is captured and stored at CloudWatch Logs or S3.
+
+### Simple Networking
+
+SSH requires a network connection between the engineer’s machine and the EC2 instance. Setting up a jump server - also called bastion host - as shown in the following figure is a typical pattern to minimize the attack surface from the Internet.
+
+![SSH Jump Host](https://cloudonaut.io/images/2019/03/ssh-jump-host.png "SSH Jump Host")
+
+Another option is to use client-to-site VPN connections. Both options add complexity to your networking infrastructure and require constant security patches and monitoring.
+
+Luckily, with AWS Session Manager there is no need for a network connection between the engineer’s machine and the EC2 instance. This simplifies the networking infrastructure a lot and reduces security risk.
+
+## How it works
+
+The AWS Session Manager is part of the AWS Systems Manager service. The following diagram outlines how it works:
+
+1. The administrator authenticates against IAM (IAM user or SSO identity provider).
+2. IAM authorizes to start a session for an EC2 instance (IAM policy).
+3. The administrator uses the AWS Management Console or the terminal (AWS CLI and additional plugin required) to start a session via the Systems Manager.
+4. An agent running on the EC2 instance connects to the Systems Manager’s backend and executes commands on the machine. Therefore, the EC2 instance needs access to the Internet or a VPC endpoint.
+5. The Session Manager sends audit logs to CloudWatch Logs or S3.
+
+![AWS Session Manager](https://cloudonaut.io/images/2019/03/session-manager.png "AWS Session Manager")
+
+Next, I will point you to the most important parts when configuring and securing the AWS Session Manager for your AWS infrastructure.
+
+## How to configure
+
+The following configuration is required for AWS Systems Manager:
+
+1. Install the AWS Systems Manager agent on each EC2 instance (already installed on Amazon Linux).
+2. Create an IAM role for the EC2 instance which grants access to the AWS Systems Manager.
+3. Use IAM policies to restrict which IAM user or role can start a session with an EC2 instance.
+4. Configure audit logs.
+5. Use IAM policies to make sure engineers are not able to modify the audit log settings.
+
+### Configure EC2 instances
+
+Make sure the SSM agent version 2.3.68.0 or later is installed on your EC2 instance. See [Installing and Configuring SSM Agent ](https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html)if you need help with that.
+
+To grant the SSM agent access to the Systems Manager’s backend you need to attach an IAM role to your EC2 instance. Make sure, that the managed IAM policy `AmazonEC2RoleforSSM` is attached to the IAM role. Be warned, the IAM policy `AmazonEC2RoleforSSM` grants excessive access to S3 and other services, write your own policy to implement the least privilege principle.
+
+### Restrict access to EC2 instances
+
+After configuring your EC2 instances IAM users and roles can start a session. Probably, you don’t want all IAM users, and roles grant root access to your EC2 instances. Therefore, you need to create IAM policies to allow access for connecting to an EC2 instance to specific IAM users and roles.
+
+The following snippet shows an IAM policy that grants access to EC2 instances with a specific tag: `Tag Key = team` and `Value = a`.
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ssm:StartSession"
+            ],
+            "Resource": "arn:aws:ec2:*:*:instance/*",
+            "Condition": {
+                "StringEquals": {
+                    "ssm:resourceTag/team": "a"
+                }
+            }
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ssm:GetConnectionStatus",
+                "ssm:DescribeSessions",
+                "ssm:DescribeInstanceProperties",
+                "ec2:DescribeInstances"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+
+Please, double check that there is no IAM policy which grants access to `ssm:StartSession` or `ssm:ResumeSession` without resource restrictions or conditions attached to IAM users, groups or roles. Otherwise, an IAM user or role might be able to log into all EC2 instances as `root` or `Administrator`.
+
+### Configure audit logs
+
+Capturing audit logs of every administrator session on your EC2 instance is a built-in feature of the AWS Session Manager. AWS Systems Manager stores audit logs in a CloudWatch log group or an S3 bucket that you provide. However, you have to enable audit logs. The following screenshot shows the necessary steps.
+
+![Configure audit logs](https://cloudonaut.io/images/2019/03/session-manager-audit-log.png "Configure audit logs")
+
+By default, the Systems Manager document `SSM-SessionManagerRunShell` is used to store your audit log preferences. Therefore, you need to make sure that engineers are not able to modify the Systems Manager document. The following snippet shows an IAM policy denying write access to the `SSM-SessionManagerRunShell` document.
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Deny",
+            "Action": [
+                "ssm:CreateDocument",
+                "ssm:UpdateDocument",
+                "ssm:DeleteDocument",
+                "ssm:UpdateDocumentDefaultVersion"
+            ],
+            "Resource": "arn:aws:ssm:*:*:document/SSM-SessionManagerRunShell"
+        }
+    ]
+}
+```
+
+Please, double check that there is no IAM policy which grants access to `ssm:CreateDocument`, `ssm:UpdateDocument`, `ssm:DeleteDocument`, and `ssm:UpdateDocumentDefaultVersion` without resource restrictions or conditions attached to IAM users, groups or roles. Otherwise, engineers can manipulate the audit log settings.
+
+On top of that, it is advisable to extend the IAM policy from the previous section to only allow users, groups, roles to start a new session when using the document containing your audit log configuration. Replace `<REGION>` with the region you are operating in and `<ACCOUNT>` with your AWS account ID.
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssm:StartSession"
+      ],
+      "Resource": "arn:aws:ec2:*:*:instance/*",
+      "Condition": {
+        "StringEquals": {
+          "ssm:resourceTag/team": "a"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssm:StartSession"
+      ],
+      "Resource": "arn:aws:ssm:<REGION>:<ACCOUNT>:document/SSM-SessionManagerRunShell"
+    }
+  ]
+}
+```
+
+## Limitations
+
+There are a few limitations when using AWS Session Manager instead of SSH.
+
+The most important limitation: transferring files is not possible with the AWS Session Manager. As a workaround, you could use an S3 bucket and the AWS CLI to exchange data. Doing so is of course not quite the same as using `scp`.
+
+I’ve also struggled with canceling commands via `CTRL + C` from time to time. AWS Support promised to find a solution, and I will keep you posted.
+
+## Summary
+
+Replacing SSH with the AWS Session Manager simplifies authentication, authorization, networking, as well as audit logs for administrator sessions on EC2 instances.
+
+So is it already time to say goodbye to SSH? Yes, especially if you are aiming for immutable virtual machines and therefore only need remote access for debugging.

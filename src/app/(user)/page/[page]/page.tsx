@@ -1,97 +1,29 @@
 'use client';
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 
-import { getPostsCount, getSortedPosts } from '@/lib/posts';
-import { getAuthors } from '@/lib/authors';
-import { AuthorItem, PostItem } from '@/types';
-import dynamic from 'next/dynamic';
+import { getPostsCount } from '@/lib/posts';
+import { AuthorItem } from '@/types';
+import { usePostContext } from '@/components/PostContext';
+
+import PostList from '@/components/PostList';
 
 import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from 'react-icons/md';
 import { MdOutlineKeyboardDoubleArrowLeft, MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md';
-import Link from 'next/link';
-import { usePostContext } from '@/components/PostContext';
-import moment from 'moment';
-import PostList from '@/components/PostList';
-
-const LazyPostCard = dynamic(() => import('@/components/LazyPostCard'), { ssr: false });
 
 export default function BlogPage({ params }: { params: { page: string } }) {
     const currentPage = parseInt(params.page, 10) || 1;
-    const { posts, setPosts } = usePostContext();
-    const { authors, setAuthors } = usePostContext();
+    const { posts } = usePostContext();
     const { lastKey } = usePostContext();
     const { fetchPosts } = usePostContext();
 
-    const [postsData, setPostsData] = useState<PostItem[]>([]);
-    const [authorData, setAuthorData] = useState<AuthorItem[]>([]);
+    const [authorData] = useState<AuthorItem[]>([]);
 
     const [postsCount, setPostsCount] = useState<number>(0);
 
     useEffect(() => {
         document.title = `Page ${currentPage || 1} / Yalovets Blog`;
     }, [document.URL]);
-
-    // useEffect(() => {
-    //     const getData = async () => {
-    //         try {
-    //             let sorted: PostItem[] | null = null;
-    //             if (posts.length > 0) {
-    //                 const postContextData = [...posts];
-
-    //                 //? Sort posts gotten from usePostContext
-    //                 sorted = postContextData.sort((a, b) => {
-    //                     const format = 'DD-MM-YYYY';
-    //                     const dateOne = moment(a.date, format);
-    //                     const dateTwo = moment(b.date, format);
-
-    //                     return dateTwo.diff(dateOne); // Descending order
-    //                 });
-    //             } else {
-    //                 sorted = await getSortedPosts();
-
-    //                 if (posts.length === 0) {
-    //                     setPosts(sorted);
-    //                 }
-    //             }
-
-    //             if (!Array.isArray(sorted)) {
-    //                 console.error('Error: Sorted posts is not an array:', sorted);
-    //                 return;
-    //             }
-    //             // Ensure all posts have the expected structure
-    //             sorted.forEach((post, index) => {
-    //                 if (typeof post !== 'object' || post === null) {
-    //                     console.error(`Post at index ${index} is invalid:`, post);
-    //                 }
-    //             });
-
-    //             setPostsData(sorted);
-    //         } catch (error) {
-    //             console.error('Error in getData:', error);
-    //         }
-    //     };
-
-    //     getData();
-    // }, [posts, setPosts]);
-
-    useEffect(() => {
-        fetchPosts(14);
-    }, [])
-
-    useEffect(() => {
-        const getAuthorsData = async () => {
-            if (authors.length > 0 && authorData.length === 0) {
-                const authorData = [...authors];
-                setAuthorData(authorData);
-            } else if (authors.length === 0 && authorData.length === 0) {
-                const authorData = await getAuthors();
-                setAuthorData(authorData);
-                setAuthors(authorData);
-            }
-        };
-
-        getAuthorsData();
-    }, [authorData, authors, setAuthors]);
 
     useEffect(() => {
         const getPostsLength = async () => {
@@ -104,9 +36,19 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     }, [])
 
     const ARTICLES_PER_PAGE = 14; // Define the number of posts per page //? (should be 14 by design and adjustable to 29)
-    const startIndex = (currentPage - 1) * ARTICLES_PER_PAGE;
-    const paginatedArticles = posts.slice(startIndex, startIndex + ARTICLES_PER_PAGE);
+    
+    const startIndex = posts.length > ((currentPage - 1) * ARTICLES_PER_PAGE) 
+        ? ((currentPage - 1) * ARTICLES_PER_PAGE) 
+        : 0;
     const pageCount = Math.ceil(postsCount / ARTICLES_PER_PAGE);
+
+    const paginatedArticles = posts.slice(startIndex, startIndex + ARTICLES_PER_PAGE);
+
+    useEffect(() => {
+        if (ARTICLES_PER_PAGE && params.page) {
+            fetchPosts(ARTICLES_PER_PAGE, Number(params.page)); 
+        }
+    }, [ARTICLES_PER_PAGE, params.page])
 
     // Pagination logic
     const rangeStart = Math.max(currentPage - 2, 1); // At least 2 pages to the left
@@ -141,27 +83,26 @@ export default function BlogPage({ params }: { params: { page: string } }) {
                             Print Last Key
                         </button>
                         <div className="row post-list">
-                            <PostList displayMode='linear' limit={14} style='full' postsData={paginatedArticles} infiniteScroll />
+                            <PostList displayMode='linear' limit={ARTICLES_PER_PAGE} style='full' postsData={paginatedArticles} />
                         </div>
 
                         <div className="container">
                             <div className="d-flex justify-content-center">
-                                {/* First page button */}
+                                {/* First and last page buttons */}
                                 {currentPage > 1 && (
-                                    <Link href={`/page/1`} className="mb-5 mx-2">
-                                        <button className="px-2 px-md-3 py-2">
-                                            <MdOutlineKeyboardDoubleArrowLeft style={{ fontSize: '1.35rem' }} />
-                                        </button>
-                                    </Link>
-                                )}
+                                    <>
+                                        <Link href={`/page/1`} className="mb-5 mx-2">
+                                            <button className="px-2 px-md-3 py-2">
+                                                <MdOutlineKeyboardDoubleArrowLeft style={{ fontSize: '1.35rem' }} />
+                                            </button>
+                                        </Link>
 
-                                {/* Previous page button */}
-                                {currentPage > 1 && (
-                                    <Link href={`/page/${currentPage - 1}`} className="mb-5 mx-2">
-                                        <button className="px-2 px-md-3 py-2">
-                                            <MdOutlineArrowBackIos />
-                                        </button>
-                                    </Link>
+                                        <Link href={`/page/${currentPage - 1}`} className="mb-5 mx-2">
+                                            <button className="px-2 px-md-3 py-2">
+                                                <MdOutlineArrowBackIos />
+                                            </button>
+                                        </Link>
+                                    </>
                                 )}
 
                                 {/* Mobile Page numbers */}
@@ -183,20 +124,19 @@ export default function BlogPage({ params }: { params: { page: string } }) {
 
                                 {/* Next page button */}
                                 {currentPage < pageCount && (
-                                    <Link href={`/page/${currentPage + 1}`} className="mb-5 mx-2">
-                                        <button className="px-2 px-md-3 py-2">
-                                            <MdOutlineArrowForwardIos />
-                                        </button>
-                                    </Link>
-                                )}
+                                    <>
+                                        <Link href={`/page/${currentPage + 1}`} className="mb-5 mx-2">
+                                            <button className="px-2 px-md-3 py-2">
+                                                <MdOutlineArrowForwardIos />
+                                            </button>
+                                        </Link>
 
-                                {/* Last page button */}
-                                {currentPage < pageCount && (
-                                    <Link href={`/page/${pageCount}`} className="mb-5 mx-2">
-                                        <button className="px-1 px-md-3 py-2">
-                                            <MdOutlineKeyboardDoubleArrowRight style={{ fontSize: '1.35rem' }} />
-                                        </button>
-                                    </Link>
+                                        <Link href={`/page/${pageCount}`} className="mb-5 mx-2">
+                                            <button className="px-1 px-md-3 py-2">
+                                                <MdOutlineKeyboardDoubleArrowRight style={{ fontSize: '1.35rem' }} />
+                                            </button>
+                                        </Link>
+                                    </>
                                 )}
                             </div>
                         </div>

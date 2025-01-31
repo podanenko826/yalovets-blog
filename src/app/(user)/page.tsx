@@ -30,81 +30,16 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
 
     const { posts, setPosts } = usePostContext();
     const { lastKey } = usePostContext();
-    const { authors, setAuthors } = usePostContext();
+    const { pagination } = usePostContext();
     const { selectedPost } = usePostContext();
-    const { openModal } = usePostContext();
 
     const { fetchPosts } = usePostContext();
-
-    const currentPath = usePathname();
 
     useEffect(() => {
         if (!selectedPost) {
             document.title = 'Home / Yalovets Blog';
         }
     }, [selectedPost]);
-
-    // useEffect(() => {
-    //     const getData = async () => {
-    //         try {
-    //             let sorted: PostItem[] | null = null;
-    //             if (posts.length > 0) {
-    //                 const postContextData = [...posts];
-
-    //                 //? Sort posts gotten from usePostContext
-    //                 sorted = postContextData.sort((a, b) => {
-    //                     const format = 'YYYY-MM-DD';
-    //                     const dateOne = moment(a.date, format);
-    //                     const dateTwo = moment(b.date, format);
-
-    //                     return dateTwo.diff(dateOne); // Descending order
-    //                 });
-    //             } else {
-    //                 sorted = await getSortedPosts();
-    //             }
-
-    //             if (!Array.isArray(sorted)) {
-    //                 console.error('Error: Sorted posts is not an array:', sorted);
-    //                 return;
-    //             }
-
-    //             // Ensure all posts have the expected structure
-    //             sorted.forEach((post, index) => {
-    //                 if (typeof post !== 'object' || post === null) {
-    //                     console.error(`Post at index ${index} is invalid:`, post);
-    //                 }
-    //             });
-
-    //             const recent = sorted.slice(0, 9);
-    //             const latest = sorted[0] || null;
-
-    //             const mostViewed = sorted
-    //                 .sort((a, b) => (b.viewsCount ?? 0) - (a.viewsCount ?? 0)) // Sort by viewsCount in descending order
-    //                 .slice(0, 3);
-
-    //             if (currentSlug.current) {
-    //                 const post = sorted.find(post => post.slug === currentSlug.current) as PostItem;
-    //                 const MdxContent = await getMDXContent(currentSlug.current);
-    //                 const markdown = MdxContent.markdown;
-    //                 const previousPath = window.location.href;
-
-    //                 if (post && markdown) {
-    //                     openModal(post, markdown, previousPath);
-    //                 }
-    //                 currentSlug.current = '';
-    //             }
-
-    //             setSortedPosts(sorted);
-    //             setRecentPosts(recent);
-    //             setLatestPost(latest);
-    //             setPopularPosts(mostViewed);
-    //         } catch (error) {
-    //             console.error('Error in getData:', error);
-    //         }
-    //     };
-
-    //     getData();
-    // }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -121,6 +56,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                 <main id="body">
                     <button onClick={() => console.log(posts)}>Print Posts</button>
                     <button onClick={() => console.log(lastKey)}>Print LastKey</button>
+                    <button onClick={() => console.log(pagination)}>Print Pagination Data</button>
                     {/* Welcome section (Mobile) */}
                     <div className="container welcome-xs d-block d-lg-none">
                         <div className="row">
@@ -202,7 +138,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                         </div>
 
                         <div className="row post-list">
-                            <PostList displayMode='linear' style="standard" indexIncrement={1} limit={9} />
+                            <PostList displayMode='recent' style="standard" indexIncrement={1} limit={9} />
                         </div>
                     </div>
 

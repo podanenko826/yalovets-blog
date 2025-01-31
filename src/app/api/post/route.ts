@@ -19,8 +19,8 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
 
     const postSlug = searchParams.get('slug')?.split('/').at(-1);
-    const limit: number = Number(searchParams.get('limit')) >= 6 ? Number(searchParams.get('limit')) : 6;
-    let lastKey = searchParams.get('lastKey') || '';
+    const limit: number | undefined = Number(searchParams.get('limit')) || undefined;
+    let lastKey = searchParams.get('lastKey') || moment.utc().toISOString();
 
     // let lastKey: { email: { S: string }; slug: { S: string } } | undefined = undefined;
     console.log('LASTKEY:', lastKey);
@@ -64,7 +64,7 @@ export async function GET(request: Request) {
                     ':postGroup': { S: 'ALL_POSTS' },
                 },
                 ExclusiveStartKey: {
-                    date: { S: lastKey }, //? The primary value that defines the start key of a Query (others don't matter)
+                    date: { S: moment(lastKey).add(1, 'second').toISOString() }, //? The primary value that defines the start key of a Query (others don't matter)
                     postGroup: { S: 'ALL_POSTS' },
                     email: { S: 'ANY_EMAIL' },
                     slug: { S: 'ANY_SLUG' },
@@ -75,10 +75,7 @@ export async function GET(request: Request) {
 
             const command = new QueryCommand(params);
             const result = await dbClient.send(command);
-            const postsData = result.Items;
-
-            console.log(`FETCH OF ${lastKey}`, postsData);
-            
+            const postsData = result.Items;       
             
             if (postsData && postsData?.length >= 1) {
                 const sortedPosts = postsData.sort((a, b) => {

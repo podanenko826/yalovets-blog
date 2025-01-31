@@ -7,9 +7,10 @@ import Cookies from 'js-cookie'; // Use js-cookie library for easy cookie handli
 import { DescribeTableCommand, DynamoDB, QueryCommand } from '@aws-sdk/client-dynamodb';
 import { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, ScanCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 
-import type { AuthorItem, PostItem } from '@/types';
+import type { AuthorItem, PaginationEntry, PaginationState, PostItem } from '@/types';
 import { getAuthorEmails, getAuthorByEmail } from './authors';
 import { request } from 'http';
+import { updatePagination } from './pagination';
 
 const AWS_REGION = process.env.NEXT_PUBLIC_REGION;
 const DYNAMODB_TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
@@ -49,16 +50,32 @@ type FetchPostsResponse = {
     lastKey: string; // The last key is the exclusive start key for pagination
 };
 
-export const getSortedPosts = async (limit: number, lastKey?: string ): Promise<{ posts: PostItem[], lastKey: string }> => {
-    if (!limit) return { posts: [], lastKey: '' };
+export function sortPosts(postsData: PostItem[]): PostItem[] {
+    const sortedPostsData = postsData.sort((a, b) => {
+        const dateOne = moment(a.date);
+        const dateTwo = moment(b.date);
+
+        return dateTwo.diff(dateOne); // Descending order
+    });
+
+    return sortedPostsData;
+}
+
+export const getPaginatedPosts = async (page: number, limit: number, paginationData: PaginationState): Promise<{ posts: PostItem[], lastKey: string }> => {
+    if (!limit || limit > 50) return { posts: [], lastKey: '' };
+
+    if (page > paginationData.totalPages) return { posts: [], lastKey: '' };
+
+    if (Object.keys(paginationData.paginationData).length === 0) return { posts: [], lastKey: '' };
 
     try {
-        console.log('RECIEVED LAstKey:', lastKey);
-        
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
-        const response = lastKey ? await fetch(`${baseUrl}/api/post?limit=${limit}&lastKey=${moment(lastKey).format('YYYY-MM-DD')}`) 
-                    : await fetch(`${baseUrl}/api/post?limit=${limit}&lastKey=${moment().format('YYYY-MM-DD')}`);
+        const pageStartingKey = paginationData.paginationData[page].date;
+
+        console.log(`Page ${page} starting key:`, pageStartingKey);
+
+        const response = await fetch(`${baseUrl}/api/post?limit=${limit}&lastKey=${pageStartingKey}`);
 
         if (!response.ok) {
             console.error('API returned an error:', response.status, await response.text());
@@ -69,13 +86,39 @@ export const getSortedPosts = async (limit: number, lastKey?: string ): Promise<
 
         const transformedPostData = transformPostData(data.posts);
 
-        const sortedPostsData = transformedPostData.sort((a, b) => {
-            // const format = 'YYYY-MM-DD';
-            const dateOne = moment(a.date);
-            const dateTwo = moment(b.date);
+        const sortedPostsData = sortPosts(transformedPostData)
 
-            return dateTwo.diff(dateOne); // Descending order
-        });
+        console.log('NORMALL SORTED:', sortedPostsData);
+        console.log('LASTKey fetched:', data.lastKey);
+        
+        return { posts: sortedPostsData, lastKey: data.lastKey };
+    } catch (err) {
+        console.error('Failed to fetch posts from the database: ', err);
+        return { posts: [], lastKey: '' };
+    }
+};
+
+export const getSortedPosts = async (limit: number, lastKey?: string ): Promise<{ posts: PostItem[], lastKey: string }> => {
+    if (!limit || limit > 50) return { posts: [], lastKey: '' };
+
+    try {
+        console.log('RECIEVED LAstKey:', lastKey);
+        
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+        const response = lastKey ? await fetch(`${baseUrl}/api/post?limit=${limit}&lastKey=${lastKey}`) 
+                    : await fetch(`${baseUrl}/api/post?limit=${limit}`);
+
+        if (!response.ok) {
+            console.error('API returned an error:', response.status, await response.text());
+            return { posts: [], lastKey: '' };
+        }
+
+        const data: FetchPostsResponse = await response.json();
+
+        const transformedPostData = transformPostData(data.posts);
+
+        const sortedPostsData = sortPosts(transformedPostData);
 
         console.log('NORMALL SORTED:', sortedPostsData);
         console.log('LASTKey fetched:', data.lastKey);
@@ -233,6 +276,50 @@ export const deleteMDXContent = async (slug: string): Promise<{ success: boolean
     return {success: false, slug: ''};
 };
 
+export const rebuildPagination = async (): Promise<Record<number, PaginationEntry>> => {
+    try {
+        console.log('Started pagination rebuild.');
+        
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+        const response = await fetch(`${baseUrl}/api/post?`, { method: 'GET' });
+
+        if (!response.ok) {
+            console.error('API returned an error:', response.status, await response.text());
+            return {};
+        }
+
+        const data: FetchPostsResponse = await response.json();
+
+        const transformedPostData = transformPostData(data.posts);
+
+        const sortedPostsData = sortPosts(transformedPostData);
+        
+        let newPagination: Record<number, PaginationEntry> = {};
+
+        for (let index = 0; index < sortedPostsData.length; index++) {
+            if (index % 14 === 0) { // Every 14th post
+                const post = sortedPostsData[index];
+                newPagination[index / 14 + 1] = { // +1 to make the page number 1-based
+                    date: post.date as string,
+                };
+            }
+        }
+
+        console.log('New Pagination:', newPagination);
+
+        if (Object.keys(newPagination).length === 0) return {};
+
+        const result = updatePagination(newPagination);
+
+        if (Object.keys(result).length > 0) console.log('Pagination rebuilt successfully.');
+        
+        return result;
+    } catch (err) {
+        console.error('Failed to rebuild pagination: ', err);
+        return {};
+    }
+}
+
 export const createPost = async (postData: Partial<PostItem>, markdown: string): Promise<{ slug: string; markdown: string }> => {
     const { email, title, description, date, imageUrl, readTime, postType, tags } = postData;
     let { slug } = postData;
@@ -288,6 +375,8 @@ export const createPost = async (postData: Partial<PostItem>, markdown: string):
             await deleteMDXContent(slug);
             return { slug: '', markdown: '' };  // Return a failed result
         }
+
+        await rebuildPagination();
 
         console.log('Post successfully uploaded:', newPost);
         return {slug, markdown: savedMarkdown.slug};

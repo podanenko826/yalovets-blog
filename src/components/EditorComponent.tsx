@@ -135,6 +135,9 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
         setTags(updatedTags);
     };
 
+    console.log(moment.utc().toISOString());
+    
+
     const handleSave = async () => {
         if (slug) {
             const { markdown, slug } = await createPost(Post, currentMarkdown);
