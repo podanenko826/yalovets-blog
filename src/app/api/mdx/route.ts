@@ -1,17 +1,24 @@
-// app/api/save-mdx/route.js
-
 import fs from 'fs';
+import moment from 'moment';
 import { NextResponse } from 'next/server';
 import path from 'path';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');
-    if (!slug) {
-        return new Response('Missing slug parameter', { status: 400 });
+    const date = searchParams.get('date');
+
+    if (!slug || !date) {
+        return new Response('Missing slug or date parameter', { status: 400 });
     }
 
-    const filePath = path.join(process.cwd(), 'src/articles', slug, `${slug}.mdx`);
+    const year = moment.utc(date).year().toString();
+    const month = (moment.utc(date).month() + 1).toString().padStart(2, '0');
+
+    const filePath = path.join(process.cwd(), 'src/articles', year, month, `${slug}.mdx`);
+
+    console.log('filePath:', filePath);
+    
 
     if (!fs.existsSync(filePath)) {
         return new Response('File not found', { status: 404 });
@@ -28,10 +35,16 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+    const { searchParams } = new URL(request.url);
+    const date = searchParams.get('date');
+
+    const year = moment.utc(date).year().toString();
+    const month = (moment.utc(date).month() + 1).toString().padStart(2, '0');
+
     const { fileName, content } = await request.json();
 
     // Define the directory to save the file
-    const dirPath = `src/articles/${fileName}`;
+    const dirPath = `src/articles/${year}/${month}`;
 
     // Ensure the directory exists
     if (!fs.existsSync(dirPath)) {
@@ -52,21 +65,25 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');
+    const date = searchParams.get('date');
 
-    if (!slug || slug === '') {
-        console.error('Missing slug paramether');
+    if (!slug || !date) {
+        console.error('Missing slug or date paramether');
         return NextResponse.json(false, { status: 400 });
     }
 
-    const dirPath = 'src/articles';
-    const filePath = path.join(process.cwd(), dirPath, slug);
+    const year = moment.utc(date).year().toString();
+    const month = (moment.utc(date).month() + 1).toString().padStart(2, '0');
+
+    const dirPath = `src/articles/${year}/${month}`;
+    const filePath = path.join(process.cwd(), dirPath, `${slug}.mdx`);
 
     if (!fs.existsSync(filePath)) {
         return NextResponse.json(false, { status: 404 });
     }
 
     try {
-        await fs.promises.rm(filePath, { recursive: true, force: true });
+        await fs.promises.rm(filePath);
         return NextResponse.json(true, { status: 200 });
     } catch (err) {
         console.error('File deletion error:', err);

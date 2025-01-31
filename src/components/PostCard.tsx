@@ -36,7 +36,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
     const format = 'YYYY-MM-DD'
 
     const handlePostOpen = async () => {
-        const mdxContent = await getMDXContent(post.slug);
+        const mdxContent = await getMDXContent(post.slug, post.date as string);
         
         const markdown = mdxContent.markdown;
         const previousPath = window.location.href;
@@ -52,8 +52,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
 
     const router = useRouter();
 
-    const handlePostDeletion = async (email: string, slug: string) => {
-        const deletedPostSlug = await deletePost({ email, slug });
+    const handlePostDeletion = async (email: string, slug: string, date: string) => {
+        const deletedPostSlug = await deletePost({ email, slug, date });
         if (deletedPostSlug) {
             router.refresh();
         }
@@ -559,7 +559,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                 <button type="button" className="btn-filled py-2 px-5" data-bs-dismiss="modal">
                                     Close
                                 </button>
-                                <button type="button" className="btn-filled btn-danger py-2 px-3" data-bs-dismiss="modal" onClick={() => handlePostDeletion(post.email, post.slug)}>
+                                <button type="button" className="btn-filled btn-danger py-2 px-3" data-bs-dismiss="modal" onClick={() => handlePostDeletion(post.email, post.slug, post.date as string)}>
                                     Delete post
                                 </button>
                             </div>

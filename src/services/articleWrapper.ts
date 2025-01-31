@@ -12,8 +12,8 @@ export function wrapArticles() {
 
     const dirContent = fs.readdirSync(dirPath);
 
-    for (let file of dirContent) {
-        const fileName = file.split('.mdx').at(0);
+    for (let folder of dirContent) {
+        const fileName = path.join(dirPath, folder, `${folder}.mdx`);
         console.log(fileName);
 
         if (fileName) {
@@ -26,8 +26,8 @@ export function wrapArticles() {
                     fs.mkdirSync(wrappedDirPath);
                 }
 
-                const sourcePath = path.join(dirPath, file);
-                const destinationPath = path.join(dirPath, fileName, file);
+                const sourcePath = path.join(dirPath, folder);
+                const destinationPath = path.join(dirPath, fileName, folder);
 
                 // Move the article to its dedicated folder
                 fs.rename(sourcePath, destinationPath, err => {

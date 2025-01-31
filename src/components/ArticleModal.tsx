@@ -100,7 +100,7 @@ const ArticleModal: React.FC = () => {
                 const post = posts.find(post => post.slug === postSlug) as PostItem;
                 if (!post) return;
 
-                const MdxContent = await getMDXContent(post.slug);
+                const MdxContent = await getMDXContent(post.slug, post.date as string);
                 const markdown = MdxContent.markdown;
                 const previousPath = window.location.href;
 

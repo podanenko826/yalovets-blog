@@ -173,12 +173,12 @@ export const formatPostDate = (date: Date) => {
     return moment(date).utc().toISOString();
 };
 
-export const getMDXContent = async (slug: string): Promise<{ slug: string; markdown: string }> => {
+export const getMDXContent = async (slug: string, date: string): Promise<{ slug: string; markdown: string }> => {
     try {
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
         // Fetch the markdown content
-        const response = await fetch(`${baseUrl}/api/mdx?slug=${slug}`, {
+        const response = await fetch(`${baseUrl}/api/mdx?slug=${slug}&date=${date}`, {
             method: 'GET',
         });
         if (!response.ok) {
@@ -205,7 +205,7 @@ export const getMDXContent = async (slug: string): Promise<{ slug: string; markd
     }
 };
 
-export const saveMDXContent = async (postTitle: string, markdown: string, slug?: string): Promise<{ content: string; slug: string }> => {
+export const saveMDXContent = async (postTitle: string, markdown: string, date: string, slug?: string): Promise<{ content: string; slug: string }> => {
     if (!slug) {
         slug = `${postTitle
             .replace(/[^a-zA-Z0-9 ]/g, '')
@@ -217,7 +217,7 @@ export const saveMDXContent = async (postTitle: string, markdown: string, slug?:
 
     try {
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
-        const response = await fetch(`${baseUrl}/api/mdx`, {
+        const response = await fetch(`${baseUrl}/api/mdx?date=${date}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -238,10 +238,10 @@ export const saveMDXContent = async (postTitle: string, markdown: string, slug?:
     return {content: '', slug: ''};
 };
 
-export const deleteMDXContent = async (slug: string): Promise<{ success: boolean; slug: string }> => {
+export const deleteMDXContent = async (slug: string, date: string): Promise<{ success: boolean; slug: string }> => {
     try {
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
-        const response = await fetch(`${baseUrl}/api/mdx?slug=${slug}`, {
+        const response = await fetch(`${baseUrl}/api/mdx?slug=${slug}&date=${date}`, {
             method: 'DELETE',
         });
 
@@ -321,7 +321,7 @@ export const createPost = async (postData: Partial<PostItem>, markdown: string):
     try {
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
-        const savedMarkdown = await saveMDXContent(title, markdown, slug);
+        const savedMarkdown = await saveMDXContent(title, markdown, date, slug);
 
         if (savedMarkdown.content === '' || savedMarkdown.slug === '') {
             console.error('Failed to save markdown content to file system. Post creation aborted.')
@@ -354,7 +354,7 @@ export const createPost = async (postData: Partial<PostItem>, markdown: string):
 
         if (!response.ok) {
             console.error('Failed to upload post metadata to DB. Post creation aborted.');
-            await deleteMDXContent(slug);
+            await deleteMDXContent(slug, newPost.date as string);
             return { slug: '', markdown: '' };  // Return a failed result
         }
 
@@ -380,7 +380,7 @@ export const updatePost = async (postData: Partial<PostItem>, markdown: string):
     try {
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
-        const savedMarkdown = await saveMDXContent(title, markdown, slug);
+        const savedMarkdown = await saveMDXContent(title, markdown, date, slug);
 
         if (savedMarkdown.content === '' || savedMarkdown.slug === '') {
             console.error('Failed to save markdown content to file system. Post updating aborted.')
@@ -425,7 +425,7 @@ export const updatePost = async (postData: Partial<PostItem>, markdown: string):
     return {slug: '', markdown: ''};
 };
 
-export const deletePost = async (postData: { email: string; slug: string }): Promise<string> => {
+export const deletePost = async (postData: { email: string; slug: string, date: string }): Promise<string> => {
     try {
         const { email, slug } = postData;
 
@@ -455,7 +455,7 @@ export const deletePost = async (postData: { email: string; slug: string }): Pro
         console.log('Post successfully deleted:', slug);
         
         // Deletes the Article folder in file system after successful metadata deletion
-        const deletedPost = await deleteMDXContent(slug);
+        const deletedPost = await deleteMDXContent(slug, postData.date);
 
         if (!deletedPost.success || !deletedPost.slug) {
             return '';
@@ -477,16 +477,17 @@ export const getPostsData = async (
     authorData: AuthorItem;
 }> => {
     try {
-        const mdxContent = await getMDXContent(slug);
+        
+        const postData = await getPost(slug);
+        
+        const authorData = await getAuthorByEmail(postData.email);
+        
+        const mdxContent = await getMDXContent(slug, postData.date as string);
+        const markdown = mdxContent.markdown;
+
         if (!mdxContent) {
             throw new Error('No content found for the given key.');
         }
-        const markdown = mdxContent.markdown;
-
-        const postData = await getPost(slug);
-
-        const authorData = await getAuthorByEmail(postData.email);
-
         return {
             slug,
             markdown,

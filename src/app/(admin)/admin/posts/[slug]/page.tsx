@@ -15,11 +15,11 @@ const PostEditor = dynamic(() => import('@/components/EditorComponent'), {
 const EditPage = async ({ params }: { params: { slug: string } }) => {
     const { slug } = params;
 
-    const data = await getMDXContent(slug);
-
     const postData = await getPost(slug);
     const authorData = await getAuthors();
     const tagsData = await getTagsData();
+
+    const data = await getMDXContent(slug, postData.date as string);
 
     if (!postData || !authorData || !tagsData) {
         return <p>Loading...</p>;
