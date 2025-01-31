@@ -11,7 +11,7 @@ import { ChangeEvent, FC, FormEvent, useEffect, useRef, useState } from 'react';
 
 import { AuthorItem, PostItem, PostPreviewItem, TagItem } from '@/types';
 
-import { createPost, formatPostDate, saveMDXContent } from '@/lib/posts';
+import { createPost, formatPostDate, saveMDXContent, updatePost } from '@/lib/posts';
 import React from 'react';
 import moment from 'moment';
 import dynamic from 'next/dynamic';
@@ -140,8 +140,8 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
 
     const handleSave = async () => {
         if (slug) {
-            const { markdown, slug } = await createPost(Post, currentMarkdown);
-
+            const { markdown, slug } = await updatePost(Post, currentMarkdown);
+    
             if (markdown && slug) {
                 window.open(`/${slug}`, '_blank', 'noopener,noreferrer');
                 setTimeout(() => {
@@ -150,7 +150,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
             }
         } else {
             const { markdown, slug } = await createPost(Post, currentMarkdown);
-
+    
             if (markdown && slug) {
                 window.open(`/${slug}`, '_blank', 'noopener,noreferrer');
                 setTimeout(() => {

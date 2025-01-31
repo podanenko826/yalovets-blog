@@ -75,7 +75,7 @@ export const getPaginatedPosts = async (page: number, limit: number, paginationD
 
         console.log(`Page ${page} starting key:`, pageStartingKey);
 
-        const response = await fetch(`${baseUrl}/api/post?limit=${limit}&lastKey=${pageStartingKey}`);
+        const response = await fetch(`${baseUrl}/api/posts?limit=${limit}&lastKey=${pageStartingKey}`);
 
         if (!response.ok) {
             console.error('API returned an error:', response.status, await response.text());
@@ -106,8 +106,8 @@ export const getSortedPosts = async (limit: number, lastKey?: string ): Promise<
         
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
-        const response = lastKey ? await fetch(`${baseUrl}/api/post?limit=${limit}&lastKey=${lastKey}`) 
-                    : await fetch(`${baseUrl}/api/post?limit=${limit}`);
+        const response = lastKey ? await fetch(`${baseUrl}/api/posts?limit=${limit}&lastKey=${lastKey}`) 
+                    : await fetch(`${baseUrl}/api/posts?limit=${limit}`);
 
         if (!response.ok) {
             console.error('API returned an error:', response.status, await response.text());
@@ -131,33 +131,15 @@ export const getSortedPosts = async (limit: number, lastKey?: string ): Promise<
 };
 
 export const getPost = async (slug: string): Promise<PostItem> => {
-    const authorEmails: any = await getAuthorEmails();
+    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+    const response = await fetch(`${baseUrl}/api/post-by-slug?slug=${slug}`, { method: 'GET' });
+    const data: PostItem[] = await response.json();
 
-    let post: any[] = [];
+    let post: any[] = []
 
-    for (const authorEmail of authorEmails) {
-        try {
-            const params = {
-                TableName: DYNAMODB_TABLE_NAME, // Replace with your actual posts table name
-                KeyConditionExpression: 'email = :email AND slug = :slug', // Querying by slug in the GSI
-                ExpressionAttributeValues: {
-                    ':email': { S: authorEmail }, // The email value to search for
-                    ':slug': { S: slug },
-                },
-            };
-
-            const command = new QueryCommand(params);
-            const result = await docClient.send(command);
-            const data = result.Items;
-
-            if (data && data.length > 0) {
-                post = [...post, ...data];
-            }
-        } catch (err) {
-            console.error('Error fetching content: ', err);
-        }
+    if (data.length > 0) {
+        post = [...data];
     }
-
     const transformedPostData = transformPostData(post);
 
     return transformedPostData[0];
@@ -281,7 +263,7 @@ export const rebuildPagination = async (): Promise<Record<number, PaginationEntr
         console.log('Started pagination rebuild.');
         
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
-        const response = await fetch(`${baseUrl}/api/post?`, { method: 'GET' });
+        const response = await fetch(`${baseUrl}/api/posts`, { method: 'GET' });
 
         if (!response.ok) {
             console.error('API returned an error:', response.status, await response.text());
@@ -362,7 +344,7 @@ export const createPost = async (postData: Partial<PostItem>, markdown: string):
         };
         
 
-        const response = await fetch(`${baseUrl}/api/post`, {
+        const response = await fetch(`${baseUrl}/api/posts`, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
@@ -387,6 +369,62 @@ export const createPost = async (postData: Partial<PostItem>, markdown: string):
     return {slug: '', markdown: ''};
 };
 
+export const updatePost = async (postData: Partial<PostItem>, markdown: string): Promise<{ slug: string; markdown: string }> => {
+    const { email, slug, title, description, date, modifyDate, imageUrl, readTime, postType, viewsCount, tags } = postData;
+    
+    if (!email || !slug || !title || !description || !date || !imageUrl || !readTime || !postType) {
+        console.error('Recieved invalid or incomplete post data');
+        return {slug: '', markdown: ''};
+    }
+
+    try {
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+        const savedMarkdown = await saveMDXContent(title, markdown, slug);
+
+        if (savedMarkdown.content === '' || savedMarkdown.slug === '') {
+            console.error('Failed to save markdown content to file system. Post updating aborted.')
+            return { slug: '', markdown: '' };
+        }
+
+        const updatedPost: PostItem = {
+            email,
+            slug,
+            title,
+            description,
+            imageUrl,
+            date: date,
+            modifyDate: modifyDate || moment.utc().toISOString(),
+            postType: postType,
+            tags: tags || [],
+            readTime: readTime,
+            viewsCount: viewsCount || 0,
+            postGroup: 'ALL_POSTS',
+        };
+        
+
+        const response = await fetch(`${baseUrl}/api/posts`, {
+            method: 'PUT',
+            headers: { 
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedPost),
+        });
+
+        if (!response.ok) {
+            console.error('Failed to upload post metadata to DB. Post creation aborted.');
+            return { slug: '', markdown: '' };  // Return a failed result
+        }
+
+        console.log('Post successfully updated:', updatedPost);
+        return {slug, markdown: savedMarkdown.slug};
+    } catch (error) {
+        console.error('Failed to update post:', error);
+    }
+
+    return {slug: '', markdown: ''};
+};
+
 export const deletePost = async (postData: { email: string; slug: string }): Promise<string> => {
     try {
         const { email, slug } = postData;
@@ -402,7 +440,7 @@ export const deletePost = async (postData: { email: string; slug: string }): Pro
             return '';
         }
 
-        const response = await fetch(`${baseUrl}/api/post`, {
+        const response = await fetch(`${baseUrl}/api/posts`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -495,7 +533,7 @@ async function incrementViewCount(email: string, slug: string) {
     try {
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
-        const response = await fetch(`${baseUrl}/api/incrementViewCount`, {
+        const response = await fetch(`${baseUrl}/api/increment-view-count`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, slug }),

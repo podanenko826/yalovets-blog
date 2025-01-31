@@ -25,123 +25,105 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     const { authors, setAuthors } = usePostContext();
     const { selectedPost } = usePostContext();
 
-    let author: AuthorItem | null = null;
-    if (authors) {
-        author = authors.find(author => author.authorKey === authorKey) as AuthorItem;
-    }
-
     const [authorData, setAuthorData] = useState<AuthorItem | null>(null);
-    const [postsData, setPostsData] = useState<PostItem[]>([]);
-
+    const [authorPosts, setAuthorPosts] = useState<PostItem[]>([]);
+    
     useEffect(() => {
-        document.title = `${author?.fullName} / Yalovets Blog`;
-    }, [document.URL]);
-
-    useEffect(() => {
-        if (author) {
-            setAuthorData(author);
+        if (authors.length > 0 && !authorData) {
+            setAuthorData(authors.find(author => author.authorKey === authorKey) as AuthorItem);
         }
-    }, [author, setAuthorData]);
+    }, [authors, authorData]);
 
     useEffect(() => {
-        if (posts) {
+        if (authorData) {
+            document.title = `${authorData?.fullName} / Yalovets Blog`;
+        } else {
+            document.title = `Author / Yalovets Blog`;
+        }
+    }, [document.URL, authorData]);
+
+    useEffect(() => {
+        if (posts.length > 0 && authorData) {
             const authorPosts = posts
                 .map(post => {
-                    if (post.email === author?.email) return post;
+                    if (post.email === authorData?.email) return post;
                 })
                 .filter(Boolean);
 
-            setPostsData(authorPosts as PostItem[]);
+            setAuthorPosts(authorPosts as PostItem[]);
         }
-    }, [posts, setPostsData]);
+    }, [posts, authorData]);
 
-    useEffect(() => {
-        const getAuthorData = async () => {
-            if (!author) {
-                const authorData = await getAuthors();
-                if (authorData) {
-                    setAuthors(authorData);
-                }
+    // useEffect(() => {
+    //     const getData = async () => {
+    //         try {
+    //             let sorted: PostItem[] | null = null;
+    //             if (posts.length > 0) {
+    //                 const postContextData = [...posts];
 
-                const author = authorData.find(author => author.authorKey === authorKey);
-                if (!author || !author.email) return notFound();
+    //                 //? Sort posts gotten from usePostContext
+    //                 sorted = postContextData.sort((a, b) => {
+    //                     const format = 'DD-MM-YYYY';
+    //                     const dateOne = moment(a.date, format);
+    //                     const dateTwo = moment(b.date, format);
 
-                setAuthorData(author);
-            }
-        };
-        getAuthorData();
-    }, [author, authorKey, setAuthors]);
+    //                     return dateTwo.diff(dateOne); // Descending order
+    //                 });
+    //             } else {
+    //                 sorted = await getSortedPosts();
 
-    useEffect(() => {
-        const getData = async () => {
-            try {
-                let sorted: PostItem[] | null = null;
-                if (posts.length > 0) {
-                    const postContextData = [...posts];
+    //                 if (sorted.length > 0) {
+    //                     setPosts(sorted);
+    //                 } else {
+    //                     return notFound();
+    //                 }
+    //             }
 
-                    //? Sort posts gotten from usePostContext
-                    sorted = postContextData.sort((a, b) => {
-                        const format = 'DD-MM-YYYY';
-                        const dateOne = moment(a.date, format);
-                        const dateTwo = moment(b.date, format);
+    //             if (!Array.isArray(sorted)) {
+    //                 console.error('Error: Sorted posts is not an array:', sorted);
+    //                 return;
+    //             }
+    //             // Ensure all posts have the expected structure
+    //             sorted.forEach((post, index) => {
+    //                 if (typeof post !== 'object' || post === null) {
+    //                     console.error(`Post at index ${index} is invalid:`, post);
+    //                 }
+    //             });
 
-                        return dateTwo.diff(dateOne); // Descending order
-                    });
-                } else {
-                    sorted = await getSortedPosts();
+    //             if (!author) {
+    //                 author = await getAuthorByKey(authorKey);
+    //             }
 
-                    if (sorted.length > 0) {
-                        setPosts(sorted);
-                    } else {
-                        return notFound();
-                    }
-                }
+    //             const authorPosts = sorted
+    //                 .map(post => {
+    //                     if (post.email === author?.email) return post;
+    //                 })
+    //                 .filter(Boolean) as PostItem[];
 
-                if (!Array.isArray(sorted)) {
-                    console.error('Error: Sorted posts is not an array:', sorted);
-                    return;
-                }
-                // Ensure all posts have the expected structure
-                sorted.forEach((post, index) => {
-                    if (typeof post !== 'object' || post === null) {
-                        console.error(`Post at index ${index} is invalid:`, post);
-                    }
-                });
+    //             if (authorPosts.length > 0) {
+    //                 setPostsData(authorPosts);
+    //             } else {
+    //                 return notFound();
+    //             }
+    //         } catch (error) {
+    //             console.error('Error in getData:', error);
+    //         }
+    //     };
 
-                if (!author) {
-                    author = await getAuthorByKey(authorKey);
-                }
-
-                const authorPosts = sorted
-                    .map(post => {
-                        if (post.email === author?.email) return post;
-                    })
-                    .filter(Boolean) as PostItem[];
-
-                if (authorPosts.length > 0) {
-                    setPostsData(authorPosts);
-                } else {
-                    return notFound();
-                }
-            } catch (error) {
-                console.error('Error in getData:', error);
-            }
-        };
-
-        getData();
-    }, [posts, setPosts, author, authors]);
+    //     getData();
+    // }, [posts, setPosts, author, authors]);
 
     return (
         <>
-            {authorData && postsData.length > 0 && (
+            {authorData && authorPosts.length > 0 && (
                 <div className="container">
                     <div className="container mb-5">
                         <div className={`${postCardStyles.profile_info} d-flex justify-content-center mt-4`}>
-                            <Image className={`${postCardStyles.pfp}`} src={`/${authorData!.profileImageUrl}`} alt="pfp" width={42.5} height={42.5} />
+                            <Image className={`${postCardStyles.pfp}`} src={`/${authorData.profileImageUrl}`} alt="pfp" width={42.5} height={42.5} />
                             <h2 className="p-2 m-0">{authorData!.fullName}</h2>
                         </div>
                         <div className="my-4 d-flex justify-content-center">
-                            <h5 className="m-0 p-0 col-9 subheading-small text-center">{authorData!.bio}</h5>
+                            <h5 className="m-0 p-0 col-9 subheading-small text-center">{authorData.bio}</h5>
                         </div>
                     </div>
 
@@ -149,12 +131,12 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
                         <div className="row post-list">
                             <div className="d-flex justify-content-center p-0 m-0 mt-5">
                                 <h3>
-                                    {authorData!.fullName}
-                                    {authorData!.fullName.at(-1)?.toLowerCase() === 's' ? "'" : "'s"} posts
+                                    {authorData.fullName}
+                                    {authorData.fullName.at(-1)?.toLowerCase() === 's' ? "'" : "'s"} posts
                                 </h3>
                             </div>
-                            {postsData.map((post, index) => (
-                                <LazyPostCard post={post as PostItem} authorData={authorData!} style="standard" index={index} key={index} />
+                            {authorPosts.map((post, index) => (
+                                <LazyPostCard post={post as PostItem} authorData={authorData} style="standard" index={index} key={index} />
                             ))}
                         </div>
                     </div>

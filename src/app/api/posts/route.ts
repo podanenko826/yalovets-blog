@@ -1,7 +1,6 @@
-import { getAuthorEmails } from '@/lib/authors';
 import { PostItem } from '@/types';
-import { AttributeValue, DynamoDBClient, QueryCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
-import { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBClient, QueryCommand } from '@aws-sdk/client-dynamodb';
+import { DeleteCommand, PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import moment from 'moment';
 import { NextResponse } from 'next/server';
 
@@ -14,16 +13,11 @@ const dbClient = new DynamoDBClient({
 
 const TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME || '';
 
-// /api/post (GET method)
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
 
-    const postSlug = searchParams.get('slug')?.split('/').at(-1);
     const limit: number | undefined = Number(searchParams.get('limit')) || undefined;
     let lastKey = searchParams.get('lastKey') || moment.utc().toISOString();
-
-    // let lastKey: { email: { S: string }; slug: { S: string } } | undefined = undefined;
-    console.log('LASTKEY:', lastKey);
 
     if (!TABLE_NAME) {
         return NextResponse.json({
@@ -32,86 +26,57 @@ export async function GET(request: Request) {
         }, { status: 500 });
     }
 
-    // First, attempt to fetch posts if we have a specific slug
-    if (postSlug) {
-        try {
-            const params = {
-                TableName: TABLE_NAME,
-                FilterExpression: 'slug = :slugValue',
-                ExpressionAttributeValues: {
-                    ':slugValue': { S: postSlug },
-                },
-            };
+    try {
+        const params = {
+            TableName: TABLE_NAME,
+            IndexName: 'GSI_PostsByDate',
+            KeyConditionExpression: 'postGroup = :postGroup',
+            ExpressionAttributeValues: {
+                ':postGroup': { S: 'ALL_POSTS' },
+            },
+            ExclusiveStartKey: {
+                //? The primary value that defines the start key of a Query (others don't matter)
+                date: { S: moment(lastKey).add(1, 'second').toISOString() },
+                postGroup: { S: 'ALL_POSTS' },
+                email: { S: 'ANY_EMAIL' },
+                slug: { S: 'ANY_SLUG' },
+            },
+            ScanIndexForward: false, // Descending order
+            Limit: limit,
+        };
 
-            const command = new QueryCommand(params);
-            const result = await dbClient.send(command);
-            const data = result.Items?.at(0);
-
-            return NextResponse.json(data, { status: 201 });
-        } catch (err) {
-            console.error('Failed to fetch data from the database: ', err);
-            return NextResponse.json(err, { status: 500 });
-        }
-    } else {
-        try {
-            // const lastKeys: Record<string, { email: { S: string }; slug: { S: string } } | undefined> = {};
-
-            const params = {
-                TableName: TABLE_NAME,
-                IndexName: 'GSI_PostsByDate',
-                KeyConditionExpression: 'postGroup = :postGroup',
-                ExpressionAttributeValues: {
-                    ':postGroup': { S: 'ALL_POSTS' },
-                },
-                ExclusiveStartKey: {
-                    date: { S: moment(lastKey).add(1, 'second').toISOString() }, //? The primary value that defines the start key of a Query (others don't matter)
-                    postGroup: { S: 'ALL_POSTS' },
-                    email: { S: 'ANY_EMAIL' },
-                    slug: { S: 'ANY_SLUG' },
-                },
-                ScanIndexForward: false, // Descending order
-                Limit: limit, // Fetch only the required number of items.
-            };
-
-            const command = new QueryCommand(params);
-            const result = await dbClient.send(command);
-            const postsData = result.Items;       
-            
-            if (postsData && postsData?.length >= 1) {
-                const sortedPosts = postsData.sort((a, b) => {
-                    // const format = 'YYYY-MM-DD';
-                    const dateOne = moment(a.date.S);
-                    const dateTwo = moment(b.date.S);
+        const command = new QueryCommand(params);
+        const result = await dbClient.send(command);
+        const postsData = result.Items;       
         
-                    return dateTwo.diff(dateOne); // Descending order
-                });
-                console.log(`LAST ITEM OF: `, sortedPosts[-1]);
-                
-                
-                const lastEvaluatedKey = sortedPosts.at(-1);
-                if (lastEvaluatedKey) {
-                    lastKey = lastEvaluatedKey.date.S || '';
-                }
-            }
-
-            if (!postsData || postsData.length === 0) {
-                return NextResponse.json({
-                    posts: [],
-                    lastKey: ''
-                }, { status: 201 });
-            }
-
-            console.log('LAAAAAAST:', lastKey);
+        if (postsData && postsData?.length >= 1) {
+            const sortedPosts = postsData.sort((a, b) => {
+                const dateOne = moment(a.date.S);
+                const dateTwo = moment(b.date.S);
+    
+                return dateTwo.diff(dateOne); // Descending order
+            });  
             
-
-            return NextResponse.json({
-                posts: postsData,
-                lastKey: lastKey,
-            }, { status: 201 });
-        } catch (err) {
-            console.error('Failed to fetch data from the database: ', err);
-            return NextResponse.json(err, { status: 500 });
+            const lastEvaluatedKey = sortedPosts.at(-1);
+            if (lastEvaluatedKey) {
+                lastKey = lastEvaluatedKey.date.S || '';
+            }
         }
+
+        if (!postsData || postsData.length === 0) {
+            return NextResponse.json({
+                posts: [],
+                lastKey: ''
+            }, { status: 201 });
+        }
+
+        return NextResponse.json({
+            posts: postsData,
+            lastKey: lastKey,
+        }, { status: 201 });
+    } catch (err) {
+        console.error('Failed to fetch data from the database: ', err);
+        return NextResponse.json(err, { status: 500 });
     }
 }
 
@@ -180,6 +145,66 @@ export async function POST(request: Request) {
     } catch (err) {
         console.error('Failed to upload post:', err);
         return NextResponse.json({ error: 'Failed to upload post' }, { status: 500 });
+    }
+}
+
+export async function PUT(request: Request) {
+    const postData = await request.json();
+    const { email, slug, description, imageUrl, date, postType, tags, readTime } = postData;
+    let { title, modifyDate } = postData;
+
+    if (!TABLE_NAME) {
+        return NextResponse.json({ error: 'Table name is not defined in environment variables' }, { status: 500 });
+    }
+
+    if (!email || !slug || !title || !description || !date || !imageUrl || !readTime || !postType) {
+        return NextResponse.json({ error: 'Recieved invalid or incomplete post data' }, { status: 500 });
+    }
+
+    // Ensure the fileName does not exceed 255 characters, including the '.mdx' extension
+    const MAX_FILENAME_LENGTH = 150;
+    const fileExtension = '.mdx';
+
+    // Truncate the slug if the full fileName would exceed the limit
+    if (title.length > MAX_FILENAME_LENGTH) {
+        title = title.slice(0, MAX_FILENAME_LENGTH - fileExtension.length);
+    }
+
+    modifyDate = modifyDate || moment.utc().toISOString();
+
+    console.log(postData);
+    
+    
+    try {
+        const command = new UpdateCommand({
+            TableName: TABLE_NAME,
+            Key: { email, slug },
+            UpdateExpression: `
+                SET title = :title,
+                    description = :description,
+                    imageUrl = :imageUrl,
+                    modifyDate = :modifyDate,
+                    postType = :postType,
+                    tags = :tags,
+                    readTime = :readTime
+            `,
+            ExpressionAttributeValues: {
+                ":title": title,
+                ":description": description,
+                ":imageUrl": imageUrl,
+                ":modifyDate": modifyDate,
+                ":postType": postType,
+                ":tags": tags || [],
+                ":readTime": readTime,
+            },
+            ReturnValues: "UPDATED_NEW",
+        });
+
+        await dbClient.send(command);
+        return NextResponse.json({ message: 'Successfully updated post' }, { status: 200 });
+    } catch (err) {
+        console.error('Failed to update post:', err);
+        return NextResponse.json({ error: 'Failed to update post' }, { status: 500 });
     }
 }
 
