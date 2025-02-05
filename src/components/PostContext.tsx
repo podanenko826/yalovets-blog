@@ -83,6 +83,32 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     /*
         Pagination logic
     */
+   
+    const PAGINATION_STORAGE_KEY = "cachedPagination";
+    const PAGINATION_EXPIRATION_TIME = 1000 * 60 * 60 * 2; // 2 hours
+
+    const savePaginationToLocalStorage = (newPagination: PaginationState) => {
+        const data = {
+            pagination: newPagination,
+            timestamp: Date.now(),
+        };
+        localStorage.setItem(PAGINATION_STORAGE_KEY, JSON.stringify(data));
+    };
+
+    const getPaginationFromLocalStorage = (): PaginationState | null => {
+        const data = localStorage.getItem(PAGINATION_STORAGE_KEY);
+        if (!data) return null;
+
+        const { pagination, timestamp } = JSON.parse(data);
+
+        // Check expiration
+        if (Date.now() - timestamp > PAGINATION_EXPIRATION_TIME) {
+            localStorage.removeItem(PAGINATION_STORAGE_KEY);
+            return null;
+        }
+
+        return pagination;
+    };
 
     useEffect(() => {
         if (typeof window !== "undefined") { // Prevents server-side execution
@@ -93,6 +119,15 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     useEffect(() => {
         const fetchPagination = async () => {
             if (!originalPagination) {
+                const cachedPagination = getPaginationFromLocalStorage();
+                console.log('cachedPagination: ', cachedPagination);
+                
+                if (cachedPagination) {
+                    setOriginalPagination(cachedPagination);
+                    console.log('Got pagination from cache');
+                    return;
+                }
+
                 const paginationData = await getPaginationData();
                 const totalPages = Object.keys(paginationData).length;
     
@@ -100,6 +135,12 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     totalPages,
                     paginationData,
                 });
+                savePaginationToLocalStorage({
+                    totalPages,
+                    paginationData,
+                });
+                console.log('saved: ', totalPages, paginationData);
+                
             }
         };
     
@@ -136,6 +177,46 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
         Post logic
     */
 
+    const POSTS_STORAGE_KEY = "cachedPosts";
+    const POSTS_EXPIRATION_TIME = 1000 * 60 * 60 * 2; // 2 hours
+
+    const savePostsToLocalStorage = (newPosts: PostItem[]) => {
+        const storedData = localStorage.getItem(POSTS_STORAGE_KEY);
+        let existingPosts: PostItem[] = [];
+    
+        if (storedData) {
+            const parsedData = JSON.parse(storedData);
+            if (Date.now() - parsedData.timestamp < POSTS_EXPIRATION_TIME) {
+                existingPosts = parsedData.posts;
+            }
+        }
+    
+        const postMap = new Map(existingPosts.map(post => [post.slug, post]));
+        newPosts.forEach(post => postMap.set(post.slug, post));
+    
+        const updatedPosts = Array.from(postMap.values());
+    
+        localStorage.setItem(POSTS_STORAGE_KEY, JSON.stringify({
+            posts: updatedPosts,
+            timestamp: Date.now(),
+        }));
+    };
+
+    const getPostsFromLocalStorage = (): PostItem[] | null => {
+        const data = localStorage.getItem(POSTS_STORAGE_KEY);
+        if (!data) return null;
+
+        const { posts, timestamp } = JSON.parse(data);
+
+        // Check expiration
+        if (Date.now() - timestamp > POSTS_EXPIRATION_TIME) {
+            localStorage.removeItem(POSTS_STORAGE_KEY);
+            return null;
+        }
+
+        return posts;
+    };
+
     const findStartPostIndexByDate = (date: string, posts: PostItem[]): number => {
         return posts.findIndex(post => post.date === date);
     };
@@ -148,6 +229,18 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setIsModalOpen(false); // Close the modal
         }
     }, [pathname, selectedPost]);
+
+    useEffect(() => {
+        const cachedPosts = getPostsFromLocalStorage();
+        console.log(cachedPosts);
+        
+        if (cachedPosts) {
+            setPosts(cachedPosts);
+            console.log('Got from the cache');
+            
+            return;
+        }
+    }, [])
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -173,6 +266,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 const sortedCombinedPosts = sortPosts([...combinedPosts]);
                 
                 setPosts([...sortedCombinedPosts]);
+                savePostsToLocalStorage([...sortedCombinedPosts]);
 
                 // Update lastKey for pagination (only if it changes)
                 if (postsData.lastKey && postsData.lastKey !== lastKey) {
@@ -216,14 +310,14 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 }
     
                 if (postsData.posts.length > 0) {
-                    setPosts(prevPosts => {
-                        const existingSlugs = new Set(prevPosts.map(post => post.slug));
-                        const newUniquePosts = postsData.posts.filter(post => !existingSlugs.has(post.slug));
-                    
-                        const combinedPosts = [...prevPosts, ...newUniquePosts];
-                        return [...sortPosts(combinedPosts)]; // Ensure new reference
-                    });
-                    
+                    const existingSlugs = new Set(posts.map(post => post.slug));
+                    const newUniquePosts = postsData.posts.filter(post => !existingSlugs.has(post.slug));
+                
+                    const combinedPosts = [...posts, ...newUniquePosts];
+                    const sortedCombinedPosts = sortPosts(combinedPosts);
+                    setPosts([...sortedCombinedPosts]);
+
+                    savePostsToLocalStorage([...sortedCombinedPosts]);
                 }
 
                 // setPage(null);
@@ -237,16 +331,74 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
         fetchPostsByPage();
     }, [request, limit, page, pagination.paginationData]);
 
+    /* 
+        Author logic
+    */
+
+    const AUTHORS_STORAGE_KEY = "cachedAuthors";
+    const AUTHORS_EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 24 hours
+
+    const saveAuthorsToLocalStorage = (newAuthors: AuthorItem[]) => {
+        const storedData = localStorage.getItem(AUTHORS_STORAGE_KEY);
+        let existingAuthors: AuthorItem[] = [];
+    
+        if (storedData) {
+            const parsedData = JSON.parse(storedData);
+            if (Date.now() - parsedData.timestamp < AUTHORS_EXPIRATION_TIME) {
+                existingAuthors = parsedData;
+            }
+        }
+    
+        const authorMap = new Map(existingAuthors.map(author => [author.email, author]));
+        newAuthors.forEach(author => authorMap.set(author.email, author));
+    
+        const updatedAuthors = Array.from(authorMap.values());
+    
+        localStorage.setItem(AUTHORS_STORAGE_KEY, JSON.stringify({
+            authors: updatedAuthors,
+            timestamp: Date.now(),
+        }));
+    };
+
+    const getAuthorsFromLocalStorage = (): AuthorItem[] | null => {
+        const data = localStorage.getItem(AUTHORS_STORAGE_KEY);
+        if (!data) return null;
+
+        const { authors, timestamp } = JSON.parse(data);
+
+        // Check expiration
+        if (Date.now() - timestamp > AUTHORS_EXPIRATION_TIME) {
+            localStorage.removeItem(AUTHORS_STORAGE_KEY);
+            return null;
+        }
+
+        return authors;
+    };
+
     useEffect(() => {
         const getAuthorsData = async () => {
             if (authors.length === 0) {
+                const cachedAuthors = getAuthorsFromLocalStorage();
+                console.log(cachedAuthors);
+                
+                if (cachedAuthors) {
+                    setAuthors(cachedAuthors)
+                    console.log('Fetched autorhs from cache');
+                    return;
+                }
+
                 const authors = await getAuthors();
                 setAuthors(authors);
+                saveAuthorsToLocalStorage(authors);
             }
         };
 
         getAuthorsData();
     }, [authors, setAuthors]);
+
+    /*
+        ArticleModal logic
+    */
 
     // Trigger the useEffect to fetch another stack of posts
     const fetchPosts = (limit: number, page?: number) => {
