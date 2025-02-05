@@ -51,10 +51,10 @@ type FetchPostsResponse = {
 };
 
 export function sortPosts(postsData: PostItem[]): PostItem[] {
-    const sortedPostsData = postsData.sort((a, b) => {
+    const sortedPostsData = [...postsData].sort((a, b) => {
         const dateOne = moment(a.date);
         const dateTwo = moment(b.date);
-
+        
         return dateTwo.diff(dateOne); // Descending order
     });
 
@@ -460,6 +460,8 @@ export const deletePost = async (postData: { email: string; slug: string, date: 
         if (!deletedPost.success || !deletedPost.slug) {
             return '';
         }
+
+        await rebuildPagination();
 
         return deletedPost.slug;
     } catch (error) {

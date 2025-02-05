@@ -161,7 +161,7 @@ const ArticleModal: React.FC = () => {
                                                 <button onClick={() => closeModal()} className="d-block d-md-none btn-outlined py-2 px-md-3">
                                                     ← Back
                                                 </button>
-                                                <button onClick={() => closeModal()} className="d-none d-md-block btn-pill py-2 px-md-3">
+                                                <button onClick={() => closeModal()} className="d-none d-md-block btn-pill py-2 px-md-2">
                                                     ←
                                                 </button>
                                             </div>

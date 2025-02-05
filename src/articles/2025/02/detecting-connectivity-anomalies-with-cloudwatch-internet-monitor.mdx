@@ -1,0 +1,76 @@
+Imagine customer support informs you that some customers can no longer access your web application. Immediately you check the monitoring, but no abnormalities are visible on the dashboard. No alarm has been triggered. So, what’s the problem?
+
+The number of components that need to work together flawlessly to ensure a customer is able to access your web application is tremendous. It’s not only the components you control, like the application, EC2 instances, ALB, and so on, but also many components out of your control. For example, there might be an issue with the peering between your customer’s Internet Service Provider (ISP) and the AWS network.
+
+But how to monitor the availability and performance of the Internet? [Amazon CloudWatch Internet Monitor](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-InternetMonitor.html) provides insights into network connectivity issues between ISPs and the AWS network.
+
+![Detecting connectivity anomalies with CloudWatch Internet Monitor](https://cloudonaut.io/images/2023/06/internet-monitor-title.jpg "Detecting connectivity anomalies with CloudWatch Internet Monitor")
+
+## Why?
+
+The Internet Monitor by AWS provides insights into networking issues that affect your customers’ experience. The following screenshot shows a performance issue detected by Internet Monitor affecting readers of this blog dialing in from Oslo.
+
+![CloudWatch Internet Monitor detects a performance issue for users from Oslo](https://cloudonaut.io/images/2023/06/internet-monitor-event.png "CloudWatch Internet Monitor detects a performance issue for users from Oslo")
+
+Of course, we cannot fix that issue ourselves. Instead, we can only wait for the ISP or AWS to fix the networking issue. But insights into networking issues are essential when communicating with customers, such as answering support requests.
+
+Besides that, the Internet Monitor helps to validate or improve your networking architecture. For example, moving your web application to another region, using CloudFront or Network Accelerator, or even going multi-region.
+
+## How?
+
+The following figure illustrates the Internet Monitor supports monitoring the following resources.
+
+* CloudFront
+* WorkSpaces
+* VPC
+
+![How does CloudWatch Internet Monitor work?](https://cloudonaut.io/images/2023/06/internetmonitorig-overview.png "How does CloudWatch Internet Monitor work?")
+
+Please note that Internet Monitor does support VPC monitoring only in some regions (see [Supported AWS Regions for Amazon CloudWatch Internet Monitor](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-InternetMonitor.Regions.html)).
+
+Internet Monitor monitors the subset of the Internet accessed by users of your web application. Unlike other tools that monitor web applications globally, Internet Monitor specifically targets your web application’s traffic. It utilizes powerful probes and algorithms to detect connectivity issues and alerts you through health events. By overlaying the traffic profile of your active viewers, it creates a performance and availability map. The tool publishes internet measurements every five minutes for the top 500 city-networks and can publish measures for all monitored city-networks to an Amazon S3 bucket.
+
+The following instructions guide you through creating a monitor.
+
+Open [CloudWatch Internet Monitor](https://us-east-1.console.aws.amazon.com/cloudwatch/home#internet-monitor:monitors) via AWS Management Console.
+
+Press the **Create monitor** button.
+
+Define a name for the monitor and select the resource to monitor.
+
+![Creating a Internet Monitor (Part 2)](https://cloudonaut.io/images/2023/06/internet-monitor-create-01.png "Creating a Internet Monitor (Part 2)")
+
+Select monitoring 100% of the traffic. Specify a maximum number of monitored city-networks. Monitor up to 100 city-networks free of charge per AWS account.
+
+![Creating a Internet Monitor (Part 2)](https://cloudonaut.io/images/2023/06/internet-monitor-create-02.png "Creating a Internet Monitor (Part 2)")
+
+Click the **Next** button.
+Review your inputs and press the \**Create monitor* button.
+
+Wait a few hours for data about the internet availability and performance affecting the monitored resource arrives. For example, historical data about the monitored resource, a CloudFront distribution in our example, shows up.
+
+![Amazon CloudWatch Internet Monitor shows historical data](https://cloudonaut.io/images/2023/06/internet-monitor-historical-explorer.png "Amazon CloudWatch Internet Monitor shows historical data")
+
+## Pricing
+
+The minimum monthly cost to monitor a resource (CloudFront distribution, WorksSpaces directory, or a VPC) is about $7. But only if you limit the number of monitored city-networks to 100.
+
+If you want to monitor more than 100 city-networks, you are paying $0.74 per 10,000 monitored city-networks per hour.
+
+The [pricing example provided by AWS](https://aws.amazon.com/cloudwatch/pricing/) calculates monthly costs of $2600 to monitor 10 CloudFront distributions and 20 Virtual Private Clouds (VPCs) among 45,000 city-networks.
+
+In our example of monitoring our blog, we pay $22 per month for 1 CloudFront distribution and about 300 city-networks.
+
+> Be warned. Limit the maximum number of monitored city-networks to avoid unexpected costs.
+
+## Recieve alerts in realtime
+
+Internet Monitor publishes events to EventBridge, allowing you to receive realtime alerts.
+
+![Internet Monitor sends alerts to EventBridge](https://cloudonaut.io/images/2023/06/internetmonitorig-realtime-alert.png "Internet Monitor sends alerts to EventBridge")
+
+For example, I added a feature to marbot, our AWS monitoring solution, which configures an EventBridge rule, forwards alerts to marbot’s API, and displays the alert in Slack or Microsoft Teams. See [Monitoring: Amazon CloudWatch Internet Monitor](https://marbot.io/help/monitoring-amazon-cloudwatch-internet-monitor.html) for details.
+
+## Summary
+
+**Amazon CloudWatch Internet Monitor** provides insights into connectivity issues between Internet Service Providers (ISPs) and the AWS network. In my opinion, Internet Monitor is a nice-to-have for most web applications. Being aware of networking issues is helpful for customer care. Besides that, insights into networking issues might help make data-driven decisions about cloud architecture. Other than that, there is little that you can do when Internet Monitor informs you about a network degradation than waiting for the ISP and AWS to fix the issue. For us, monitoring our blog with Internet Monitor provides little value. Therefore, I will disable the monitor.

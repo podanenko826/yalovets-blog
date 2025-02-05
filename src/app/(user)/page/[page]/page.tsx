@@ -1,46 +1,60 @@
 'use client';
+import '@/app/page.css';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-import { getPostsCount } from '@/lib/posts';
-import { AuthorItem } from '@/types';
+import { getPostsCount, sortPosts } from '@/lib/posts';
+import { AuthorItem, PaginationEntry, PaginationState, PostItem } from '@/types';
 import { usePostContext } from '@/components/PostContext';
 
 import PostList from '@/components/PostList';
+import PaginationPreferences from '@/components/PaginationPreferences';
+
 
 import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from 'react-icons/md';
 import { MdOutlineKeyboardDoubleArrowLeft, MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md';
+import { MdSettings } from "react-icons/md";
+import { notFound } from 'next/navigation';
 
 export default function BlogPage({ params }: { params: { page: string } }) {
     const currentPage = parseInt(params.page, 10) || 1;
     const { posts } = usePostContext();
-    const { lastKey } = usePostContext();
     const { fetchPosts } = usePostContext();
+    const { userConfig } = usePostContext();
+    const { selectedPost } = usePostContext();
+    const { pagination } = usePostContext();
+    const { postCount, setPostCount } = usePostContext();
 
-    const [authorData] = useState<AuthorItem[]>([]);
-
-    const [postsCount, setPostsCount] = useState<number>(0);
+    const [paginationModalOpen, setPaginationModalOpen] = useState<boolean>(false);
 
     useEffect(() => {
-        document.title = `Page ${currentPage || 1} / Yalovets Blog`;
-    }, [document.URL]);
+        if (!selectedPost && typeof document !== "undefined") {
+            document.title = `Page ${currentPage || 1} / Yalovets Blog`;
+        }
+    }, [selectedPost]);
+
+    if (Object.keys(pagination.paginationData).length > 0 && parseInt(params.page) > pagination.totalPages) return notFound();
 
     useEffect(() => {
         const getPostsLength = async () => {
+            if (postCount > 0) return;
+
             const count = await getPostsCount();
 
-            if (count) setPostsCount(count);
+            if (count) setPostCount(count);
         }
 
         getPostsLength();
-    }, [])
+    }, [postCount, setPostCount])
 
-    const ARTICLES_PER_PAGE = 14; // Define the number of posts per page //? (should be 14 by design and adjustable to 29)
-    
-    const startIndex = posts.length > ((currentPage - 1) * ARTICLES_PER_PAGE) 
-        ? ((currentPage - 1) * ARTICLES_PER_PAGE) 
-        : 0;
-    const pageCount = Math.ceil(postsCount / ARTICLES_PER_PAGE);
+    // Getting the exact starting key for the particular page
+    const _pagination: PaginationState = pagination as PaginationState;
+    const startingKey: PaginationEntry | undefined = Object.entries(_pagination.paginationData)
+        .find(([key, value]) => key.toString() === params.page)?.[1];
+
+    const ARTICLES_PER_PAGE = userConfig.postsPerPage; // Define the number of posts per page //? (should be 14 by design and adjustable to 30 or 44)
+    const pageCount = pagination.totalPages;
+    const startIndex = posts.findIndex(article => article.date === startingKey?.date);
 
     const paginatedArticles = posts.slice(startIndex, startIndex + ARTICLES_PER_PAGE);
 
@@ -48,7 +62,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
         if (ARTICLES_PER_PAGE && params.page) {
             fetchPosts(ARTICLES_PER_PAGE, Number(params.page)); 
         }
-    }, [ARTICLES_PER_PAGE, params.page])
+    }, [ARTICLES_PER_PAGE, params.page, pagination.totalPages])
 
     // Pagination logic
     const rangeStart = Math.max(currentPage - 2, 1); // At least 2 pages to the left
@@ -69,19 +83,21 @@ export default function BlogPage({ params }: { params: { page: string } }) {
 
     return (
         <>
-            {posts.length > 0 && paginatedArticles.length > 0 && authorData ? (
+            {posts.length > 0 && paginatedArticles.length > 0 ? (
                 <main id="body">
                     <div className="container posts" id="posts">
-                        <h1 className="heading heading-large mt-5">Page {currentPage}</h1>
-                        <button onClick={() => console.log(postsCount)}>
-                            Print Count
-                        </button>
-                        <button onClick={() => console.log(posts)}>
-                            Print Posts
-                        </button>
-                        <button onClick={() => console.log(lastKey)}>
-                            Print Last Key
-                        </button>
+                        <div className='container p-0'>
+                            <div className='container d-flex p-0 pt-3 mt-5 justify-content-between'>
+                                <h1 className="heading m-0 p-0 heading-large">Page {currentPage}</h1>
+                                <button onClick={() => setPaginationModalOpen(prev => !prev)} className='btn-pill py-2 px-2'><MdSettings className='btn-pill-svg' /></button>
+
+                            </div>
+
+                            {paginationModalOpen && (
+                                <PaginationPreferences setModalOpen={setPaginationModalOpen} />
+                            )}
+                        </div>
+
                         <div className="row post-list">
                             <PostList displayMode='linear' limit={ARTICLES_PER_PAGE} style='full' postsData={paginatedArticles} />
                         </div>

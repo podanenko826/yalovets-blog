@@ -9,6 +9,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 
 // Types
 interface PostContextType {
+    userConfig: { theme: string, postsPerPage: number };
+    setUserConfig: React.Dispatch<React.SetStateAction<{ theme: string, postsPerPage: number }>>;
     openModal: (post: PostItem, markdown: string, previousPath: string) => void;
     closeModal: () => void;
     posts: PostItem[];
@@ -27,9 +29,11 @@ interface PostContextType {
     setTags: React.Dispatch<React.SetStateAction<TagItem[]>>;
     fetchPosts: (limit: number, page?: number) => void;
     lastKey: string | null;
-    pagination: Record<number, PaginationEntry>;
-    setPagination: React.Dispatch<React.SetStateAction<PaginationState>>;
     setLastKey: React.Dispatch<React.SetStateAction<string>>;
+    pagination: PaginationState;
+    setPagination: React.Dispatch<React.SetStateAction<PaginationState>>;
+    postCount: number;
+    setPostCount: React.Dispatch<React.SetStateAction<number>>;
     loading: boolean;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -44,6 +48,12 @@ const PostContext = createContext<PostContextType | undefined>(undefined);
 
 // Provider
 export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const [userConfig, setUserConfig] = useState<{ theme: string, postsPerPage: number }>(() => {
+        if (typeof window === "undefined") return { theme: "light", postsPerPage: 14 }; // Prevent SSR errors
+
+        const storedConfig = localStorage.getItem("userConfig");
+        return storedConfig ? JSON.parse(storedConfig) : { theme: "light", postsPerPage: 14 };
+    });
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [selectedPost, setSelectedPost] = useState<PostItem | null>(null);
     const [expandedPost, setExpandedPost] = useState<{ post: PostItem; boundingBox: DOMRect } | null>(null);
@@ -51,6 +61,8 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [selectedMarkdown, setSelectedMarkdown] = useState<string | null>(null);
     const [previousPath, setPreviousPath] = useState<string | null>(null);
     const [tags, setTags] = useState<TagItem[]>([]);
+
+    const [originalPagination, setOriginalPagination] = useState<PaginationState | null>(null);
     const [pagination, setPagination] = useState<PaginationState>({
         totalPages: 1,
         paginationData: {},
@@ -59,14 +71,74 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [posts, setPosts] = useState<PostItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
-    const [fetchedPages, setFetchedPages] = useState<number[]>([])
-
     const [lastKey, setLastKey] = useState<string>('');
     const [limit, setLimit] = useState<number | null>(null);
     const [page, setPage] = useState<number | null>(null);
+    const [postCount, setPostCount] = useState<number>(0);
+
     const [request, setRequest] = useState<number>(0);
 
     const pathname = usePathname();
+
+    /*
+        Pagination logic
+    */
+
+    useEffect(() => {
+        if (typeof window !== "undefined") { // Prevents server-side execution
+            localStorage.setItem('userConfig', JSON.stringify(userConfig));
+        }
+    }, [userConfig]);
+
+    useEffect(() => {
+        const fetchPagination = async () => {
+            if (!originalPagination) {
+                const paginationData = await getPaginationData();
+                const totalPages = Object.keys(paginationData).length;
+    
+                setOriginalPagination({
+                    totalPages,
+                    paginationData,
+                });
+            }
+        };
+    
+        fetchPagination();
+    }, [originalPagination]);
+
+    useEffect(() => {
+        if (!originalPagination) return;
+    
+        if (userConfig.postsPerPage === 14) {
+            // Restore original pagination
+            setPagination(originalPagination);
+            return;
+        }
+    
+        let modifiedPagination: Record<number, PaginationEntry> = {};
+        Object.entries(originalPagination.paginationData).forEach(([key, value], index) => {
+            if (userConfig.postsPerPage === 28 && index % 2 === 0) {
+                modifiedPagination[parseInt(key) > 1 ? (parseInt(key) - 1) : parseInt(key)] = { date: value.date };
+            } else if (userConfig.postsPerPage === 42 && index % 3 === 0) {
+                modifiedPagination[parseInt(key)] = { date: value.date };
+            }
+        });       
+
+        setPagination({
+            totalPages: Object.keys(modifiedPagination).length,
+            paginationData: modifiedPagination,
+        });
+
+    
+    }, [userConfig.postsPerPage, originalPagination]);
+
+    /*
+        Post logic
+    */
+
+    const findStartPostIndexByDate = (date: string, posts: PostItem[]): number => {
+        return posts.findIndex(post => post.date === date);
+    };
 
     useEffect(() => {
         // Automatically close modal if URL doesn't match the selected post
@@ -79,37 +151,27 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         const fetchPosts = async () => {
-            if (!limit || limit > 50) return;
+            if (page || !limit || limit > 50) return;
+            if (!userConfig.postsPerPage) return;
             
             setLoading(true);
             
             try {
                 let postsData;
 
-                if (page && fetchedPages.includes(page)) return;
-
-                if (page && pagination.paginationData && !fetchedPages.includes(page)) {
-                    postsData = await getPaginatedPosts(page, 14, pagination);
-                    
-                    if (postsData.posts.length > 0) setFetchedPages(prev => [...prev, page])
-                } else if (lastKey) {
+                if (lastKey) {
                     postsData = await getSortedPosts(limit, lastKey);
                 } else {
-                    postsData = await getSortedPosts(limit)
+                    postsData = await getSortedPosts(limit);
                 }
                 
                 const existingSlugs = new Set(posts.map(post => post.slug));
                 const newUniquePosts = postsData.posts.filter(post => !existingSlugs.has(post.slug));
-                
-                // Log unique posts
-                console.log('New unique:', newUniquePosts);
 
                 // Clone and combine posts, avoiding mutation
                 const combinedPosts = [...posts, ...newUniquePosts];
-
-                const sortedCombinedPosts = sortPosts(combinedPosts);
+                const sortedCombinedPosts = sortPosts([...combinedPosts]);
                 
-                // Set posts if they've changed (deep clone ensures no mutation)
                 setPosts([...sortedCombinedPosts]);
 
                 // Update lastKey for pagination (only if it changes)
@@ -124,7 +186,56 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
     
         fetchPosts();
-    }, [request, limit, page, authors]);
+    }, [request, limit]);
+
+    useEffect(() => {
+        const fetchPostsByPage = async () => {
+            if (!page || !limit || limit > 50) return;
+            if (!userConfig.postsPerPage) return;
+            if (Object.keys(pagination.paginationData).length === 0) return;
+            
+            setLoading(true);
+            
+            try {
+                let postsData: { posts: PostItem[]; lastKey: string; } = { posts: [], lastKey: ''};
+
+                const currentPageStartingDate = pagination.paginationData[page]?.date;
+                const currentPageStartPostIndex = findStartPostIndexByDate(currentPageStartingDate, posts);
+
+                if (currentPageStartPostIndex >= 0) {
+                    const pagePosts = posts.slice(currentPageStartPostIndex, currentPageStartPostIndex + userConfig.postsPerPage);
+                    
+                    if (pagePosts.length > 0) postsData = {
+                        lastKey: pagePosts.at(-1)?.date || '',
+                        posts: pagePosts
+                    };
+                }
+
+                if (postsData.posts.length === 0) {
+                    postsData = await getPaginatedPosts(page, userConfig.postsPerPage, pagination);
+                }
+    
+                if (postsData.posts.length > 0) {
+                    setPosts(prevPosts => {
+                        const existingSlugs = new Set(prevPosts.map(post => post.slug));
+                        const newUniquePosts = postsData.posts.filter(post => !existingSlugs.has(post.slug));
+                    
+                        const combinedPosts = [...prevPosts, ...newUniquePosts];
+                        return [...sortPosts(combinedPosts)]; // Ensure new reference
+                    });
+                    
+                }
+
+                // setPage(null);
+            } catch (error) {
+                console.error("Error fetching posts:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        fetchPostsByPage();
+    }, [request, limit, page, pagination.paginationData]);
 
     useEffect(() => {
         const getAuthorsData = async () => {
@@ -136,23 +247,6 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         getAuthorsData();
     }, [authors, setAuthors]);
-
-    useEffect(() => {
-        const getPagination = async () => {
-            if (Object.keys(pagination.paginationData).length === 0) {
-                const pagination: Record<number, PaginationEntry> = await getPaginationData();
-    
-                const totalPages = Object.keys(pagination).length;
-                
-                setPagination({
-                    totalPages,
-                    paginationData: pagination
-                });
-            }
-        }
-
-        getPagination();
-    }, [pagination, setPagination])
 
     // Trigger the useEffect to fetch another stack of posts
     const fetchPosts = (limit: number, page?: number) => {
@@ -189,6 +283,8 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return (
         <PostContext.Provider
             value={{
+                userConfig,
+                setUserConfig,
                 openModal,
                 closeModal,
                 posts,
@@ -210,6 +306,8 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 setLastKey,
                 pagination,
                 setPagination,
+                postCount,
+                setPostCount,
                 loading,
                 setLoading,
             }}>

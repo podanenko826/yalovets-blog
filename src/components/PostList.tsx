@@ -24,21 +24,14 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
     const [sortedPosts, setSortedPosts] = useState<PostItem[]>([]);
 
     useEffect(() => {
-        console.log('Recieved:', postsData);
-        
-    }, [postsData])
-
-    useEffect(() => {
         let sortedPosts;
 
         if (postsData && postsData?.length > 0) {
             sortedPosts = [...postsData];
         } else {
-            const format = 'YYYY-MM-DD';
-
             sortedPosts = [...posts].sort((a, b) => {
-                const dateOne = moment(a.date, format);
-                const dateTwo = moment(b.date, format);
+                const dateOne = moment(a.date);
+                const dateTwo = moment(b.date);
                 return dateTwo.diff(dateOne); // Sorting by date (descending)
             });
         }
@@ -47,13 +40,6 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
         setSortedPosts(sortedPosts); // Set sorted posts state
     }, [posts, postsData]);  // Recalculate whenever `posts` change
 
-    // useEffect(() => {
-    //     const fetchPost = () => {
-    //         fetchPosts(page, limit);
-    //     }
-
-    //     fetchPost()
-    // }, [limit])
 
     const recent = sortedPosts.slice(0, 9);
     
@@ -71,17 +57,6 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
 
     return (
         <>
-            {/* Render initial posts followed by fetched ones */}
-            {/* {posts.map((post, index) => (
-                <LazyPostCard 
-                    post={post} 
-                    authorData={authors.find((author) => author.email === post.email) as AuthorItem} 
-                    key={post.slug} 
-                    index={index + indexIncrement} 
-                    style={style} 
-                />
-            ))} */}
-
             {/* Render dynamically fetched posts */}
             {displayMode === 'linear' ? (
                 sortedPosts.map((post, index) => (

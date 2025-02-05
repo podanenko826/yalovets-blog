@@ -1,0 +1,38 @@
+Two months before, Michael wrote about why [AWS SSM is a trojan horse](https://cloudonaut.io/aws-ssm-is-a-trojan-horse-fix-it-now/). Shortly after that, AWS released [EC2 Instance Connect](https://aws.amazon.com/about-aws/whats-new/2019/06/introducing-amazon-ec2-instance-connect/), which is even worse. **If you use Amazon Linux 2 or Ubuntu, the chances are high that everyone in your AWS account can SSH into every EC2 instance!**
+
+![Rant](https://cloudonaut.io/images/2019/08/rant.jpg "Rant")
+
+> Do you prefer listening to a podcast episode over reading a blog post? Here you go!
+
+## What is EC2 Instance Connect
+
+EC2 Instance Connect makes your public SSH key available on an EC2 instance using the [metadata service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html). To push your public key to an EC2 instance, you use the [SendSSHPublicKey API](https://docs.aws.amazon.com/ec2-instance-connect/latest/APIReference/API_SendSSHPublicKey.html).
+
+The SSH daemon (`sshd`) needs to be configured to ask the metadata service for all public keys when someone connects via SSH. This configuration is enabled for you by default on Amazon Linux 2 and Ubuntu AMIs. We discovered this [breaking change in November 2018](https://github.com/widdix/aws-ec2-ssh/issues/142).
+
+## How the backdoor works
+
+These three conditions must be met:
+
+1. Use the official Amazon Linux 2 or Ubuntu AMIs
+2. Allow traffic on port 22. If you used SSH in the past to manage your instances, the port is already open.
+3. Your IAM user or role needs permissions (action `ec2-instance-connect:SendSSHPublicKey`). Very likely, you have those permissions thanks to managed policies like `AdministratorAccess`or `PowerUserAccess`.
+
+You can now open an SSH connection to every EC2 instance in your AWS account.
+
+## Protect yourself
+
+If you are not interested in using EC2 Instance Connect, you can do one of the following:
+
+* [Uninstall EC2 Instance Connect](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-uninstall.html).
+* Do not allow traffic on port 22.
+* Deny the action `ec2-instance-connect:SendSSHPublicKey` globally in your SCP.
+
+If you want to use EC2 Instance Connect:
+
+1. Keep your Security Groups as close as possible and use a VPN to connect to your VPC.
+2. Grant the `ec2-instance-connect:SendSSHPublicKey` action carefully. According to [IAM docs](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazonec2instanceconnectservice.html), you only can use a condition to restrict the OS user. According to the [EC2 Instance Connect docs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-set-up.html), you can also restrict access to specific EC2 instances using resource-level permissions. Unfortunately, EC2 Instance tags don’t seem to be supported.
+
+## Summary
+
+AWS released a new feature called EC2 Instance Connect. It is enabled by default on Amazon Linux 2 and Ubuntu AMIs. We would appreciate if AWS would ask us - the customers - before they change defaults that increase our security risks. And we would also love to see up-to-date documentation on the IAM configuration. The information is contradictory at the moment, which is not satisfactory when security is at risk!

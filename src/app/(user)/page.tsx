@@ -36,7 +36,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
     const { fetchPosts } = usePostContext();
 
     useEffect(() => {
-        if (!selectedPost) {
+        if (!selectedPost && typeof document !== 'undefined') {
             document.title = 'Home / Yalovets Blog';
         }
     }, [selectedPost]);

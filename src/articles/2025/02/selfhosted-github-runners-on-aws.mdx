@@ -1,0 +1,56 @@
+GitHub Actions became my tool of choice for automating tasks around software development. To execute jobs, GitHub Actions relies on runners. By default, jobs run on GitHub-hosted runners. But there are good reasons to use self-hosted runners.
+
+* Reducing costs by utilizing your cloud or on-premises infrastructure.
+* Accessing private networks (e.g., RDS connected to a VPC).
+* Customizing the environment by pre-installing libraries or tools.
+
+In the following, I will share three approaches to self-host GitHub runners on AWS and discuss their pros and cons.
+
+![Self-hosted GitHub runners on AWS](https://cloudonaut.io/images/2023/09/self-hosted_github_runner_on_aws_title.jpg "Self-hosted GitHub runners on AWS")
+
+## Hosting GitHub runners on EC2 instances
+
+The simplest way to host a GitHub runner on AWS is this.
+
+1. Launch an EC2 instance.
+2. Install the runtime environment and tools required for jobs.
+3. Install and configure the GitHub runner.
+
+![Hosting GitHub runners on EC2 instances](https://cloudonaut.io/images/2023/09/self-hosted_github_runner_on_aws_single_ec2_instance.png "Hosting GitHub runners on EC2 instances")
+
+The GitHub documentation describes how to [add self-hosted runners](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/adding-self-hosted-runners) in detail.
+
+The approach comes with two downsides. First, the solution does not scale. During peeks, jobs pile up and slow down software development. Second, the concept is not secure. When projects or teams share a virtual machine to execute their jobs, there is a high risk of leaking sensitive information (e.g., AWS credentials).
+
+## Scaling GitHub runners with auto-scaling
+
+To avoid lengthy waiting times, scaling the number of EC2 instances running GitHub runners with the magic of auto-scaling is an obvious idea.
+
+* An **Auto Scaling Group** launches and terminates EC2 instances based on an AMI with GitHub runner, the runtime environment, and tools pre-installed.
+* A **CloudWatch alarm** increases or decreases the desired capacity of the Auto Scaling Group based on a metric like the job queue length.
+
+![Scaling GitHub runners with auto-scaling](https://cloudonaut.io/images/2023/09/self-hosted_github_runner_on_aws_autoscaling_ec2.png "Scaling GitHub runners with auto-scaling")
+
+> A side note: it is not trivial to ensure the Auto Scaling Group does not terminate an EC2 instance that executes a long-running job (see [lifecycle hooks](https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html)). Also, finding the right metric to scale is tricky.
+
+While this approach addresses the scaling issue, it still has a major downside: jobs from different projects or event teams share the same virtual machine. There is a high risk of leaking sensitive information (e.g., AWS credentials).
+
+## Event-driven EC2 instances for GitHub runners
+
+Here comes a simple approach that addresses both challenges: building a secure and scalable infrastructure for GitHub runners by executing each job on its own EC2 instance.
+
+1. The **GitHub webhook** sends events indicating that a job was queued and is waiting for a runner.
+2. The **API Gateway** receives an event and invokes a Lambda function.
+3. The **Lambda function** launches an EC2 instance and hands over a just-in-time runner registration via user data.
+4. The **EC2 instance** starts the GitHub runner.
+5. After the **GitHub runner** exits, the EC2 instance terminates itself.
+
+![Event-driven EC2 instances for GitHub runners](https://cloudonaut.io/images/2023/09/self-hosted_github_runner_on_aws_event_driven_ec2_instance.png "Event-driven EC2 instances for GitHub runners")
+
+This solution does offload the challenge of scaling an infrastructure to the on-demand capacity provided by AWS. And by the way, the approach is very cost-efficient as you are not paying for idle resources.
+
+Besides that, as each job runs on its virtual machine, which guarantees high isolation and implements the [Security hardening for GitHub Actions](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-just-in-time-runners) best practice of using just-in-time runners.
+
+There is only one small catch: starting a new EC2 instance for each job adds a delay of \~1 minute for every job. In my opinion, a delay of 1 minute per job is worth the benefits in terms of scalability, cost, and safety.
+
+> I’m happy to announce that we just released [HyperEnv for GitHub Actions: Self-hosted GitHub Runners on AWS](https://hyperenv.com/github-actions/). This product implements the event-driven solution described above. [HyperEnv for GitHub Actions is available at the AWS Marketplace](https://aws.amazon.com/marketplace/pp/prodview-7bzr422ymm2hw).

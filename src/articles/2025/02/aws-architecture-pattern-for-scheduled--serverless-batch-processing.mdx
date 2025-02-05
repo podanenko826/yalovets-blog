@@ -1,0 +1,70 @@
+Scheduled batch jobs are the heart of many business processes implemented by enterprise applications. Reports are generated daily, databases are optimized over the weekend, and business logic is executed nightly. The importance of batch jobs satisfies an investment into a reliable architecture to execute the jobs.
+
+Let’s look at how batch jobs are mostly executed and what options you have to run them on AWS in a more robust way.
+
+![AWS Architecture Pattern for Scheduled & Serverless Batch Processing](https://cloudonaut.io/images/2021/04/batch.jpg "AWS Architecture Pattern for Scheduled & Serverless Batch Processing")
+
+> This is a cross-post from the [Cloudcraft blog](https://blog.cloudcraft.co/).
+
+One of the most straightforward implementations of a scheduled batch job is a Linux cronjob that executes a script. Though straightforward this implementation comes with many pitfalls:
+
+* How can you monitor the successful execution?
+* What if the machine fails and the cronjob is not executed at all?
+* Can we keep a timeout and stop the job if it takes too long?
+* The machine is not powerful enough; how can we scale the job execution?
+
+Luckily, AWS provides us with all the building blocks needed to take care of all the pitfalls. In good old AWS fashion, we have to wire up the best building blocks to achieve our goal.
+
+In this post, I’ll show you a reference architecture to run scheduled and serverless batch jobs on AWS. By scheduled, I mean jobs that run at specific time intervals. By serverless, we’re referring to an operation mode where the environment is fully managed by AWS, scales on-demand, and we only pay for what we use (never for idle).
+
+## High-level architecture
+
+Two AWS services are at the heart of the architecture. Amazon EventBridge and AWS Batch. You can think of Amazon [EventBridge as the cron daemon](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-schedule-expressions.html) that triggers on a schedule while [AWS Batch provides the execution environment](https://docs.aws.amazon.com/batch/latest/userguide/compute_environments.html) for your batch job. The high-level architecture follows:
+
+![AWS Batch architecture](https://cloudonaut.io/images/2021/04/aws-batch-architecture.png "AWS Batch architecture")
+
+AWS Batch relies on Docker and AWS ECS. The ECS part is abstracted away, but it might be handy to know the internals if you are debugging an issue.
+
+Batch can be used in different flavors:
+
+* Unmanaged & EC2 based: You run the ECS cluster, the EC2 instances, and ensure they connect with AWS Batch properly. You are also responsible for scaling the system.
+* Managed & EC2 based (on-demand or spot): AWS takes care of the scaling.
+* Managed & Fargate based (on-demand or spot): AWS takes care of everything.
+
+For minimal management overhead, I recommend going with a managed option, specifically Fargate. If you use Fargate, you benefit from a Serverless experience. There is nothing to operate, nothing to patch, nothing to provision and nothing to pay for if no jobs are running.
+
+The managed environments are either powered by on-demand or spot capacity. Spot capacity is significantly cheaper, but you always risk that your workload is terminated before it completes. You can safely use spot environments if your jobs can deal with being interrupted in the middle of the run (which they should be anyway). If a workload is interrupted because of a capacity shortage on the spot market, AWS Batch can restart the job later.
+
+A scheduled EventBridge (formerly known as CloudWatch Events) rule can trigger AWS Batch in a [cron like fashion](https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html). You can either configure a cron expression such as `cron(10 * * ? *)`, or a rate expression such as `rate(12 hours)`.
+
+**Pro-tip**: Keep in mind that EventBridge comes with a minute granularity. You can not control the exact second a trigger fires.
+
+## Batch Jobs
+
+An AWS batch job runs inside a Linux Docker container. This comes with great flexibility on your end, allowing you to choose whatever programming language you wish to implement the job.
+
+Existing cronjobs that run on Linux can run in a container as well. This provides an excellent migration path from cronjobs to AWS Batch. If a job execution fails, AWS Batch will retry the execution. You have complete control over how many retries should be performed. This can be very handy if your job fails because of unavailable downstream dependencies.
+
+AWS Batch also keeps track of a timeout for each execution. If the execution takes too long, AWS Batch will terminate the container and try again. And of course, AWS Batch provides CloudWatch Metrics and emits events that you can use to monitor the health of your jobs.
+
+![AWS Batch job isolation](https://cloudonaut.io/images/2021/04/aws-batch-job-isolation.png "AWS Batch job isolation")
+
+Workload isolation is achieved by a separate IAM role and security group (firewall) for each job. This helps you to follow the least privilege principle: Only allow the job to call the AWS APIs that it needs and only allow the outbound network connectivity that is needed.
+
+## Job queues and compute environments
+
+You can submit a job to AWS Batch by specifying a job queue. You can assign priorities to job queues to ensure that important jobs are taken care of first. A job queue is also linked to one or many prioritized compute environments. For example, you could first try to run a job on a spot-based compute environment to reduce costs. If no spot capacity is available, you can fall back to on-demand. This is very handy to keep costs as low as possible without sacrificing availability.
+
+![AWS Batch job queues and compute environments](https://cloudonaut.io/images/2021/04/aws-batch-job-queues.png "AWS Batch job queues and compute environments")
+
+Another handy AWS batch feature is job dependencies. You can specify that specific jobs have to finish before another job can run. For example, you could first run your database optimization before you generate a weekly sales report.
+
+## Alternatives
+
+Are you looking for a simpler solution? If you don’t need priorities, dependencies, retries, and your jobs always finish within 15 minutes, you can replace AWS Batch with AWS Lambda. Some orchestration can be achieved with Step Functions as well.
+
+**Pro-tip**: The proposed solution works well for a reasonable number (thousands) of triggers. The solution likely does not work well if users can create their own cronjobs in the system.
+
+## Summary
+
+The bottom line is that AWS Batch executes batch jobs in a controlled manner. Compute environments can be powered by Fargate for a serverless experience and job queues can be used to prioritize work under heavy load situations. The cron like trigger is provided by EventBridge and integrates natively with AWS Batch.

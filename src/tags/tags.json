@@ -90,6 +90,13 @@
             "title": "Kubernetes",
             "description": "bla bla bla",
             "postCount": 0
+        },
+        {
+            "id": 14,
+            "tag": "security",
+            "title": "Cloud Security",
+            "description": "All about the shared responsibility model in the cloud. Includes topics like networking (VPC), authentication and authorization (IAM), and more.",
+            "postCount": 0
         }
     ]
 }
