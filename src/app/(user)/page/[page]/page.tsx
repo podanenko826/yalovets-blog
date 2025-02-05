@@ -124,9 +124,9 @@ export default function BlogPage({ params }: { params: { page: string } }) {
                                 {/* Mobile Page numbers */}
                                 <div className="d-flex d-md-none">
                                     {mobilePageNumbers.map(page => (
-                                        <a href={`/page/${page}`} key={page} className="mb-5 mx-2">
+                                        <Link href={`/page/${page}`} key={page} className="mb-5 mx-2">
                                             <button className={`px-3 px-md-3 py-2 ${page === currentPage ? 'btn-filled' : ''}`}>{page}</button>
-                                        </a>
+                                        </Link>
                                     ))}
                                 </div>
                                 {/* Page numbers */}

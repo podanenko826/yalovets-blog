@@ -73,8 +73,6 @@ export const getPaginatedPosts = async (page: number, limit: number, paginationD
 
         const pageStartingKey = paginationData.paginationData[page].date;
 
-        console.log(`Page ${page} starting key:`, pageStartingKey);
-
         const response = await fetch(`${baseUrl}/api/posts?limit=${limit}&lastKey=${pageStartingKey}`);
 
         if (!response.ok) {
@@ -83,13 +81,8 @@ export const getPaginatedPosts = async (page: number, limit: number, paginationD
         }
 
         const data: FetchPostsResponse = await response.json();
-
         const transformedPostData = transformPostData(data.posts);
-
         const sortedPostsData = sortPosts(transformedPostData)
-
-        console.log('NORMALL SORTED:', sortedPostsData);
-        console.log('LASTKey fetched:', data.lastKey);
         
         return { posts: sortedPostsData, lastKey: data.lastKey };
     } catch (err) {
@@ -102,8 +95,6 @@ export const getSortedPosts = async (limit: number, lastKey?: string ): Promise<
     if (!limit || limit > 50) return { posts: [], lastKey: '' };
 
     try {
-        console.log('RECIEVED LAstKey:', lastKey);
-        
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
         const response = lastKey ? await fetch(`${baseUrl}/api/posts?limit=${limit}&lastKey=${lastKey}`) 
@@ -119,9 +110,6 @@ export const getSortedPosts = async (limit: number, lastKey?: string ): Promise<
         const transformedPostData = transformPostData(data.posts);
 
         const sortedPostsData = sortPosts(transformedPostData);
-
-        console.log('NORMALL SORTED:', sortedPostsData);
-        console.log('LASTKey fetched:', data.lastKey);
         
         return { posts: sortedPostsData, lastKey: data.lastKey };
     } catch (err) {
