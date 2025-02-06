@@ -60,7 +60,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [authors, setAuthors] = useState<AuthorItem[]>([]);
     const [selectedMarkdown, setSelectedMarkdown] = useState<string | null>(null);
     const [previousPath, setPreviousPath] = useState<string | null>(null);
-    const [tags, setTags] = useState<TagItem[]>([]);
+    const [tags, setTags] = useState<TagItem[]>([]); // An array of all saved tags
 
     const [originalPagination, setOriginalPagination] = useState<PaginationState | null>(null);
     const [pagination, setPagination] = useState<PaginationState>({
@@ -74,6 +74,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [lastKey, setLastKey] = useState<string>('');
     const [limit, setLimit] = useState<number | null>(null);
     const [page, setPage] = useState<number | null>(null);
+    const [tag, setTag] = useState<string | null>(null); // A single tag for fetching purposes
     const [postCount, setPostCount] = useState<number>(0);
 
     const [request, setRequest] = useState<number>(0);
@@ -401,11 +402,12 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     */
 
     // Trigger the useEffect to fetch another stack of posts
-    const fetchPosts = (limit: number, page?: number) => {
+    const fetchPosts = (limit: number, page?: number, tag?: string) => {
         setRequest(prev => prev + 1);
         setLimit(limit);
 
         if (page) setPage(page);
+        if (tag) setTag(tag);
     }
 
     const openModal = (post: PostItem, markdown: string, previousPath: string) => {

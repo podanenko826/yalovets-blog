@@ -281,7 +281,7 @@ const ArticleModal: React.FC = () => {
                                                 </Link>
                                             ))}
 
-                                        {selectedPost.tags &&
+                                        {/* {selectedPost.tags &&
                                             selectedPost.tags[0] !== '' &&
                                             selectedPost.tags?.slice(0, 3).map((tag, index) => (
                                                 <Link href={`/tag/${tag}`} className="col-md-9" key={index}>
@@ -289,7 +289,7 @@ const ArticleModal: React.FC = () => {
                                                         <h5 id="col-heading-1">Tag: {tag}</h5>
                                                     </div>
                                                 </Link>
-                                            ))}
+                                            ))} */}
                                     </div>
                                 </div>
                             )}
