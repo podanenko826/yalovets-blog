@@ -111,14 +111,6 @@ button {
     cursor: pointer;
 }
 
-button:hover {
-    background: var(--col-button-hover);
-}
-
-button:active {
-    background: var(--col-button-active);
-}
-
 a.a-btn {
     line-height: 1rem !important;
     border-radius: 5px;
@@ -262,9 +254,15 @@ button {
     padding: 12px 10px;
     background: transparent;
     font-weight: 500;
+    box-sizing: border-box;
 }
+
 .btn-outlined:hover {
     text-decoration: underline;
+}
+
+.btn-outlined > svg {
+    font-size: 1.75rem;
 }
 
 .btn-filled {
@@ -615,6 +613,14 @@ blockquote > span,
 }
 
 @media (min-width: 768px) {
+    button:hover {
+        background: var(--col-button-hover);
+    }
+    
+    button:active {
+        background: var(--col-button-active);
+    }
+
     .btn-outlined {
         border: var(--col-text) solid 1px;
         padding: 12px 20px;

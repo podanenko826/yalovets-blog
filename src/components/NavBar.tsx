@@ -111,11 +111,11 @@ const NavBar = () => {
                             {mobileMenuOpened ? <IoMdClose className={styles.mobileNavIcon} id={styles.menu_opened} /> : <IoMdMenu className={styles.mobileNavIcon} />}
                         </button>
                         {mobileMenuOpened && (
-                            <button className='mx-3 py-0 btn-pill' onClick={() => handleThemeChange()}>
+                            <button className='btn-outlined h-min mx-3 px-2 p-0' onClick={() => handleThemeChange()}>
                                 {isDarkTheme ? (
-                                    <IoMoonOutline className='btn-pill-svg' />
+                                    <IoMoonOutline />
                                 ): (
-                                    <IoSunnyOutline className='btn-pill-svg' />
+                                    <IoSunnyOutline />
                                 )}
                             </button>
                         )}

@@ -106,7 +106,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
                             <PostList displayMode='linear' limit={ARTICLES_PER_PAGE} style='full' postsData={paginatedArticles} />
                         </div>
 
-                        <div className="container">
+                        <div className="container mt-5 mb-2">
                             <div className="d-flex justify-content-center">
                                 {/* First and last page buttons */}
                                 {currentPage > 1 && (
