@@ -26,7 +26,11 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     const { postCount, setPostCount } = usePostContext();
 
     const [paginationModalOpen, setPaginationModalOpen] = useState<boolean>(false);
-
+    
+    useEffect(() => {
+        window.scrollTo(0, 0); // Scroll to top on route change
+      }, []);
+      
     useEffect(() => {
         if (!selectedPost && typeof document !== "undefined") {
             document.title = `Page ${currentPage || 1} / Yalovets Blog`;

@@ -29,6 +29,10 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
 
     const [authorData, setAuthorData] = useState<AuthorItem | null>(null);
     const [authorPosts, setAuthorPosts] = useState<PostItem[]>([]);
+
+    useEffect(() => {
+        window.scrollTo(0, 0); // Scroll to top on route change
+      }, []);
     
     useEffect(() => {
         if (authors.length > 0 && !authorData) {
