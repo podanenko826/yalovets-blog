@@ -21,7 +21,7 @@ export const navigation = [
     },
     {
         label: 'Blog',
-        href: '/page/1',
+        href: '/page',
         id: 1,
     },
     {
@@ -90,11 +90,16 @@ const NavBar = () => {
                         </Link>
                     </div>
                     <div className={`${styles.navbar_nav} navbar navbar-collapse container-lg col-9 py-0`}>
-                        {navigation.map(item => (
-                            <Link key={item.id} href={item.href} className={styles.nav_link} id={`${item.href === currentPath ? styles.active : ''}`}>
-                                {item.label}
-                            </Link>
-                        ))}
+                        {navigation.map(item => {
+                            const isActive = 
+                                item.href === '/' ? currentPath === '/' : currentPath.startsWith(item.href + '/');
+                    
+                            return (
+                                <Link key={item.id} href={item.href} className={styles.nav_link} id={`${isActive ? styles.active : ''}`}>
+                                    {item.label}
+                                </Link>
+                            );
+                        })}
                         <button className="btn-outlined">Subscribe</button>
                         <button className='btn-pill' onClick={() => handleThemeChange()}>
                             {isDarkTheme ? (
@@ -128,11 +133,16 @@ const NavBar = () => {
                 </div>
                 <div className={`${mobileMenuOpened ? 'd-flex d-lg-none' : 'd-none'} ${styles.nav_menu_mobile}`}>
                     <div className="pt-3 d-flex flex-column">
-                        {navigation.map(item => (
-                            <Link key={item.id} href={item.href} onClick={() => handleMobileNavigation()} className={`${styles.nav_link_mobile}`} id={currentPath === item.href ? 'col-secondary' : 'col-primary'}>
-                                {item.label}
-                            </Link>
-                        ))}
+                        {navigation.map(item => {
+                            const isActive = 
+                            item.href === '/' ? currentPath === '/' : currentPath.startsWith(item.href + '/');
+
+                            return (
+                                <Link key={item.id} href={item.href} onClick={() => handleMobileNavigation()} className={`${styles.nav_link_mobile}`} id={isActive ? 'col-secondary' : 'col-primary'}>
+                                    {item.label}
+                                </Link>
+                            );
+                        })}
                     </div>
                 </div>
             </header>
