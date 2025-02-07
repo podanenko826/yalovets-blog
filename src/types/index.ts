@@ -28,6 +28,7 @@ export type PostItem = {
     tags?: string[];
     readTime?: number;
     viewsCount?: number;
+    postGroup: string;
 };
 
 export type PostPreviewItem = {
@@ -47,4 +48,13 @@ export type TagItem = {
     title: string;
     description: string;
     postCount: number;
+};
+
+export type PaginationEntry = {
+    date: string
+};
+
+export type PaginationState = {
+    totalPages: number;
+    paginationData: Record<number, PaginationEntry>;
 };

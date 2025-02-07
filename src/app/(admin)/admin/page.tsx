@@ -1,22 +1,14 @@
+'use client';
 import React from 'react';
 
-import { getSortedPosts } from '@/lib/posts';
-import { getAuthors } from '@/lib/authors';
-import { AuthorItem, PostItem } from '@/types';
+import { rebuildPagination } from '@/lib/posts';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
 
 import postCardStyles from '@/components/PostCard.module.css';
 import moment from 'moment';
 import Link from 'next/link';
 
-const PostCard = dynamic(() => import('@/components/PostCard'), { ssr: false });
-
 const AdminPage = async () => {
-    const postData: PostItem[] = await getSortedPosts();
-
-    const authorData: AuthorItem[] = await getAuthors();
-
     const managementItems = [
         {
             id: 1,
@@ -52,6 +44,7 @@ const AdminPage = async () => {
         <div>
             <div className="container-lg posts my-5" id="posts">
                 <div className="container-fluid">
+                    <button onClick={() => rebuildPagination()}>Rebuild Pagination</button>
                     <h1 className="heading-large mt-4">Quick actions</h1>
                     <div className="row post-list">
                         <div className="">

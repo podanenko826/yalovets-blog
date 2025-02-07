@@ -19,8 +19,11 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Table name is not defined in environment variables' }, { status: 500 });
     }
 
+    if (!email || !slug || !/^\d+-/.test(slug)) {
+        return NextResponse.json({ error: 'Invalid email or slug format' }, { status: 400 });
+    }
+
     // First, attempt to fetch posts if we have a specific slug
-    if (email && slug) {
         try {
             const params = {
                 TableName: TABLE_NAME,
@@ -43,8 +46,4 @@ export async function POST(request: Request) {
             console.error('Failed to fetch data from the database: ', err);
             return NextResponse.json(err, { status: 500 });
         }
-    } else {
-        console.error('Either email or slug is not provided');
-        return NextResponse.json({ error: 'Incrementing post viewsCount failed' }, { status: 500 });
-    }
 }

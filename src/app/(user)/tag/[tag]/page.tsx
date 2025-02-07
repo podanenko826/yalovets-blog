@@ -14,6 +14,7 @@ import moment from 'moment';
 import { getTagData, getTagsData } from '@/lib/tags';
 import { get } from 'http';
 import { notFound } from 'next/navigation';
+import PostList from '@/components/PostList';
 
 const LazyPostCard = dynamic(() => import('@/components/LazyPostCard'), { ssr: false });
 
@@ -21,61 +22,24 @@ export default function TagPage({ params }: { params: { tag: string } }) {
     const { posts, setPosts } = usePostContext();
     const { authors, setAuthors } = usePostContext();
     const { tags, setTags } = usePostContext();
+    const { selectedPost } = usePostContext();
+    const { fetchPosts } = usePostContext();
 
-    const [postsData, setPostsData] = useState<PostItem[]>([]);
-    const [authorData, setAuthorData] = useState<AuthorItem[]>([]);
     const [tagData, setTagData] = useState<TagItem | null>(null);
 
-    useEffect(() => {
-        document.title = `#${params.tag} / Yalovets Blog`;
-    }, [document.URL]);
+    const ARTICLES_PER_PAGE = 28;
 
     useEffect(() => {
-        const getData = async () => {
-            try {
-                let sorted: PostItem[] | null = null;
-                if (posts.length > 0) {
-                    const postContextData = [...posts];
+        if (!selectedPost && typeof document !== "undefined") {
+            document.title = `#${params.tag} / Yalovets Blog`;
+        }
+    }, [selectedPost]);
 
-                    //? Sort posts gotten from usePostContext
-                    sorted = postContextData.sort((a, b) => {
-                        const format = 'DD-MM-YYYY';
-                        const dateOne = moment(a.date, format);
-                        const dateTwo = moment(b.date, format);
-
-                        return dateTwo.diff(dateOne); // Descending order
-                    });
-                } else {
-                    sorted = await getSortedPosts();
-
-                    if (posts.length === 0) {
-                        setPosts(sorted);
-                    }
-                }
-
-                if (!Array.isArray(sorted)) {
-                    console.error('Error: Sorted posts is not an array:', sorted);
-                    return;
-                }
-                // Ensure all posts have the expected structure
-                sorted.forEach((post, index) => {
-                    if (typeof post !== 'object' || post === null) {
-                        console.error(`Post at index ${index} is invalid:`, post);
-                    }
-                });
-
-                const tagPosts = sorted.filter(post => post.tags?.toString().includes(params.tag));
-                console.log(tagPosts);
-                console.log(sorted);
-
-                setPostsData(tagPosts);
-            } catch (error) {
-                console.error('Error in getData:', error);
-            }
-        };
-
-        getData();
-    }, [posts, setPosts]);
+    useEffect(() => {
+        if (ARTICLES_PER_PAGE) {
+            fetchPosts(ARTICLES_PER_PAGE); 
+        }
+    }, [ARTICLES_PER_PAGE])
 
     useEffect(() => {
         const getTag = async () => {
@@ -100,21 +64,6 @@ export default function TagPage({ params }: { params: { tag: string } }) {
 
         getTag();
     }, [params.tag]);
-
-    useEffect(() => {
-        const getAuthorsData = async () => {
-            if (authors.length > 0 && authorData.length === 0) {
-                const authorData = [...authors];
-                setAuthorData(authorData);
-            } else if (authors.length === 0 && authorData.length === 0) {
-                const authorData = await getAuthors();
-                setAuthorData(authorData);
-                setAuthors(authorData);
-            }
-        };
-
-        getAuthorsData();
-    }, [authorData, authors, setAuthors]);
 
     // //? Fulfills tags data when the first post is loaded
     // useEffect(() => {
@@ -142,11 +91,7 @@ export default function TagPage({ params }: { params: { tag: string } }) {
                         </p>
 
                         <div className="row post-list">
-                            {postsData.map((post, index) => {
-                                const author = authorData.find(author => author.email === post.email);
-
-                                return <LazyPostCard key={index} post={post} authorData={author as AuthorItem} style="standard" index={index} />;
-                            })}
+                            <PostList displayMode='linear' limit={28} style='full' postsData={posts} infiniteScroll />
                         </div>
                     </div>
                 </main>

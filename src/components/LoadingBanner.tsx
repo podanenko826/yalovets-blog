@@ -12,12 +12,13 @@ const LoadingBanner = () => {
 
     const { posts } = usePostContext();
     const { authors } = usePostContext();
+    const { loading } = usePostContext();
 
     useEffect(() => {
-        if (posts.length > 0 && authors.length > 0) {
+        if (!loading) {
             setIsShowed(false);
         }
-    }, [posts, authors]);
+    }, [loading]);
 
     if (isShowed) {
         return (

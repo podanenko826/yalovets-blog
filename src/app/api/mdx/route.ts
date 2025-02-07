@@ -1,25 +1,28 @@
-// app/api/save-mdx/route.js
-
 import fs from 'fs';
-import {NextResponse} from 'next/server';
+import moment from 'moment';
+import { NextResponse } from 'next/server';
 import path from 'path';
 
 export async function GET(request: Request) {
-    const {searchParams} = new URL(request.url);
+    const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');
-    if (!slug) {
-        return new Response('Missing slug parameter', {status: 400});
+    const date = searchParams.get('date');
+
+    if (!slug || !date) {
+        return new Response('Missing slug or date parameter', { status: 400 });
     }
 
-    const filePath = path.join(process.cwd(), 'src/articles', `${slug}.mdx`);
+    const year = moment.utc(date).year().toString();
+    const month = (moment.utc(date).month() + 1).toString().padStart(2, '0');
 
+    const filePath = path.join(process.cwd(), 'src/articles', year, month, `${slug}.mdx`);
     if (!fs.existsSync(filePath)) {
-        return new Response('File not found', {status: 404});
+        return new Response('File not found', { status: 404 });
     }
 
     const content = fs.readFileSync(filePath, 'utf8');
 
-    return new Response(JSON.stringify({content}), {
+    return new Response(JSON.stringify({ content }), {
         status: 200,
         headers: {
             'Content-Type': 'text/markdown',
@@ -28,54 +31,58 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-    const {fileName, content} = await request.json();
+    const { searchParams } = new URL(request.url);
+    const date = searchParams.get('date');
+
+    const year = moment.utc(date).year().toString();
+    const month = (moment.utc(date).month() + 1).toString().padStart(2, '0');
+
+    const { fileName, content } = await request.json();
 
     // Define the directory to save the file
-    // const dirPath = path.join(process.cwd(), 'saved_files');
-    const dirPath = 'src/articles';
+    const dirPath = `src/articles/${year}/${month}`;
 
     // Ensure the directory exists
     if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath);
     }
-
-    const filePath = path.join(dirPath, fileName);
+    
+    const filePath = path.join(dirPath, `${fileName}.mdx`);
 
     // Write the file to the filesystem
     try {
         fs.writeFileSync(filePath, content);
-        return NextResponse.json(filePath, {status: 200});
+        return NextResponse.json(filePath, { status: 200 });
     } catch (err) {
-        return NextResponse.json(
-            {message: 'Failed to save file'},
-            {status: 500}
-        );
+        return NextResponse.json({ message: 'Failed to save file' }, { status: 500 });
     }
 }
 
 export async function DELETE(request: Request) {
-    const {searchParams} = new URL(request.url);
+    const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');
+    const date = searchParams.get('date');
 
-    if (!slug) {
-        return new Response('Missing slug parameter', {status: 400});
+    if (!slug || !date) {
+        console.error('Missing slug or date paramether');
+        return NextResponse.json(false, { status: 400 });
     }
 
-    const dirPath = 'src/articles';
+    const year = moment.utc(date).year().toString();
+    const month = (moment.utc(date).month() + 1).toString().padStart(2, '0');
+
+    const dirPath = `src/articles/${year}/${month}`;
     const filePath = path.join(process.cwd(), dirPath, `${slug}.mdx`);
 
     if (!fs.existsSync(filePath)) {
-        return NextResponse.json(true, {status: 200});
+        return NextResponse.json(false, { status: 404 });
     }
 
     try {
         await fs.promises.rm(filePath);
-        return NextResponse.json(true, {status: 200});
+        return NextResponse.json(true, { status: 200 });
     } catch (err) {
         console.error('File deletion error:', err);
-        return NextResponse.json(
-            {message: 'Failed to delete file'},
-            {status: 500}
-        );
+        return NextResponse.json(false, { status: 500 });
     }
 }

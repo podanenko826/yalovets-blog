@@ -1,0 +1,49 @@
+Many of our AWS consultancy clients ask me:
+
+> “How can we make sure that the files that we store on S3 are virus free?”
+
+As always, our clients are looking for simple and cheap solutions. That’s why we developed [Antivirus for Amazon S3](https://cloudonaut.io/antivirus-for-s3-buckets/). Every file that is added to an S3 bucket is automatically scanned.
+
+> [bucketAV - Antivirus for Amazon S3](https://bucketav.com/) with additional features is available at [AWS Marketplace](https://aws.amazon.com/marketplace/pp/B07XFR781T).
+
+## Features
+
+* Uses ClamAV to scan newly added files on S3 buckets
+* Updates ClamAV database every 3 hours automatically
+* Scales EC2 instance workers to distribute the workload
+* Publishes a message to SNS in case of a finding
+* Can optionally delete compromised files automatically
+* Logs to CloudWatch Logs
+
+### Additional Commercial Features by bucketAV
+
+* Reporting capabilities
+* Dashboard
+* Scan buckets at regular intervals / initial bucket scan
+* Quarantine infected files
+* Enhanced security features (e.g., IMDSv2)
+* Regular Security updates
+* Multi-Account support
+* AWS Integrations:
+  * CloudWatch Integration (Metrics and Dashboard)
+  * Security Hub Integration
+  * SSM OpsCenter Integration
+* S3 -> SNS fan-out support
+* Support
+
+[bucketAV - Antivirus for Amazon S3](https://bucketav.com/) with additional features is available at [AWS Marketplace](https://aws.amazon.com/marketplace/pp/B07XFR781T).
+
+## How does it work
+
+A picture is worth a thousand words:
+
+![Architecture](https://cloudonaut.io/images/2016/03/architecture.png "Architecture")
+
+1. A SQS queue is used to decouple scan jobs from the ClamAV workers. Each S3 bucket can fire events to that SQS queue in case of new objects. This feature of S3 is called [S3 Event Notifications](http://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html).
+2. The SQS queue is consumed by a fleet of EC2 instances running in an Auto Scaling Group. If the number of outstanding scan jobs reaches a threshold a new ClamAV worker is automatically added. If the queue is mostly empty workers are removed.
+3. The ClamAV workers run a simple ruby script that executes the [clamscan](http://linux.die.net/man/1/clamscan) command. In the background the virus db is updated every three hours.
+4. If `clamscan` finds a virus the file is directly deleted (you can configure that) and a SNS notification is published.
+
+## Installation Guide
+
+Visit the template’s repository for installation instructions: [aws-s3-virusscan](https://github.com/widdix/aws-s3-virusscan)

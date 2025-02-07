@@ -29,6 +29,7 @@
     height: 100vh;
     border-radius: 16px 16px 0 0;
     display: flex;
+    will-change: transform, width, height, padding;
 
     transition: all 0.3s ease-in-out;
     overflow: hidden;
@@ -81,6 +82,10 @@
     justify-content: center;
     position: absolute;
     transition: all 0.3s ease-in-out;
+}
+
+.paginationPreferences {
+    border-radius: 16px !important;
 }
 
 @keyframes screenTint {
@@ -141,6 +146,10 @@
     .postDataContainer {
         min-width: min-content;
         border-radius: 16px;
+    }
+
+    .paginationPreferences {
+        min-width: 35rem !important;
     }
 }
 

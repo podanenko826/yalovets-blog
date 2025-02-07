@@ -1,0 +1,66 @@
+We learned the hard way, that GitHub Actions is getting expensive when using GitHub-hosted runners. Back in 2023, we decided to build a solution for self-hosted runners on AWS to reduce costs. A few months later, we released [HyperEnv](https://hyperenv.com/) to the public. Over time, we improved our solution step by step. With the [release of version 2.9.0](https://hyperenv.com/blog/release-2-9-0-improced-architecture-spot-instances-workflow-configuration/) we achieved another important milestone: leverage EC2 spot instances to take advantage of unused EC2 capacity in the AWS cloud. In the following, I will share our learnings along the way.
+
+![Reduce GitHub runner costs by leveraging EC2 spot instances](https://cloudonaut.io/images/2025/01/money.jpg "Reduce GitHub runner costs by leveraging EC2 spot instances")
+
+## EC2 Spot vs. On-Demand
+
+There are three different pricing models for virtual machines on AWS.
+
+* **On-Demand** is the default, depending on the instance type, you pay an hourly fee, which is usually charged by the second. For example, an `m5.large` instance (2 vCPUs and 8 GiB of memory) costs you $0.0960 per hour in region `us-east-1`.
+* **Spot** grants discounts on unused capacity in AWS’s data centers. The price changes depending on the utilization of the data centers. While writing this, an `m5.large` instance is about $0.0348 in `us-east-1` which is a 63.78% saving compared with on-demand. Here is the catch: AWS reserves the right to terminate a spot instance after 2 minutes notice, which AWS calls a spot interruption.
+* **Savings Plans** are a simple deal: you commit to a specific use of EC2 instances and get a discount from AWS. The approach works best for static workloads that can be planned for 1 or even 3 years in advance.
+
+So, running GitHub runners on spot instead of on-demand instances cuts down infrastructure costs by about 60%. However, there are a few caveats to consider.
+
+## Consideration: Ephemeral Runners
+
+There are three approaches for hosting GitHub Runners on AWS:
+
+* **Long-running**: Launch an EC2 instance, install and start GitHub runner. Keep the instance running 24/7.
+* **Auto-scaled**: Launch and terminate EC2 instances depending on the number of waiting jobs.
+* **Ephemeral**: Launch an EC2 instance for every job. Terminate the machine after completing the job.
+
+A typical build job takes 5 to 15 minutes to complete. Therefore, ephemeral runners require a spot instance for a short time only, which reduces the risk of getting interrupted. That’s because AWS takes the runtime of a spot instance into consideration, when selecting a spot instance to interrupt to free up capacity.
+
+So, ephemeral runners are a perfect fit for EC2 spot instances.
+
+## Consideration: Fallback to On-Demand
+
+Depending on the utilization of the data center, the availability of spot instances might be limited. It is not unlikely, that AWS rejects a request to launch a spot instance due to no capacity.
+
+When utilizing spot instances, it is essential to be aware that the availability of these instances can fluctuate based on demand. In some cases, AWS might not have enough capacity available, resulting in your request to launch a spot instance being rejected due to no available capacity.
+To mitigate this risk, consider implementing a fallback strategy where you automatically switch to launching on-demand instances when spot instances are not available.
+
+One way to achieve this is by using a combination of AWS Auto Scaling and CloudWatch metrics to monitor the availability of spot instances. Based on these metrics, your Auto Scaling group can scale up or down accordingly, ensuring that your GitHub runners have access to the necessary resources.
+By implementing such a strategy, you can minimize the impact of spot instance unavailability and maintain a stable and reliable infrastructure for your GitHub runners.
+
+This approach ensures high availability and allows you to take advantage of the cost savings offered by spot instances while minimizing the risk associated with their availability.
+
+Here is what to do in such a situation:
+
+1. Try to launch the spot instance in another availability zone, which means in another data center that might provide spot capacity.
+2. Fallback to launching an on-demand instance.
+
+## Consideration: Does the GitHub workflow withstand an interruption?
+
+While chances are low that an ephemeral runner that runs on an EC2 spot instance for a few minutes gets interrupted, it is not zero. For many GitHub workflows, it is not an issue when a job gets stuck and cancelled due to a spot interruption. A job like running unit tests, linting code, or building artifacts can typically be restarted without any side effects. However, there are jobs where an interruption might cause in corrupt state or unwanted side effects. For example, interrupting the run of `terraform apply` might cause the following job to fail because the Terraform state is still locked.
+
+Therefore, being able to configure whether a spot instance should be used at the job level is necessary.
+
+## Architecture for GitHub Actions running on EC2 spot instances
+
+So what would an AWS architecture for launching ephemeral GitHub runners on EC2 spot instances with a fallback to on-demand instances look like? The following diagram shows the solution that we ended up with for HyperEnv.
+
+1. API Gateway receives an HTTP request from GitHub.
+2. API Gateway invokes the Lambda function named `webhook`.
+3. The Lambda function `webhook` verifies the incoming webhook event.
+4. The Lambda function `webhook` starts an execution of the Step Function `runner-orchestrator`.
+5. The Step Function invokes the Lambda function `consumer` which tries to launch a spot instance.
+6. In case a spot instance is not available in the selected availability zone, the Step Function retries launching a spot instance in another availability zone by calling the Lambda function `consumer` a second time.
+7. In case it is not possible to launch a spot instance, the Step Function continues and calls the Lambda function `consumer` again to launch an on-demand instance.
+
+![Running self-hosted GitHub runners on EC2 spot instances](https://cloudonaut.io/images/2025/01/hyperenv-architecture.png "Running self-hosted GitHub runners on EC2 spot instances")
+
+## Give HyperEnv a try!
+
+Do you prefer a production-ready and well-maintained solution instead of building this on your own? Check out our solution for [self-hosted GitHub Actions runners for AWS: HyperEnv](https://hyperenv.com/).

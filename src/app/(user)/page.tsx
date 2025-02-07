@@ -6,17 +6,13 @@ import type { AuthorItem, PostItem } from '@/types';
 
 import StartReadingButton from '@/components/Button/StartReadingButton';
 
-// import {MdOutlineArrowForwardIos} from 'react-icons/md';
-// import {getUsers} from '@/lib/users';
-import { getMDXContent, getSortedPosts } from '@/lib/posts';
-import { getAuthors } from '@/lib/authors';
 import Image from 'next/image';
 import LazyPostCard from '@/components/LazyPostCard';
 import PostList from '@/components/PostList';
-import { PostProvider, usePostContext } from '@/components/PostContext';
+import { usePostContext } from '@/components/PostContext';
 import { useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import moment from 'moment';
-import { usePathname, useRouter } from 'next/navigation';
 
 interface HomeProps {
     slug?: string; // Optional slug prop
@@ -33,105 +29,30 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
     const [authorData, setAuthorData] = useState<AuthorItem[]>([]);
 
     const { posts, setPosts } = usePostContext();
-    const { authors, setAuthors } = usePostContext();
+    const { lastKey } = usePostContext();
+    const { pagination } = usePostContext();
     const { selectedPost } = usePostContext();
-    const { openModal } = usePostContext();
 
-    const currentPath = usePathname();
+    const { fetchPosts } = usePostContext();
 
     useEffect(() => {
-        if (!selectedPost) {
+        if (!selectedPost && typeof document !== 'undefined') {
             document.title = 'Home / Yalovets Blog';
         }
     }, [selectedPost]);
 
     useEffect(() => {
-        setPosts(sortedPosts); // Populate context with initial data
-    }, [sortedPosts, setPosts]);
+        const fetchData = async () => {
+            fetchPosts(9);
+        }
 
-    useEffect(() => {
-        setAuthors(authorData); // Populate context with initial data
-    }, [authorData, setAuthors]);
-
-    useEffect(() => {
-        const getData = async () => {
-            try {
-                let sorted: PostItem[] | null = null;
-                if (posts.length > 0) {
-                    const postContextData = [...posts];
-
-                    //? Sort posts gotten from usePostContext
-                    sorted = postContextData.sort((a, b) => {
-                        const format = 'DD-MM-YYYY';
-                        const dateOne = moment(a.date, format);
-                        const dateTwo = moment(b.date, format);
-
-                        return dateTwo.diff(dateOne); // Descending order
-                    });
-                } else {
-                    sorted = await getSortedPosts();
-                }
-
-                if (!Array.isArray(sorted)) {
-                    console.error('Error: Sorted posts is not an array:', sorted);
-                    return;
-                }
-
-                // Ensure all posts have the expected structure
-                sorted.forEach((post, index) => {
-                    if (typeof post !== 'object' || post === null) {
-                        console.error(`Post at index ${index} is invalid:`, post);
-                    }
-                });
-
-                const recent = sorted.slice(0, 9);
-                const latest = sorted[0] || null;
-
-                const mostViewed = sorted
-                    .sort((a, b) => (b.viewsCount ?? 0) - (a.viewsCount ?? 0)) // Sort by viewsCount in descending order
-                    .slice(0, 3);
-
-                if (currentSlug.current) {
-                    const post = sorted.find(post => post.slug === currentSlug.current) as PostItem;
-                    const MdxContent = await getMDXContent(currentSlug.current);
-                    const markdown = MdxContent.markdown;
-                    const previousPath = window.location.href;
-
-                    if (post && markdown) {
-                        openModal(post, markdown, previousPath);
-                    }
-                    currentSlug.current = '';
-                }
-
-                setSortedPosts(sorted);
-                setRecentPosts(recent);
-                setLatestPost(latest);
-                setPopularPosts(mostViewed);
-            } catch (error) {
-                console.error('Error in getData:', error);
-            }
-        };
-
-        getData();
-    }, []);
-
-    useEffect(() => {
-        const getAuthorsData = async () => {
-            if (authors.length > 0 && authorData.length === 0) {
-                const authorData = [...authors];
-                setAuthorData(authorData);
-            } else if (authors.length === 0 && authorData.length === 0) {
-                const authorData = await getAuthors();
-                setAuthorData(authorData);
-            }
-        };
-
-        getAuthorsData();
-    }, [authorData, authors]);
+        fetchData();
+    }, [])
+    if (posts.length < 1) return;
 
     return (
         <>
-            {recentPosts && latestPost && popularPosts && authorData ? (
+            {posts ? (
                 <main id="body">
                     {/* Welcome section (Mobile) */}
                     <div className="container welcome-xs d-block d-lg-none">
@@ -189,7 +110,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
 
                     {/* Latest post section */}
                     <div className="container-fluid posts p-0" id="posts">
-                        <LazyPostCard post={latestPost} authorData={authorData.find(author => author.email === latestPost?.email) as AuthorItem} style="massive" />
+                        <LazyPostCard post={posts[0]} authorData={authorData.find(author => author.email === latestPost?.email) as AuthorItem} style="massive" />
                     </div>
 
                     {/* Recent posts */}
@@ -214,7 +135,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                         </div>
 
                         <div className="row post-list">
-                            <PostList initialPosts={recentPosts} initialAuthors={authorData} style="standard" indexIncrement={1} />
+                            <PostList displayMode='recent' style="standard" indexIncrement={1} limit={9} />
                         </div>
                     </div>
 
@@ -234,7 +155,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                         </div>
 
                         <div className="row post-list">
-                            <PostList initialPosts={popularPosts} initialAuthors={authorData} style="standard" indexIncrement={10} />
+                            <PostList displayMode='popular' style="standard" indexIncrement={10} limit={3} />
                         </div>
                     </div>
 

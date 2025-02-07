@@ -1,3 +1,4 @@
+import { wrapArticles } from '@/services/articleWrapper';
 import React, { useEffect } from 'react';
 
 export const metadata = {
@@ -6,6 +7,9 @@ export const metadata = {
 };
 
 const PodcastsPage = () => {
+    const result = wrapArticles();
+    console.log('Result: ', result);
+
     return (
         <>
             <div className="container-fluid d-flex justify-content-center">

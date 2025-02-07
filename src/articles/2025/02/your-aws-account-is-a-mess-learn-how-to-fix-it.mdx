@@ -1,0 +1,80 @@
+Have you no wildcard `ec2:*` in your IAM policies? Your Security Group rules are as strict as possible? Your S3 Bucket Access Policies only contain rules you know? You know about every single resource that runs in your account?
+
+If so, stop reading and please tell me how you achieve that!
+Otherwise: **I’m sorry, your AWS Account is a mess!** A security problem is likely!
+
+As an independent AWS consultant, I see many accounts and most of them are messy. I observed that the level of mess is related to:
+
+* Awareness and Visibility: If the mess is visible to the users, they will care about it.
+* Number of Users per Account: The more users, the more mess. More than ten users are going to be hard.
+* Degree of Automation: Manual work creates a mess. Automation reduces mess.
+
+I developed three approaches to clean up and prevent a mess. I suggest that you tackle them one after the other to not feel overwhelmed.
+
+## 1. Awareness and Visibility
+
+![Awareness and visibility](https://cloudonaut.io/images/2016/07/glasses.jpg "Awareness and visibility")
+
+If your users are not aware of the problem, they can’t fix it. Monthly reviews can help to make problems visible to your team.
+
+### Security Groups
+
+* Are your inbound rules as strict as possible?
+* Do you have IP address based rules where Security Group references are possible?
+
+### IAM roles
+
+* Are the policies (inline and attached) as strict as possible? Especially look for wildcards (`*`) in actions and resources. Also look for managed policies that end with `FullAccess` or the *evil* `AdministratorAccess` with root permissions.
+* Who is allowed to assume the role? Look at the trust policy.
+
+### IAM users & groups
+
+* Are they still needed? Maybe a user left the company?
+* Are the policies (inline and attached) as strict as possible? Especially look for wildcards (`*`) in actions and resources. Also look for managed policies that end with `FullAccess` or the *evil* `AdministratorAccess` with root permissions.
+* Have your users MFA enabled? [Learn how to check and enable MFA](http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_checking-status.html).
+* How old are the access keys? If they are older than 30 days, [rotate them](http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_RotateAccessKey)!
+
+### S3 access policies
+
+* Do you allow public access and are you okay with that? Look for `"Principal": "*"` in the statements.
+* Are the policies as strict as possible?
+
+Now it’s time to book a meeting room for one hour, invite 2-3 users and have a look at one of the topics. You will be surprised! Make sure you document the finding, assign responsibilities and set due dates. Track the progress in the next review meeting.
+
+## 2. Reduce Number of Users per Account
+
+![Reduce Number of users per account](https://cloudonaut.io/images/2016/07/slices.jpg "Reduce Number of users per account")
+
+Reducing the number of users per account works even in enterprises with thousands of employees. No one said that you only need one account! Create many accounts. One per team, one per service, one per customer. Whatever partition make sense for you.
+
+If you choose a multi-account strategy, you will introduce additional complexity. Tackle it with:
+
+* [Have one account to consolidate billing](http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/consolidated-billing.html)
+* [Have one account for your IAM users](https://cloudonaut.io/your-single-aws-account-is-a-serious-risk/) and assume roles in your other accounts.
+* Communicate over secure channels (TLS/SSL) with authentication (certificates) between the accounts or use [VPC peering](http://docs.aws.amazon.com/AmazonVPC/latest/PeeringGuide/Welcome.html).
+* Reduce the amount of dependencies between your accounts to keep things simple.
+
+## 3. Automation
+
+![Automate all the things](https://cloudonaut.io/images/2016/07/robot.jpg "Automate all the things")
+
+A typical web application consists of many parts:
+
+* Load Balancer
+* RDS instance
+* Auto Scaling Group
+* Launch Configuration
+* EC2 instances
+* Security Groups for EC2, RDS, and ELB
+* IAM role for EC2
+* Key Pair for EC2
+* CloudWatch Alarms for EC2, RDS, and ELB
+* Route53 Zone + Record Set
+* CloudFront Distribution
+* S3 bucket for static files
+
+The day will come where one of your applications is approaching end-of-life. The chances are high that you forget about on of the many parts you created years before or that your co-worker added a few months before.
+
+Instead of creating all the resources manually use CloudFormation to deploy them. You have to write a JSON template that contains a definition of the resources you need. The CloudFormation service will use that template to create a stack with all the resources for you. The cool thing is that if you delete the stack, all the resources are deleted. Nothing is forgotten. You can even use CloudFormation to update a stack when you need to change something in your template.
+
+If you *CloudFormation all the things*, you can go one step further. Reduce the IAM permissions of your users and [protect your CloudFormation managed AWS account from human intervention](https://cloudonaut.io/how-to-protect-your-cloudformation-managed-aws-account-from-human-intervention/).

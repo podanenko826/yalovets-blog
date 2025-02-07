@@ -1,0 +1,153 @@
+> This post was originally published on the [marbot blog](https://marbot.io/blog/analyze-cloudwatch-logs-like-a-pro.html).
+
+Are you monitoring the network utilization of your EC2 instances? Why not? The network is one of the rare resources that will limit your workload’s maximum throughput:
+
+1. CPU
+2. Memory
+3. Network
+4. Disk
+5. GPU
+
+I’ve debugged performance problems in a lot of infrastructures during the last 12 months. In most of the scenarios, the network capabilities of EC2 or RDS instances was the bottleneck causing troubles. That is why I want to share with you how to monitor the network utilization of EC2 instances.
+
+![Monitoring the Network Utilization of EC2](https://cloudonaut.io/images/2019/05/network.jpg "Monitoring the Network Utilization of EC2")
+
+To monitor the networking utilization of an EC2 instance, we need to solve two challenges.
+
+## Challenge #1: What’s the network performance of my EC2 instance?
+
+To be able to monitor the network utilization of your EC2 instance, you need to be able to answer the following question. What are the baseline and maximum network throughput of your EC2 instance? Unfortunately, AWS does not provide accurate information about the network performance for most instance types. For example, AWS promises `Moderate` network performance for a `t2.xlarge` instance or `Up to 10 Gbps` for a `m5.large` instance.
+
+This provided information is not satisfactory. That is why I ran a network performance benchmark and published the results at [EC2 Network Performance Cheat Sheet](https://cloudonaut.io/ec2-network-performance-cheat-sheet/). The results are astonishing.
+
+An `m5.large` instance provides 10.04 Gbit/s for a few minutes only. Afterward, the baseline network performance for an m5.large instance is around 0.74 Gbit/s. The results for other instance types look similar.
+
+The [EC2 Network Performance Cheat Sheet](https://cloudonaut.io/ec2-network-performance-cheat-sheet/) gives you an estimation for the baseline and maximum network throughput of your EC2 instance which allows you to define a threshold for monitoring.
+
+Fine, we have solved the challenge #1.
+
+## Challenge #2: How to combine multiple CloudWatch metrics?
+
+Each EC2 instance reports various metrics to CloudWatch. The metrics `NetworkIn` and `NetworkOut` collect the number of bytes received on all network interfaces by the instance. However, to calculate the network utilization of your EC2 instance, you need to add up both metrics.
+
+Pick one of the following options to create a CloudWatch alarm monitoring the total network utilization of your EC2 instance:
+
+1. Use the AWS Management Console to create the CloudWatch alarm manually.
+2. Use CloudFormation to create the CloudWatch alarm with Infrastructure as Code.
+3. Use marbot’s Jump Start to create the CloudWatch alarm.
+
+### AWS Management Console
+
+Log into the AWS Management Console and go to [CloudWatch](https://console.aws.amazon.com/cloudwatch/). Select `Alarms` from the sub-navigation and click the `Create Alarm` button. The wizard shown in the following screenshot appears. Click the `Select metric` button.
+
+![Step 1: Creating CloudWatch Alarm monitoring Network Utilization](https://cloudonaut.io/images/2019/05/network-utilization-01.png "Step 1: Creating CloudWatch Alarm monitoring Network Utilization")
+
+Search for the `NetworkIn` and `NetworkOut` metrics of your EC2 instance and select them both. After doing so, select the `Graphed metrics` tab.
+
+1. Click `Add a math expression`.
+2. Type in id `out` for the `NetworkOut` metric and `in` for the `NetworkIn` metric.
+3. Type in the expression `(in+out)/300/1000/1000/1000*8`.
+
+Let me quickly explain the math expression `(in+out)/300/1000/1000/1000*8`:
+
+* Add up `in` and `out`.
+* Divide by `300` to convert from 5 minutes to 1 second.
+* Divide by `1000/1000/1000*8` to convert Byte in Gbit.
+
+Make sure you have only selected the math expression before you click the `Select metric` button.
+
+![Step 2: Creating CloudWatch Alarm monitoring Network Utilization](https://cloudonaut.io/images/2019/05/network-utilization-02.png "Step 2: Creating CloudWatch Alarm monitoring Network Utilization")
+
+Finally, set up the alarm.
+
+1. Type in a name and description.
+2. Define the threshold. For example, 80% of the baseline network performance listed in the [EC2 Network Performance Cheat Sheet](https://cloudonaut.io/ec2-network-performance-cheat-sheet/).
+3. To avoid alarms from short network utilization spikes configure `8 out of 12 datapoints`. Which translates to 45 minutes within an hour.
+
+Click the `Create Alarm` button.
+
+![Step 3: Creating CloudWatch Alarm monitoring Network Utilization](https://cloudonaut.io/images/2019/05/network-utilization-03.png "Step 3: Creating CloudWatch Alarm monitoring Network Utilization")
+
+Fine, you have set up a CloudWatch alarm monitoring the network utilization of your EC2 instance.
+
+Instead of going through this process manually, you could create CloudWatch alarms in an automated way with the help of CloudFormation as well.
+
+### CloudFormation
+
+The following snippet shows a CloudFormation template setting up a CloudWatch alarm monitoring the network utilization of an EC2 instance.
+
+You need to modify the `Threshold`. I suggest 80% of the network baseline performance as listed in the [EC2 Network Performance Cheat Sheet](https://cloudonaut.io/ec2-network-performance-cheat-sheet/).
+
+```yaml
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  Topic:
+    Type: String
+  InstanceId:
+    Type: String
+Resources:
+  NetworkUtilizationTooHighAlarm:
+    Type: 'AWS::CloudWatch::Alarm'
+    Properties:
+      AlarmDescription: 'EC2 High Network Utilization'
+      Metrics:
+      - Id: in
+        Label: NetworkIn
+        MetricStat:
+          Metric:
+            Namespace: 'AWS/EC2'
+            MetricName: NetworkIn
+            Dimensions:
+            - Name: InstanceId
+              Value: !Ref InstanceId
+          Period: 300
+          Stat: Sum
+          Unit: Bytes
+        ReturnData: false
+      - Id: out
+        Label: NetworkOut
+        MetricStat:
+          Metric:
+            Namespace: 'AWS/EC2'
+            MetricName: NetworkOut
+            Dimensions:
+            - Name: InstanceId
+              Value: !Ref InstanceId
+          Period: 300
+          Stat: Sum
+          Unit: Bytes
+        ReturnData: false
+      - Id: total
+        Label: 'NetworkTotal'
+        Expression: '(in+out)/300/1000/1000/1000*8' # Gbit/s
+        ReturnData: true
+      ComparisonOperator: GreaterThanThreshold
+      EvaluationPeriods: 12
+      DatapointsToAlarm: 8
+      Threshold: '0.048' # Gbit/s
+      AlarmActions:
+      - !Ref Topic
+      OKActions:
+      - !Ref Topic
+      TreatMissingData: notBreaching
+```
+
+Are you looking for an, even more, simpler way to monitor the network utilization of your EC2 instance?
+
+### marbot Jump Start
+
+Our chatbot *marbot* escalates alarms among the members of your DevOps team. Luckily, *marbot* provides built-in *Jump Starts* which simplify creating CloudWatch alarms for your cloud resources. The *Jump Start* for EC2 instances sets up monitoring for network utilization as well.
+
+1. Add [marbot](https://marbot.io/) to your Slack workspace.
+2. Invite *marbot* to a channel.
+3. Follow the installation instructions.
+4. Ask marbot for help monitoring your EC2 instance: `@marbot Help me to monitor my EC2 instance.`
+5. Select `EC2 instance` or `EC2 instances` as monitoring goal and follow the *Jump Start* wizard as shown in the following screenshot.
+
+![marbot Jump Start](https://cloudonaut.io/images/2019/05/marbot-jump-start.png "marbot Jump Start")
+
+It couldn’t be easier!
+
+## Summary
+
+Monitoring the network utilization of your EC2 instance is essential, as the network is a limited resource. The instance type affects maximum and baseline performance. Your EC2 instance might not be able to provide the maximum network performance for more than 5 to 30 minutes. Therefore, use the baseline performance to define the alarm threshold. Use [EC2 Network Performance Cheat Sheet](https://cloudonaut.io/ec2-network-performance-cheat-sheet/) to get an estimation of the network performance of your EC2 instance.

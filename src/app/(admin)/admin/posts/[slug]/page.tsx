@@ -15,11 +15,11 @@ const PostEditor = dynamic(() => import('@/components/EditorComponent'), {
 const EditPage = async ({ params }: { params: { slug: string } }) => {
     const { slug } = params;
 
-    const data = await getMDXContent(slug);
-
-    const postData = await getSortedPosts();
+    const postData = await getPost(slug);
     const authorData = await getAuthors();
     const tagsData = await getTagsData();
+
+    const data = await getMDXContent(slug, postData.date as string);
 
     if (!postData || !authorData || !tagsData) {
         return <p>Loading...</p>;
@@ -29,7 +29,7 @@ const EditPage = async ({ params }: { params: { slug: string } }) => {
         <div className="container-fluid mt-3">
             <div className="container">
                 <Suspense fallback={<p>Loading...</p>}>
-                    <PostEditor markdown={data.markdown} slug={params.slug} postsData={postData} authorData={authorData} tagsData={tagsData} />
+                    <PostEditor markdown={data.markdown} slug={params.slug} postData={postData} authorData={authorData} tagsData={tagsData} />
                 </Suspense>
             </div>
         </div>

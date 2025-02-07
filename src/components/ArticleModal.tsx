@@ -17,13 +17,19 @@ import { getMDXContent, getSortedPosts, trackView } from '@/lib/posts';
 import { usePathname } from 'next/navigation';
 import { getAuthors } from '@/lib/authors';
 import { MDXProvider } from '@mdx-js/react';
-import { mdSerialize } from '../../mdSerializer';
+import { mdSerialize } from '../services/mdSerializer';
 import { useMDXComponents } from '../../mdx-components';
 import Head from 'next/head';
 import { getTagsData } from '@/lib/tags';
 
 const ArticleModal: React.FC = () => {
     const { selectedPost, setSelectedPost } = usePostContext();
+
+    const transformedSlug = `${selectedPost?.slug
+        .replace(/[^a-zA-Z0-9 ]/g, '')
+        .replaceAll(' ', '-')
+        .toLowerCase()}`;
+
     const { expandedPost, setExpandedPost } = usePostContext();
     const { posts, setPosts } = usePostContext();
     const { authors, setAuthors } = usePostContext();
@@ -43,6 +49,8 @@ const ArticleModal: React.FC = () => {
     const components = useMDXComponents();
 
     const currentPath = usePathname();
+
+    const format = 'YYYY-MM-DD';
 
     useEffect(() => {
         const sortedByViews = posts
@@ -86,11 +94,13 @@ const ArticleModal: React.FC = () => {
             const postUrl = window.location.href;
             const postSlug = postUrl.split('/').at(-1);
 
+            if (posts.length < 1) return;
+
             if (selectedPost === null && postSlug) {
                 const post = posts.find(post => post.slug === postSlug) as PostItem;
                 if (!post) return;
 
-                const MdxContent = await getMDXContent(post.slug);
+                const MdxContent = await getMDXContent(post.slug, post.date as string);
                 const markdown = MdxContent.markdown;
                 const previousPath = window.location.href;
 
@@ -102,7 +112,7 @@ const ArticleModal: React.FC = () => {
         };
 
         returnToPost();
-    }, [window.location.href]);
+    }, [window.location.href, posts]);
 
     useEffect(() => {
         const processMarkdown = async () => {
@@ -151,7 +161,7 @@ const ArticleModal: React.FC = () => {
                                                 <button onClick={() => closeModal()} className="d-block d-md-none btn-outlined py-2 px-md-3">
                                                     ← Back
                                                 </button>
-                                                <button onClick={() => closeModal()} className="d-none d-md-block btn-pill py-2 px-md-3">
+                                                <button onClick={() => closeModal()} className="d-none d-md-block btn-pill py-2 px-md-2">
                                                     ←
                                                 </button>
                                             </div>
@@ -171,17 +181,17 @@ const ArticleModal: React.FC = () => {
                                                     {author.fullName}
                                                 </Link>
                                                 <p className="m-0">•</p>
-                                                <p className="m-0">{moment(selectedPost.date, 'DD-MM-YYYY').format('D MMM YYYY')} </p>
-                                                {moment(selectedPost.modifyDate, 'DD-MM-YYYY').isAfter(moment(selectedPost.date, 'DD-MM-YYYY')) && (
+                                                <p className="m-0">{moment(selectedPost.date, format).format('D MMM YYYY')} </p>
+                                                {moment(selectedPost.modifyDate, format).isAfter(moment(selectedPost.date, format)) && (
                                                     <>
                                                         <p className="d-none d-md-block m-0">•</p>
-                                                        <span className="d-none d-md-block px-2 m-0 rounded-pill text-bg-secondary">{'Updated ' + moment(selectedPost.modifyDate, 'DD-MM-YYYY').fromNow()}</span>
+                                                        <span className="d-none d-md-block px-2 m-0 rounded-pill text-bg-secondary">{'Updated ' + moment(selectedPost.modifyDate, format).fromNow()}</span>
                                                     </>
                                                 )}
                                             </div>
-                                            {moment(selectedPost.modifyDate, 'DD-MM-YYYY').isAfter(moment(selectedPost.date, 'DD-MM-YYYY')) && (
+                                            {moment(selectedPost.modifyDate, format).isAfter(moment(selectedPost.date, format)) && (
                                                 <span className="d-md-none px-2 mb-4 rounded-pill text-bg-secondary" id="mobileUpdatedBadge">
-                                                    {'Updated ' + moment(selectedPost.modifyDate, 'DD-MM-YYYY').fromNow()}
+                                                    {'Updated ' + moment(selectedPost.modifyDate, format).fromNow()}
                                                 </span>
                                             )}
                                         </div>
@@ -271,7 +281,7 @@ const ArticleModal: React.FC = () => {
                                                 </Link>
                                             ))}
 
-                                        {selectedPost.tags &&
+                                        {/* {selectedPost.tags &&
                                             selectedPost.tags[0] !== '' &&
                                             selectedPost.tags?.slice(0, 3).map((tag, index) => (
                                                 <Link href={`/tag/${tag}`} className="col-md-9" key={index}>
@@ -279,7 +289,7 @@ const ArticleModal: React.FC = () => {
                                                         <h5 id="col-heading-1">Tag: {tag}</h5>
                                                     </div>
                                                 </Link>
-                                            ))}
+                                            ))} */}
                                     </div>
                                 </div>
                             )}

@@ -4,12 +4,13 @@ import { remark } from 'remark';
 import html from 'remark-html';
 import Cookies from 'js-cookie'; // Use js-cookie library for easy cookie handling
 
-import { DynamoDB, QueryCommand } from '@aws-sdk/client-dynamodb';
+import { DescribeTableCommand, DynamoDB, QueryCommand } from '@aws-sdk/client-dynamodb';
 import { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, ScanCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 
-import type { AuthorItem, PostItem } from '@/types';
+import type { AuthorItem, PaginationEntry, PaginationState, PostItem } from '@/types';
 import { getAuthorEmails, getAuthorByEmail } from './authors';
 import { request } from 'http';
+import { updatePagination } from './pagination';
 
 const AWS_REGION = process.env.NEXT_PUBLIC_REGION;
 const DYNAMODB_TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
@@ -26,129 +27,173 @@ const dbClient = new DynamoDB({
 const docClient = DynamoDBDocumentClient.from(dbClient);
 
 function transformPostData(data: any[]): PostItem[] {
-    return data.map(post => ({
-        email: post.email?.S,
-        slug: post.slug?.S,
-        title: post.title?.S,
-        description: post.description?.S,
-        imageUrl: post.imageUrl?.S,
-        date: post.date?.S,
-        modifyDate: post.modifyDate?.S,
-        postType: post.postType?.S,
-        tags: post.tags?.L ? post.tags.L.map((tag: { S: any }) => tag.S) : [],
-        readTime: parseInt(post.readTime?.N || '0'),
-        viewsCount: parseInt(post.viewsCount?.N || '0'),
-    }));
+    return data.map(post => {
+        return {
+            email: post.email?.S,
+            slug: post.slug?.S,
+            title: post.title?.S,
+            description: post.description?.S,
+            imageUrl: post.imageUrl?.S,
+            date: post.date?.S,
+            modifyDate: post.modifyDate?.S,
+            postType: post.postType?.S,
+            tags: post.tags?.L ? post.tags.L.map((tag: { S: any }) => tag.S) : [],
+            readTime: parseInt(post.readTime?.N || '0'),
+            viewsCount: parseInt(post.viewsCount?.N || '0'),
+            postGroup: post.postGroup?.S,
+        }
+    });
 }
 
-export const getSortedPosts = async () => {
-    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+type FetchPostsResponse = {
+    posts: PostItem[];
+    lastKey: string; // The last key is the exclusive start key for pagination
+};
+
+export function sortPosts(postsData: PostItem[]): PostItem[] {
+    const sortedPostsData = [...postsData].sort((a, b) => {
+        const dateOne = moment(a.date);
+        const dateTwo = moment(b.date);
+        
+        return dateTwo.diff(dateOne); // Descending order
+    });
+
+    return sortedPostsData;
+}
+
+export const getPaginatedPosts = async (page: number, limit: number, paginationData: PaginationState): Promise<{ posts: PostItem[], lastKey: string }> => {
+    if (!limit || limit > 50) return { posts: [], lastKey: '' };
+
+    if (page > paginationData.totalPages) return { posts: [], lastKey: '' };
+
+    if (Object.keys(paginationData.paginationData).length === 0) return { posts: [], lastKey: '' };
 
     try {
-        const response = await fetch(`${baseUrl}/api/post`);
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+        const pageStartingKey = paginationData.paginationData[page].date;
+
+        const response = await fetch(`${baseUrl}/api/posts?limit=${limit}&lastKey=${pageStartingKey}`);
+
         if (!response.ok) {
             console.error('API returned an error:', response.status, await response.text());
-            throw new Error('Failed to fetch posts');
+            return { posts: [], lastKey: '' };
         }
 
-        const data = await response.json();
-
-        let posts: any[] = [];
-
-        if (data) {
-            posts = [...posts, ...data];
-        }
-
-        const transformedPostData = transformPostData(data);
-
-        const sortedPostsData = transformedPostData.sort((a, b) => {
-            const format = 'DD-MM-YYYY';
-            const dateOne = moment(a.date, format);
-            const dateTwo = moment(b.date, format);
-
-            return dateTwo.diff(dateOne); // Descending order
-        });
-
-        return sortedPostsData;
+        const data: FetchPostsResponse = await response.json();
+        const transformedPostData = transformPostData(data.posts);
+        const sortedPostsData = sortPosts(transformedPostData)
+        
+        return { posts: sortedPostsData, lastKey: data.lastKey };
     } catch (err) {
         console.error('Failed to fetch posts from the database: ', err);
-        return [];
+        return { posts: [], lastKey: '' };
+    }
+};
+
+export const getSortedPosts = async (limit: number, lastKey?: string ): Promise<{ posts: PostItem[], lastKey: string }> => {
+    if (!limit || limit > 50) return { posts: [], lastKey: '' };
+
+    try {
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+        const response = lastKey ? await fetch(`${baseUrl}/api/posts?limit=${limit}&lastKey=${lastKey}`) 
+                    : await fetch(`${baseUrl}/api/posts?limit=${limit}`);
+
+        if (!response.ok) {
+            console.error('API returned an error:', response.status, await response.text());
+            return { posts: [], lastKey: '' };
+        }
+
+        const data: FetchPostsResponse = await response.json();
+
+        const transformedPostData = transformPostData(data.posts);
+
+        const sortedPostsData = sortPosts(transformedPostData);
+        
+        return { posts: sortedPostsData, lastKey: data.lastKey };
+    } catch (err) {
+        console.error('Failed to fetch posts from the database: ', err);
+        return { posts: [], lastKey: '' };
+    }
+};
+
+export const getAuthorPosts = async (email: string, limit: number, lastKey?: string ): Promise<{ posts: PostItem[], lastKey: string }> => {
+    if (!email || !limit || limit > 50) return { posts: [], lastKey: '' };
+
+    try {
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+        const response = lastKey ? await fetch(`${baseUrl}/api/posts-by-author?email=${email}&limit=${limit}&lastKey=${lastKey}`) 
+                    : await fetch(`${baseUrl}/api/posts-by-author?email=${email}&limit=${limit}`);
+
+        if (!response.ok) {
+            console.error('API returned an error:', response.status, await response.text());
+            return { posts: [], lastKey: '' };
+        }
+
+        const data: FetchPostsResponse = await response.json();
+
+        const transformedPostData = transformPostData(data.posts);
+
+        const sortedPostsData = sortPosts(transformedPostData);
+        
+        return { posts: sortedPostsData, lastKey: data.lastKey };
+    } catch (err) {
+        console.error('Failed to fetch posts from the database: ', err);
+        return { posts: [], lastKey: '' };
     }
 };
 
 export const getPost = async (slug: string): Promise<PostItem> => {
-    const authorEmails: any = await getAuthorEmails();
+    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+    const response = await fetch(`${baseUrl}/api/post-by-slug?slug=${slug}`, { method: 'GET' });
+    const data: PostItem[] = await response.json();
 
-    let post: any[] = [];
+    let post: any[] = []
 
-    for (const authorEmail of authorEmails) {
-        try {
-            const params = {
-                TableName: DYNAMODB_TABLE_NAME, // Replace with your actual posts table name
-                KeyConditionExpression: 'email = :email AND slug = :slug', // Querying by slug in the GSI
-                ExpressionAttributeValues: {
-                    ':email': { S: authorEmail }, // The email value to search for
-                    ':slug': { S: slug },
-                },
-            };
-
-            const command = new QueryCommand(params);
-            const result = await docClient.send(command);
-            const data = result.Items;
-
-            if (data && data.length > 0) {
-                post = [...post, ...data];
-            }
-        } catch (err) {
-            console.error('Error fetching content: ', err);
-        }
+    if (data.length > 0) {
+        post = [...data];
     }
-
     const transformedPostData = transformPostData(post);
 
     return transformedPostData[0];
 };
 
-export const getLatestPost = async (): Promise<PostItem> => {
-    const sortedPosts = await getSortedPosts();
-    const latestArticle: PostItem = sortedPosts[0];
+export const getPostsCount = async (): Promise<number> => {
+    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+    const authorLengthResponse = await fetch(`${baseUrl}/api/author-list`);
+    const authorLength = await authorLengthResponse.json() || [];
 
-    return latestArticle;
-};
+    const params = {
+        TableName: DYNAMODB_TABLE_NAME,
+    };
 
-export const getRecentPosts = async (): Promise<PostItem[]> => {
-    const sortedPosts = await getSortedPosts();
+    const command = new DescribeTableCommand(params);
+    const response = await docClient.send(command);
 
-    const recentPosts: PostItem[] = sortedPosts.slice(0, 9);
+    if (!response.Table?.ItemCount) return 0;
 
-    return recentPosts;
-};
-
-export const getPopularPosts = async (): Promise<PostItem[]> => {
-    const sortedPosts = await getSortedPosts();
-
-    // Sort posts by viewsCount in descending order
-    const sortedByViews = sortedPosts
-        .filter(post => post.viewsCount !== undefined) // Filter out posts with undefined viewsCount
-        .sort((a, b) => (b.viewsCount ?? 0) - (a.viewsCount ?? 0));
-
-    const mostPopularPosts = sortedByViews.slice(0, 3); // Returs an array of 3 most popular posts by views
-    return mostPopularPosts;
-};
+    const postsCount = Number(response.Table.ItemCount) - authorLength.length;
+    
+    return postsCount || 0;
+}
 
 export const formatPostDate = (date: Date) => {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
+    // const year = date.getFullYear();
+    // const month = String(date.getMonth() + 1).padStart(2, '0');
+    // const day = String(date.getDate()).padStart(2, '0');
+    // return `${year}-${month}-${day}`;
+
+    return moment(date).utc().toISOString();
 };
 
-export const getMDXContent = async (slug: string): Promise<{ slug: string; markdown: string }> => {
+export const getMDXContent = async (slug: string, date: string): Promise<{ slug: string; markdown: string }> => {
     try {
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
         // Fetch the markdown content
-        const response = await fetch(`${baseUrl}/api/mdx?slug=${slug}`, {
+        const response = await fetch(`${baseUrl}/api/mdx?slug=${slug}&date=${date}`, {
             method: 'GET',
         });
         if (!response.ok) {
@@ -175,7 +220,7 @@ export const getMDXContent = async (slug: string): Promise<{ slug: string; markd
     }
 };
 
-export const saveMDXContent = async (postTitle: string, markdown: string, slug?: string) => {
+export const saveMDXContent = async (postTitle: string, markdown: string, date: string, slug?: string): Promise<{ content: string; slug: string }> => {
     if (!slug) {
         slug = `${postTitle
             .replace(/[^a-zA-Z0-9 ]/g, '')
@@ -183,11 +228,11 @@ export const saveMDXContent = async (postTitle: string, markdown: string, slug?:
             .toLowerCase()}`;
     }
 
-    const fileName = `${slug}.mdx`;
+    const fileName = `${slug}`;
 
     try {
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
-        const response = await fetch(`${baseUrl}/api/mdx`, {
+        const response = await fetch(`${baseUrl}/api/mdx?date=${date}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -199,107 +244,245 @@ export const saveMDXContent = async (postTitle: string, markdown: string, slug?:
             throw new Error('Failed to save file');
         }
 
-        const data = await response.text();
-        return slug;
+        const content = await response.text();
+        return {content, slug};
     } catch (error) {
         console.error('Error:', error);
     }
+
+    return {content: '', slug: ''};
 };
 
-export const createPost = async (postData: Partial<PostItem>, markdown: string) => {
-    const { email, description, date, modifyDate, imageUrl, readTime, postType, tags, viewsCount } = postData;
-    let { slug, title } = postData;
+export const deleteMDXContent = async (slug: string, date: string): Promise<{ success: boolean; slug: string }> => {
+    try {
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+        const response = await fetch(`${baseUrl}/api/mdx?slug=${slug}&date=${date}`, {
+            method: 'DELETE',
+        });
 
-    if (!email || !title || !description || !date || !modifyDate) {
-        throw new Error('Missing required post data: email, slug, title, description, date or modifyDate.');
+        if (!response.ok) {
+            throw new Error('Failed to delete file');
+        }
+
+        const success = await response.json();
+        return { success, slug };
+    } catch (error) {
+        console.error('Error:', error);
+    }
+
+    return {success: false, slug: ''};
+};
+
+export const rebuildPagination = async (): Promise<Record<number, PaginationEntry>> => {
+    try {
+        console.log('Started pagination rebuild.');
+        
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+        const response = await fetch(`${baseUrl}/api/posts`, { method: 'GET' });
+
+        if (!response.ok) {
+            console.error('API returned an error:', response.status, await response.text());
+            return {};
+        }
+
+        const data: FetchPostsResponse = await response.json();
+
+        const transformedPostData = transformPostData(data.posts);
+
+        const sortedPostsData = sortPosts(transformedPostData);
+        
+        let newPagination: Record<number, PaginationEntry> = {};
+
+        for (let index = 0; index < sortedPostsData.length; index++) {
+            if (index % 14 === 0) { // Every 14th post
+                const post = sortedPostsData[index];
+                newPagination[index / 14 + 1] = { // +1 to make the page number 1-based
+                    date: post.date as string,
+                };
+            }
+        }
+
+        console.log('New Pagination:', newPagination);
+
+        if (Object.keys(newPagination).length === 0) return {};
+
+        const result = updatePagination(newPagination);
+
+        if (Object.keys(result).length > 0) console.log('Pagination rebuilt successfully.');
+        
+        return result;
+    } catch (err) {
+        console.error('Failed to rebuild pagination: ', err);
+        return {};
+    }
+}
+
+export const createPost = async (postData: Partial<PostItem>, markdown: string): Promise<{ slug: string; markdown: string }> => {
+    const { email, title, description, date, imageUrl, readTime, postType, tags } = postData;
+    let { slug } = postData;
+    
+    if (!email || !title || !description || !date || !imageUrl || !readTime || !postType) {
+        console.error('Recieved invalid or incomplete post data');
+        return {slug: '', markdown: ''};
     }
 
     if (!slug) {
-        if (title) {
-            slug = `${title
-                .replace(/[^a-zA-Z0-9 ]/g, '')
-                .replaceAll(' ', '-')
-                .toLowerCase()}`;
-        } else {
-            throw new Error('Missing required slug identifier.');
-        }
+        slug = `${title
+            .replace(/[^a-zA-Z0-9 ]/g, '')
+            .replaceAll(' ', '-')
+            .toLowerCase()}`;
     }
-
-    // Ensure the fileName does not exceed 255 characters, including the '.mdx' extension
-    const MAX_FILENAME_LENGTH = 150;
-    const fileExtension = '.mdx';
-    const ellipsis = '...';
-
-    // Truncate the slug if the full fileName would exceed the limit
-    if (slug.length + fileExtension.length > MAX_FILENAME_LENGTH) {
-        slug = slug.slice(0, MAX_FILENAME_LENGTH - fileExtension.length - ellipsis.length);
-
-        title = title.slice(0, MAX_FILENAME_LENGTH - fileExtension.length - ellipsis.length) + ellipsis;
-    }
-
-    const savedPostSlug = saveMDXContent(title, markdown, slug);
-
-    const newPost: PostItem = {
-        email,
-        slug,
-        title,
-        description,
-        imageUrl: imageUrl ?? '', // Optional imageUrl, default to an empty string if not provided
-        date: date,
-        modifyDate: modifyDate, // Automatically generated modifyDate
-        postType: postType || 'Article',
-        tags: tags || [],
-        readTime: readTime || 0, // Default readTime
-        viewsCount: viewsCount || 0, // Default viewsCount
-    };
-
-    const command = new PutCommand({
-        TableName: DYNAMODB_TABLE_NAME,
-        Item: newPost,
-    });
 
     try {
-        const response = await docClient.send(command);
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+        const savedMarkdown = await saveMDXContent(title, markdown, date, slug);
+
+        if (savedMarkdown.content === '' || savedMarkdown.slug === '') {
+            console.error('Failed to save markdown content to file system. Post creation aborted.')
+            return { slug: '', markdown: '' };
+        }
+
+        const newPost: PostItem = {
+            email,
+            slug: slug,
+            title,
+            description,
+            imageUrl,
+            date: date,
+            modifyDate: date,
+            postType: postType,
+            tags: tags || [],
+            readTime: readTime,
+            viewsCount: 0,
+            postGroup: 'ALL_POSTS',
+        };
+        
+
+        const response = await fetch(`${baseUrl}/api/posts`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newPost),
+        });
+
+        if (!response.ok) {
+            console.error('Failed to upload post metadata to DB. Post creation aborted.');
+            await deleteMDXContent(slug, newPost.date as string);
+            return { slug: '', markdown: '' };  // Return a failed result
+        }
+
+        await rebuildPagination();
+
         console.log('Post successfully uploaded:', newPost);
-        return savedPostSlug;
+        return {slug, markdown: savedMarkdown.slug};
     } catch (error) {
         console.error('Failed to upload post:', error);
     }
+
+    return {slug: '', markdown: ''};
 };
 
-export const deletePost = async (postData: { email: string; slug: string }) => {
-    const { email, slug } = postData;
-    // Check that the required slug is provided
-    if (!slug) {
-        throw new Error('Missing required identifier: slug.');
+export const updatePost = async (postData: Partial<PostItem>, markdown: string): Promise<{ slug: string; markdown: string }> => {
+    const { email, slug, title, description, date, modifyDate, imageUrl, readTime, postType, viewsCount, tags } = postData;
+    
+    if (!email || !slug || !title || !description || !date || !imageUrl || !readTime || !postType) {
+        console.error('Recieved invalid or incomplete post data');
+        return {slug: '', markdown: ''};
     }
-
-    // Create the delete command with the specified TableName and Key (slug in this case)
-    const command = new DeleteCommand({
-        TableName: DYNAMODB_TABLE_NAME,
-        Key: {
-            email,
-            slug,
-        },
-    });
 
     try {
-        const response = await docClient.send(command);
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+        const savedMarkdown = await saveMDXContent(title, markdown, date, slug);
+
+        if (savedMarkdown.content === '' || savedMarkdown.slug === '') {
+            console.error('Failed to save markdown content to file system. Post updating aborted.')
+            return { slug: '', markdown: '' };
+        }
+
+        const updatedPost: PostItem = {
+            email,
+            slug,
+            title,
+            description,
+            imageUrl,
+            date: date,
+            modifyDate: modifyDate || moment.utc().toISOString(),
+            postType: postType,
+            tags: tags || [],
+            readTime: readTime,
+            viewsCount: viewsCount || 0,
+            postGroup: 'ALL_POSTS',
+        };
+        
+
+        const response = await fetch(`${baseUrl}/api/posts`, {
+            method: 'PUT',
+            headers: { 
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedPost),
+        });
+
+        if (!response.ok) {
+            console.error('Failed to upload post metadata to DB. Post creation aborted.');
+            return { slug: '', markdown: '' };  // Return a failed result
+        }
+
+        console.log('Post successfully updated:', updatedPost);
+        return {slug, markdown: savedMarkdown.slug};
+    } catch (error) {
+        console.error('Failed to update post:', error);
+    }
+
+    return {slug: '', markdown: ''};
+};
+
+export const deletePost = async (postData: { email: string; slug: string, date: string }): Promise<string> => {
+    try {
+        const { email, slug } = postData;
+
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+        // Check that the required slug is provided
+        if (!email) {
+            console.error('Missing required identifier: email.');
+            return '';
+        }
+        if (!slug) {
+            console.error('Missing required identifier: slug.');
+            return '';
+        }
+
+        const response = await fetch(`${baseUrl}/api/posts`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, slug }),
+        })
+
+        if (!response.ok) {
+            console.error('Failed to delete post metadata to DB. Post deleting aborted.');
+            return ''; // Return empty slug
+        }
         console.log('Post successfully deleted:', slug);
+        
+        // Deletes the Article folder in file system after successful metadata deletion
+        const deletedPost = await deleteMDXContent(slug, postData.date);
+
+        if (!deletedPost.success || !deletedPost.slug) {
+            return '';
+        }
+
+        await rebuildPagination();
+
+        return deletedPost.slug;
     } catch (error) {
         console.error('Failed to delete post:', error);
-        throw new Error('Error deleting post.');
+        return '';
     }
-
-    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
-
-    const response = await fetch(`${baseUrl}/api/mdx?slug=${slug}`, {
-        method: 'DELETE',
-    });
-    if (!response.ok) {
-        throw new Error('Failed to delete file');
-    }
-    return slug;
 };
 
 export const getPostsData = async (
@@ -311,16 +494,17 @@ export const getPostsData = async (
     authorData: AuthorItem;
 }> => {
     try {
-        const mdxContent = await getMDXContent(slug);
+        
+        const postData = await getPost(slug);
+        
+        const authorData = await getAuthorByEmail(postData.email);
+        
+        const mdxContent = await getMDXContent(slug, postData.date as string);
+        const markdown = mdxContent.markdown;
+
         if (!mdxContent) {
             throw new Error('No content found for the given key.');
         }
-        const markdown = mdxContent.markdown;
-
-        const postData = await getPost(slug);
-
-        const authorData = await getAuthorByEmail(postData.email);
-
         return {
             slug,
             markdown,
@@ -337,6 +521,7 @@ export const getPostsData = async (
                 slug: '',
                 title: '',
                 description: '',
+                postGroup: '',
             },
             authorData: {
                 email: '',
@@ -366,7 +551,7 @@ async function incrementViewCount(email: string, slug: string) {
     try {
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
-        const response = await fetch(`${baseUrl}/api/incrementViewCount`, {
+        const response = await fetch(`${baseUrl}/api/increment-view-count`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, slug }),

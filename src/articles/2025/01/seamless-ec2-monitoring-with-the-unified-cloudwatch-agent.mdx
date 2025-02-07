@@ -1,0 +1,266 @@
+Shipping logs and metrics from an EC2 instance to CloudWatch was painful in the past. By default, you only get metrics about CPU utilization, disk and network IO. The missing pieces are metrics about memory and disk usage and logs. Plenty of different options are available to achieve the goal of collecting the missing information. You can use [collectd](https://collectd.org/) with a [plugin](https://github.com/awslabs/collectd-cloudwatch) to ship metrics. [fluentd](https://www.fluentd.org/) comes with plugins to send logs and metrics as well. On top of that, AWS provides or provided multiple agents to ship metrics and logs.![EC2 monitoring](https://cloudonaut.io/images/2020/03/ec2-monitoring@730w2x.webp "EC2 monitoring")
+
+The good news is that AWS finally seems to settle on a single agent, called Unified CloudWatch Agent, which solves all problems. The Unified CloudWatch Agent ships logs and metrics to CloudWatch. The bad news is that the Unified CloudWatch Agent is not part of Amazon Linux 2 by default. ([Compare with the SSM agent that is installed and started by default, which might surprise you and your security team](https://cloudonaut.io/aws-ssm-is-a-trojan-horse-fix-it-now/)). In this blog post, you learn how to install and configure the Unified CloudWatch Agent with Amazon Linux 2. Without forcing you to use SSM or any other non-standard Linux tools. As long as you can install RPMs, you are okay with any other Linux distribution too.
+
+The agent creates additional metrics like memory and swap usage.
+
+![CloudWatch Metrics published by the Unified CloudWatch Agent](https://cloudonaut.io/images/2020/03/cloudwatch-metrics@730w2x.webp "CloudWatch Metrics published by the Unified CloudWatch Agent")
+
+On top of that, the agent will also send events from log files to a log group.
+
+![CloudWatch Logs published by the Unified CloudWatch Agent](https://cloudonaut.io/images/2020/03/cloudwatch-logs@730w2x.webp "CloudWatch Logs published by the Unified CloudWatch Agent")
+
+## Installing
+
+Unfortunately, the Unified CloudWatch Agent is not part of the official package repositories included in Amazon Linux 2. Instead of a straightforward `yum install xyz`, execute the following commands.
+
+```bash
+wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm
+sudo rpm -U amazon-cloudwatch-agent.rpm
+```
+
+I don’t recommend to install whatever the latest version is. Instead, you should pin the version like this:
+
+```bash
+wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/1.237768.0/amazon-cloudwatch-agent.rpm
+sudo rpm -U amazon-cloudwatch-agent.rpm
+```
+
+You might ask yourself: where can I find the release notes? AWS provides us with [RELEASE\_NOTES](https://s3.amazonaws.com/amazoncloudwatch-agent/info/latest/RELEASE_NOTES), which feels a little bit outdated nowadays where most of us use GitHub where you can subscribe to new releases via RSS. But it works. Besides that, there is no way to subscribe to new releases anywhere. Interestingly, you can get the latest version from [`https://s3.amazonaws.com/amazoncloudwatch-agent/info/latest/CWAGENT_VERSION`.](https://s3.amazonaws.com/amazoncloudwatch-agent/info/latest/CWAGENT_VERSION.)
+
+Unfortunately, the `RELEASE_NOTES` and the `CWAGENT_VERSION` are not in sync right now. The release notes list version `1.229195.0` as the latest release, which is not available for download. Instead, the `CWAGENT_VERSION` points to the newest version `1.237768.0`, which I can download 🤷. As I said, the Unified CloudWatch Agent needs more ❤️.
+
+## Configuring
+
+The most important configuration file is `/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json`. The [details are documented in depth](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Agent-Configuration-File-Details.html).
+
+In the following, I will provide you a default configuration that works for Amazon Linux 2 and ships:
+
+* logs from `/var/log/`
+* memory and swap usage metrics
+* root volume (`/`) disk usage metric
+
+The log streams are automatically prefixed with the EC2 instance id, and the metrics are published with an `InstanceId` dimension as well.
+
+Replace `LOG_GROUP_NAME` with the name of your CloudWatch log group and `CW_NAMESPACE` with the name-space you want to use for the custom metrics.
+
+```json
+{
+  "logs": {
+    "logs_collected": {
+      "files": {
+        "collect_list": [{
+           "log_group_name": "CW_LOG_GROUP_NAME",
+           "file_path": "/var/log/amazon/amazon-cloudwatch-agent/amazon-cloudwatch-agent.log",
+           "log_stream_name": "{instance_id}/var/log/amazon/amazon-cloudwatch-agent/amazon-cloudwatch-agent.log",
+           "timestamp_format": "%Y-%m-%dT%H:%M:%S"
+        }, {
+           "log_group_name": "CW_LOG_GROUP_NAME",
+           "file_path": "/var/log/amazon/amazon-cloudwatch-agent/configuration-validation.log",
+           "log_stream_name": "{instance_id}/var/log/amazon/amazon-cloudwatch-agent/configuration-validation.log",
+           "timestamp_format": "%Y/%m/%d %H:%M:%S"
+        }, {
+          "log_group_name": "CW_LOG_GROUP_NAME",
+          "file_path": "/var/log/amazon/ssm/amazon-ssm-agent.log",
+          "log_stream_name": "{instance_id}/var/log/amazon/ssm/amazon-ssm-agent.log",
+          "timestamp_format": "%Y-%m-%d %H:%M:%S"
+        }, {
+           "log_group_name": "CW_LOG_GROUP_NAME",
+           "file_path": "/var/log/amazon/ssm/errors.log",
+           "log_stream_name": "{instance_id}/var/log/amazon/ssm/errors.log",
+           "timestamp_format": "%Y-%m-%d %H:%M:%S"
+        }, {
+           "log_group_name": "CW_LOG_GROUP_NAME",
+           "file_path": "/var/log/audit/audit.log",
+           "log_stream_name": "{instance_id}/var/log/audit/audit.log"
+        }, {
+           "log_group_name": "CW_LOG_GROUP_NAME",
+           "file_path": "/var/log/boot.log",
+           "log_stream_name": "{instance_id}/var/log/boot.log"
+        }, {
+           "log_group_name": "CW_LOG_GROUP_NAME",
+           "file_path": "/var/log/cfn-hup.log",
+           "log_stream_name": "{instance_id}/var/log/cfn-hup.log",
+           "timestamp_format": "%Y-%m-%d %H:%M:%S"
+        }, {
+           "log_group_name": "CW_LOG_GROUP_NAME",
+           "file_path": "/var/log/cfn-init-cmd.log",
+           "log_stream_name": "{instance_id}/var/log/cfn-init-cmd.log",
+           "timestamp_format": "%Y-%m-%d %H:%M:%S"
+        }, {
+           "log_group_name": "CW_LOG_GROUP_NAME",
+           "file_path": "/var/log/cfn-init.log",
+           "log_stream_name": "{instance_id}/var/log/cfn-init.log",
+           "timestamp_format": "%Y-%m-%d %H:%M:%S"
+        }, {
+           "log_group_name": "CW_LOG_GROUP_NAME",
+           "file_path": "/var/log/cfn-wire.log",
+           "log_stream_name": "{instance_id}/var/log/cfn-wire.log",
+           "timestamp_format": "%Y-%m-%d %H:%M:%S"
+        }, {
+           "log_group_name": "CW_LOG_GROUP_NAME",
+           "file_path": "/var/log/cloud-init-output.log",
+           "log_stream_name": "{instance_id}/var/log/cloud-init-output.log"
+        }, {
+           "log_group_name": "CW_LOG_GROUP_NAME",
+           "file_path": "/var/log/cloud-init.log",
+           "log_stream_name": "{instance_id}/var/log/cloud-init.log",
+           "timestamp_format": "%b %d %H:%M:%S"
+        }, {
+           "log_group_name": "CW_LOG_GROUP_NAME",
+           "file_path": "/var/log/cron",
+           "log_stream_name": "{instance_id}/var/log/cron",
+           "timestamp_format": "%b %-d %H:%M:%S"
+        }, {
+           "log_group_name": "CW_LOG_GROUP_NAME",
+           "file_path": "/var/log/dmesg",
+           "log_stream_name": "{instance_id}/var/log/dmesg"
+        }, {
+           "log_group_name": "CW_LOG_GROUP_NAME",
+           "file_path": "/var/log/grubby_prune_debug",
+           "log_stream_name": "{instance_id}/var/log/grubby_prune_debug"
+        }, {
+           "log_group_name": "CW_LOG_GROUP_NAME",
+           "file_path": "/var/log/maillog",
+           "log_stream_name": "{instance_id}/var/log/maillog",
+           "timestamp_format": "%b %-d %H:%M:%S"
+        }, {
+           "log_group_name": "CW_LOG_GROUP_NAME",
+           "file_path": "/var/log/messages",
+           "log_stream_name": "{instance_id}/var/log/messages",
+           "timestamp_format": "%b %-d %H:%M:%S"
+        }, {
+           "log_group_name": "CW_LOG_GROUP_NAME",
+           "file_path": "/var/log/secure",
+           "log_stream_name": "{instance_id}/var/log/secure",
+           "timestamp_format": "%b %-d %H:%M:%S"
+        }, {
+           "log_group_name": "CW_LOG_GROUP_NAME",
+           "file_path": "/var/log/yum.log",
+           "log_stream_name": "{instance_id}/var/log/yum.log",
+           "timestamp_format": "%b %d %H:%M:%S"
+        }]
+      }
+    }
+  },
+  "metrics": {
+    "namespace": "CW_NAMESPACE",
+    "append_dimensions": {
+      "InstanceId": "${aws:InstanceId}"
+    },
+    "metrics_collected": {
+      "mem": {
+        "measurement": [
+          "mem_used_percent"
+        ]
+      },
+      "swap": {
+        "measurement": [
+          "swap_used_percent"
+        ]
+      },
+      "disk": {
+        "resources": [
+          "/"
+        ],
+        "measurement": [
+          "used_percent"
+        ],
+        "drop_device": true
+      }
+    }
+  }
+}
+```
+
+Do you want to use the configuration for instances running inside an Auto Scaling Group? In that scenario, you likely want to change the dimension used for metrics and publish the `AutoScalingGroupName` dimension:
+
+```json
+{
+  "metrics": {
+    "namespace": "CW_NAMESPACE",
+    "append_dimensions": {
+      "AutoScalingGroupName": "${aws:AutoScalingGroupName}"
+    },
+    "metrics_collected": {
+      [...]
+    }
+  }
+}
+```
+
+It wouldn’t be AWS if you didn’t also have to grant IAM permissions, right?
+
+## IAM permissions
+
+The following policy needs to be attached to the IAM role that is attached to the EC2 instance (via an Instance Profile). The policy grants permissions to publish CloudWatch metrics and logs and follows the least privilege principle.
+
+Replace `CW_NAMESPACE` and `LOG_GROUP_ARN` with your values.
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "cloudwatch:PutMetricData",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "cloudwatch:namespace": "CW_NAMESPACE"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "logs:DescribeLogStreams",
+        "logs:DescribeLogGroups"
+      ],
+      "Resource": "LOG_GROUP_ARN"
+    }
+  ]
+}
+```
+
+If you are planning to use the configuration for instances running inside an Auto Scaling Group, you also need the following permission:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "ec2:DescribeTags",
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+## Starting & Stopping
+
+To start the agent, run:
+
+```bash
+systemctl start amazon-cloudwatch-agent
+```
+
+To stop the agent, run:
+
+```bash
+systemctl stop amazon-cloudwatch-agent
+```
+
+To start the agent when the system boots up, run:
+
+```bash
+systemctl enable amazon-cloudwatch-agent
+```
+
+## Summary
+
+The **Unified CloudWatch Agent** is an excellent option to ship logs and metrics from EC2 instances to CloudWatch. The Unified CloudWatch Agent docs seem to be heavily influenced by SSM marketing gurus. The obvious choice to install a tool on Linux seems to be: install package, modify configuration files, start with systemd. Instead, the docs mention all kinds of useful and not so useful helpers that hide the important stuff. I hope that the agent will be pre-installed on Amazon Linux 2 AMI one day (or at least available via package repositories).

@@ -1,0 +1,125 @@
+A lot has happened in the area of security at AWS over the years. By now, AWS has released an exhaustive range of security services and the role of the security officer has changed significantly. This article looks back and forecasts where the journey will go next.
+
+![Auto Scaling](https://cloudonaut.io/images/2021/07/road.jpg "Auto Scaling")
+
+## TL;DR
+
+* Cloud providers have shaped the philosophy of security and done their homework.
+* New services to secure and new security services and their features pose a know-how challenge.
+* Security Engineers as specialists will outnumber Security Architect generalists.
+* Cloud customers organizations will be increasingly challenged to keep risk at an acceptable level.
+
+## The beginning – Security Philosophers
+
+What is your story? How did you come to AWS? For me, as a security professional, the cloud was an obvious field of work. However, initially, it was not clear that AWS would be the market leader and for such a long time.
+
+Cloud computing was proposed, but its adoption was not an immediate success. There were security concerns about confidentiality, legal issues about data location, and data ownership worries.[<sup>1</sup>](https://localhost:3000/the-aws-security-journey-2021/#fn:1)
+
+AWS had an easy solution for the last one: Customers own their data, can always transfer their data, and must do so before they terminate the contract. AWS will not keep the data afterward.
+
+The legal discussion – at least in Europe – dragged on for several years: USA PATRIOT Act, EU Privacy Directive, Safe Harbor, CLOUD ACT, GDPR, … In the meantime, the practitioners were implementing, with major or minor concessions to the perceived legal situation, and they were rarely called to order.
+
+AWS did their homework on security and passed audits, and achieved certifications. With the Security White Paper, AWS published the [Shared Responsibility Model](https://aws.amazon.com/compliance/shared-responsibility-model/) and informed their customers that they had work to do, too.
+
+| Date | Innovation                                                                                        | Importance                                                        |
+| ---- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| 2006 | First service S3 in region us-east-1                                                              | First AWS service, followed by SQS, EC2                           |
+| 2007 | First EU-region `eu-west-1`                                                                       | Improved latency and compliance with privacy regulation in Europe |
+| 2009 | VPC (Virtual Private Cloud)                                                                       | Network isolation with subnets, routing, access control lists     |
+| 2009 | SAS70 Type II Audit[<sup>3</sup>](https://localhost:3000/the-aws-security-journey-2021/#fn:3)     | 3rd party audit (today: ISAE 3402, SOC 1)                         |
+| 2010 | ISO 27001 certification[<sup>4</sup>](https://localhost:3000/the-aws-security-journey-2021/#fn:4) | 3rd party audit for information security                          |
+| 2011 | AWS Security White Paper                                                                          | Shared Responsibility Model                                       |
+
+Security work was like this:
+
+1. Customer voices a security concern, what could go wrong.
+2. Reword it as a question or demand to the cloud provider.
+3. Locate information about the provider’s security in an official white paper, an answered questionnaire, or from a 3rd party audit.
+4. Evaluate whether the answer covers the initial concern or whether parts of the issue remain in the customers’ responsibility.
+
+## The build-up – Security Architects
+
+AWS released CloudTrail and KMS and was directing a large part of their information campaign to security: AWS Summits, Blogs, Meetups always mentioned: “security is our #1 priority”. With the availability of KMS, encryption-at-rest was more in the hands of customers, and later, Werner Vogels recommended, “just encrypt everything”.
+
+AWS was leading the security initiative. The regional rollouts in many countries acknowledged their customer’s legal worries about data location and allowed them to save their data in their own country. Now all concerns could be handled, and implementation of “Cloud First” initiatives could start. For me, with `eu-central-1`, I realized that AWS would become the most important player, not only in Germany but worldwide.
+
+| Date | Innovation                        | Importance                                 |
+| ---- | --------------------------------- | ------------------------------------------ |
+| 2013 | AWS Certified Solutions Architect | Defined expectations for professional work |
+| 2013 | CloudTrail                        | Universal Logging                          |
+| 2014 | Key Management Service            | Customer control over encryption           |
+| 2015 | Policies in IAM                   | Fine-grained access control                |
+
+By then, the services were complete with security features, and one could safely assume that there would be some solution for every security problem. The security design would proceed as follows:
+
+1. Identify the AWS service, which addressed the problem.
+   A nod to Michael, who helped to structure the topics with his [AWS Security Primer mindmap](https://cloudonaut.io/aws-security-primer/).
+2. Use the service name to look up security information in the AWS reference.
+3. Design a solution and draw a diagram.
+4. Code and find out about the limitations of the service.
+
+AWS provided some structure, how this work should be done, and ultimately it was codified in the professional education program for the “AWS Certified Solutions Architect”, which also includes many security topics. Note that there was no prep book or online course initially, and taking the exam was a step into the unknown.
+
+In 2018 AWS created the [Security Specialty](https://aws.amazon.com/de/blogs/security/announcing-the-new-aws-certified-security-specialty-exam/), which was going deeper into implementation details, but in scope initially stayed close to the Solution Architects scope. The exam is updated over time, and as I recertified in 2021, it occurred to me how much the field has changed: More services to secure and more security services, more bits to know.
+
+## The overload – Security Engineers
+
+AWS announced that [“Over 150 AWS services now have a security chapter”](https://aws.amazon.com/de/blogs/security/over-150-aws-services-now-have-security-chapter/), which is quite an impressive number. Depending on how you count (the [CloudPegBoard lists 323 AWS services](https://medium.com/cloudpegboard/how-many-aws-services-are-there-51dda44fa946)), most common services seem to be covered, and everyone should use this ready-made security resource. If a security chapter does not cover a service, a security analysis will have to be performed, as was previously the norm.
+
+### AWS-native security services
+
+AWS rolls out ever more security services, and new features are continuously added to the existing services, as summarized in the table below. First and foremost the table shows that the required know-how rises in two dimensions: Year after year, the table gets longer, and the numbers of the existing lines get higher.
+
+Is it realistic that any AWS security expert will have sufficiently deep knowledge about every service’s internal operations and configuration details? In security, the margin of error is relatively small.
+
+| Release | AWS Security Service                  | **Number of announcements**[**<sup>2</sup>**](https://localhost:3000/the-aws-security-journey-2021/#fn:2) |
+| ------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| 09/2010 | AWS IAM                               | 82+                                                                                                       |
+| 07/2014 | Amazon Cognito                        | 49                                                                                                        |
+| 10/2014 | AWS Directory Service                 | 60+                                                                                                       |
+| 11/2014 | AWS Key Management Service            | 30                                                                                                        |
+| 10/2015 | AWS WAF (Web Application Firewall)    | 52+                                                                                                       |
+| 10/2015 | Amazon Inspector                      | 36                                                                                                        |
+| 01/2016 | AWS Certificate Manager               | 39                                                                                                        |
+| 11/2016 | AWS Organizations                     | 31                                                                                                        |
+| 12/2016 | AWS Shield                            | 22                                                                                                        |
+| 01/2017 | Amazon Cloud Directory                | 13                                                                                                        |
+| 08/2017 | AWS CloudHSM (new)                    | 15                                                                                                        |
+| 08/2017 | Amazon Macie                          | 10                                                                                                        |
+| 11/2017 | Amazon GuardDuty                      | 29                                                                                                        |
+| 12/2017 | AWS Single Sign-On                    | 28                                                                                                        |
+| 04/2018 | AWS Firewall Manager                  | 22                                                                                                        |
+| 04/2018 | AWS Secrets Manager                   | 40                                                                                                        |
+| 11/2018 | AWS Security Hub                      | 44                                                                                                        |
+| 12/2018 | AWS Resource Access Manager           | 10+                                                                                                       |
+| 11/2019 | AWS Artifact                          | 4                                                                                                         |
+| 12/2019 | Amazon Detective                      | 9+                                                                                                        |
+| 11/2020 | AWS Network Firewall                  | 5                                                                                                         |
+| 12/2020 | AWS Audit Manager                     | 4+                                                                                                        |
+|         | **Total announcements in "Security"** | **634**                                                                                                   |
+
+### Specialist vs. generalist
+
+The larger amount of knowledge causes a split between the Security Architect as a generalist and the Security Engineer as a specialist. The number of engineers will continue to grow with the number of applications that must be maintained in AWS and the increasing need-to-know-how in AWS services. Whereas Security Architects will continue to work at the generalist level, similar to Solution Architects, usually in implementation projects, their number will not grow as much.
+
+Both can work together to generate results faster by using the increasing amount of material available from AWS and other sources, as follows:
+
+1. Architect finds an implementation blueprint or CloudFormation template and lists all AWS services in the diagram and hands it to the Engineer.
+2. Engineer collects all recommendations from the security chapters of each service and checks the implementation manually or in the CloudFormation template.
+3. Both lookup checks or metrics in Security Hub or Guard Duty or design their own to configure alerts from the checks and metrics.
+
+This approach is traceable, measurable, efficient, and improves security. It also acknowledges that nothing is perfect and includes a response to incidents. However, the remaining risk is not transparent, primarily if some measures have not been implemented.
+
+## The future
+
+As more cloud applications go into operation, they encounter well-known management problems of security in organizations: Immediate costs get more attention than future damages, and prevention is not valued if nothing has happened in the past. In effect, a business will do less than was recommended and accept more risk than would be optimal.
+
+It is foreseeable that security incidents will happen more often, and damages will be more significant. Unfortunately, currently, there is no mechanism for the community to learn from substantial breaches like Capital One.[<sup>5</sup>](https://localhost:3000/the-aws-security-journey-2021/#fn:5) We would need 3rd party investigations of essential incidents, which make analysis and improvements public so that everyone can learn and improve.
+
+***
+
+1. 1\. 2012 Cloud Computing Market Maturity Study Results, CSA and ISACA [↩](https://localhost:3000/the-aws-security-journey-2021/#fnref:1)
+2. 2\. Based on "AWS What's new" on 22 June 2021, ordered by date of the first announcement; +marks services, for which the first announcement is listed not in the category, so the total number of announcements will probably be larger. [↩](https://localhost:3000/the-aws-security-journey-2021/#fnref:2)
+3. 3. [AWS Completes SAS70 Type II Audit](https://aws.amazon.com/de/about-aws/whats-new/2009/11/11/aws-completes-sas70-type-ii-audit/) [↩](https://localhost:3000/the-aws-security-journey-2021/#fnref:3)
+4. 4. [AWS Receives ISO 27001 Certification](https://aws.amazon.com/de/blogs/aws/aws-receives-iso-27001-certification/) [↩](https://localhost:3000/the-aws-security-journey-2021/#fnref:4)
+5. 5. [Capital One Data Breach](https://edition.cnn.com/2019/07/29/business/capital-one-data-breach/index.html) [↩](https://localhost:3000/the-aws-security-journey-2021/#fnref:5)

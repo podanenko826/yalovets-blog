@@ -102,7 +102,6 @@ const PostPreviewModal = () => {
 
     const handleScroll = (e: React.UIEvent) => {
         setStartY(e.currentTarget.scrollTop);
-        console.log(e.currentTarget.scrollTop);
     };
 
     const handleScrollCapture = (e: React.UIEvent) => {

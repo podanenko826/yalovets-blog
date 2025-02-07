@@ -1,0 +1,72 @@
+AWS can deploy one EC2 Key Pair to your EC2 instance. [But this approach has several disadvantages](https://cloudonaut.io/avoid-sharing-key-pairs-for-ec2/):
+
+* You can only use one key per EC2 instance. But you shouldn’t share keys between users.
+* Access to EC2 instances via SSH can not be restricted to specific users.
+
+Therefore many of our AWS consultancy clients ask me:
+
+> “How can SSH access be managed without too much overhead?”
+
+If I ask what they mean by managing SSH access the following questions arise:
+
+* How can only certain people access certain machines over SSH?
+* How can I maintain a separate SSH user per employee to trace who did what?
+* How can SSH access be revoked in case someone leaves the company?
+* How can SSH public keys be rotated?
+
+Wouldn’t it be nice if you could use IAM for that? Yes, you can!
+
+## Solution
+
+My preferred solution for managing public SSH keys is simple:
+
+* Using IAM to store and retrieve public SSH keys. You may know about that if you use the CodeCommit service.
+* Making use of sshd’s `AuthorizedKeysCommand` to retrieve the public key from IAM.
+
+![Manage AWS EC2 SSH access with IAM](https://cloudonaut.io/images/2016/04/ssh_access.png "Manage AWS EC2 SSH access with IAM")
+
+To see my solution in action run the following showcase. Skip the section if you are only interested in the theory.
+
+## How to run the showcase
+
+The showcase demonstrates how you can use your IAM user’s public SSH key to get access via SSH to an EC2 instance.
+
+### 1. Upload your public SSH key to IAM
+
+Open the Users section in the [IAM Management Console](https://console.aws.amazon.com/iam/home#users) and click the row with your user as demonstrated below.
+
+![IAM Step 1](https://cloudonaut.io/images/2016/04/iam_list_users.png "IAM Step 1")
+
+Click the “Upload SSH public key” button at the bottom of the page as demonstrated below.
+
+![IAM Step 2](https://cloudonaut.io/images/2016/04/iam_user_security_credentials.png "IAM Step 2")
+
+Paste your public SSH key into the textarea and click the “Upload SSH public key” button to save
+
+### 2. Create the showcase stack
+
+1. [![Launch Stack](https://cloudonaut.io/images/2016/01/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=showcase\&templateURL=https://s3-eu-west-1.amazonaws.com/static.cloudonaut.io/aws-ec2-ssh/showcase.yaml)
+2. Click **Next** to proceed with the next step of the wizard.
+3. Specify a name and all parameters for the stack.
+4. Click **Next** to proceed with the next step of the wizard.
+5. Click **Next** to skip the **Options** step of the wizard.
+6. Check the **I acknowledge that this template might cause AWS CloudFormation to create IAM resources.** checkbox.
+7. Click **Create** to start the creation of the stack.
+8. Wait until the stack reaches the state **CREATE\_COMPLETE**
+9. Copy the `PublicName` from the stack’s outputs
+10. Connect via ssh `ssh $Username@$PublicName` replace `$Username` with your IAM user and `$PublicName` with the stack’s output
+
+## How does it work
+
+* On first start all IAM users are imported and local users are created
+* The import also runs every 10 minutes
+* On every SSH login the EC2 instance tries to fetch the public key(s) from IAM using sshd’s `AuthorizedKeysCommand`
+* If the user is not found, login fails
+* If no public key is available, login fails
+* If the private key does not match with the public key, login fails
+* You can restrict that the EC2 instance is only allowed to download public keys for certain IAM users instead of `*` (all). This way you can restrict SSH access to certain users
+* As soon as the public SSH key is deleted from the IAM user a login is no longer possible
+
+## Summary
+
+Managing SSH access on AWS can be achieved by combining IAM and sshd’s `AuthorizedKeysCommand`. By restricting the `iam:GetSSHPublicKey` action to certain users you can restrict which users can access what EC2 instances. You can find the [source code on GitHub](https://github.com/widdix/aws-ec2-ssh). IAM public SSH keys are intended to be used with CodeCommit. My solution can be labeled a “hack”.

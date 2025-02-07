@@ -33,9 +33,11 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
     const { openModal } = usePostContext();
     const { setExpandedPost } = usePostContext();
 
-    const handlePostOpen = async () => {
-        const mdxContent = await getMDXContent(post.slug);
+    const format = 'YYYY-MM-DD'
 
+    const handlePostOpen = async () => {
+        const mdxContent = await getMDXContent(post.slug, post.date as string);
+        
         const markdown = mdxContent.markdown;
         const previousPath = window.location.href;
 
@@ -50,8 +52,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
 
     const router = useRouter();
 
-    const handlePostDeletion = async (email: string, slug: string) => {
-        const deletedPostSlug = await deletePost({ email, slug });
+    const handlePostDeletion = async (email: string, slug: string, date: string) => {
+        const deletedPostSlug = await deletePost({ email, slug, date });
         if (deletedPostSlug) {
             router.refresh();
         }
@@ -125,7 +127,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             };
         };
 
-        if (popoverTrigger && !currentPopover && Popover) {
+        if (popoverTrigger && !currentPopover && Popover && authorData) {
             const newPopover = new Popover(popoverTrigger, {
                 html: true,
                 placement: 'top',
@@ -241,33 +243,35 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                     )}
                     <div ref={cardRef} className="col-lg-5 offset-lg-1 py-3" id="latest-post">
                         <div className={`${styles.profile_info} d-flex pb-2 pb-sm-2`}>
-                            <div className={styles.profile_info__details}>
-                                <span className="d-inline-block">
-                                    <div className={`${styles.profile_info} d-flex`}>
-                                        <div className="align-content-center">
-                                            <Link href={`/author/${authorData.authorKey}`} className="m-0 p-0">
-                                                <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
-                                            </Link>
+                            {authorData && (
+                                <div className={styles.profile_info__details}>
+                                    <span className="d-inline-block">
+                                        <div className={`${styles.profile_info} d-flex`}>
+                                            <div className="align-content-center">
+                                                <Link href={`/author/${authorData.authorKey}`} className="m-0 p-0">
+                                                    <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                                </Link>
+                                            </div>
+                                            <div className={styles.profile_info__details}>
+                                                <Link href={`/author/${authorData.authorKey}`} className={`${styles.profile_info__text} m-0`}>
+                                                    {authorData.fullName}
+                                                </Link>
+                                                <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
+                                                    {moment(post.date, format).format('D MMM')} • {post.readTime?.toString()} min read
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div className={styles.profile_info__details}>
-                                            <Link href={`/author/${authorData.authorKey}`} className={`${styles.profile_info__text} m-0`}>
-                                                {authorData.fullName}
-                                            </Link>
-                                            <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                                {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
-                                            </p>
-                                        </div>
-                                    </div>
-                                </span>
-                            </div>
+                                    </span>
+                                </div>
+                            )}
                         </div>
                         <a role="button" onClick={handlePostOpen}>
                             <h1 className={`${styles.heading} heading`} id="col-heading-1">
-                                {post.title.length > 85 ? <>{post.title.slice(0, 85) + '... '}</> : post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(Date.now(), 'days') >= -30 && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
+                                {post.title && post.title.length > 85 ? <>{post.title.slice(0, 85) + '... '}</> : post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && moment(post.modifyDate, format).diff(Date.now(), 'days') >= -30 && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
                             </h1>
                         </a>
                         <p className={`${styles.description} pb-2`}>
-                            {post.description.length > 140 ? (
+                            {post.description && post.description.length > 140 ? (
                                 <>
                                     <a role="button" onClick={handlePostOpen}>
                                         {post.description.slice(0, 140) + '... '}
@@ -277,7 +281,9 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                     </a>
                                 </>
                             ) : (
-                                post.description
+                                <a role="button" onClick={handlePostOpen}>
+                                    {post.description}
+                                </a>
                             )}
                         </p>
                         <a role="button" onClick={handlePostOpen}>
@@ -308,7 +314,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             <div className={styles.postInfo}>
                 <a role="button" onClick={handlePostOpen}>
                     <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                        {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(), 'days') >= -30 && <span className="badge text-wrap">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>} {/* Add a badge if the post was updated within the last 30 days */}
+                        {post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && moment(post.modifyDate, format).diff(moment(), 'days') >= -30 && <span className="badge text-wrap">{'Updated ' + moment(post.modifyDate, format).fromNow()}</span>} {/* Add a badge if the post was updated within the last 30 days */}
                     </h2>
                 </a>
                 <p className={styles.description}>
@@ -322,30 +328,34 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                             </a>
                         </>
                     ) : (
-                        post.description
+                        <a role="button" onClick={handlePostOpen}>
+                            {post.description}
+                        </a>
                     )}
                 </p>
             </div>
             <div className={`${styles.profile_info} d-flex`}>
-                <div className={styles.profile_info__details}>
-                    <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
-                        <div className={`${styles.profile_info} d-flex`}>
-                            <div className="align-content-center">
-                                <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
-                                    <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
-                                </Link>
+                {authorData && (
+                    <div className={styles.profile_info__details}>
+                        <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
+                            <div className={`${styles.profile_info} d-flex`}>
+                                <div className="align-content-center">
+                                    <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
+                                        <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                    </Link>
+                                </div>
+                                <div className={styles.profile_info__details}>
+                                    <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
+                                        {authorData.fullName}
+                                    </Link>
+                                    <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
+                                        {moment(post.date, format).format('D MMM')} • {post.readTime?.toString()} min read
+                                    </p>
+                                </div>
                             </div>
-                            <div className={styles.profile_info__details}>
-                                <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
-                                    {authorData.fullName}
-                                </Link>
-                                <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                    {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
-                                </p>
-                            </div>
-                        </div>
-                    </span>
-                </div>
+                        </span>
+                    </div>
+                )}
             </div>
         </div>
     ) : style === 'expanded' ? (
@@ -378,31 +388,33 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             <div className={styles.postInfo}>
                 <a role="button" onClick={handlePostOpen}>
                     <h2 className={`${styles.heading} subheading d-flex flex-wrap align-items-center gap-1`} id="col-heading-1">
-                        {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(moment(post.date, 'DD-MM-YYYY'), 'days') <= 30 && <span className="badge text-wrap">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>}
+                        {post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && moment(post.modifyDate, format).diff(moment(post.date, format), 'days') <= 30 && <span className="badge text-wrap">{'Updated ' + moment(post.modifyDate, format).fromNow()}</span>}
                     </h2>
                     <p className={styles.description}>{post.description.length > 160 ? <>{post.description}</> : post.description}</p>
                 </a>
             </div>
             <div className={`${styles.profile_info} d-flex`}>
-                <div className={styles.profile_info__details}>
-                    <span className="d-inline-block" typeof="button">
-                        <div className={`${styles.profile_info} d-flex`}>
-                            <div className="align-content-center">
-                                <Link href={`/author/${authorData.authorKey}`} scroll={true} onClick={() => setExpandedPost(null)} className={`m-0 p-0`}>
-                                    <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
-                                </Link>
+                {authorData && (
+                    <div className={styles.profile_info__details}>
+                        <span className="d-inline-block" typeof="button">
+                            <div className={`${styles.profile_info} d-flex`}>
+                                <div className="align-content-center">
+                                    <Link href={`/author/${authorData.authorKey}`} scroll={true} onClick={() => setExpandedPost(null)} className={`m-0 p-0`}>
+                                        <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                    </Link>
+                                </div>
+                                <div className={styles.profile_info__details}>
+                                    <Link href={`/author/${authorData.authorKey}`} scroll={true} onClick={() => setExpandedPost(null)} className={`${styles.profile_info__text} m-0`}>
+                                        {authorData.fullName}
+                                    </Link>
+                                    <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
+                                        {moment(post.date, format).format('D MMM')} • {post.readTime?.toString()} min read
+                                    </p>
+                                </div>
                             </div>
-                            <div className={styles.profile_info__details}>
-                                <Link href={`/author/${authorData.authorKey}`} scroll={true} onClick={() => setExpandedPost(null)} className={`${styles.profile_info__text} m-0`}>
-                                    {authorData.fullName}
-                                </Link>
-                                <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                    {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
-                                </p>
-                            </div>
-                        </div>
-                    </span>
-                </div>
+                        </span>
+                    </div>
+                )}
             </div>
         </div>
     ) : style === 'admin' ? (
@@ -429,7 +441,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             <a role="button" data-bs-toggle="modal" data-bs-target={`#leavingModal-${post.slug}`}>
                 <div className={styles.postInfo}>
                     <h2 className={`${styles.heading} subheading d-flex flex-wrap align-content-center gap-1`} id="col-heading-1">
-                        {post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && <span className="px-2 py-1 text-wrap badge">{'Updated ' + moment(post.modifyDate, 'DD-MM-YYYY').fromNow()}</span>}
+                        {post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && <span className="px-2 py-1 text-wrap badge">{'Updated ' + moment(post.modifyDate, format).fromNow()}</span>}
                     </h2>
                     <p className={styles.description}>{post.description}</p>
                 </div>
@@ -499,23 +511,25 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 </div>
             </div>
             <div className={`${styles.profile_info} d-flex`}>
-                <div className={styles.profile_info__details}>
-                    <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
-                        <div className={`${styles.profile_info} d-flex`}>
-                            <div className="align-content-center">
-                                <LazyImage onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                {authorData && (
+                    <div className={styles.profile_info__details}>
+                        <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
+                            <div className={`${styles.profile_info} d-flex`}>
+                                <div className="align-content-center">
+                                    <LazyImage onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                </div>
+                                <div className={styles.profile_info__details}>
+                                    <Link href={''} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
+                                        {authorData.fullName}
+                                    </Link>
+                                    <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
+                                        {moment(post.date, format).format('D MMM')} • {post.readTime?.toString()} min read
+                                    </p>
+                                </div>
                             </div>
-                            <div className={styles.profile_info__details}>
-                                <Link href={''} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
-                                    {authorData.fullName}
-                                </Link>
-                                <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                    {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
-                                </p>
-                            </div>
-                        </div>
-                    </span>
-                </div>
+                        </span>
+                    </div>
+                )}
             </div>
             <div className="d-flex justify-content-end mt-3 gap-3 mb-5">
                 <Link href={`/admin/posts/${post.slug}`}>
@@ -545,7 +559,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                 <button type="button" className="btn-filled py-2 px-5" data-bs-dismiss="modal">
                                     Close
                                 </button>
-                                <button type="button" className="btn-filled btn-danger py-2 px-3" data-bs-dismiss="modal" onClick={() => handlePostDeletion(post.email, post.slug)}>
+                                <button type="button" className="btn-filled btn-danger py-2 px-3" data-bs-dismiss="modal" onClick={() => handlePostDeletion(post.email, post.slug, post.date as string)}>
                                     Delete post
                                 </button>
                             </div>
@@ -580,7 +594,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                             <div className={styles.postInfo}>
                                 <div className="d-flex align-content-center m-0">
                                     <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                                        {previewData.title || 'Enter the post title'} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && <span className="badge">Updated</span>}
+                                        {previewData.title || 'Enter the post title'} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && <span className="badge">Updated</span>}
                                     </h2>
                                 </div>
                                 {setValue ? (
@@ -605,7 +619,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                     <div className={styles.profile_info__details}>
                                         <p className={`${styles.profile_info__text} m-0 p-0`}>{authorData.fullName}</p>
                                         <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                            {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
+                                            {moment(post.date, format).format('D MMM')} • {post.readTime?.toString()} min read
                                         </p>
                                     </div>
                                 </div>
@@ -639,12 +653,12 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 <div className="d-flex align-content-center m-0">
                     <a role="button" onClick={handlePostOpen}>
                         <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                            {post.title.length > 90 ? <>{post.title.slice(0, 90) + '... '}</> : post.title} {moment(post.modifyDate, 'DD-MM-YYYY').isAfter(moment(post.date, 'DD-MM-YYYY')) && moment(post.modifyDate, 'DD-MM-YYYY').diff(Date.now(), 'days') >= -30 && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
+                            {post.title && post.title.length > 90 ? <>{post.title.slice(0, 90) + '... '}</> : post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && moment(post.modifyDate, format).diff(Date.now(), 'days') >= -30 && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
                         </h2>
                     </a>
                 </div>
                 <p className={styles.description}>
-                    {post.description.length > 140 ? (
+                    {post.description && post.description.length > 140 ? (
                         <>
                             <a role="button" onClick={handlePostOpen}>
                                 {post.description.slice(0, 140) + '... '}
@@ -654,30 +668,34 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                             </a>
                         </>
                     ) : (
-                        post.description
+                        <a role="button" onClick={handlePostOpen}>
+                            {post.description}
+                        </a>
                     )}
                 </p>
             </div>
             <div className={`${styles.profile_info} d-flex`}>
-                <div className={styles.profile_info__details}>
-                    <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
-                        <div className={`${styles.profile_info} d-flex`}>
-                            <div className="align-content-center">
-                                <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
-                                    <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
-                                </Link>
+                {authorData && (
+                    <div className={styles.profile_info__details}>
+                        <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
+                            <div className={`${styles.profile_info} d-flex`}>
+                                <div className="align-content-center">
+                                    <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
+                                        <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                    </Link>
+                                </div>
+                                <div className={styles.profile_info__details}>
+                                    <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
+                                        {authorData.fullName}
+                                    </Link>
+                                    <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
+                                        {moment(post.date, format).format('D MMM')} • {post.readTime?.toString()} min read
+                                    </p>
+                                </div>
                             </div>
-                            <div className={styles.profile_info__details}>
-                                <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
-                                    {authorData.fullName}
-                                </Link>
-                                <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                    {moment(post.date, 'DD-MM-YYYY').format('D MMM')} • {post.readTime?.toString()} min read
-                                </p>
-                            </div>
-                        </div>
-                    </span>
-                </div>
+                        </span>
+                    </div>
+                )}
             </div>
         </div>
     );

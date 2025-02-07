@@ -83,6 +83,10 @@
     width: 100%;
 }
 
+.pagination-change {
+    position: absolute;
+}
+
 .post-card-link {
     text-decoration: underline;
     color: black;
