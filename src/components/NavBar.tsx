@@ -25,20 +25,25 @@ export const navigation = [
         id: 1,
     },
     {
-        label: 'Podcasts',
-        href: '/podcasts',
-        id: 2,
-    },
-    {
-        label: 'YouTube',
-        href: '/youtube',
-        id: 3,
-    },
-    {
         label: 'Books',
         href: '/books-recomendation',
-        id: 4,
+        id: 2,
     },
+    // {
+    //     label: 'Podcasts',
+    //     href: '/podcasts',
+    //     id: 2,
+    // },
+    // {
+    //     label: 'YouTube',
+    //     href: '/youtube',
+    //     id: 3,
+    // },
+    // {
+    //     label: 'Books',
+    //     href: '/books-recomendation',
+    //     id: 4,
+    // },
 ];
 
 const NavBar = () => {
