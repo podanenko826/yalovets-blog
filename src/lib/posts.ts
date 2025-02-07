@@ -118,6 +118,40 @@ export const getSortedPosts = async (limit: number, lastKey?: string ): Promise<
     }
 };
 
+export const getAuthorPosts = async (email: string, limit: number, lastKey?: string ): Promise<{ posts: PostItem[], lastKey: string }> => {
+    if (!email || !limit || limit > 50) return { posts: [], lastKey: '' };
+
+    try {
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+        const response = lastKey ? await fetch(`${baseUrl}/api/posts-by-author?email=${email}&limit=${limit}&lastKey=${lastKey}`) 
+                    : await fetch(`${baseUrl}/api/posts-by-author?email=${email}&limit=${limit}`);
+
+        console.log('fetching from author', email);
+                    
+        if (!response.ok) {
+            console.error('API returned an error:', response.status, await response.text());
+            return { posts: [], lastKey: '' };
+        }
+
+        const data: FetchPostsResponse = await response.json();
+
+        console.log(`fetched from author ${email}`);
+        console.log(data);
+        
+        
+
+        const transformedPostData = transformPostData(data.posts);
+
+        const sortedPostsData = sortPosts(transformedPostData);
+        
+        return { posts: sortedPostsData, lastKey: data.lastKey };
+    } catch (err) {
+        console.error('Failed to fetch posts from the database: ', err);
+        return { posts: [], lastKey: '' };
+    }
+};
+
 export const getPost = async (slug: string): Promise<PostItem> => {
     const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
     const response = await fetch(`${baseUrl}/api/post-by-slug?slug=${slug}`, { method: 'GET' });

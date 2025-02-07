@@ -12,14 +12,17 @@ interface PostListProps {
     indexIncrement?: number;
     infiniteScroll?: boolean;
     postsData?: PostItem[];
+    authorEmail?: string;
 }
 
-const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexIncrement = 0, infiniteScroll = false, postsData }) => {
+const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexIncrement = 0, infiniteScroll = false, postsData, authorEmail }) => {
     const { posts, setPosts } = usePostContext();
     const { authors, setAuthors } = usePostContext();
     const { fetchPosts } = usePostContext();
+    const { fetchPostsByAuthor } = usePostContext();
     const { loading } = usePostContext();
     const { lastKey } = usePostContext();
+    const { authorFetchLastKey } = usePostContext();
 
     const [sortedPosts, setSortedPosts] = useState<PostItem[]>([]);
 
@@ -50,7 +53,11 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
 
     // Scroll-based pagination or load more trigger
     const loadMorePosts = () => {
-        if (!loading) {
+        if (loading) return;
+
+        if (authorEmail) {
+            fetchPostsByAuthor(authorEmail);
+        } else {
             fetchPosts(limit); // Increment the page for the next fetch
         }
     };
@@ -99,10 +106,16 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
             )}
 
             {/* Show a "Load More" button if more posts are available */}
-            {infiniteScroll && lastKey && !loading && (
-                <button onClick={loadMorePosts} className="btn-filled">
+            {(lastKey || authorFetchLastKey) && infiniteScroll && !loading && (
+                <button onClick={loadMorePosts} className="btn-filled my-5">
                     Load More Posts
                 </button>
+            )}
+
+            {loading && (
+                <div className="container d-flex justify-content-center py-4">
+                    <div className="loading-spinning"></div>
+                </div>
             )}
         </>
     );

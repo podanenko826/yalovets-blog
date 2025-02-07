@@ -19,7 +19,7 @@ import { notFound } from 'next/navigation';
 export default function BlogPage({ params }: { params: { page: string } }) {
     const currentPage = parseInt(params.page, 10) || 1;
     const { posts } = usePostContext();
-    const { fetchPosts } = usePostContext();
+    const { fetchPostsByPage } = usePostContext();
     const { userConfig } = usePostContext();
     const { selectedPost } = usePostContext();
     const { pagination } = usePostContext();
@@ -59,10 +59,10 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     const paginatedArticles = posts.slice(startIndex, startIndex + ARTICLES_PER_PAGE);
 
     useEffect(() => {
-        if (ARTICLES_PER_PAGE && params.page) {
-            fetchPosts(ARTICLES_PER_PAGE, Number(params.page)); 
+        if (params.page) {
+            fetchPostsByPage(Number(params.page)); 
         }
-    }, [ARTICLES_PER_PAGE, params.page, pagination.totalPages])
+    }, [params.page, pagination.totalPages])
 
     // Pagination logic
     const rangeStart = Math.max(currentPage - 2, 1); // At least 2 pages to the left

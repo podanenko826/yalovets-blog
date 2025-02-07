@@ -1,7 +1,7 @@
 'use client';
 import { getAuthors } from '@/lib/authors';
 import { getPaginationData } from '@/lib/pagination';
-import { getPaginatedPosts, getSortedPosts, sortPosts } from '@/lib/posts';
+import { getAuthorPosts, getPaginatedPosts, getSortedPosts, sortPosts } from '@/lib/posts';
 import { AuthorItem, PaginationEntry, PaginationState, PostItem, TagItem } from '@/types';
 import moment from 'moment';
 import { usePathname } from 'next/navigation';
@@ -27,9 +27,13 @@ interface PostContextType {
     setPreviousPath: React.Dispatch<React.SetStateAction<string | null>>;
     tags: TagItem[];
     setTags: React.Dispatch<React.SetStateAction<TagItem[]>>;
-    fetchPosts: (limit: number, page?: number) => void;
+    fetchPosts: (limit: number) => void;
+    fetchPostsByPage: (page: number) => void;
+    fetchPostsByAuthor: (email: string) => void;
     lastKey: string | null;
     setLastKey: React.Dispatch<React.SetStateAction<string>>;
+    authorFetchLastKey: string | null;
+    setAuthorFetchLastKey: React.Dispatch<React.SetStateAction<string>>;
     pagination: PaginationState;
     setPagination: React.Dispatch<React.SetStateAction<PaginationState>>;
     postCount: number;
@@ -72,9 +76,12 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [loading, setLoading] = useState<boolean>(true);
 
     const [lastKey, setLastKey] = useState<string>('');
+    const [authorFetchLastKey, setAuthorFetchLastKey] = useState<string>('');
+
     const [limit, setLimit] = useState<number | null>(null);
     const [page, setPage] = useState<number | null>(null);
     const [tag, setTag] = useState<string | null>(null); // A single tag for fetching purposes
+    const [authorEmail, setAuthorEmail] = useState<string | null>(null); // A single email for fetching purposes
     const [postCount, setPostCount] = useState<number>(0);
 
     const [request, setRequest] = useState<number>(0);
@@ -285,8 +292,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         const fetchPostsByPage = async () => {
-            if (!page || !limit || limit > 50) return;
-            if (!userConfig.postsPerPage) return;
+            if (!page || !userConfig.postsPerPage) return;
             if (Object.keys(pagination.paginationData).length === 0) return;
             
             setLoading(true);
@@ -321,7 +327,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     savePostsToLocalStorage([...sortedCombinedPosts]);
                 }
 
-                // setPage(null);
+                setPage(null);
             } catch (error) {
                 console.error("Error fetching posts:", error);
             } finally {
@@ -330,7 +336,43 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
     
         fetchPostsByPage();
-    }, [request, limit, page, pagination.paginationData]);
+    }, [request, page, pagination.paginationData]);
+
+    useEffect(() => {
+        const fetchPostsByAuthor = async () => {
+            if (!authorEmail || !userConfig.postsPerPage) return;
+            if (Object.keys(pagination.paginationData).length === 0) return;
+            
+            setLoading(true);
+            
+            try {
+                const postsData = await getAuthorPosts(authorEmail, userConfig.postsPerPage, authorFetchLastKey);
+    
+                console.log('author posts data: ', postsData);
+                console.log('author email: ', authorEmail);
+                
+                if (postsData.posts.length > 0) {
+                    const existingSlugs = new Set(posts.map(post => post.slug));
+                    const newUniquePosts = postsData.posts.filter(post => !existingSlugs.has(post.slug));
+                
+                    const combinedPosts = [...posts, ...newUniquePosts];
+                    const sortedCombinedPosts = sortPosts(combinedPosts);
+                    setPosts([...sortedCombinedPosts]);
+                    setAuthorFetchLastKey(postsData.lastKey);
+
+                    savePostsToLocalStorage([...sortedCombinedPosts]);
+                }
+
+                setAuthorEmail(null);
+            } catch (error) {
+                console.error("Error fetching posts:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        fetchPostsByAuthor();
+    }, [request, authorEmail, pagination.paginationData]);
 
     /* 
         Author logic
@@ -402,12 +444,19 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     */
 
     // Trigger the useEffect to fetch another stack of posts
-    const fetchPosts = (limit: number, page?: number, tag?: string) => {
+    const fetchPosts = (limit: number) => {
         setRequest(prev => prev + 1);
         setLimit(limit);
+    }
 
-        if (page) setPage(page);
-        if (tag) setTag(tag);
+    const fetchPostsByPage = (page: number) => {
+        setRequest(prev => prev + 1);
+        setPage(page);
+    }
+
+    const fetchPostsByAuthor = (email: string) => {
+        setRequest(prev => prev + 1);
+        setAuthorEmail(email);
     }
 
     const openModal = (post: PostItem, markdown: string, previousPath: string) => {
@@ -456,8 +505,12 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 tags,
                 setTags,
                 fetchPosts,
+                fetchPostsByPage,
+                fetchPostsByAuthor,
                 lastKey,
                 setLastKey,
+                authorFetchLastKey,
+                setAuthorFetchLastKey,
                 pagination,
                 setPagination,
                 postCount,

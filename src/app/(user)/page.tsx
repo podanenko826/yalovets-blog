@@ -54,9 +54,11 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
         <>
             {posts ? (
                 <main id="body">
-                    <button onClick={() => console.log(posts)}>Print Posts</button>
-                    <button onClick={() => console.log(lastKey)}>Print LastKey</button>
-                    <button onClick={() => console.log(pagination)}>Print Pagination Data</button>
+                    <button onClick={() => {
+                        localStorage.clear();
+                        console.log('cache clear');
+                        
+                    }}>Clear Cache</button>
                     {/* Welcome section (Mobile) */}
                     <div className="container welcome-xs d-block d-lg-none">
                         <div className="row">

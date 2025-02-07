@@ -11,6 +11,7 @@ import { getPost, getSortedPosts } from '@/lib/posts';
 import { usePostContext } from '@/components/PostContext';
 import dynamic from 'next/dynamic';
 import moment from 'moment';
+import PostList from '@/components/PostList';
 
 const LazyPostCard = dynamic(() => import('@/components/LazyPostCard'));
 interface AuthorPageProps {
@@ -24,6 +25,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     const { posts, setPosts } = usePostContext();
     const { authors, setAuthors } = usePostContext();
     const { selectedPost } = usePostContext();
+    const { fetchPostsByAuthor } = usePostContext();
 
     const [authorData, setAuthorData] = useState<AuthorItem | null>(null);
     const [authorPosts, setAuthorPosts] = useState<PostItem[]>([]);
@@ -35,12 +37,18 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     }, [authors, authorData]);
 
     useEffect(() => {
-        if (authorData) {
-            document.title = `${authorData?.fullName} / Yalovets Blog`;
-        } else {
-            document.title = `Author / Yalovets Blog`;
+        if (!selectedPost && typeof document !== "undefined") {
+            document.title = `${authorData?.fullName || 'Author'} / Yalovets Blog`;
         }
-    }, [document.URL, authorData]);
+    }, [authorData, selectedPost]);
+
+    useEffect(() => {
+        if (authorData?.email) {
+            fetchPostsByAuthor(authorData.email);
+            console.log('attempt');
+            
+        }
+    }, [authorData]);
 
     useEffect(() => {
         if (posts.length > 0 && authorData) {
@@ -54,65 +62,6 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
         }
     }, [posts, authorData]);
 
-    // useEffect(() => {
-    //     const getData = async () => {
-    //         try {
-    //             let sorted: PostItem[] | null = null;
-    //             if (posts.length > 0) {
-    //                 const postContextData = [...posts];
-
-    //                 //? Sort posts gotten from usePostContext
-    //                 sorted = postContextData.sort((a, b) => {
-    //                     const format = 'DD-MM-YYYY';
-    //                     const dateOne = moment(a.date, format);
-    //                     const dateTwo = moment(b.date, format);
-
-    //                     return dateTwo.diff(dateOne); // Descending order
-    //                 });
-    //             } else {
-    //                 sorted = await getSortedPosts();
-
-    //                 if (sorted.length > 0) {
-    //                     setPosts(sorted);
-    //                 } else {
-    //                     return notFound();
-    //                 }
-    //             }
-
-    //             if (!Array.isArray(sorted)) {
-    //                 console.error('Error: Sorted posts is not an array:', sorted);
-    //                 return;
-    //             }
-    //             // Ensure all posts have the expected structure
-    //             sorted.forEach((post, index) => {
-    //                 if (typeof post !== 'object' || post === null) {
-    //                     console.error(`Post at index ${index} is invalid:`, post);
-    //                 }
-    //             });
-
-    //             if (!author) {
-    //                 author = await getAuthorByKey(authorKey);
-    //             }
-
-    //             const authorPosts = sorted
-    //                 .map(post => {
-    //                     if (post.email === author?.email) return post;
-    //                 })
-    //                 .filter(Boolean) as PostItem[];
-
-    //             if (authorPosts.length > 0) {
-    //                 setPostsData(authorPosts);
-    //             } else {
-    //                 return notFound();
-    //             }
-    //         } catch (error) {
-    //             console.error('Error in getData:', error);
-    //         }
-    //     };
-
-    //     getData();
-    // }, [posts, setPosts, author, authors]);
-
     return (
         <>
             {authorData && authorPosts.length > 0 && (
@@ -120,7 +69,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
                     <div className="container mb-5">
                         <div className={`${postCardStyles.profile_info} d-flex justify-content-center mt-4`}>
                             <Image className={`${postCardStyles.pfp}`} src={`/${authorData.profileImageUrl}`} alt="pfp" width={42.5} height={42.5} />
-                            <h2 className="p-2 m-0">{authorData!.fullName}</h2>
+                            <h2 className="p-2 m-0">{authorData.fullName}</h2>
                         </div>
                         <div className="my-4 d-flex justify-content-center">
                             <h5 className="m-0 p-0 col-9 subheading-small text-center">{authorData.bio}</h5>
@@ -135,9 +84,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
                                     {authorData.fullName.at(-1)?.toLowerCase() === 's' ? "'" : "'s"} posts
                                 </h3>
                             </div>
-                            {authorPosts.map((post, index) => (
-                                <LazyPostCard post={post as PostItem} authorData={authorData} style="standard" index={index} key={index} />
-                            ))}
+                            <PostList displayMode='linear' limit={28} style='full' postsData={authorPosts} infiniteScroll authorEmail={authorData.email} />
                         </div>
                     </div>
                 </div>

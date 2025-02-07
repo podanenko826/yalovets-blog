@@ -16,41 +16,39 @@ export async function GET(request: Request) {
 
     const postSlug = searchParams.get('slug')?.split('/').at(-1);
 
-    if (!TABLE_NAME) {
+    if (!TABLE_NAME || !postSlug) {
         return NextResponse.json({}, { status: 500 });
     }
 
-    if (postSlug) {
-        const authorEmails: any = await getAuthorEmails();
+    const authorEmails: any = await getAuthorEmails();
 
-        let post: any[] = [];
+    let post: any[] = [];
 
-        for (const authorEmail of authorEmails) {
-            try {
-                const params = {
-                    TableName: TABLE_NAME, // Replace with your actual posts table name
-                    KeyConditionExpression: 'email = :email AND slug = :slug', // Querying by slug in the GSI
-                    ExpressionAttributeValues: {
-                        ':email': { S: authorEmail }, // The email value to search for
-                        ':slug': { S: postSlug },
-                    },
-                };
+    for (const authorEmail of authorEmails) {
+        try {
+            const params = {
+                TableName: TABLE_NAME, // Replace with your actual posts table name
+                KeyConditionExpression: 'email = :email AND slug = :slug', // Querying by slug in the GSI
+                ExpressionAttributeValues: {
+                    ':email': { S: authorEmail }, // The email value to search for
+                    ':slug': { S: postSlug },
+                },
+            };
 
-                const command = new QueryCommand(params);
-                const result = await dbClient.send(command);
-                const data = result.Items;
+            const command = new QueryCommand(params);
+            const result = await dbClient.send(command);
+            const data = result.Items;
 
-                if (data && data.length > 0) {
-                    post = [...post, ...data];
-                }
-            } catch (err) {
-                console.error('Failed to fetch data from the database: ', err);
-                return NextResponse.json(err, { status: 500 });
+            if (data && data.length > 0) {
+                post = [...post, ...data];
             }
+        } catch (err) {
+            console.error('Failed to fetch data from the database: ', err);
+            return NextResponse.json(err, { status: 500 });
         }
-
-        return NextResponse.json(post, { status: 201 });
     }
+
+    return NextResponse.json(post, { status: 201 });
 }
 
 export { POST, PUT, DELETE } from "@/app/api/posts/route";
