@@ -112,23 +112,23 @@ const PaginationPreferences = ({ setModalOpen }: PaginationPreferencesProps) => 
                         <h3 className='subheading mt-2' id='col-heading-1'>Preferences</h3>
                         <h5 className='subheading-small'><strong>Page size</strong></h5>
 
-                        <ul className="list-group my-4">
+                        <ul className="list-group list-group-dark my-4">
                             {[14, 28, 42].map((value) => (
                                 <li key={value} className="list-group-item py-2 py-lg-1">
-                                <input
-                                    className="form-check-input me-2"
-                                    type="radio"
-                                    name="listGroupRadio"
-                                    value={value}
-                                    id={`${value}posts`}
-                                    checked={postsPerPage === value}
-                                    onChange={handlePostsPerPageChange}
-                                />
-                                <label className="form-check-label" htmlFor={`${value}posts`}>
-                                    {value === 42 ? (value + 3)
-                                        : value === 28 ? (value + 2)
-                                        : (value + 1)} posts
-                                </label>
+                                    <input
+                                        className="form-check-input me-2"
+                                        type="radio"
+                                        name="listGroupRadio"
+                                        value={value}
+                                        id={`${value}posts`}
+                                        checked={postsPerPage === value}
+                                        onChange={handlePostsPerPageChange}
+                                    />
+                                    <label className="form-check-label" htmlFor={`${value}posts`}>
+                                        {value === 42 ? (value + 3)
+                                            : value === 28 ? (value + 2)
+                                            : (value + 1)} posts
+                                    </label>
                                 </li>
                             ))}
                         </ul>

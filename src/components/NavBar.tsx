@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 import styles from './NavBar.module.css';
@@ -9,6 +9,9 @@ import { usePathname } from 'next/navigation';
 import { FaCoffee } from 'react-icons/fa';
 import { IoMdMenu } from 'react-icons/io';
 import { IoMdClose } from 'react-icons/io';
+import { IoMoonOutline } from "react-icons/io5";
+import { IoSunnyOutline } from "react-icons/io5";
+import { usePostContext } from './PostContext';
 
 export const navigation = [
     {
@@ -42,6 +45,13 @@ const NavBar = () => {
     const currentPath = usePathname();
     const [mobileMenuOpened, setMobileMenuOpened] = useState<boolean>(false);
 
+    const { userConfig, setUserConfig } = usePostContext();
+    const [isDarkTheme, setIsDarkTheme] = useState<boolean>(false);
+
+    useEffect(() => {
+        setIsDarkTheme(userConfig.theme === 'dark' ? true : false);
+    }, [userConfig])
+
     const handleMobileNavigation = () => {
         setMobileMenuOpened(!mobileMenuOpened);
 
@@ -57,6 +67,15 @@ const NavBar = () => {
             document.getElementById('modal')?.scrollTo(0, 0);
         }
     };
+
+    const handleThemeChange = () => {
+        setUserConfig(prev => ({
+            ...prev,
+            theme: !isDarkTheme ? 'dark' : 'light',
+        }));
+
+        setIsDarkTheme(prev => !prev);
+    }
 
     return (
         <>
@@ -77,6 +96,13 @@ const NavBar = () => {
                             </Link>
                         ))}
                         <button className="btn-outlined">Subscribe</button>
+                        <button className='btn-pill' onClick={() => handleThemeChange()}>
+                            {isDarkTheme ? (
+                                <IoMoonOutline className='btn-pill-svg px-1' />
+                            ): (
+                                <IoSunnyOutline className='btn-pill-svg px-1' />
+                            )}
+                        </button>
                     </div>
                 </div>
                 <div className="navbar navbar-expand-lg xs-nav p-0 row d-flex justify-content-center d-lg-none container">
@@ -84,6 +110,15 @@ const NavBar = () => {
                         <button id={styles.mobileNavigation} type="button" aria-controls="mobileNavigation" aria-expanded={mobileMenuOpened} aria-label="Toggle navigation" onClick={handleMobileNavigation}>
                             {mobileMenuOpened ? <IoMdClose className={styles.mobileNavIcon} id={styles.menu_opened} /> : <IoMdMenu className={styles.mobileNavIcon} />}
                         </button>
+                        {mobileMenuOpened && (
+                            <button className='mx-3 py-0 btn-pill' onClick={() => handleThemeChange()}>
+                                {isDarkTheme ? (
+                                    <IoMoonOutline className='btn-pill-svg' />
+                                ): (
+                                    <IoSunnyOutline className='btn-pill-svg' />
+                                )}
+                            </button>
+                        )}
                     </div>
                     <div className="d-flex col-9 justify-content-end p-0 m-0">
                         <Link className={styles.btn_subscribe} href="#">

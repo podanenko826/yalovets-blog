@@ -71,17 +71,17 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
                     <div className="container mb-5">
                         <div className={`${postCardStyles.profile_info} d-flex justify-content-center mt-4`}>
                             <Image className={`${postCardStyles.pfp}`} src={`/${authorData.profileImageUrl}`} alt="pfp" width={42.5} height={42.5} />
-                            <h2 className="p-2 m-0">{authorData.fullName}</h2>
+                            <h2 className="p-2 m-0" id='col-heading-1'>{authorData.fullName}</h2>
                         </div>
                         <div className="my-4 d-flex justify-content-center">
-                            <h5 className="m-0 p-0 col-9 subheading-small text-center">{authorData.bio}</h5>
+                            <h5 className="m-0 p-0 col-9 subheading-small text-center" id='col-text'>{authorData.bio}</h5>
                         </div>
                     </div>
 
                     <div className="container posts" id="posts">
                         <div className="row post-list">
                             <div className="d-flex justify-content-center p-0 m-0 mt-5">
-                                <h3>
+                                <h3 id='col-text'>
                                     {authorData.fullName}
                                     {authorData.fullName.at(-1)?.toLowerCase() === 's' ? "'" : "'s"} posts
                                 </h3>

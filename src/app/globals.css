@@ -9,9 +9,39 @@
     --col-highlight: rgb(31, 90, 139);
     --col-text: dimgray;
     --col-outline-default: lightgrey;
+
+    --col-background: rgb(255, 255, 255);
+    --col-background-elements: rgb(248, 248, 248);
+    --col-background-modals: rgb(248, 248, 248);
+    --col-link: rgb(25, 25, 25);
+    --col-button: rgb(235, 235, 235);
+    --col-button-hover: rgb(220, 220, 220);
+    --col-button-active: rgb(200, 200, 200);
+
     --col-heading-1: rgb(80, 80, 80);
     --col-heading-2: rgb(105, 120, 136);
     --col-footer: rgb(31, 90, 139);
+}
+
+.dark {
+    /* --col-primary: rgb(245, 245, 245); */
+    --col-primary: rgb(140, 140, 140);
+    --col-secondary: rgb(62, 132, 190);
+    --col-highlight: rgb(31, 90, 139);
+    --col-text: rgb(180, 180, 180);
+    --col-outline-default: rgb(105, 105, 105);
+
+    --col-background: rgb(20, 20, 20);
+    --col-background-elements: rgb(27, 27, 27);
+    --col-background-modals: rgb(35, 35, 35);
+    --col-link: rgb(220, 220, 220);
+    --col-button: rgb(50, 50, 50);
+    --col-button-hover: rgb(40, 40, 40);
+    --col-button-active: rgb(30, 30, 30);
+
+    --col-heading-1: rgb(190, 190, 190);
+    --col-heading-2: rgb(105, 120, 136);
+    --col-footer: rgb(17, 60, 96);
 }
 
 #col-primary {
@@ -31,7 +61,7 @@
 }
 
 #col-text {
-    color: lightgrey !important;
+    color: var(--col-text) !important;
 }
 
 * {
@@ -54,9 +84,18 @@ svg {
     vertical-align: middle;
 }
 
+.dark img {
+    filter: brightness(0.85) contrast(1.1);
+    transition: filter 0.3s ease;
+}
+  
+
 body {
     margin: 0;
     line-height: 1.6rem !important;
+    background-color: var(--col-background);
+
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 main {
@@ -67,14 +106,28 @@ main {
 
 button {
     color: var(--col-text);
+    background: var(--col-button);
     transition: all 75ms;
     cursor: pointer;
+}
+
+button:hover {
+    background: var(--col-button-hover);
+}
+
+button:active {
+    background: var(--col-button-active);
 }
 
 a.a-btn {
     line-height: 1rem !important;
     border-radius: 5px;
     align-content: center;
+    color: var(--col-link);
+}
+
+a.a-link {
+    color: var(--col-link);
 }
 
 a.a-link:hover {
@@ -84,6 +137,11 @@ a.a-link:hover {
 a.a-button {
     display: inline-block;
     white-space: nowrap;
+    color: var(--col-link);
+}
+
+p {
+    color: var(--col-link);
 }
 
 input {
@@ -226,6 +284,10 @@ button {
     background: var(--col-primary) !important;
 }
 
+.dark .btn-filled:active {
+    background: var(--col-button-active) !important;
+}
+
 .btn-danger {
     color: white !important;
     background: rgb(140, 36, 36) !important;
@@ -244,7 +306,7 @@ button {
     min-width: 100%;
     height: 1.5px;
     margin-bottom: 10px;
-    background: lightgrey;
+    background: var(--col-outline-default);
 }
 
 .horisontal-line-thin {
@@ -255,7 +317,7 @@ button {
 .loading-spinning {
     width: 36px;
     height: 36px;
-    border: 5px solid #f3f3f3; /* Light grey */
+    border: 5px solid var(--col-button); /* Light grey */
     border-top: 5px solid var(--col-secondary); /* Blue */
     border-radius: 50%;
     animation: spin 0.75s linear infinite;
@@ -348,6 +410,11 @@ button {
     margin-bottom: 1.2rem;
 }
 
+.dark .codeblock {
+    background-color: black;
+
+}
+
 .codeblock__head {
     display: flex;
     align-items: center;
@@ -355,6 +422,10 @@ button {
     position: relative;
 
     padding: 0.5rem 1rem;
+}
+
+.dark .codeblock__head {
+    background-color: #7e7e7e80;
 }
 
 .codeblock__head > div > p {
@@ -396,6 +467,10 @@ button {
     margin: 0 !important;
 }
 
+.codeblock > pre > span {
+    background-color: red !important;
+}
+
 code {
     background: rgba(210, 210, 210, 0.2);
     /* color: rgb(130, 130, 130); */
@@ -407,6 +482,11 @@ code {
 pre > code {
     background: none;
     color: black;
+}
+
+.dark pre > code {
+    text-shadow: none;
+    color: lightgrey;
 }
 
 blockquote,
@@ -445,21 +525,46 @@ blockquote > span,
     margin-right: 12px;
 }
 
+.dark .list-group > li {
+    background-color: var(--col-button);
+    border-color: var(--col-outline-default);
+    color: var(--col-text);
+}
+
+.dark .list-group > li > input {
+    background-color: var(--col-button);
+    border-color: var(--col-outline-default);
+}
+
+.dark .popover {
+    background: var(--col-background-modals) !important;
+}
+
 .table {
     overflow: scroll;
     margin-bottom: 1rem;
 }
 
 .table > thead > tr > th {
-    border: 1px solid lightgrey;
+    border: 1px solid var(--col-outline-default);
     background: rgba(128, 128, 128, 0.1);
     width: max-content;
 }
 
+.dark .table > thead > tr > th {
+    background: rgba(128, 128, 128, 0.5);
+    color: var(--col-heading-1);
+}
+
 .table > tbody > tr > td {
-    border: 1px solid lightgrey;
+    border: 1px solid var(--col-outline-default);
     max-width: 50vh;
     width: max-content;
+}
+
+.dark .table > tbody > tr > td {
+    border: 1px solid var(--col-outline-default);
+    background: rgb(211, 211, 211);
 }
 
 .table > thead > tr,
@@ -516,7 +621,12 @@ blockquote > span,
     }
 
     .btn-outlined:hover {
-        background: var(--col-primary);
+        background: var(--col-button-hover);
+        color: white;
+    }
+
+    .btn-outlined:active {
+        background: var(--col-button-active);
         color: white;
     }
 }

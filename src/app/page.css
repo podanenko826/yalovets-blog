@@ -97,7 +97,7 @@
     display: flex;
     width: 100% !important;
     justify-content: center;
-    background: rgb(248, 248, 248);
+    background: var(--col-background-elements) !important;
 }
 
 .ivan-yalovets {

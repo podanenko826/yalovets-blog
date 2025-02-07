@@ -125,6 +125,16 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [userConfig]);
 
     useEffect(() => {
+        if (!userConfig.theme) return;
+
+        if (userConfig.theme === 'dark') {
+            document.body.classList.add('dark');
+        } else {
+            document.body.classList.remove('dark')
+        }
+    }, [userConfig])
+
+    useEffect(() => {
         const fetchPagination = async () => {
             if (!originalPagination) {
                 const cachedPagination = getPaginationFromLocalStorage();

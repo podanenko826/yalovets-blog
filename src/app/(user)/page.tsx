@@ -31,6 +31,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
     const { posts, setPosts } = usePostContext();
     const { lastKey } = usePostContext();
     const { pagination } = usePostContext();
+    const { userConfig } = usePostContext();
     const { selectedPost } = usePostContext();
 
     const { fetchPosts } = usePostContext();

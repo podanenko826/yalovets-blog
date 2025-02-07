@@ -107,7 +107,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
 
             {/* Show a "Load More" button if more posts are available */}
             {(lastKey || authorFetchLastKey) && infiniteScroll && !loading && (
-                <button onClick={loadMorePosts} className="btn-filled my-5">
+                <button onClick={loadMorePosts} className="btn-outlined my-5 py-3">
                     Load More Posts
                 </button>
             )}

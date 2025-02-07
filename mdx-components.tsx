@@ -2,6 +2,7 @@ import LazyImage from '@/components/LazyImage';
 import type { MDXComponents } from 'mdx/types';
 import { ImageProps } from 'next/image';
 import hljs from 'highlight.js';
+import 'highlight.js/styles/atom-one-dark.css';
 import 'highlight.js/styles/atom-one-light.css';
 import hljsDefineTerraform from '@/lib/terraform';
 
