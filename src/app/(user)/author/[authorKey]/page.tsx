@@ -48,9 +48,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
 
     useEffect(() => {
         if (authorData?.email) {
-            fetchPostsByAuthor(authorData.email);
-            console.log('attempt');
-            
+            fetchPostsByAuthor(authorData.email);    
         }
     }, [authorData]);
 

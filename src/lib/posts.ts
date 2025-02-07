@@ -127,19 +127,12 @@ export const getAuthorPosts = async (email: string, limit: number, lastKey?: str
         const response = lastKey ? await fetch(`${baseUrl}/api/posts-by-author?email=${email}&limit=${limit}&lastKey=${lastKey}`) 
                     : await fetch(`${baseUrl}/api/posts-by-author?email=${email}&limit=${limit}`);
 
-        console.log('fetching from author', email);
-                    
         if (!response.ok) {
             console.error('API returned an error:', response.status, await response.text());
             return { posts: [], lastKey: '' };
         }
 
         const data: FetchPostsResponse = await response.json();
-
-        console.log(`fetched from author ${email}`);
-        console.log(data);
-        
-        
 
         const transformedPostData = transformPostData(data.posts);
 

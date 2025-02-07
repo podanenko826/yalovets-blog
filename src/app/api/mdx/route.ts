@@ -16,10 +16,6 @@ export async function GET(request: Request) {
     const month = (moment.utc(date).month() + 1).toString().padStart(2, '0');
 
     const filePath = path.join(process.cwd(), 'src/articles', year, month, `${slug}.mdx`);
-
-    console.log('filePath:', filePath);
-    
-
     if (!fs.existsSync(filePath)) {
         return new Response('File not found', { status: 404 });
     }

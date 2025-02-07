@@ -128,11 +128,9 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const fetchPagination = async () => {
             if (!originalPagination) {
                 const cachedPagination = getPaginationFromLocalStorage();
-                console.log('cachedPagination: ', cachedPagination);
                 
                 if (cachedPagination) {
                     setOriginalPagination(cachedPagination);
-                    console.log('Got pagination from cache');
                     return;
                 }
 
@@ -147,8 +145,6 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     totalPages,
                     paginationData,
                 });
-                console.log('saved: ', totalPages, paginationData);
-                
             }
         };
     
@@ -240,12 +236,9 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         const cachedPosts = getPostsFromLocalStorage();
-        console.log(cachedPosts);
-        
+
         if (cachedPosts) {
             setPosts(cachedPosts);
-            console.log('Got from the cache');
-            
             return;
         }
     }, [])
@@ -347,10 +340,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
             
             try {
                 const postsData = await getAuthorPosts(authorEmail, userConfig.postsPerPage, authorFetchLastKey);
-    
-                console.log('author posts data: ', postsData);
-                console.log('author email: ', authorEmail);
-                
+
                 if (postsData.posts.length > 0) {
                     const existingSlugs = new Set(posts.map(post => post.slug));
                     const newUniquePosts = postsData.posts.filter(post => !existingSlugs.has(post.slug));
@@ -422,11 +412,9 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const getAuthorsData = async () => {
             if (authors.length === 0) {
                 const cachedAuthors = getAuthorsFromLocalStorage();
-                console.log(cachedAuthors);
-                
+
                 if (cachedAuthors) {
                     setAuthors(cachedAuthors)
-                    console.log('Fetched autorhs from cache');
                     return;
                 }
 

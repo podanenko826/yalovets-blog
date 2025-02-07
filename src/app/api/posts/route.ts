@@ -172,9 +172,6 @@ export async function PUT(request: Request) {
 
     modifyDate = modifyDate || moment.utc().toISOString();
 
-    console.log(postData);
-    
-    
     try {
         const command = new UpdateCommand({
             TableName: TABLE_NAME,

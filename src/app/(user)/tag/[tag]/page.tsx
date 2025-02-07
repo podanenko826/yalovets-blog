@@ -37,7 +37,7 @@ export default function TagPage({ params }: { params: { tag: string } }) {
 
     useEffect(() => {
         if (ARTICLES_PER_PAGE) {
-            fetchPosts(ARTICLES_PER_PAGE, 1); 
+            fetchPosts(ARTICLES_PER_PAGE); 
         }
     }, [ARTICLES_PER_PAGE])
 
