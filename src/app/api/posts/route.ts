@@ -86,8 +86,8 @@ export async function POST(request: Request) {
     const postSlug = searchParams.get('slug')?.split('/').at(-1);
 
     const postData = await request.json();
-    const { email, description, imageUrl, date, modifyDate, postType, tags, readTime, viewsCount } = postData;
-    let {slug, title} = postData;
+    const { email, description, imageUrl, date, modifyDate, postType, tags, readTime, viewsCount, sponsoredBy } = postData;
+    let {slug, title, sponsorUrl} = postData;
 
     if (!TABLE_NAME) {
         return NextResponse.json({ error: 'Table name is not defined in environment variables' }, { status: 500 });
@@ -108,6 +108,11 @@ export async function POST(request: Request) {
             .toLowerCase()}`;
     }
 
+    let modifiedSponsorUrl: string | undefined = undefined;
+    if (sponsorUrl && !sponsorUrl.startsWith('http://') && !sponsorUrl.startsWith('https://')) {
+        modifiedSponsorUrl = `https://${sponsorUrl}`;
+    }
+
     // Ensure the fileName does not exceed 255 characters, including the '.mdx' extension
     const MAX_FILENAME_LENGTH = 150;
     const fileExtension = '.mdx';
@@ -124,14 +129,16 @@ export async function POST(request: Request) {
         slug,
         title,
         description,
-        imageUrl: imageUrl,
-        date: date,
+        imageUrl,
+        date,
         modifyDate: modifyDate || date, // Automatically generated modifyDate
-        postType: postType,
+        postType,
         tags: tags || [],
         readTime: readTime,
         viewsCount: viewsCount || 0,
-        postGroup: 'ALL_POSTS'
+        postGroup: 'ALL_POSTS',
+        sponsoredBy: sponsoredBy || '',
+        sponsorUrl: modifiedSponsorUrl || ''
     };
     
     try {
@@ -150,8 +157,8 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     const postData = await request.json();
-    const { email, slug, description, imageUrl, date, postType, tags, readTime } = postData;
-    let { title, modifyDate } = postData;
+    const { email, slug, description, imageUrl, date, postType, tags, readTime, sponsoredBy } = postData;
+    let { title, modifyDate, sponsorUrl } = postData;
 
     if (!TABLE_NAME) {
         return NextResponse.json({ error: 'Table name is not defined in environment variables' }, { status: 500 });
@@ -159,6 +166,11 @@ export async function PUT(request: Request) {
 
     if (!email || !slug || !title || !description || !date || !imageUrl || !readTime || !postType) {
         return NextResponse.json({ error: 'Recieved invalid or incomplete post data' }, { status: 500 });
+    }
+
+    let modifiedSponsorUrl: string | undefined = undefined;
+    if (sponsorUrl && !sponsorUrl.startsWith('http://') && !sponsorUrl.startsWith('https://')) {
+        modifiedSponsorUrl = `https://${sponsorUrl}`;
     }
 
     // Ensure the fileName does not exceed 255 characters, including the '.mdx' extension
@@ -183,7 +195,9 @@ export async function PUT(request: Request) {
                     modifyDate = :modifyDate,
                     postType = :postType,
                     tags = :tags,
-                    readTime = :readTime
+                    readTime = :readTime,
+                    sponsoredBy = :sponsoredBy,
+                    sponsorUrl = :sponsorUrl
             `,
             ExpressionAttributeValues: {
                 ":title": title,
@@ -193,6 +207,8 @@ export async function PUT(request: Request) {
                 ":postType": postType,
                 ":tags": tags || [],
                 ":readTime": readTime,
+                ":sponsoredBy": sponsoredBy || '',
+                ":sponsorUrl": modifiedSponsorUrl || ''
             },
             ReturnValues: "UPDATED_NEW",
         });

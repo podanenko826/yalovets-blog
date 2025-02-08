@@ -101,9 +101,9 @@ img {
 }
 
 .rounded-pill {
-    background: red !important;
     font-size: 16px;
     max-height: 28px;
+    background-color: var(--col-secondary);
 }
 
 .badge {
@@ -116,6 +116,11 @@ img {
     font-weight: 750 !important;
     font-stretch: semi-condensed;
     font-size: 12px;
+}
+
+.badge-sponsored {
+    background-color: rgb(180, 180, 93) !important;
+    color: #fff;
 }
 
 $badge-font-size: 0.7em;

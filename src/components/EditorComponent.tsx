@@ -36,6 +36,10 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
     const [readTime, setReadTime] = useState<number>(0);
     const [tags, setTags] = useState<string[]>([]);
 
+    const [isSponsored, setIsSponsored] = useState<boolean>(false);
+    const [sponsoredBy, setSponsoredBy] = useState<string | undefined>(undefined);
+    const [sponsorUrl, setSponsorUrl] = useState<string | undefined>(undefined);
+
     const [imageUrl, setImageUrl] = useState(postData ? postData.imageUrl : '/img/AWS-beginning.png');
 
     const format = 'YYYY-MM-DD';
@@ -60,6 +64,16 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
                 if (postData.tags && postData.tags?.length > 0) {
                     setTags(postData.tags);
                 }
+
+                if (postData.sponsoredBy) {
+                    setIsSponsored(true);
+                    setSponsoredBy(postData.sponsoredBy)
+                }
+
+                if (postData.sponsorUrl) {
+                    setIsSponsored(true);
+                    setSponsorUrl(postData.sponsorUrl)
+                }
             }
         }
     }, [slug, postData, authorData]);
@@ -72,25 +86,27 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
         email: selectedAuthor?.email || authorData[0].email,
         slug: slug ? slug : '',
         title: postTitle,
-        description: description,
+        description,
         date: postData?.date || moment.utc().toISOString(),
         modifyDate: moment.utc().toISOString(),
-        imageUrl: imageUrl,
+        imageUrl,
         tags: tags || [],
-        postType: postType,
-        readTime: readTime,
+        postType,
+        readTime,
         viewsCount: postData?.viewsCount || 0,
         postGroup: 'ALL_POSTS',
+        sponsoredBy,
+        sponsorUrl,
     };
 
     const PostPreview: PostPreviewItem = {
         title: postTitle,
-        description: description,
+        description,
         imageUrl: imageUrl as string,
         date: postData?.date || moment(Date.now()).format(format),
         modifyDate: moment(formatPostDate(moment(postData?.modifyDate).toDate()), format).format(format) || moment(Date.now()).format(format),
         postType: postData?.postType || 'Article',
-        readTime: readTime,
+        readTime,
         authorData: (selectedAuthor as AuthorItem) || authorData[0],
     };
 
@@ -137,6 +153,8 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
 
     const handleSave = async () => {
         if (slug) {
+            console.log(Post);
+            
             const { markdown, slug } = await updatePost(Post, currentMarkdown);
     
             if (markdown && slug) {
@@ -146,6 +164,8 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
                 }, 12000);
             }
         } else {
+            console.log(Post);
+            
             const { markdown, slug } = await createPost(Post, currentMarkdown);
     
             if (markdown && slug) {
@@ -302,7 +322,40 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
                     </div>
                 </div>
             </div>
-            <div className="container d-flex justify-content-center col-md-9 mt-3 mb-5">
+            <div className="container d-flex justify-content-center col-md-9 my-5">
+                <div className="row">
+                    <div className="container col-12">
+                        <h1 className="text-center py-3">Sponsorship</h1>
+
+                        <li className="list-group-item py-2 py-lg-1">
+                            <input
+                                className="form-check-input me-2"
+                                type="checkbox"
+                                name="listGroupRadio"
+                                checked={isSponsored}
+                                onChange={e => setIsSponsored(e.target.checked)}
+                            />
+                            <label className="form-check-label">
+                                Is Sponsored
+                            </label>
+                        </li>
+
+                        {isSponsored && (
+                            <>
+                                <div>
+                                    <label htmlFor="" className='mx-3'>Enter sponsor company name</label>
+                                    <input type="text" placeholder='Coffeeman Corporation' value={sponsoredBy} onChange={e => setSponsoredBy(e.target.value)} />
+                                </div>
+                                <div className='mt-3'>
+                                    <label htmlFor="" className='mx-3'>Enter company's website URL (optional)</label>
+                                    <input type="text" placeholder='www.yalovets.blog/' value={sponsorUrl} onChange={e => setSponsorUrl(e.target.value)} />
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </div>
+            <div className="container d-flex justify-content-center col-md-9 my-5">
                 <div className="row">
                     <div className="container">
                         <h1 className="text-center py-3">Tags</h1>

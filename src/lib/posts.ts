@@ -41,6 +41,8 @@ function transformPostData(data: any[]): PostItem[] {
             readTime: parseInt(post.readTime?.N || '0'),
             viewsCount: parseInt(post.viewsCount?.N || '0'),
             postGroup: post.postGroup?.S,
+            sponsoredBy: post.sponsoredBy?.S,
+            sponsorUrl: post.sponsorUrl?.S,
         }
     });
 }
@@ -318,7 +320,7 @@ export const rebuildPagination = async (): Promise<Record<number, PaginationEntr
 }
 
 export const createPost = async (postData: Partial<PostItem>, markdown: string): Promise<{ slug: string; markdown: string }> => {
-    const { email, title, description, date, imageUrl, readTime, postType, tags } = postData;
+    const { email, title, description, date, imageUrl, readTime, postType, tags, sponsoredBy, sponsorUrl } = postData;
     let { slug } = postData;
     
     if (!email || !title || !description || !date || !imageUrl || !readTime || !postType) {
@@ -345,17 +347,19 @@ export const createPost = async (postData: Partial<PostItem>, markdown: string):
 
         const newPost: PostItem = {
             email,
-            slug: slug,
+            slug,
             title,
             description,
             imageUrl,
-            date: date,
+            date,
             modifyDate: date,
-            postType: postType,
+            postType,
             tags: tags || [],
-            readTime: readTime,
+            readTime,
             viewsCount: 0,
             postGroup: 'ALL_POSTS',
+            sponsoredBy,
+            sponsorUrl,
         };
         
 
@@ -385,7 +389,7 @@ export const createPost = async (postData: Partial<PostItem>, markdown: string):
 };
 
 export const updatePost = async (postData: Partial<PostItem>, markdown: string): Promise<{ slug: string; markdown: string }> => {
-    const { email, slug, title, description, date, modifyDate, imageUrl, readTime, postType, viewsCount, tags } = postData;
+    const { email, slug, title, description, date, modifyDate, imageUrl, readTime, postType, viewsCount, tags, sponsoredBy, sponsorUrl } = postData;
     
     if (!email || !slug || !title || !description || !date || !imageUrl || !readTime || !postType) {
         console.error('Recieved invalid or incomplete post data');
@@ -408,13 +412,15 @@ export const updatePost = async (postData: Partial<PostItem>, markdown: string):
             title,
             description,
             imageUrl,
-            date: date,
+            date,
             modifyDate: modifyDate || moment.utc().toISOString(),
-            postType: postType,
+            postType,
             tags: tags || [],
-            readTime: readTime,
+            readTime,
             viewsCount: viewsCount || 0,
             postGroup: 'ALL_POSTS',
+            sponsoredBy,
+            sponsorUrl,
         };
         
 

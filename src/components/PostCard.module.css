@@ -94,12 +94,15 @@
     display: flex;
     align-items: center; /* This ensures vertical alignment */
     padding: 0;
+    gap: 10px !important;
 }
 
 .profile_info__details {
     line-height: 8px;
+    /* margin-left: 10px !important; */
 
     align-content: space-around;
+
 }
 
 .profile_info__text {
@@ -107,7 +110,6 @@
     font-weight: 300;
     padding-top: 12px;
     padding-bottom: 3px;
-    margin-left: 10px !important;
     color: var(--col-link);
 }
 

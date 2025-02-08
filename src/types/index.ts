@@ -21,6 +21,7 @@ export type PostItem = {
     slug: string;
     title: string;
     description: string;
+    postGroup: string;
     imageUrl?: string;
     date?: string;
     modifyDate?: string;
@@ -28,7 +29,8 @@ export type PostItem = {
     tags?: string[];
     readTime?: number;
     viewsCount?: number;
-    postGroup: string;
+    sponsoredBy?: string;
+    sponsorUrl?: string;
 };
 
 export type PostPreviewItem = {

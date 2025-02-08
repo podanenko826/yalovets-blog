@@ -189,9 +189,15 @@ const ArticleModal: React.FC = () => {
                                                     </>
                                                 )}
                                             </div>
-                                            {moment(selectedPost.modifyDate, format).isAfter(moment(selectedPost.date, format)) && (
+                                            {moment(selectedPost.modifyDate, format).isAfter(moment(selectedPost.date, format)) && !selectedPost.sponsoredBy && (
                                                 <span className="d-md-none px-2 mb-4 rounded-pill text-bg-secondary" id="mobileUpdatedBadge">
                                                     {'Updated ' + moment(selectedPost.modifyDate, format).fromNow()}
+                                                </span>
+                                            )}
+                                            {selectedPost.sponsoredBy && (
+                                                <span className="px-2 mb-4 rounded-pill badge-sponsored">
+                                                    Sponsored by {selectedPost.sponsorUrl ? <Link href={selectedPost.sponsorUrl} target='_blank' className='a-link a-link-active'><strong>{selectedPost.sponsoredBy}</strong></Link> 
+                                                                    : <strong>{selectedPost.sponsoredBy}</strong>}
                                                 </span>
                                             )}
                                         </div>

@@ -267,7 +267,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                         </div>
                         <a role="button" onClick={handlePostOpen}>
                             <h1 className={`${styles.heading} heading`} id="col-heading-1">
-                                {post.title && post.title.length > 85 ? <>{post.title.slice(0, 85) + '... '}</> : post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && moment(post.modifyDate, format).diff(Date.now(), 'days') >= -30 && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
+                                {post.title && post.title.length > 85 ? <>{post.title.slice(0, 85) + '... '}</> : post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && moment(post.modifyDate, format).diff(Date.now(), 'days') >= -30 && !post.sponsoredBy && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
+                                {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
                             </h1>
                         </a>
                         <p className={`${styles.description} pb-2`}>
@@ -314,7 +315,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             <div className={styles.postInfo}>
                 <a role="button" onClick={handlePostOpen}>
                     <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                        {post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && moment(post.modifyDate, format).diff(moment(), 'days') >= -30 && <span className="badge text-wrap">{'Updated ' + moment(post.modifyDate, format).fromNow()}</span>} {/* Add a badge if the post was updated within the last 30 days */}
+                        {post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && moment(post.modifyDate, format).diff(moment(), 'days') >= -30 && !post.sponsoredBy && <span className="badge text-wrap">{'Updated ' + moment(post.modifyDate, format).fromNow()}</span>} {/* Add a badge if the post was updated within the last 30 days */}
+                        {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
                     </h2>
                 </a>
                 <p className={styles.description}>
@@ -388,7 +390,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             <div className={styles.postInfo}>
                 <a role="button" onClick={handlePostOpen}>
                     <h2 className={`${styles.heading} subheading d-flex flex-wrap align-items-center gap-1`} id="col-heading-1">
-                        {post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && moment(post.modifyDate, format).diff(moment(post.date, format), 'days') <= 30 && <span className="badge text-wrap">{'Updated ' + moment(post.modifyDate, format).fromNow()}</span>}
+                        {post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && moment(post.modifyDate, format).diff(moment(post.date, format), 'days') <= 30 && !post.sponsoredBy && <span className="badge text-wrap">{'Updated ' + moment(post.modifyDate, format).fromNow()}</span>}
+                        {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
                     </h2>
                     <p className={styles.description}>{post.description.length > 160 ? <>{post.description}</> : post.description}</p>
                 </a>
@@ -653,7 +656,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 <div className="d-flex align-content-center m-0">
                     <a role="button" onClick={handlePostOpen}>
                         <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                            {post.title && post.title.length > 90 ? <>{post.title.slice(0, 90) + '... '}</> : post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && moment(post.modifyDate, format).diff(Date.now(), 'days') >= -30 && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
+                            {post.title && post.title.length > 90 ? <>{post.title.slice(0, 90) + '... '}</> : post.title} {moment(post.modifyDate).isAfter(moment(post.date)) && moment(post.modifyDate).diff(Date.now(), 'days') >= -30 && !post.sponsoredBy && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
+                            {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
                         </h2>
                     </a>
                 </div>
@@ -688,6 +692,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                     <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
                                         {authorData.fullName}
                                     </Link>
+
                                     <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
                                         {moment(post.date, format).format('D MMM')} • {post.readTime?.toString()} min read
                                     </p>

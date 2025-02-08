@@ -126,6 +126,15 @@ a.a-link:hover {
     text-decoration: underline;
 }
 
+a.a-link-active {
+    text-decoration: underline;
+    color: #fff;
+}
+
+a.a-link-active:hover {
+    color: #ececec;
+}
+
 a.a-button {
     display: inline-block;
     white-space: nowrap;
