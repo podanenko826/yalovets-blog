@@ -177,9 +177,10 @@ const ArticleModal: React.FC = () => {
                                                 {selectedPost.title}
                                             </h1>
                                             <div className="d-flex justify-content-center gap-2">
-                                                <Link href={`/author/${author.authorKey}`} className="a-link h-min">
+                                                <Link href={`/author/${author.authorKey}`} className="d-flex align-items-center gap-1 a-link h-min">
                                                     {author.fullName}
                                                 </Link>
+                                                {author.isGuest && <p className='m-0'><span className='badge badge-guest'>Guest</span></p>}
                                                 <p className="m-0">•</p>
                                                 <p className="m-0">{moment(selectedPost.date, format).format('D MMM YYYY')} </p>
                                                 {moment(selectedPost.modifyDate, format).isAfter(moment(selectedPost.date, format)) && (

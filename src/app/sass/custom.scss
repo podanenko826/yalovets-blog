@@ -123,6 +123,13 @@ img {
     color: #fff;
 }
 
+.badge-guest {
+    // background-color: rgb(90, 90, 216);
+    background-color: rgb(112, 128, 144);
+    margin-bottom: 4px;
+    height: min-content;
+}
+
 $badge-font-size: 0.7em;
 
 .posts > .post-list > div {

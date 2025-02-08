@@ -536,6 +536,7 @@ export const getPostsData = async (
                 authorKey: '',
                 profileImageUrl: '',
                 bio: '',
+                isGuest: false,
                 socialLinks: {
                     emailAddress: '',
                     githubUrl: '',

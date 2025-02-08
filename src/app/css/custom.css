@@ -104,6 +104,13 @@ img {
   color: #fff;
 }
 
+.badge-guest {
+  background-color: rgb(112, 128, 144);
+  margin-bottom: 4px;
+  height: -moz-min-content;
+  height: min-content;
+}
+
 .posts > .post-list > div {
   margin-top: 60px;
   margin-bottom: 60px;

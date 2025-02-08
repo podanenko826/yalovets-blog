@@ -29,7 +29,7 @@ interface EditorProps {
 
 const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsData, editorRef }) => {
     const [currentMarkdown, setCurrentMarkdown] = useState(markdown); // Track current markdown
-    const [selectedAuthor, setSelectedAuthor] = useState(postData ? authorData.find(author => author.email === postData.email) : authorData[0]);
+    const [selectedAuthor, setSelectedAuthor] = useState(postData ? authorData.find(author => author.email === postData.email) : authorData.find(author => author.authorKey === 'ivanyalovets') || authorData[0]);
     const [postTitle, setPostTitle] = useState(postData ? postData.title : '');
     const [description, setDescription] = useState(postData ? postData.description : '');
     const [postType, setPostType] = useState<string>('Article');

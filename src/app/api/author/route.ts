@@ -32,7 +32,7 @@ export async function GET(request: Request) {
 
         try {
             const response = await docClient.send(command);
-            const item = response.Item;
+            const item = response.Item;       
 
             if (item === undefined) {
                 return NextResponse.json([], { status: 404 });
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
     try {
         const TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
 
-        const { email, bio, fullName, profileImageUrl, socialLinks } = await request.json();
+        const { email, bio, fullName, profileImageUrl, isGuest, socialLinks } = await request.json();
 
         if (email && fullName && bio) {
             const authorKey = `${fullName
@@ -102,6 +102,7 @@ export async function POST(request: Request) {
                 bio,
                 fullName,
                 profileImageUrl,
+                isGuest,
                 socialLinks: formattedSocialLinks,
             };
 
@@ -131,7 +132,7 @@ export async function PUT(request: Request) {
     try {
         const TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
 
-        const { email, bio, fullName, profileImageUrl, socialLinks } = await request.json();
+        const { email, bio, fullName, profileImageUrl, isGuest, socialLinks } = await request.json();
 
         if (fullName && bio) {
             const authorKey = `${fullName
@@ -159,6 +160,7 @@ export async function PUT(request: Request) {
                 bio,
                 fullName,
                 profileImageUrl,
+                isGuest,
                 socialLinks: formattedSocialLinks,
             };
 
@@ -174,6 +176,7 @@ export async function PUT(request: Request) {
                         fullName = :fullName,
                         profileImageUrl = :profileImageUrl,
                         authorKey = :authorKey,
+                        isGuest = :isGuest,
                         socialLinks = :socialLinks
                 `,
                 ExpressionAttributeValues: {
@@ -181,6 +184,7 @@ export async function PUT(request: Request) {
                     ':fullName': fullName,
                     ':profileImageUrl': profileImageUrl,
                     ':authorKey': authorKey,
+                    ':isGuest': isGuest,
                     ':socialLinks': formattedSocialLinks,
                 },
                 ReturnValues: 'UPDATED_NEW', // Return the updated fields

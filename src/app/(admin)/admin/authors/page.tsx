@@ -1,5 +1,5 @@
 'use client';
-import { createAuthor, getAuthors, updateAuthor } from '@/lib/authors';
+import { createAuthor, emptyAuthorObject, getAuthors, updateAuthor } from '@/lib/authors';
 import { AuthorItem } from '@/types';
 import { Modal } from 'bootstrap';
 import Link from 'next/link';
@@ -15,7 +15,7 @@ const AuthorsPage = () => {
     const [refreshAuthors, setRefreshAuthors] = useState<boolean>(true);
 
     const [selectedAuthor, setSelectedAuthor] = useState<AuthorItem | null>(null);
-    const [newAuthor, setNewAuthor] = useState<AuthorItem | null>(null);
+    const [newAuthor, setNewAuthor] = useState<AuthorItem>(emptyAuthorObject);
 
     const [currentModal, setCurrentModal] = useState<bootstrap.Modal | null>(null);
     const modalRef = useRef<Modal | null>(null);
@@ -58,7 +58,7 @@ const AuthorsPage = () => {
     }, [authorData]);
 
     const handleCreateClick = (): void => {
-        setNewAuthor(null);
+        setNewAuthor(emptyAuthorObject);
     };
 
     const handleEditClick = (author: AuthorItem): void => {
@@ -77,13 +77,13 @@ const AuthorsPage = () => {
         }
     };
 
-    const handleCreateInputChange = (field: keyof AuthorItem, value: string): void => {
+    const handleCreateInputChange = (field: keyof AuthorItem, value: string | boolean): void => {
         setNewAuthor({ ...(newAuthor as AuthorItem), [field]: value }); // Update the selected tag's data
     };
 
     const handleCreateSocialChange = (field: keyof AuthorItem['socialLinks'], value: string): void => {
         setNewAuthor(prevAuthor => {
-            if (!prevAuthor) return null;
+            if (!prevAuthor) return emptyAuthorObject;
 
             return {
                 ...prevAuthor,
@@ -103,7 +103,7 @@ const AuthorsPage = () => {
         }
     };
 
-    const handleEditInputChange = (field: keyof AuthorItem, value: string): void => {
+    const handleEditInputChange = (field: keyof AuthorItem, value: string | boolean): void => {
         if (selectedAuthor) {
             setSelectedAuthor({ ...selectedAuthor, [field]: value }); // Update the selected tag's data
         }
@@ -150,6 +150,7 @@ const AuthorsPage = () => {
                                             <th scope="col">Email</th>
                                             <th scope="col">Biography</th>
                                             <th scope="col">Author Key</th>
+                                            <th scope="col">Is Guest</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -159,6 +160,7 @@ const AuthorsPage = () => {
                                                 <td>{author.email}</td>
                                                 <td>{author.bio}</td>
                                                 <td>{author.authorKey}</td>
+                                                <td>{String(author.isGuest)}</td>
                                                 <div className="d-flex gap-4">
                                                     <button
                                                         type="button"
@@ -222,6 +224,12 @@ const AuthorsPage = () => {
                                             <strong>Profile Image URL:</strong>
                                         </label>
                                         <textarea className="form-control" value={newAuthor?.profileImageUrl || ''} onChange={e => handleCreateInputChange('profileImageUrl', e.target.value)}></textarea>
+                                    </div>
+                                    <div className='mb-3'>
+                                        <label htmlFor="isGuest" className="col-form-label">
+                                            <strong>Is a guest author?</strong>
+                                        </label>
+                                        <input type="checkbox" className='mx-3' checked={newAuthor?.isGuest || false} onChange={e => handleCreateInputChange('isGuest', e.target.checked)} />
                                     </div>
                                     <p className="pt-3">
                                         <strong>Social Links:</strong>
@@ -332,6 +340,12 @@ const AuthorsPage = () => {
                                             <strong>Profile Image URL:</strong>
                                         </label>
                                         <textarea className="form-control" value={selectedAuthor?.profileImageUrl || ''} onChange={e => handleEditInputChange('profileImageUrl', e.target.value)}></textarea>
+                                    </div>
+                                    <div className='mb-3'>
+                                        <label htmlFor="isGuest" className="col-form-label">
+                                            <strong>Is a guest author?</strong>
+                                        </label>
+                                        <input type="checkbox" className='mx-3' checked={selectedAuthor?.isGuest || false} onChange={e => handleEditInputChange('isGuest', e.target.checked)} />
                                     </div>
                                     <p className="pt-3">
                                         <strong>Social Links:</strong>

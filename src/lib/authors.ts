@@ -9,6 +9,7 @@ function transformAuthorData(data: any[]): AuthorItem[] {
         bio: author.bio?.S,
         fullName: author.fullName?.S,
         profileImageUrl: author.profileImageUrl?.S,
+        isGuest: author.isGuest?.BOOL,
         socialLinks: {
             emailAddress: author.socialLinks?.M.emailAddress?.S,
             githubUrl: author.socialLinks?.M.githubUrl?.S,
@@ -22,12 +23,13 @@ function transformAuthorData(data: any[]): AuthorItem[] {
     }));
 }
 
-const emptyAuthorObject: AuthorItem = {
+export const emptyAuthorObject: AuthorItem = {
     email: '',
     slug: '',
     bio: '',
     fullName: '',
     profileImageUrl: '',
+    isGuest: false,
     socialLinks: {
         emailAddress: '',
         githubUrl: '',
@@ -54,6 +56,7 @@ export const getAuthors = async () => {
 
         const transformedAuthorData = transformAuthorData(authors);
         const authorData = transformedAuthorData.reverse();
+        
         return authorData;
     } catch (err) {
         console.error('Failed to fetch authors from the database: ', err);
@@ -124,14 +127,15 @@ export const createAuthor = async (author: AuthorItem) => {
         bio: author.bio,
         fullName: author.fullName,
         profileImageUrl: author.profileImageUrl,
+        isGuest: author.isGuest || false,
         socialLinks: {
-            emailAddress: author.socialLinks.emailAddress,
+            emailAddress: author.socialLinks.emailAddress || '',
             githubUrl: author.socialLinks.githubUrl,
-            instagramUrl: author.socialLinks.instagramUrl,
-            linkedInUrl: author.socialLinks.linkedInUrl,
-            xUrl: author.socialLinks.xUrl,
-            facebookUrl: author.socialLinks.facebookUrl,
-            redditUrl: author.socialLinks.redditUrl,
+            instagramUrl: author.socialLinks.instagramUrl || '',
+            linkedInUrl: author.socialLinks.linkedInUrl || '',
+            xUrl: author.socialLinks.xUrl || '',
+            facebookUrl: author.socialLinks.facebookUrl || '',
+            redditUrl: author.socialLinks.redditUrl || '',
         },
     };
 
@@ -158,14 +162,15 @@ export const updateAuthor = async (author: AuthorItem) => {
         bio: author.bio,
         fullName: author.fullName,
         profileImageUrl: author.profileImageUrl,
+        isGuest: author.isGuest,
         socialLinks: {
-            emailAddress: author.socialLinks.emailAddress,
-            githubUrl: author.socialLinks.githubUrl,
-            instagramUrl: author.socialLinks.instagramUrl,
-            linkedInUrl: author.socialLinks.linkedInUrl,
-            xUrl: author.socialLinks.xUrl,
-            facebookUrl: author.socialLinks.facebookUrl,
-            redditUrl: author.socialLinks.redditUrl,
+            emailAddress: author.socialLinks.emailAddress || '',
+            githubUrl: author.socialLinks.githubUrl || '',
+            instagramUrl: author.socialLinks.instagramUrl || '',
+            linkedInUrl: author.socialLinks.linkedInUrl || '',
+            xUrl: author.socialLinks.xUrl || '',
+            facebookUrl: author.socialLinks.facebookUrl || '',
+            redditUrl: author.socialLinks.redditUrl || '',
         },
     };
 

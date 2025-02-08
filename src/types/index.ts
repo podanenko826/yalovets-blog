@@ -5,6 +5,7 @@ export type AuthorItem = {
     authorKey: string;
     profileImageUrl: string;
     bio: string;
+    isGuest: boolean;
     socialLinks: {
         emailAddress: string;
         githubUrl: string;
