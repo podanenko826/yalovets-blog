@@ -143,7 +143,7 @@ const NavBar = () => {
                             item.href === '/' ? currentPath === '/' : currentPath.startsWith(item.href + '/');
 
                             return (
-                                <Link key={item.id} href={item.href} onClick={() => handleMobileNavigation()} className={`${styles.nav_link_mobile}`} id={isActive ? 'col-secondary' : 'col-primary'}>
+                                <Link key={item.id} href={item.href !== '/page' ? item.href : '/page/1'} onClick={() => handleMobileNavigation()} className={`${styles.nav_link_mobile}`} id={isActive ? 'col-secondary' : 'col-primary'}>
                                     {item.label}
                                 </Link>
                             );
