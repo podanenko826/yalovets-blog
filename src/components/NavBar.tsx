@@ -81,7 +81,7 @@ const NavBar = () => {
 
         setIsDarkTheme(prev => !prev);
     }
-
+    
     return (
         <>
             <header className="container navbar-container">

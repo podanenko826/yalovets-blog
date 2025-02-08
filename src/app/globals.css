@@ -558,11 +558,12 @@ blockquote > span,
     border: 1px solid var(--col-outline-default);
     max-width: 50vh;
     width: max-content;
+    background: none;
 }
 
 .dark .table > tbody > tr > td {
     border: 1px solid var(--col-outline-default);
-    background: rgb(211, 211, 211);
+    color: var(--col-text);
 }
 
 .table > thead > tr,
