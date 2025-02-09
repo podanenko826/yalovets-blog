@@ -26,11 +26,19 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
 
     const [sortedPosts, setSortedPosts] = useState<PostItem[]>([]);
 
+    let memoizedPosts: PostItem[] = [];
+    if (postsData && postsData?.length > 0) {
+        memoizedPosts = useMemo(() => postsData, [postsData]);
+    } else {
+        memoizedPosts = useMemo(() => posts, [posts]);
+    }
+
+
     useEffect(() => {
         let sortedPosts;
 
-        if (postsData && postsData?.length > 0) {
-            sortedPosts = [...postsData];
+        if (memoizedPosts && memoizedPosts?.length > 0) {
+            sortedPosts = [...memoizedPosts];
         } else {
             sortedPosts = [...posts].sort((a, b) => {
                 const dateOne = moment(a.date);
@@ -41,7 +49,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
 
 
         setSortedPosts(sortedPosts); // Set sorted posts state
-    }, [posts, postsData]);  // Recalculate whenever `posts` change
+    }, [memoizedPosts]);  // Recalculate whenever `posts` change
 
 
     const recent = sortedPosts.slice(0, 9);
