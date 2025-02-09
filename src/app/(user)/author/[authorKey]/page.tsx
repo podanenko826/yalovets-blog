@@ -8,10 +8,12 @@ import Image from 'next/image';
 
 import postCardStyles from '@/components/PostCard.module.css';
 import { getPost, getSortedPosts } from '@/lib/posts';
-import { usePostContext } from '@/components/PostContext';
 import dynamic from 'next/dynamic';
 import moment from 'moment';
 import PostList from '@/components/PostList';
+
+import { useModalContext } from '@/components/Context/ModalContext';
+import { usePostContext } from '@/components/Context/PostDataContext';
 
 const LazyPostCard = dynamic(() => import('@/components/LazyPostCard'));
 interface AuthorPageProps {
@@ -24,7 +26,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
 
     const { posts, setPosts } = usePostContext();
     const { authors, setAuthors } = usePostContext();
-    const { selectedPost } = usePostContext();
+    const { selectedPost } = useModalContext();
     const { fetchPostsByAuthor } = usePostContext();
 
     const [authorData, setAuthorData] = useState<AuthorItem | null>(null);

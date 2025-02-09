@@ -12,7 +12,7 @@ const ArticleModal = dynamic(() => import('@/components/ArticleModal'), {
     ssr: false,
 });
 
-import { PostProvider } from '@/components/PostContext';
+import { PostProvider } from '@/components/Context/PostProvider';
 import React from 'react';
 import dynamic from 'next/dynamic';
 import LoadingBanner from '@/components/LoadingBanner';

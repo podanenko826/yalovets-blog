@@ -11,7 +11,7 @@ import { IoMdMenu } from 'react-icons/io';
 import { IoMdClose } from 'react-icons/io';
 import { IoMoonOutline } from "react-icons/io5";
 import { IoSunnyOutline } from "react-icons/io5";
-import { usePostContext } from './PostContext';
+import { usePostContext } from './Context/PostDataContext';
 
 export const navigation = [
     {

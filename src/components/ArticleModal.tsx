@@ -3,7 +3,8 @@ import React, { HTMLAttributes, useEffect, useState } from 'react';
 import Image from 'next/image';
 import styles from '@/components/ArticleModal.module.css';
 import NavBar from './NavBar';
-import { usePostContext } from './PostContext';
+import { usePostContext } from './Context/PostDataContext';
+import { useModalContext } from './Context/ModalContext';
 import moment from 'moment';
 import Link from 'next/link';
 import { FaXTwitter } from 'react-icons/fa6';
@@ -23,19 +24,19 @@ import Head from 'next/head';
 import { getTagsData } from '@/lib/tags';
 
 const ArticleModal: React.FC = () => {
-    const { selectedPost, setSelectedPost } = usePostContext();
+    const { selectedPost, setSelectedPost } = useModalContext();
 
     const transformedSlug = `${selectedPost?.slug
         .replace(/[^a-zA-Z0-9 ]/g, '')
         .replaceAll(' ', '-')
         .toLowerCase()}`;
 
-    const { expandedPost, setExpandedPost } = usePostContext();
+    const { expandedPost, setExpandedPost } = useModalContext();
     const { posts, setPosts } = usePostContext();
     const { authors, setAuthors } = usePostContext();
-    const { openModal } = usePostContext();
-    const { selectedMarkdown, setSelectedMarkdown } = usePostContext();
-    const { closeModal } = usePostContext();
+    const { openModal } = useModalContext();
+    const { selectedMarkdown, setSelectedMarkdown } = useModalContext();
+    const { closeModal } = useModalContext();
     const [serializedMarkdown, setSerializedMarkdown] = useState<MDXRemoteSerializeResult<Record<string, unknown>, Record<string, unknown>>>();
 
     const [popularPosts, setPopularPosts] = useState<PostItem[]>([]);

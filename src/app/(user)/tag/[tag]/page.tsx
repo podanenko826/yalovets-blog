@@ -9,7 +9,8 @@ import dynamic from 'next/dynamic';
 import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from 'react-icons/md';
 import { MdOutlineKeyboardDoubleArrowLeft, MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md';
 import Link from 'next/link';
-import { usePostContext } from '@/components/PostContext';
+import { usePostContext } from '@/components/Context/PostDataContext';
+import { useModalContext } from '@/components/Context/ModalContext';
 import moment from 'moment';
 import { getTagData, getTagsData } from '@/lib/tags';
 import { get } from 'http';
@@ -22,7 +23,7 @@ export default function TagPage({ params }: { params: { tag: string } }) {
     const { posts, setPosts } = usePostContext();
     const { authors, setAuthors } = usePostContext();
     const { tags, setTags } = usePostContext();
-    const { selectedPost } = usePostContext();
+    const { selectedPost } = useModalContext();
     const { fetchPosts } = usePostContext();
 
     const [tagData, setTagData] = useState<TagItem | null>(null);

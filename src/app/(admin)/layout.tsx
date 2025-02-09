@@ -6,7 +6,7 @@ import '@/app/css/custom.css';
 import '@/app/globals.css';
 
 import { ThemeProvider } from '@mui/material';
-import { PostProvider } from '@/components/PostContext';
+import { PostProvider } from '@/components/Context/PostProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 

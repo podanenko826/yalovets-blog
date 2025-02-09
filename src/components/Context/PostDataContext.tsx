@@ -8,23 +8,13 @@ import { usePathname } from 'next/navigation';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 // Types
-interface PostContextType {
+interface PostDataContextType {
     userConfig: { theme: string, postsPerPage: number };
     setUserConfig: React.Dispatch<React.SetStateAction<{ theme: string, postsPerPage: number }>>;
-    openModal: (post: PostItem, markdown: string, previousPath: string) => void;
-    closeModal: () => void;
     posts: PostItem[];
     setPosts: React.Dispatch<React.SetStateAction<PostItem[]>>;
-    selectedPost: PostItem | null;
-    setSelectedPost: React.Dispatch<React.SetStateAction<PostItem | null>>;
-    expandedPost: { post: PostItem; boundingBox: DOMRect } | null; // Update type here
-    setExpandedPost: React.Dispatch<React.SetStateAction<{ post: PostItem; boundingBox: DOMRect } | null>>;
     authors: AuthorItem[];
     setAuthors: React.Dispatch<React.SetStateAction<AuthorItem[]>>;
-    selectedMarkdown: string | null;
-    setSelectedMarkdown: React.Dispatch<React.SetStateAction<string | null>>;
-    previousPath: string | null;
-    setPreviousPath: React.Dispatch<React.SetStateAction<string | null>>;
     tags: TagItem[];
     setTags: React.Dispatch<React.SetStateAction<TagItem[]>>;
     fetchPosts: (limit: number) => void;
@@ -48,22 +38,17 @@ type FetchPostsResponse = {
 };
 
 // Create Context
-const PostContext = createContext<PostContextType | undefined>(undefined);
+const PostDataContext = createContext<PostDataContextType | undefined>(undefined);
 
 // Provider
-export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const PostDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [userConfig, setUserConfig] = useState<{ theme: string, postsPerPage: number }>(() => {
         if (typeof window === "undefined") return { theme: "light", postsPerPage: 14 }; // Prevent SSR errors
 
         const storedConfig = localStorage.getItem("userConfig");
         return storedConfig ? JSON.parse(storedConfig) : { theme: "light", postsPerPage: 14 };
     });
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-    const [selectedPost, setSelectedPost] = useState<PostItem | null>(null);
-    const [expandedPost, setExpandedPost] = useState<{ post: PostItem; boundingBox: DOMRect } | null>(null);
     const [authors, setAuthors] = useState<AuthorItem[]>([]);
-    const [selectedMarkdown, setSelectedMarkdown] = useState<string | null>(null);
-    const [previousPath, setPreviousPath] = useState<string | null>(null);
     const [tags, setTags] = useState<TagItem[]>([]); // An array of all saved tags
 
     const [originalPagination, setOriginalPagination] = useState<PaginationState | null>(null);
@@ -80,13 +65,10 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const [limit, setLimit] = useState<number | null>(null);
     const [page, setPage] = useState<number | null>(null);
-    const [tag, setTag] = useState<string | null>(null); // A single tag for fetching purposes
     const [authorEmail, setAuthorEmail] = useState<string | null>(null); // A single email for fetching purposes
     const [postCount, setPostCount] = useState<number>(0);
 
     const [request, setRequest] = useState<number>(0);
-
-    const pathname = usePathname();
 
     /*
         Pagination logic
@@ -234,15 +216,6 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const findStartPostIndexByDate = (date: string, posts: PostItem[]): number => {
         return posts.findIndex(post => post.date === date);
     };
-
-    useEffect(() => {
-        // Automatically close modal if URL doesn't match the selected post
-        if (selectedPost && pathname !== `/${selectedPost?.slug}`) {
-            setSelectedPost(null);
-            setSelectedMarkdown(null);
-            setIsModalOpen(false); // Close the modal
-        }
-    }, [pathname, selectedPost]);
 
     useEffect(() => {
         const cachedPosts = getPostsFromLocalStorage();
@@ -457,49 +430,15 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setAuthorEmail(email);
     }
 
-    const openModal = (post: PostItem, markdown: string, previousPath: string) => {
-        setSelectedPost(post);
-        setSelectedMarkdown(markdown);
-        setPreviousPath(previousPath);
-        setIsModalOpen(true);
-
-        // Update the URL state
-        window.history.pushState({}, '', `/${post?.slug}`);
-    };
-
-    const closeModal = () => {
-        setSelectedPost(null);
-        setSelectedMarkdown(null);
-        setIsModalOpen(false);
-
-        const currentPath = window.location.href;
-
-        if (previousPath === currentPath) {
-            window.history.pushState({}, '', `/`);
-        } else {
-            window.history.pushState({}, '', previousPath ? previousPath : '/');
-        }
-    };
-
     return (
-        <PostContext.Provider
+        <PostDataContext.Provider
             value={{
                 userConfig,
                 setUserConfig,
-                openModal,
-                closeModal,
                 posts,
                 setPosts,
-                selectedPost,
-                setSelectedPost,
-                expandedPost,
-                setExpandedPost,
                 authors,
                 setAuthors,
-                selectedMarkdown,
-                setSelectedMarkdown,
-                previousPath,
-                setPreviousPath,
                 tags,
                 setTags,
                 fetchPosts,
@@ -517,13 +456,13 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 setLoading,
             }}>
             {children}
-        </PostContext.Provider>
+        </PostDataContext.Provider>
     );
 };
 
 // Hook to use context
 export const usePostContext = () => {
-    const context = useContext(PostContext);
+    const context = useContext(PostDataContext);
     if (!context) {
         throw new Error('usePostContext must be used within a PostProvider');
     }

@@ -13,7 +13,7 @@ import { deletePost, getMDXContent } from '@/lib/posts';
 import LazyImage from './LazyImage';
 
 import { FaCoffee } from 'react-icons/fa';
-import { usePostContext } from './PostContext';
+import { useModalContext } from './Context/ModalContext';
 
 type PostCardProps = {
     post: PostItem;
@@ -27,8 +27,8 @@ type PostCardProps = {
 
 const PostCard = ({ post, previewData, authorData, style, index, setValue, onVisible }: PostCardProps) => {
     const cardRef = useRef<HTMLDivElement>(null);
-    const { openModal } = usePostContext();
-    const { setExpandedPost } = usePostContext();
+    const { openModal } = useModalContext();
+    const { setExpandedPost } = useModalContext();
 
     const PostImageSection = React.memo((props: { fullImage?: boolean }) => {
         if (post.imageUrl) return (

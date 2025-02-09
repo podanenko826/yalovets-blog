@@ -9,10 +9,11 @@ import StartReadingButton from '@/components/Button/StartReadingButton';
 import Image from 'next/image';
 import LazyPostCard from '@/components/LazyPostCard';
 import PostList from '@/components/PostList';
-import { usePostContext } from '@/components/PostContext';
+import { usePostContext } from '@/components/Context/PostDataContext';
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import moment from 'moment';
+import { useModalContext } from '@/components/Context/ModalContext';
 
 interface HomeProps {
     slug?: string; // Optional slug prop
@@ -32,7 +33,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
     const { lastKey } = usePostContext();
     const { pagination } = usePostContext();
     const { userConfig } = usePostContext();
-    const { selectedPost } = usePostContext();
+    const { selectedPost } = useModalContext();
 
     const { fetchPosts } = usePostContext();
 

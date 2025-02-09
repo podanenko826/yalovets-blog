@@ -5,7 +5,8 @@ import Link from 'next/link';
 
 import { getPostsCount, sortPosts } from '@/lib/posts';
 import { AuthorItem, PaginationEntry, PaginationState, PostItem } from '@/types';
-import { usePostContext } from '@/components/PostContext';
+import { usePostContext } from '@/components/Context/PostDataContext';
+import { useModalContext } from '@/components/Context/ModalContext';
 
 import PostList from '@/components/PostList';
 import PaginationPreferences from '@/components/PaginationPreferences';
@@ -21,7 +22,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     const { posts } = usePostContext();
     const { fetchPostsByPage } = usePostContext();
     const { userConfig } = usePostContext();
-    const { selectedPost } = usePostContext();
+    const { selectedPost } = useModalContext();
     const { pagination } = usePostContext();
     const { postCount, setPostCount } = usePostContext();
 
