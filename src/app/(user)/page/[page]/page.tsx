@@ -15,7 +15,7 @@ import PaginationPreferences from '@/components/Modals/PaginationPreferences';
 import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from 'react-icons/md';
 import { MdOutlineKeyboardDoubleArrowLeft, MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md';
 import { MdSettings } from "react-icons/md";
-import { notFound } from 'next/navigation';
+// import { notFound } from 'next/navigation';
 
 export default function BlogPage({ params }: { params: { page: string } }) {
     const currentPage = parseInt(params.page, 10) || 1;
@@ -38,7 +38,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
         }
     }, [selectedPost]);
 
-    if (Object.keys(pagination.paginationData).length > 0 && parseInt(params.page) > pagination.totalPages) return notFound();
+    // if (Object.keys(pagination.paginationData).length > 0 && parseInt(params.page) > pagination.totalPages) return notFound();
 
     useEffect(() => {
         const getPostsLength = async () => {

@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { lazy } from 'react';
 import { Metadata } from "next";
 
-import NavBar from '@/components/NavBar';
-import Footer from '@/components/Footer';
+const NavBar = lazy(() => import('@/components/NavBar'));
+const Footer = lazy(() => import('@/components/Footer'));
 
 export const metadata: Metadata = {
     title: "404 Not Found / Yalovets Blog",

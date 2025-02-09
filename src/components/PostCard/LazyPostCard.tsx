@@ -1,6 +1,6 @@
 'use client';
 import { PostItem, PostPreviewItem, AuthorItem } from '@/types';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { lazy, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import PostCard from './PostCard';
 

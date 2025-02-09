@@ -27,6 +27,7 @@ const useWindowSize = () => {
 
 const PostPreviewModal = () => {
     const { expandedPost, setExpandedPost } = useModalContext();
+    const { selectedPost } = useModalContext();
     const { authors } = usePostContext();
 
     const { width } = useWindowSize();
@@ -34,6 +35,12 @@ const PostPreviewModal = () => {
     const [startY, setStartY] = useState<number | null>(null);
 
     const authorData = authors.find(author => author.email === expandedPost?.post.email);
+
+    useEffect(() => {
+        if (selectedPost && expandedPost) {
+            setExpandedPost(null);
+        }
+    }, [selectedPost]);
 
     const handleClose = () => {
         if (!window) return;
@@ -171,11 +178,10 @@ const PostPreviewModal = () => {
         handleClose();
     }, [width]);
 
-    if (!authorData) return null;
+    if (!authorData || !expandedPost) return null;
 
     return (
         <div className={`${styles.articlePage} ${styles.previewModal}`} onClick={() => handleClose()} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
-            {expandedPost && authorData ? (
                 <div className="container" onScrollCapture={handleScrollCapture} onScroll={handleScroll} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
                     <div className={`${styles.postDataContainer}`} onClick={e => e.stopPropagation()}>
                         {expanded && (
@@ -186,9 +192,6 @@ const PostPreviewModal = () => {
                         <LazyPostCard post={expandedPost.post} authorData={authorData} style="expanded" index={1000} />
                     </div>
                 </div>
-            ) : (
-                <div></div>
-            )}
         </div>
     );
 };

@@ -1,7 +1,7 @@
 'use client';
 import { getAuthorByKey, getAuthors } from '@/lib/authors';
 import { AuthorItem, PostItem } from '@/types';
-import { notFound } from 'next/navigation';
+// import { notFound } from 'next/navigation';
 import React, { FC, useEffect, useState } from 'react';
 
 import Image from 'next/image';

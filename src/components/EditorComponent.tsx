@@ -1,5 +1,5 @@
 'use client';
-import { notFound, redirect, useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 
 import { headingsPlugin, listsPlugin, quotePlugin, thematicBreakPlugin, markdownShortcutPlugin, codeMirrorPlugin, linkDialogPlugin, imagePlugin, sandpackPlugin, tablePlugin, diffSourcePlugin, MDXEditor, type MDXEditorMethods, type MDXEditorProps, ConditionalContents, codeBlockPlugin, linkPlugin, ListsToggle } from '@mdxeditor/editor';
 

@@ -1,24 +1,14 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
-import theme from '@/app/theme';
 import '@/app/css/custom.css';
 import '@/app/globals.css';
 
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
-import Home from './page';
-const ArticleModal = dynamic(() => import('@/components/Modals/ArticleModal'), {
-    ssr: false,
-});
 
 import { PostProvider } from '@/components/Context/PostProvider';
-import React from 'react';
-import dynamic from 'next/dynamic';
+import React, { Suspense, lazy } from 'react';
 import LoadingBanner from '@/components/Modals/LoadingBanner';
-import PostPreviewModal from '@/components/Modals/PostPreviewModal';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
     title: 'Yalovets Blog',
@@ -35,13 +25,11 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <AppRouterCacheProvider>
+        <AppRouterCacheProvider>   
             <PostProvider>
                 <NavBar />
                 <LoadingBanner />
                 {children}
-                <PostPreviewModal />
-                <ArticleModal />
                 <Footer />
             </PostProvider>
         </AppRouterCacheProvider>

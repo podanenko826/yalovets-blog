@@ -14,7 +14,7 @@ import { useModalContext } from '@/components/Context/ModalContext';
 import moment from 'moment';
 import { getTagData, getTagsData } from '@/lib/tags';
 import { get } from 'http';
-import { notFound } from 'next/navigation';
+// import { notFound } from 'next/navigation';
 import PostList from '@/components/PostCard/PostList';
 
 const LazyPostCard = dynamic(() => import('@/components/PostCard/LazyPostCard'), { ssr: false });
@@ -58,7 +58,7 @@ export default function TagPage({ params }: { params: { tag: string } }) {
                 }
             }
 
-            if (!_tagData) return notFound();
+            // if (!_tagData) return notFound();
 
             setTagData(_tagData.content);
         };
