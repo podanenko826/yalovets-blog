@@ -4,7 +4,7 @@ import React from 'react';
 import { rebuildPagination } from '@/lib/posts';
 import Image from 'next/image';
 
-import postCardStyles from '@/components/PostCard.module.css';
+import postCardStyles from '@/components/PostCard/PostCard.module.css';
 import moment from 'moment';
 import Link from 'next/link';
 

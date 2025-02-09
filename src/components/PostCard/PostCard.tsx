@@ -30,24 +30,6 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
     const { openModal } = useModalContext();
     const { setExpandedPost } = useModalContext();
 
-    const PostImageSection = React.memo((props: { fullImage?: boolean }) => {
-        if (post.imageUrl) return (
-            <a role="button" onClick={handlePostOpen}>
-                <div className={styles.image}>
-                    <picture className={`img-fluid ${styles.imageWrapper}`}>
-                        <Image className={`img-fluid ${props.fullImage && 'full-image'}`} src={post.imageUrl || '/ui/not-found.png'} alt={post.title} title={post.title} width={354} height={180} loading="lazy" sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
-                        {post.postType && (
-                            <span className={`d-inline-block ${styles.articleLabel} ${post.postType === 'Guide' ? styles.articleLabel_Guide : post.postType === 'Review' ? styles.articleLabel_Review : post.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
-                                <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
-                                {post.postType} {/* Display the post type */}
-                            </span>
-                        )}
-                    </picture>
-                </div>
-            </a>
-        );
-    }, (prevProps, nextProps) => prevProps.fullImage === nextProps.fullImage);
-
     const PostInfoSection = React.memo((props: { descLength: number, noLimit?: boolean }) => {
         return (
             <div className={styles.postInfo}>
@@ -306,7 +288,21 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         </div>
     ) : style === 'full' ? (
         <div ref={cardRef} className="col-12 col-md-6" key={index}>
-            <PostImageSection />
+            {post.imageUrl && (
+                <a role="button" onClick={handlePostOpen}>
+                    <div className={styles.image}>
+                        <picture className={`img-fluid ${styles.imageWrapper}`}>
+                            <Image className="img-fluid" src={post.imageUrl || '/ui/not-found.png'} alt={post.title} title={post.title} width={546} height={182} loading="lazy" sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
+                            {post.postType && (
+                                <span className={`d-inline-block ${styles.articleLabel} ${post.postType === 'Guide' ? styles.articleLabel_Guide : post.postType === 'Review' ? styles.articleLabel_Review : post.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
+                                    <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
+                                    {post.postType} {/* Display the post type */}
+                                </span>
+                            )}
+                        </picture>
+                    </div>
+                </a>
+            )}
 
             <PostInfoSection descLength={160} />
 
@@ -337,7 +333,30 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         </div>
     ) : style === 'expanded' ? (
         <div className={`col-12 ${styles.expandedContainer}`} key={index}>
-            <PostImageSection fullImage />
+            {post.imageUrl && (
+                <a role="button" onClick={handlePostOpen}>
+                    <div className={styles.image}>
+                        <picture className={`img-fluid ${styles.imageWrapper}`}>
+                            <Image
+                                className="img-fluid full-image"
+                                src={post.imageUrl || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
+                                alt={post.title}
+                                title={post.title}
+                                loading="lazy"
+                                width={546}
+                                height={182}
+                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                            />
+                            {post.postType && (
+                                <span className={`d-inline-block ${styles.articleLabel} ${post.postType === 'Guide' ? styles.articleLabel_Guide : post.postType === 'Review' ? styles.articleLabel_Review : post.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
+                                    <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
+                                    {post.postType} {/* Display the post type */}
+                                </span>
+                            )}
+                        </picture>
+                    </div>
+                </a>
+            )}
 
             <PostInfoSection descLength={300} noLimit />
             
@@ -582,7 +601,21 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         </div>
     ) : (
         <div ref={cardRef} className={`${styles.card} col-12 col-md-4`} key={index}>
-            <PostImageSection />
+            {post.imageUrl && (
+                <a role="button" onClick={handlePostOpen}>
+                    <div className={styles.image}>
+                        <picture className={`img-fluid ${styles.imageWrapper}`}>
+                            <Image className="img-fluid" src={post.imageUrl || '/ui/not-found.png'} alt={post.title} title={post.title} width={354} height={180} loading="lazy" sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
+                            {post.postType && (
+                                <span className={`d-inline-block ${styles.articleLabel} ${post.postType === 'Guide' ? styles.articleLabel_Guide : post.postType === 'Review' ? styles.articleLabel_Review : post.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
+                                    <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
+                                    {post.postType} {/* Display the post type */}
+                                </span>
+                            )}
+                        </picture>
+                    </div>
+                </a>
+            )}
 
             <PostInfoSection descLength={140}  />
 
