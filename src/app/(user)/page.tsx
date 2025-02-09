@@ -7,8 +7,8 @@ import type { AuthorItem, PostItem } from '@/types';
 import StartReadingButton from '@/components/Button/StartReadingButton';
 
 import Image from 'next/image';
-import LazyPostCard from '@/components/LazyPostCard';
-import PostList from '@/components/PostList';
+import LazyPostCard from '@/components/PostCard/LazyPostCard';
+import PostList from '@/components/PostCard/PostList';
 import { usePostContext } from '@/components/Context/PostDataContext';
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';

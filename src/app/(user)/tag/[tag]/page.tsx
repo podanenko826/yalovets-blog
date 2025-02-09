@@ -15,9 +15,9 @@ import moment from 'moment';
 import { getTagData, getTagsData } from '@/lib/tags';
 import { get } from 'http';
 import { notFound } from 'next/navigation';
-import PostList from '@/components/PostList';
+import PostList from '@/components/PostCard/PostList';
 
-const LazyPostCard = dynamic(() => import('@/components/LazyPostCard'), { ssr: false });
+const LazyPostCard = dynamic(() => import('@/components/PostCard/LazyPostCard'), { ssr: false });
 
 export default function TagPage({ params }: { params: { tag: string } }) {
     const { posts, setPosts } = usePostContext();

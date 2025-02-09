@@ -6,12 +6,12 @@ import { AuthorItem, PostItem } from '@/types';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 
-import postCardStyles from '@/components/PostCard.module.css';
+import postCardStyles from '@/components/PostCard/PostCard.module.css';
 import moment from 'moment';
 import Link from 'next/link';
-import PostList from '@/components/PostList';
+import PostList from '@/components/PostCard/PostList';
 
-const LazyPostCard = dynamic(() => import('@/components/LazyPostCard'), { ssr: false });
+const LazyPostCard = dynamic(() => import('@/components/PostCard/LazyPostCard'), { ssr: false });
 
 const PostsPage = async () => {
     const postData = await getSortedPosts(5);

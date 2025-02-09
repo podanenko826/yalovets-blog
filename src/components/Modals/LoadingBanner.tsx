@@ -1,10 +1,10 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import styles from '@/components/ArticleModal.module.css';
+import styles from './Modals.module.css';
 import NavBarStyles from '@/components/NavBar.module.css';
 
 import { FaCoffee } from 'react-icons/fa';
-import { usePostContext } from './Context/PostDataContext';
+import { usePostContext } from '../Context/PostDataContext';
 import Link from 'next/link';
 
 const LoadingBanner = () => {

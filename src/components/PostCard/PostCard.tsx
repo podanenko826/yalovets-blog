@@ -5,15 +5,15 @@ import Link from 'next/link';
 import moment from 'moment';
 import { useRouter } from 'next/navigation';
 
-import styles from '@/components/PostCard.module.css';
+import styles from './PostCard.module.css';
 import { Popover, Offcanvas, Modal } from 'bootstrap';
 
 import type { AuthorItem, PostItem, PostPreviewItem } from '@/types';
 import { deletePost, getMDXContent } from '@/lib/posts';
-import LazyImage from './LazyImage';
+import LazyImage from '../LazyImage';
 
 import { FaCoffee } from 'react-icons/fa';
-import { useModalContext } from './Context/ModalContext';
+import { useModalContext } from '../Context/ModalContext';
 
 type PostCardProps = {
     post: PostItem;

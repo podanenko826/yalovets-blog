@@ -16,7 +16,7 @@ import React from 'react';
 import moment from 'moment';
 import dynamic from 'next/dynamic';
 
-const PostCard = dynamic(() => import('@/components/PostCard'), { ssr: false });
+const PostCard = dynamic(() => import('@/components/PostCard/PostCard'), { ssr: false });
 
 interface EditorProps {
     markdown: string;

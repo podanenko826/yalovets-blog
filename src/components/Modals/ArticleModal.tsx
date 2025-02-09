@@ -1,10 +1,10 @@
 'use client';
 import React, { HTMLAttributes, useEffect, useState } from 'react';
 import Image from 'next/image';
-import styles from '@/components/ArticleModal.module.css';
-import NavBar from './NavBar';
-import { usePostContext } from './Context/PostDataContext';
-import { useModalContext } from './Context/ModalContext';
+import styles from './Modals.module.css';
+import NavBar from '../NavBar';
+import { usePostContext } from '../Context/PostDataContext';
+import { useModalContext } from '../Context/ModalContext';
 import moment from 'moment';
 import Link from 'next/link';
 import { FaXTwitter } from 'react-icons/fa6';
@@ -12,14 +12,14 @@ import { FaFacebookF, FaLinkedin, FaRedditAlien } from 'react-icons/fa';
 
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { serialize } from 'next-mdx-remote/serialize';
-import Footer from './Footer';
+import Footer from '../Footer';
 import { PostItem, TagItem } from '@/types';
 import { getMDXContent, getSortedPosts, trackView } from '@/lib/posts';
 import { usePathname } from 'next/navigation';
 import { getAuthors } from '@/lib/authors';
 import { MDXProvider } from '@mdx-js/react';
-import { mdSerialize } from '../services/mdSerializer';
-import { useMDXComponents } from '../../mdx-components';
+import { mdSerialize } from '../../services/mdSerializer';
+import { useMDXComponents } from '../../../mdx-components';
 import Head from 'next/head';
 import { getTagsData } from '@/lib/tags';
 

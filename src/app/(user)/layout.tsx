@@ -8,15 +8,15 @@ import '@/app/globals.css';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import Home from './page';
-const ArticleModal = dynamic(() => import('@/components/ArticleModal'), {
+const ArticleModal = dynamic(() => import('@/components/Modals/ArticleModal'), {
     ssr: false,
 });
 
 import { PostProvider } from '@/components/Context/PostProvider';
 import React from 'react';
 import dynamic from 'next/dynamic';
-import LoadingBanner from '@/components/LoadingBanner';
-import PostPreviewModal from '@/components/PostPreviewModal';
+import LoadingBanner from '@/components/Modals/LoadingBanner';
+import PostPreviewModal from '@/components/Modals/PostPreviewModal';
 
 const inter = Inter({ subsets: ['latin'] });
 

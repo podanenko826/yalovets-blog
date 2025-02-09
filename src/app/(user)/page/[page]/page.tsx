@@ -8,8 +8,8 @@ import { AuthorItem, PaginationEntry, PaginationState, PostItem } from '@/types'
 import { usePostContext } from '@/components/Context/PostDataContext';
 import { useModalContext } from '@/components/Context/ModalContext';
 
-import PostList from '@/components/PostList';
-import PaginationPreferences from '@/components/PaginationPreferences';
+import PostList from '@/components/PostCard/PostList';
+import PaginationPreferences from '@/components/Modals/PaginationPreferences';
 
 
 import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from 'react-icons/md';

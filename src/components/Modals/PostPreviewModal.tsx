@@ -1,11 +1,11 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import styles from '@/components/ArticleModal.module.css';
-import LazyPostCard from './LazyPostCard';
+import styles from './Modals.module.css';
+import LazyPostCard from '../PostCard/LazyPostCard';
 import { IoMdClose } from 'react-icons/io';
 
-import { usePostContext } from './Context/PostDataContext';
-import { useModalContext } from './Context/ModalContext';
+import { usePostContext } from '../Context/PostDataContext';
+import { useModalContext } from '../Context/ModalContext';
 
 const useWindowSize = () => {
     if (typeof window === 'undefined') return { width: 0, height: 0 };

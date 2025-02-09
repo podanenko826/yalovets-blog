@@ -2,12 +2,9 @@
 import { PostItem, PostPreviewItem, AuthorItem } from '@/types';
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-
 import PostCard from './PostCard';
-import ArticlePage from '@/components/ArticleModal';
 
-import styles from '@/components/PostCard.module.css';
+import styles from './PostCard.module.css';
 
 type PostCardProps = {
     post: PostItem;

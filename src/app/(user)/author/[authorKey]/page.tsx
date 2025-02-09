@@ -6,16 +6,16 @@ import React, { FC, useEffect, useState } from 'react';
 
 import Image from 'next/image';
 
-import postCardStyles from '@/components/PostCard.module.css';
+import postCardStyles from '@/components/PostCard/PostCard.module.css';
 import { getPost, getSortedPosts } from '@/lib/posts';
 import dynamic from 'next/dynamic';
 import moment from 'moment';
-import PostList from '@/components/PostList';
+import PostList from '@/components/PostCard/PostList';
 
 import { useModalContext } from '@/components/Context/ModalContext';
 import { usePostContext } from '@/components/Context/PostDataContext';
 
-const LazyPostCard = dynamic(() => import('@/components/LazyPostCard'));
+const LazyPostCard = dynamic(() => import('@/components/PostCard/LazyPostCard'));
 interface AuthorPageProps {
     params: { authorKey: string };
     // mdxSource: MDXRemoteProps | MDXRemoteSerializeResult | null;

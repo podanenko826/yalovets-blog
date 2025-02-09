@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import styles from '@/components/ArticleModal.module.css';
-import { usePostContext } from './Context/PostDataContext';
+import styles from './Modals.module.css';
+import { usePostContext } from '../Context/PostDataContext';
 import { IoMdClose } from 'react-icons/io';
 
 type PaginationPreferencesProps = {
