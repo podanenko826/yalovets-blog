@@ -3,13 +3,11 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import '@/app/css/custom.css';
 import '@/app/globals.css';
 
-const NavBar = lazy(() => import('@/components/NavBar'));
-const Footer = lazy(() => import('@/components/Footer'));
-
-const PostProvider = lazy(() => import('@/components/Context/PostProvider'));
-
 import React, { Suspense, lazy } from 'react';
 import LoadingBanner from '@/components/Modals/LoadingBanner';
+
+const NavBar = lazy(() => import('@/components/NavBar'));
+const Footer = lazy(() => import('@/components/Footer'));
 
 export const metadata: Metadata = {
     title: 'Yalovets Blog',
@@ -27,12 +25,10 @@ export default function RootLayout({
 }>) {
     return (
         <AppRouterCacheProvider>   
-            <PostProvider>
-                <NavBar />
-                <LoadingBanner />
-                {children}
-                <Footer />
-            </PostProvider>
+            <NavBar />
+            <LoadingBanner />
+            {children}
+            <Footer />
         </AppRouterCacheProvider>
     );
 }
