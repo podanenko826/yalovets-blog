@@ -100,7 +100,7 @@ const NavBar = () => {
                                 item.href === '/' ? currentPath === '/' : currentPath.startsWith(item.href + '/');
                     
                             return (
-                                <Link key={item.id} href={item.href} className={styles.nav_link} id={`${isActive ? styles.active : ''}`}>
+                                <Link key={item.id} href={item.href !== '/page' ? item.href : '/page/1'} className={styles.nav_link} id={`${isActive ? styles.active : ''}`}>
                                     {item.label}
                                 </Link>
                             );

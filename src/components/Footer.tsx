@@ -64,7 +64,7 @@ const Footer = () => {
                             <ul className={`${styles.linkContainer} d-flex gap-4`}>
                                 {navButtons.map(item => (
                                     <li key={item.id}>
-                                        <Link href={item.href} key={item.id} className={styles.navLink}>
+                                        <Link href={item.href !== '/page' ? item.href : '/page/1'} key={item.id} className={styles.navLink}>
                                             {item.label}
                                         </Link>
                                     </li>

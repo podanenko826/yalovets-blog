@@ -2,7 +2,7 @@
 import { getAuthorByKey, getAuthors } from '@/lib/authors';
 import { AuthorItem, PostItem } from '@/types';
 // import { notFound } from 'next/navigation';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, Suspense, lazy, useEffect, useState } from 'react';
 
 import Image from 'next/image';
 
@@ -14,7 +14,8 @@ import PostList from '@/components/PostCard/PostList';
 import { useModalContext } from '@/components/Context/ModalContext';
 import { usePostContext } from '@/components/Context/PostDataContext';
 
-const LazyPostCard = dynamic(() => import('@/components/PostCard/LazyPostCard'));
+const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
+const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
 interface AuthorPageProps {
     params: { authorKey: string };
     // mdxSource: MDXRemoteProps | MDXRemoteSerializeResult | null;
@@ -67,6 +68,10 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
 
     return (
         <>
+            <Suspense fallback={<div></div>}>
+                <PostPreviewModal />
+                <ArticleModal selectedPost={selectedPost!} />
+            </Suspense>
             {authorData && authorPosts.length > 0 && (
                 <div className="container">
                     <div className="container mb-5">
