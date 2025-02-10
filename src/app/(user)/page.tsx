@@ -42,7 +42,6 @@ async function generateMetadata(post: PostItem): Promise<Metadata> {
 
 const Home: React.FC<HomeProps> = ({ slug }) => {
     const { selectedPost } = useModalContext();
-    const { expandedPost } = useModalContext();
     const { fetchPosts } = usePostContext();
 
     useEffect(() => {
@@ -122,24 +121,10 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                     </div>
                 </div>
 
-                {/* Latest post section */}
-                <div className="container-fluid posts p-0" id="posts">
-                    {/* <LazyPostCard post={posts[0]} authorData={authorData.find(author => author.email === latestPost?.email) as AuthorItem} style="massive" /> */}
-                </div>
-
                 {/* Recent posts */}
                 <div className="container posts" id="posts">
                     <div className="row pt-5">
                         <div className="col-12 category-heading">
-                            {/* <a
-                                id="col-primary"
-                                className="recent-btn"
-                                href="/page/1">
-                                <h3 id="btn-text">
-                                    Recent posts{' '}
-                                    <MdOutlineArrowForwardIos className="recent-posts-icon" />
-                                </h3>
-                            </a> */}
                             <h4 className="subheading-smaller">Recent posts</h4>
                             <div className="horisontal-line" />
                             <h6 className="subheading-small" id="col-heading-1">
