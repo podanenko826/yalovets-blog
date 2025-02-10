@@ -70,6 +70,8 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ selectedPost }) => {
 
     useEffect(() => {
         const returnToPost = async () => {
+            if (typeof window === 'undefined') return;
+
             const postUrl = window.location.href;
             const postSlug = postUrl.split('/').at(-1);
 
@@ -91,7 +93,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ selectedPost }) => {
         };
 
         returnToPost();
-    }, [window.location.href, posts]);
+    }, [posts]);
 
     useEffect(() => {
         const processMarkdown = async () => {

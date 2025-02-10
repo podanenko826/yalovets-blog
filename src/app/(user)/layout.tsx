@@ -6,7 +6,8 @@ import '@/app/globals.css';
 const NavBar = lazy(() => import('@/components/NavBar'));
 const Footer = lazy(() => import('@/components/Footer'));
 
-import { PostProvider } from '@/components/Context/PostProvider';
+const PostProvider = lazy(() => import('@/components/Context/PostProvider'));
+
 import React, { Suspense, lazy } from 'react';
 import LoadingBanner from '@/components/Modals/LoadingBanner';
 
