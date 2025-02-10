@@ -1,9 +1,13 @@
 .footer {
     min-width: screen;
 
-    padding: 70px 0;
+    padding: 16px 0;
 
     background-color: var(--col-footer);
+}
+
+.footer > div > div {
+    row-gap: 1.5rem;
 }
 
 #subscribeForm {
@@ -37,6 +41,7 @@
 .navLink {
     color: rgb(239, 239, 239);
     text-decoration: underline;
+    width: max-content;
 }
 
 .navLink:hover {
