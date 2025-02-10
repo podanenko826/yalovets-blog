@@ -1,9 +1,11 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import styles from '@/components/ArticleModal.module.css';
-import { usePostContext } from './PostContext';
-import LazyPostCard from './LazyPostCard';
+import styles from './Modals.module.css';
+import LazyPostCard from '../PostCard/LazyPostCard';
 import { IoMdClose } from 'react-icons/io';
+
+import { usePostContext } from '../Context/PostDataContext';
+import { useModalContext } from '../Context/ModalContext';
 
 const useWindowSize = () => {
     if (typeof window === 'undefined') return { width: 0, height: 0 };
@@ -24,7 +26,8 @@ const useWindowSize = () => {
 };
 
 const PostPreviewModal = () => {
-    const { expandedPost, setExpandedPost } = usePostContext();
+    const { expandedPost, setExpandedPost } = useModalContext();
+    const { selectedPost } = useModalContext();
     const { authors } = usePostContext();
 
     const { width } = useWindowSize();
@@ -32,6 +35,12 @@ const PostPreviewModal = () => {
     const [startY, setStartY] = useState<number | null>(null);
 
     const authorData = authors.find(author => author.email === expandedPost?.post.email);
+
+    useEffect(() => {
+        if (selectedPost && expandedPost) {
+            setExpandedPost(null);
+        }
+    }, [selectedPost]);
 
     const handleClose = () => {
         if (!window) return;
@@ -169,11 +178,10 @@ const PostPreviewModal = () => {
         handleClose();
     }, [width]);
 
-    if (!authorData) return null;
+    if (!authorData || !expandedPost) return null;
 
     return (
         <div className={`${styles.articlePage} ${styles.previewModal}`} onClick={() => handleClose()} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
-            {expandedPost && authorData ? (
                 <div className="container" onScrollCapture={handleScrollCapture} onScroll={handleScroll} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
                     <div className={`${styles.postDataContainer}`} onClick={e => e.stopPropagation()}>
                         {expanded && (
@@ -184,9 +192,6 @@ const PostPreviewModal = () => {
                         <LazyPostCard post={expandedPost.post} authorData={authorData} style="expanded" index={1000} />
                     </div>
                 </div>
-            ) : (
-                <div></div>
-            )}
         </div>
     );
 };

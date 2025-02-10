@@ -3,20 +3,17 @@ import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import moment from 'moment';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
-import styles from '@/components/PostCard.module.css';
-import * as bootstrap from 'bootstrap';
+import styles from './PostCard.module.css';
 import { Popover, Offcanvas, Modal } from 'bootstrap';
 
 import type { AuthorItem, PostItem, PostPreviewItem } from '@/types';
 import { deletePost, getMDXContent } from '@/lib/posts';
-import LazyImage from './LazyImage';
+import LazyImage from '../LazyImage';
 
 import { FaCoffee } from 'react-icons/fa';
-import { usePostContext } from './PostContext';
-
-import { IoMdClose } from 'react-icons/io';
+import { useModalContext } from '../Context/ModalContext';
 
 type PostCardProps = {
     post: PostItem;
@@ -30,10 +27,50 @@ type PostCardProps = {
 
 const PostCard = ({ post, previewData, authorData, style, index, setValue, onVisible }: PostCardProps) => {
     const cardRef = useRef<HTMLDivElement>(null);
-    const { openModal } = usePostContext();
-    const { setExpandedPost } = usePostContext();
+    const { openModal } = useModalContext();
+    const { setExpandedPost } = useModalContext();
 
-    const format = 'YYYY-MM-DD'
+    const PostInfoSection = React.memo((props: { descLength: number, noLimit?: boolean }) => {
+        return (
+            <div className={styles.postInfo}>
+                <div className="d-flex align-content-center m-0">
+                    <a role="button" onClick={handlePostOpen}>
+                        {props.noLimit ? (
+                            <h2 className={`${styles.heading} subheading d-flex flex-wrap align-items-center gap-1`} id="col-heading-1">
+                                {post.title} {moment.utc(post.modifyDate).isAfter(moment.utc(post.date)) && moment.utc(post.modifyDate).diff(moment.utc(post.date), 'days') <= 30 && !post.sponsoredBy && <span className="badge text-wrap">{'Updated ' + moment.utc(post.modifyDate).fromNow()}</span>}
+                                {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
+                            </h2>
+                        ) : (
+                            <h2 className={`${styles.heading} subheading`} id="col-heading-1">
+                                {post.title && post.title.length > 90 ? <>{post.title.slice(0, 90) + '... '}</> : post.title} {moment.utc(post.modifyDate).isAfter(moment.utc(post.date)) && moment.utc(post.modifyDate).diff(Date.now(), 'days') >= -30 && !post.sponsoredBy && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
+                                {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
+                            </h2>
+                        )}
+                    </a>
+                </div>
+                {props.noLimit ? (
+                    <p className={styles.description}>{post.description.length > 160 ? <>{post.description}</> : post.description}</p>
+                ): (
+                    <p className={styles.description}>
+                        {post.description && post.description.length > props.descLength ? (
+                            <>
+                                <a role="button" onClick={handlePostOpen}>
+                                    {post.description.slice(0, props.descLength) + '... '}
+                                </a>
+                                <a role="button" onClick={handlePostExpansion} className="a-link a-button" id="col-secondary">
+                                    Read more
+                                </a>
+                            </>
+                        ) : (
+                            <a role="button" onClick={handlePostOpen}>
+                                {post.description}
+                            </a>
+                        )}
+                    </p>
+                )}
+            </div>
+        );
+    }, (prevProps, nextProps) => prevProps.descLength === nextProps.descLength && prevProps.noLimit === nextProps.noLimit);
 
     const handlePostOpen = async () => {
         const mdxContent = await getMDXContent(post.slug, post.date as string);
@@ -43,14 +80,6 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
 
         openModal(post, markdown, previousPath);
     };
-
-    useEffect(() => {
-        if (onVisible) {
-            onVisible(); // Notify parent that the component is visible
-        }
-    }, [onVisible]);
-
-    const router = useRouter();
 
     const handlePostDeletion = async (email: string, slug: string, date: string) => {
         const deletedPostSlug = await deletePost({ email, slug, date });
@@ -67,13 +96,17 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         }
     };
 
+    useEffect(() => {
+        if (onVisible) {
+            onVisible(); // Notify parent that the component is visible
+        }
+    }, [onVisible]);
+
+    const router = useRouter();
+
     const modalRef = useRef<Modal | null>(null);
     const offcanvasRef = useRef<Offcanvas | null>(null);
     const popoverRef = useRef<Popover | null>(null);
-
-    const [currentModal, setCurrentModal] = useState<bootstrap.Modal | null>(null);
-    const [currentOffcanvas, setCurrentOffcanvas] = useState<bootstrap.Offcanvas | null>(null);
-    const [currentPopover, setCurrentPopover] = useState<bootstrap.Popover | null>(null);
 
     const [popoverVisible, setPopoverVisible] = useState(false); // Single source of truth for visibility
     const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null); // Ref for timeout to avoid state re-renders
@@ -84,7 +117,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         const Modal = require('bootstrap/js/dist/modal');
         const modalTrigger = document.querySelector('.modal');
 
-        if (modalTrigger && !currentModal) {
+        if (modalTrigger) {
             const newModal = new Modal(modalTrigger);
             modalRef.current = newModal;
         }
@@ -95,7 +128,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 modalRef.current = null;
             }
         };
-    }, [index, currentModal]);
+    }, [index]);
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
@@ -103,77 +136,59 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         const Offcanvas = require('bootstrap/js/dist/offcanvas');
         const offcanvasTrigger = document.querySelector(`.offcanvas`);
 
-        if (offcanvasTrigger && !currentOffcanvas && Offcanvas) {
+        if (offcanvasTrigger && Offcanvas) {
             const newOffcanvas = new Offcanvas(offcanvasTrigger);
 
             offcanvasRef.current = newOffcanvas;
         }
-    }, [index, currentOffcanvas]);
+    }, [index]);
 
     // Initialize popover on first render
     useEffect(() => {
         if (typeof window === 'undefined') return;
-
+    
         const Popover = require('bootstrap/js/dist/popover');
         const popoverTrigger = document.querySelector(`#popover-trigger-${index}`);
-
-        const navigate = (path: string, event?: React.MouseEvent<HTMLAnchorElement>) => {
-            return (event?: React.MouseEvent<HTMLAnchorElement>) => {
-                if (event) {
-                    event.preventDefault(); // Prevent default anchor click behavior
-                }
-
-                router.push(path); // Navigate to the given path
-            };
-        };
-
-        if (popoverTrigger && !currentPopover && Popover && authorData) {
-            const newPopover = new Popover(popoverTrigger, {
-                html: true,
-                placement: 'top',
-                customClass: 'd-none d-md-inline-block',
-                content: `
-                    <div class="row mx-3 mt-2">
-                        <div class="col-12 col-md-9 p-0">
-                            <a role="button" class="subheading-smaller a-link m-0" id="author-link-${index}">${authorData.fullName}</a>
-                            <h6 class="subheading-xsmall text-thinner py-2" id="col-heading-1">${authorData.bio}</h6>
-                        </div>
     
-                        <div class="col-md-3 p-0 mr-2">
-                            <Image class="${styles.popoverPfp}" src="/${authorData.profileImageUrl}" width={50} height={50} />
+        if (popoverTrigger && Popover && authorData) {
+            if (!popoverRef.current) {
+                popoverRef.current = new Popover(popoverTrigger, {
+                    html: true,
+                    placement: 'top',
+                    customClass: 'd-none d-md-inline-block',
+                    content: `
+                        <div class="row mx-3 mt-2">
+                            <div class="col-12 col-md-9 p-0">
+                                <a role="button" class="subheading-smaller a-link m-0" id="author-link-${index}">${authorData.fullName}</a>
+                                <h6 class="subheading-xsmall text-thinner py-2" id="col-heading-1">${authorData.bio}</h6>
+                            </div>
+            
+                            <div class="col-md-3 p-0 mr-2">
+                                <Image class="${styles.popoverPfp}" src="/${authorData.profileImageUrl}" width={50} height={50} />
+                            </div>
+            
+                            <div class="col-md-12 horisontal-line horisontal-line-thin"></div>
+            
+                            <div class="col-12 d-flex justify-content-between p-0 align-content-center">
+                                <p class="p-0 m-0">Visit my profile</p>
+                                <a role="button" class="a-btn btn-outlined px-2 py-0" id="visit-button-${index}">
+                                    Visit
+                                </a>
+                            </div>
                         </div>
-    
-                        <div class="col-md-12 horisontal-line horisontal-line-thin"></div>
-    
-                        <div class="col-12 d-flex justify-content-between p-0 align-content-center">
-                            <p class="p-0 m-0">Visit my profile</p>
-                            <a role="button" class="a-btn btn-outlined px-2 py-0" id="visit-button-${index}">
-                                Visit
-                            </a>
-                        </div>
-                    </div>
-                `,
-                trigger: 'manual',
-            });
-            popoverRef.current = newPopover;
-        }
-        // Add event listeners to mimic Next.js Link behavior
-        document.addEventListener('click', e => {
-            const target = e.target as HTMLElement;
-
-            if (target.id === `author-link-${index}` || target.id === `visit-button-${index}`) {
-                e.preventDefault(); // Prevent default anchor behavior
-                // const path = target.getAttribute('href');
-                router.push(`/author/${authorData.authorKey}`, { scroll: true }); // Navigate using Next.js router
+                    `,
+                    trigger: 'manual',
+                });
             }
-        });
-
+        }
+    
         return () => {
             if (popoverRef.current) {
                 popoverRef.current.dispose();
+                popoverRef.current = null;
             }
         };
-    }, [authorData, index, currentPopover, router]);
+    }, [index, authorData]);
 
     const handleMouseEnter = () => {
         clearHideTimeout();
@@ -192,17 +207,6 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         startHideTimeout();
     };
 
-    // Effect to attach listeners to the dynamic popover content
-    useEffect(() => {
-        if (popoverVisible) {
-            const popoverContent = document.querySelector('div.popover') as HTMLElement;
-            if (popoverContent) {
-                popoverContent.addEventListener('mouseenter', handleMouseEnter);
-                popoverContent.addEventListener('mouseleave', handleMouseLeave);
-            }
-        }
-    }, [popoverVisible, handleMouseEnter, handleMouseLeave]);
-
     const startHideTimeout = () => {
         clearHideTimeout();
         hideTimeoutRef.current = setTimeout(() => {
@@ -219,6 +223,17 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             hideTimeoutRef.current = null;
         }
     };
+
+    // Effect to attach listeners to the dynamic popover content
+    useEffect(() => {
+        if (popoverVisible) {
+            const popoverContent = document.querySelector('div.popover') as HTMLElement;
+            if (popoverContent) {
+                popoverContent.addEventListener('mouseenter', handleMouseEnter);
+                popoverContent.addEventListener('mouseleave', handleMouseLeave);
+            }
+        }
+    }, [popoverVisible, handleMouseEnter, handleMouseLeave]);
 
     return style === 'massive' ? (
         <div className={styles.latest_post}>
@@ -242,32 +257,9 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                         </a>
                     )}
                     <div ref={cardRef} className="col-lg-5 offset-lg-1 py-3" id="latest-post">
-                        <div className={`${styles.profile_info} d-flex pb-2 pb-sm-2`}>
-                            {authorData && (
-                                <div className={styles.profile_info__details}>
-                                    <span className="d-inline-block">
-                                        <div className={`${styles.profile_info} d-flex`}>
-                                            <div className="align-content-center">
-                                                <Link href={`/author/${authorData.authorKey}`} className="m-0 p-0">
-                                                    <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
-                                                </Link>
-                                            </div>
-                                            <div className={styles.profile_info__details}>
-                                                <Link href={`/author/${authorData.authorKey}`} className={`${styles.profile_info__text} m-0`}>
-                                                    {authorData.fullName}
-                                                </Link>
-                                                <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                                    {moment(post.date, format).format('D MMM')} • {post.readTime?.toString()} min read
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </span>
-                                </div>
-                            )}
-                        </div>
                         <a role="button" onClick={handlePostOpen}>
                             <h1 className={`${styles.heading} heading`} id="col-heading-1">
-                                {post.title && post.title.length > 85 ? <>{post.title.slice(0, 85) + '... '}</> : post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && moment(post.modifyDate, format).diff(Date.now(), 'days') >= -30 && !post.sponsoredBy && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
+                                {post.title && post.title.length > 85 ? <>{post.title.slice(0, 85) + '... '}</> : post.title} {moment.utc(post.modifyDate).isAfter(moment.utc(post.date)) && moment.utc(post.modifyDate).diff(Date.now(), 'days') >= -30 && !post.sponsoredBy && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
                                 {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
                             </h1>
                         </a>
@@ -312,30 +304,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 </a>
             )}
 
-            <div className={styles.postInfo}>
-                <a role="button" onClick={handlePostOpen}>
-                    <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                        {post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && moment(post.modifyDate, format).diff(moment(), 'days') >= -30 && !post.sponsoredBy && <span className="badge text-wrap">{'Updated ' + moment(post.modifyDate, format).fromNow()}</span>} {/* Add a badge if the post was updated within the last 30 days */}
-                        {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
-                    </h2>
-                </a>
-                <p className={styles.description}>
-                    {post.description.length > 160 ? (
-                        <>
-                            <a role="button" onClick={handlePostOpen}>
-                                {post.description.slice(0, 160) + '... '}
-                            </a>
-                            <a role="button" onClick={handlePostExpansion} className="a-link a-button" id="col-secondary">
-                                Read more
-                            </a>
-                        </>
-                    ) : (
-                        <a role="button" onClick={handlePostOpen}>
-                            {post.description}
-                        </a>
-                    )}
-                </p>
-            </div>
+            <PostInfoSection descLength={160} />
+
             <div className={`${styles.profile_info} d-flex`}>
                 {authorData && (
                     <div className={styles.profile_info__details}>
@@ -350,8 +320,9 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                     <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
                                         {authorData.fullName}
                                     </Link>
+
                                     <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                        {moment(post.date, format).format('D MMM')} • {post.readTime?.toString()} min read
+                                        {moment(post.date).format('D MMM')} • {post.readTime?.toString()} min read
                                     </p>
                                 </div>
                             </div>
@@ -387,31 +358,25 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 </a>
             )}
 
-            <div className={styles.postInfo}>
-                <a role="button" onClick={handlePostOpen}>
-                    <h2 className={`${styles.heading} subheading d-flex flex-wrap align-items-center gap-1`} id="col-heading-1">
-                        {post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && moment(post.modifyDate, format).diff(moment(post.date, format), 'days') <= 30 && !post.sponsoredBy && <span className="badge text-wrap">{'Updated ' + moment(post.modifyDate, format).fromNow()}</span>}
-                        {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
-                    </h2>
-                    <p className={styles.description}>{post.description.length > 160 ? <>{post.description}</> : post.description}</p>
-                </a>
-            </div>
+            <PostInfoSection descLength={300} noLimit />
+            
             <div className={`${styles.profile_info} d-flex`}>
                 {authorData && (
                     <div className={styles.profile_info__details}>
-                        <span className="d-inline-block" typeof="button">
+                        <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
                             <div className={`${styles.profile_info} d-flex`}>
                                 <div className="align-content-center">
-                                    <Link href={`/author/${authorData.authorKey}`} scroll={true} onClick={() => setExpandedPost(null)} className={`m-0 p-0`}>
+                                    <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
                                         <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
                                     </Link>
                                 </div>
                                 <div className={styles.profile_info__details}>
-                                    <Link href={`/author/${authorData.authorKey}`} scroll={true} onClick={() => setExpandedPost(null)} className={`${styles.profile_info__text} m-0`}>
+                                    <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
                                         {authorData.fullName}
                                     </Link>
+
                                     <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                        {moment(post.date, format).format('D MMM')} • {post.readTime?.toString()} min read
+                                        {moment(post.date).format('D MMM')} • {post.readTime?.toString()} min read
                                     </p>
                                 </div>
                             </div>
@@ -444,7 +409,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             <a role="button" data-bs-toggle="modal" data-bs-target={`#leavingModal-${post.slug}`}>
                 <div className={styles.postInfo}>
                     <h2 className={`${styles.heading} subheading d-flex flex-wrap align-content-center gap-1`} id="col-heading-1">
-                        {post.title} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && <span className="px-2 py-1 text-wrap badge">{'Updated ' + moment(post.modifyDate, format).fromNow()}</span>}
+                        {post.title} {moment.utc(post.modifyDate).isAfter(moment.utc(post.date)) && <span className="px-2 py-1 text-wrap badge">{'Updated ' + moment.utc(post.modifyDate).fromNow()}</span>}
                     </h2>
                     <p className={styles.description}>{post.description}</p>
                 </div>
@@ -526,7 +491,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                         {authorData.fullName}
                                     </Link>
                                     <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                        {moment(post.date, format).format('D MMM')} • {post.readTime?.toString()} min read
+                                        {moment.utc(post.date).format('D MMM')} • {post.readTime?.toString()} min read
                                     </p>
                                 </div>
                             </div>
@@ -597,7 +562,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                             <div className={styles.postInfo}>
                                 <div className="d-flex align-content-center m-0">
                                     <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                                        {previewData.title || 'Enter the post title'} {moment(post.modifyDate, format).isAfter(moment(post.date, format)) && <span className="badge">Updated</span>}
+                                        {previewData.title || 'Enter the post title'} {moment.utc(post.modifyDate).isAfter(moment.utc(post.date)) && <span className="badge">Updated</span>}
                                     </h2>
                                 </div>
                                 {setValue ? (
@@ -622,7 +587,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                     <div className={styles.profile_info__details}>
                                         <p className={`${styles.profile_info__text} m-0 p-0`}>{authorData.fullName}</p>
                                         <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                            {moment(post.date, format).format('D MMM')} • {post.readTime?.toString()} min read
+                                            {moment.utc(post.date).format('D MMM')} • {post.readTime?.toString()} min read
                                         </p>
                                     </div>
                                 </div>
@@ -652,32 +617,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 </a>
             )}
 
-            <div className={styles.postInfo}>
-                <div className="d-flex align-content-center m-0">
-                    <a role="button" onClick={handlePostOpen}>
-                        <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                            {post.title && post.title.length > 90 ? <>{post.title.slice(0, 90) + '... '}</> : post.title} {moment(post.modifyDate).isAfter(moment(post.date)) && moment(post.modifyDate).diff(Date.now(), 'days') >= -30 && !post.sponsoredBy && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
-                            {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
-                        </h2>
-                    </a>
-                </div>
-                <p className={styles.description}>
-                    {post.description && post.description.length > 140 ? (
-                        <>
-                            <a role="button" onClick={handlePostOpen}>
-                                {post.description.slice(0, 140) + '... '}
-                            </a>
-                            <a role="button" onClick={handlePostExpansion} className="a-link a-button" id="col-secondary">
-                                Read more
-                            </a>
-                        </>
-                    ) : (
-                        <a role="button" onClick={handlePostOpen}>
-                            {post.description}
-                        </a>
-                    )}
-                </p>
-            </div>
+            <PostInfoSection descLength={140}  />
+
             <div className={`${styles.profile_info} d-flex`}>
                 {authorData && (
                     <div className={styles.profile_info__details}>
@@ -694,7 +635,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                     </Link>
 
                                     <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                        {moment(post.date, format).format('D MMM')} • {post.readTime?.toString()} min read
+                                        {moment(post.date).format('D MMM')} • {post.readTime?.toString()} min read
                                     </p>
                                 </div>
                             </div>

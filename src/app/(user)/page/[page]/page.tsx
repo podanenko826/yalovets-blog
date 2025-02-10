@@ -1,15 +1,18 @@
 'use client';
 import '@/app/page.css';
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import Link from 'next/link';
 
 import { getPostsCount, sortPosts } from '@/lib/posts';
 import { AuthorItem, PaginationEntry, PaginationState, PostItem } from '@/types';
-import { usePostContext } from '@/components/PostContext';
+import { usePostContext } from '@/components/Context/PostDataContext';
+import { useModalContext } from '@/components/Context/ModalContext';
 
-import PostList from '@/components/PostList';
-import PaginationPreferences from '@/components/PaginationPreferences';
+import PostList from '@/components/PostCard/PostList';
+import PaginationPreferences from '@/components/Modals/PaginationPreferences';
 
+const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
+const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
 
 import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from 'react-icons/md';
 import { MdOutlineKeyboardDoubleArrowLeft, MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md';
@@ -21,7 +24,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     const { posts } = usePostContext();
     const { fetchPostsByPage } = usePostContext();
     const { userConfig } = usePostContext();
-    const { selectedPost } = usePostContext();
+    const { selectedPost } = useModalContext();
     const { pagination } = usePostContext();
     const { postCount, setPostCount } = usePostContext();
 
@@ -87,6 +90,10 @@ export default function BlogPage({ params }: { params: { page: string } }) {
 
     return (
         <>
+            <Suspense fallback={<div></div>}>
+                <PostPreviewModal />
+                <ArticleModal selectedPost={selectedPost!} />
+            </Suspense>
             {posts.length > 0 && paginatedArticles.length > 0 ? (
                 <main id="body">
                     <div className="container posts" id="posts">

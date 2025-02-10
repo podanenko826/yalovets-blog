@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 import Home from '../page';
-import { usePostContext } from '@/components/PostContext';
+import { usePostContext } from '@/components/Context/PostDataContext';
 
 interface PostPageProps {
     params: { slug: string };

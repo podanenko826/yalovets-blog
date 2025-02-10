@@ -11,7 +11,7 @@ import { IoMdMenu } from 'react-icons/io';
 import { IoMdClose } from 'react-icons/io';
 import { IoMoonOutline } from "react-icons/io5";
 import { IoSunnyOutline } from "react-icons/io5";
-import { usePostContext } from './PostContext';
+import { usePostContext } from './Context/PostDataContext';
 
 export const navigation = [
     {
@@ -100,7 +100,7 @@ const NavBar = () => {
                                 item.href === '/' ? currentPath === '/' : currentPath.startsWith(item.href + '/');
                     
                             return (
-                                <Link key={item.id} href={item.href} className={styles.nav_link} id={`${isActive ? styles.active : ''}`}>
+                                <Link key={item.id} href={item.href !== '/page' ? item.href : '/page/1'} className={styles.nav_link} id={`${isActive ? styles.active : ''}`}>
                                     {item.label}
                                 </Link>
                             );

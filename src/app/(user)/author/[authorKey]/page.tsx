@@ -1,19 +1,21 @@
 'use client';
 import { getAuthorByKey, getAuthors } from '@/lib/authors';
 import { AuthorItem, PostItem } from '@/types';
-import { notFound } from 'next/navigation';
-import React, { FC, useEffect, useState } from 'react';
+// import { notFound } from 'next/navigation';
+import React, { FC, Suspense, lazy, useEffect, useState } from 'react';
 
 import Image from 'next/image';
 
-import postCardStyles from '@/components/PostCard.module.css';
+import postCardStyles from '@/components/PostCard/PostCard.module.css';
 import { getPost, getSortedPosts } from '@/lib/posts';
-import { usePostContext } from '@/components/PostContext';
 import dynamic from 'next/dynamic';
-import moment from 'moment';
-import PostList from '@/components/PostList';
+import PostList from '@/components/PostCard/PostList';
 
-const LazyPostCard = dynamic(() => import('@/components/LazyPostCard'));
+import { useModalContext } from '@/components/Context/ModalContext';
+import { usePostContext } from '@/components/Context/PostDataContext';
+
+const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
+const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
 interface AuthorPageProps {
     params: { authorKey: string };
     // mdxSource: MDXRemoteProps | MDXRemoteSerializeResult | null;
@@ -24,7 +26,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
 
     const { posts, setPosts } = usePostContext();
     const { authors, setAuthors } = usePostContext();
-    const { selectedPost } = usePostContext();
+    const { selectedPost } = useModalContext();
     const { fetchPostsByAuthor } = usePostContext();
 
     const [authorData, setAuthorData] = useState<AuthorItem | null>(null);
@@ -66,6 +68,10 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
 
     return (
         <>
+            <Suspense fallback={<div></div>}>
+                <PostPreviewModal />
+                <ArticleModal selectedPost={selectedPost!} />
+            </Suspense>
             {authorData && authorPosts.length > 0 && (
                 <div className="container">
                     <div className="container mb-5">
