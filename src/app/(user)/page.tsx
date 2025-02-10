@@ -22,19 +22,19 @@ interface HomeProps {
 
 async function generateMetadata(post: PostItem): Promise<Metadata> {
     return {
-        title: post?.title || "Yalovets Blog",
-        description: post?.description || "AWS Unveiled: Your Gateway to Cloud Knowledge",
+        title: post?.title || 'Yalovets Blog',
+        description: post?.description || 'AWS Unveiled: Your Gateway to Cloud Knowledge',
         openGraph: {
-            title: post?.title || "Yalovets Blog",
-            description: post?.description || "AWS Unveiled: Your Gateway to Cloud Knowledge",
+            title: post?.title || 'Yalovets Blog',
+            description: post?.description || 'AWS Unveiled: Your Gateway to Cloud Knowledge',
             images: post?.imageUrl ? [{ url: post.imageUrl }] : [],
             url: `https://yalovets.blog/${post?.slug}`,
-            type: "article",
+            type: 'article',
         },
         twitter: {
-            card: "summary_large_image",
-            title: post?.title || "Yalovets Blog",
-            description: post?.description || "AWS Unveiled: Your Gateway to Cloud Knowledge",
+            card: 'summary_large_image',
+            title: post?.title || 'Yalovets Blog',
+            description: post?.description || 'AWS Unveiled: Your Gateway to Cloud Knowledge',
             images: post?.imageUrl ? [post.imageUrl] : [],
         },
     };
@@ -55,10 +55,38 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
     useEffect(() => {
         const fetchData = async () => {
             fetchPosts(9);
-        }
+        };
 
         fetchData();
     }, []);
+
+    const [isVisible, setIsVisible] = useState<boolean>(false);
+
+    useEffect(() => {
+        const targetElement = document.querySelector(`arrow-container`);
+        if (!targetElement) return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsVisible(entry.isIntersecting);
+            },
+            { threshold: 0.5 }
+        );
+
+        observer.observe(targetElement);
+        return () => observer.disconnect();
+    }, []);
+
+    const codeBlock = `
+  # Ensure you have AWS CLI configured
+  aws configure
+
+  # Retrieve the public IP of your EC2 instance
+  export EC2_IP=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=MyInstance" --query "Reservations[*].Instances[*].PublicIpAddress" --output text)
+
+  # Connect to the instance using SSH
+  ssh -i my-key.pem ec2-user@$EC2_IP
+    `;
 
     return (
         <>
@@ -84,37 +112,61 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                 </div>
 
                 <div className="container-fluid welcome-xs d-block d-lg-none p-0 overflow-hidden">
-                    {/* <div className="row">
+                    <div className="row">
                         <div className="col-11 offset-1 col-sm-10 offset-sm-2 col-md-7 offset-md-5">
                             <picture className="img-fluid teaser-img">
-                                <Image className="img-fluid teaser-img" src={'/img/teaser-front@1140w2x.webp'} style={{ width: 'auto' }} alt="Teaser" title="Teaser" width={635} height={476} priority={true} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
+                                <Image className="img-fluid teaser-img" src={'/coffeman.jpg'} style={{ width: 'auto' }} alt="Teaser" title="Teaser" width={635} height={476} priority={true} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
                             </picture>
                         </div>
-                    </div> */}
+                    </div>
                 </div>
+
+                {/* <div className="arrow-container">
+                    <div className="arrow-down"></div>
+                </div> */}
 
                 {/* Welcome section (Desktop) */}
 
                 <div className="welcome container-fluid d-none d-lg-block overflow-hidden">
-                    {/* <div className="row">
-                        <div className="col-lg-7 offset-lg-5">
+                    <div className="row">
+                        <div className="col-lg-6 offset-lg-7">
                             <picture className="img-fluid teaser-img">
-                                <Image className="img-fluid teaser-img" src={'/img/teaser-front@1140w2x.webp'} style={{ width: 'auto' }} alt="Teaser" width={998} height={19} priority={true} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
+                                <Image className="img-fluid teaser-img" src={'/coffeman.jpg'} style={{ width: '50vw', maxHeight: '70vh' }} alt="Teaser" width={1080} height={1350} loading="lazy" sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
                             </picture>
                         </div>
-                    </div> */}
+                    </div>
                     <div>
                         <div className="container">
                             <div className="row">
                                 <div className="col-5">
-                                    <h2 className="welcome-text" id="col-heading-2">
-                                        Welcome to Yalovets Blog
-                                    </h2>
+                                    <div className="d-flex gap-3">
+                                        <h2 className="welcome-text-cursor">&gt;</h2>
+                                        <h2 className="welcome-text" id="col-heading-2">
+                                            Welcome to Yalovets Blog
+                                        </h2>
+                                    </div>
                                     <h1 className="welcome-heading" id="col-heading-1">
                                         AWS Unveiled: Your Gateway to Cloud Knowledge
                                     </h1>
-                                    <p className="welcome-paragraph">By Ivan Yalovets. Since 2024, I published 0 articles.</p>
-                                    <StartReadingButton />
+                                    {/* <p className="welcome-paragraph">By Ivan Yalovets. Since 2024, I published 0 articles.</p> */}
+                                    {/* <StartReadingButton /> */}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="container-lg col-12">
+                            <div className="mac-window">
+                                <div className="mac-title-bar">
+                                    <div className="mac-buttons">
+                                        <div className="mac-button close"></div>
+                                        <div className="mac-button minimize"></div>
+                                        <div className="mac-button maximize"></div>
+                                    </div>
+                                    <div className="mac-title">ReadMe.txt</div>
+                                </div>
+                                <div className="mac-content">
+                                    <pre>
+                                        <code>{codeBlock}</code>
+                                    </pre>
                                 </div>
                             </div>
                         </div>
@@ -122,8 +174,8 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                 </div>
 
                 {/* Recent posts */}
-                <div className="container posts" id="posts">
-                    <div className="row pt-5">
+                <div className="container posts" id="recentPosts">
+                    <div className="row">
                         <div className="col-12 category-heading">
                             <h4 className="subheading-smaller">Recent posts</h4>
                             <div className="horisontal-line" />
@@ -134,13 +186,13 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                     </div>
 
                     <div className="row post-list">
-                        <PostList displayMode='recent' style="standard" indexIncrement={2} limit={9} />
+                        <PostList displayMode="recent" style="standard" indexIncrement={2} limit={9} />
                     </div>
                 </div>
 
                 {/* Most popular posts */}
 
-                <div className="container posts" id="posts">
+                <div className="container posts" id="popularPosts">
                     <div className="row pt-5">
                         <div className="col-12 category-link">
                             <h4 className="subheading-smaller" id="btn-text col-secondary">
@@ -154,7 +206,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                     </div>
 
                     <div className="row post-list">
-                        <PostList displayMode='popular' style="standard" indexIncrement={15} limit={3} />
+                        <PostList displayMode="popular" style="standard" indexIncrement={15} limit={3} />
                     </div>
                 </div>
 
