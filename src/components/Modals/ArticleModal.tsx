@@ -17,7 +17,6 @@ import { getMDXContent, trackView } from '@/lib/posts';
 import { MDXProvider } from '@mdx-js/react';
 import { mdSerialize } from '../../services/mdSerializer';
 import { useMDXComponents } from '../../../mdx-components';
-import Head from 'next/head';
 
 interface ArticleModalProps {
     selectedPost: PostItem;

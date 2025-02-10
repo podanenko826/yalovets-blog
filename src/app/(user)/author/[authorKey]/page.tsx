@@ -9,7 +9,6 @@ import Image from 'next/image';
 import postCardStyles from '@/components/PostCard/PostCard.module.css';
 import { getPost, getSortedPosts } from '@/lib/posts';
 import dynamic from 'next/dynamic';
-import moment from 'moment';
 import PostList from '@/components/PostCard/PostList';
 
 import { useModalContext } from '@/components/Context/ModalContext';

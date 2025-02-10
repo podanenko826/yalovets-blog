@@ -1,9 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import styles from './Modals.module.css';
 
 import { FaCoffee } from 'react-icons/fa';
-import { usePostContext } from '../Context/PostDataContext';
 
 const LoadingBanner = () => {
     const [loading, setLoading] = useState(true);
@@ -19,11 +17,11 @@ const LoadingBanner = () => {
     if (!loading) return null;
 
     return (
-        <div className={styles.loadingBanner}>
+        <div style={{ width: "100%", height: "100vh", display: "flex", justifyContent: "center", alignItems: "center", position: "fixed", background: "white", overflow: "hidden", zIndex: 10000, top: "0%", left: "0%" }}>
             <div className="container-sm pb-5 d-flex justify-content-center">
-                <h4 className={`${styles.navbar_brand} col-primary`}>
+            <h4 className="col-primary" style={{ fontFamily: "'Rubik', sans-serif", fontWeight: 500, fontSize: "1.85rem", color: "var(--col-primary)" }}>
                     Yalovets Blog
-                    <FaCoffee className={`${styles.navLogo_icon}`} />
+                    <FaCoffee style={{ alignSelf: 'center', fontSize: '32px' }} />
                 </h4>
             </div>
         </div>

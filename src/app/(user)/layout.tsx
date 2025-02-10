@@ -3,8 +3,8 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import '@/app/css/custom.css';
 import '@/app/globals.css';
 
-import NavBar from '@/components/NavBar';
-import Footer from '@/components/Footer';
+const NavBar = lazy(() => import('@/components/NavBar'));
+const Footer = lazy(() => import('@/components/Footer'));
 
 import { PostProvider } from '@/components/Context/PostProvider';
 import React, { Suspense, lazy } from 'react';

@@ -2,19 +2,15 @@
 import * as React from 'react';
 import '@/app/page.css';
 
-import type { AuthorItem, PostItem } from '@/types';
+import type { PostItem } from '@/types';
 
 import StartReadingButton from '@/components/Button/StartReadingButton';
 
 import Image from 'next/image';
-import LazyPostCard from '@/components/PostCard/LazyPostCard';
 import PostList from '@/components/PostCard/PostList';
 import { usePostContext } from '@/components/Context/PostDataContext';
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
-import { usePathname } from 'next/navigation';
-import moment from 'moment';
 import { useModalContext } from '@/components/Context/ModalContext';
-import { Head } from 'next/document';
 import { Metadata } from 'next';
 
 const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));

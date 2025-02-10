@@ -7,7 +7,6 @@ import Image from 'next/image';
 import dynamic from 'next/dynamic';
 
 import postCardStyles from '@/components/PostCard/PostCard.module.css';
-import moment from 'moment';
 import Link from 'next/link';
 import PostList from '@/components/PostCard/PostList';
 

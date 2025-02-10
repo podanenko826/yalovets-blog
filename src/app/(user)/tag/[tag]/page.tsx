@@ -1,23 +1,16 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 
-import { getSortedPosts } from '@/lib/posts';
-import { getAuthors } from '@/lib/authors';
-import { AuthorItem, PostItem, TagItem } from '@/types';
-import dynamic from 'next/dynamic';
+import { TagItem } from '@/types';
 
-import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from 'react-icons/md';
-import { MdOutlineKeyboardDoubleArrowLeft, MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md';
-import Link from 'next/link';
 import { usePostContext } from '@/components/Context/PostDataContext';
 import { useModalContext } from '@/components/Context/ModalContext';
-import moment from 'moment';
 import { getTagData, getTagsData } from '@/lib/tags';
-import { get } from 'http';
-// import { notFound } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import PostList from '@/components/PostCard/PostList';
 
-const LazyPostCard = dynamic(() => import('@/components/PostCard/LazyPostCard'), { ssr: false });
+const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
+const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
 
 export default function TagPage({ params }: { params: { tag: string } }) {
     const { posts, setPosts } = usePostContext();
@@ -58,7 +51,7 @@ export default function TagPage({ params }: { params: { tag: string } }) {
                 }
             }
 
-            // if (!_tagData) return notFound();
+            if (!_tagData) return notFound();
 
             setTagData(_tagData.content);
         };
@@ -81,6 +74,10 @@ export default function TagPage({ params }: { params: { tag: string } }) {
 
     return (
         <>
+            <Suspense fallback={<div></div>}>
+                <PostPreviewModal />
+                <ArticleModal selectedPost={selectedPost!} />
+            </Suspense>
             {tagData && (
                 <main id="body">
                     <div className="container posts" id="posts">

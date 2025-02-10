@@ -3,7 +3,6 @@ import { getAuthors } from '@/lib/authors';
 import { getPaginationData } from '@/lib/pagination';
 import { getAuthorPosts, getPaginatedPosts, getSortedPosts, sortPosts } from '@/lib/posts';
 import { AuthorItem, PaginationEntry, PaginationState, PostItem, TagItem } from '@/types';
-import moment from 'moment';
 import { usePathname } from 'next/navigation';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
