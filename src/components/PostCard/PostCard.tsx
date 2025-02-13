@@ -27,58 +27,55 @@ type PostCardProps = {
 
 const PostCard = ({ post, previewData, authorData, style, index, setValue, onVisible }: PostCardProps) => {
     const cardRef = useRef<HTMLDivElement>(null);
-    const { openModal } = useModalContext();
     const { setExpandedPost } = useModalContext();
 
-    const PostInfoSection = React.memo((props: { descLength: number, noLimit?: boolean }) => {
-        return (
-            <div className={styles.postInfo}>
-                <div className="d-flex align-content-center m-0">
-                    <a role="button" onClick={handlePostOpen}>
-                        {props.noLimit ? (
-                            <h2 className={`${styles.heading} subheading d-flex flex-wrap align-items-center gap-1`} id="col-heading-1">
-                                {post.title} {moment.utc(post.modifyDate).isAfter(moment.utc(post.date)) && moment.utc(post.modifyDate).diff(moment.utc(post.date), 'days') <= 30 && !post.sponsoredBy && <span className="badge text-wrap">{'Updated ' + moment.utc(post.modifyDate).fromNow()}</span>}
-                                {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
-                            </h2>
-                        ) : (
-                            <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                                {post.title && post.title.length > 90 ? <>{post.title.slice(0, 90) + '... '}</> : post.title} {moment.utc(post.modifyDate).isAfter(moment.utc(post.date)) && moment.utc(post.modifyDate).diff(Date.now(), 'days') >= -30 && !post.sponsoredBy && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
-                                {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
-                            </h2>
-                        )}
-                    </a>
-                </div>
-                {props.noLimit ? (
-                    <p className={styles.description}>{post.description.length > 160 ? <>{post.description}</> : post.description}</p>
-                ): (
-                    <p className={styles.description}>
-                        {post.description && post.description.length > props.descLength ? (
-                            <>
+    const PostInfoSection = React.memo(
+        (props: { descLength: number; noLimit?: boolean }) => {
+            return (
+                <div className={styles.postInfo}>
+                    <div className="d-flex align-content-center m-0">
+                        <a role="button" onClick={handlePostOpen}>
+                            {props.noLimit ? (
+                                <h2 className={`${styles.heading} subheading d-flex flex-wrap align-items-center gap-1`} id="col-heading-1">
+                                    {post.title} {moment.utc(post.modifyDate).isAfter(moment.utc(post.date)) && moment.utc(post.modifyDate).diff(moment.utc(post.date), 'days') <= 30 && !post.sponsoredBy && <span className="badge text-wrap">{'Updated ' + moment.utc(post.modifyDate).fromNow()}</span>}
+                                    {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
+                                </h2>
+                            ) : (
+                                <h2 className={`${styles.heading} subheading`} id="col-heading-1">
+                                    {post.title && post.title.length > 90 ? <>{post.title.slice(0, 90) + '... '}</> : post.title} {moment.utc(post.modifyDate).isAfter(moment.utc(post.date)) && moment.utc(post.modifyDate).diff(Date.now(), 'days') >= -30 && !post.sponsoredBy && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
+                                    {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
+                                </h2>
+                            )}
+                        </a>
+                    </div>
+                    {props.noLimit ? (
+                        <p className={styles.description}>{post.description.length > 160 ? <>{post.description}</> : post.description}</p>
+                    ) : (
+                        <p className={styles.description}>
+                            {post.description && post.description.length > props.descLength ? (
+                                <>
+                                    <a role="button" onClick={handlePostOpen}>
+                                        {post.description.slice(0, props.descLength) + '... '}
+                                    </a>
+                                    <a role="button" onClick={handlePostExpansion} className="a-link a-button" id="col-secondary">
+                                        Read more
+                                    </a>
+                                </>
+                            ) : (
                                 <a role="button" onClick={handlePostOpen}>
-                                    {post.description.slice(0, props.descLength) + '... '}
+                                    {post.description}
                                 </a>
-                                <a role="button" onClick={handlePostExpansion} className="a-link a-button" id="col-secondary">
-                                    Read more
-                                </a>
-                            </>
-                        ) : (
-                            <a role="button" onClick={handlePostOpen}>
-                                {post.description}
-                            </a>
-                        )}
-                    </p>
-                )}
-            </div>
-        );
-    }, (prevProps, nextProps) => prevProps.descLength === nextProps.descLength && prevProps.noLimit === nextProps.noLimit);
+                            )}
+                        </p>
+                    )}
+                </div>
+            );
+        },
+        (prevProps, nextProps) => prevProps.descLength === nextProps.descLength && prevProps.noLimit === nextProps.noLimit
+    );
 
     const handlePostOpen = async () => {
-        const mdxContent = await getMDXContent(post.slug, post.date as string);
-        
-        const markdown = mdxContent.markdown;
-        const previousPath = window.location.href;
-
-        openModal(post, markdown, previousPath);
+        router.push(`/${post.slug}`, { scroll: false });
     };
 
     const handlePostDeletion = async (email: string, slug: string, date: string) => {
@@ -146,10 +143,10 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
     // Initialize popover on first render
     useEffect(() => {
         if (typeof window === 'undefined') return;
-    
+
         const Popover = require('bootstrap/js/dist/popover');
         const popoverTrigger = document.querySelector(`#popover-trigger-${index}`);
-    
+
         if (popoverTrigger && Popover && authorData) {
             if (!popoverRef.current) {
                 popoverRef.current = new Popover(popoverTrigger, {
@@ -181,7 +178,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 });
             }
         }
-    
+
         return () => {
             if (popoverRef.current) {
                 popoverRef.current.dispose();
@@ -359,7 +356,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             )}
 
             <PostInfoSection descLength={300} noLimit />
-            
+
             <div className={`${styles.profile_info} d-flex`}>
                 {authorData && (
                     <div className={styles.profile_info__details}>
@@ -617,7 +614,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                 </a>
             )}
 
-            <PostInfoSection descLength={140}  />
+            <PostInfoSection descLength={140} />
 
             <div className={`${styles.profile_info} d-flex`}>
                 {authorData && (

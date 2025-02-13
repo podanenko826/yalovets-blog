@@ -1,11 +1,11 @@
 'use client';
 import { PostItem } from '@/types';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 // Types
 interface ModalContextType {
-    openModal: (post: PostItem, markdown: string, previousPath: string) => void;
+    openModal: (post: PostItem, markdown: string) => void;
     closeModal: () => void;
     selectedPost: PostItem | null;
     setSelectedPost: React.Dispatch<React.SetStateAction<PostItem | null>>;
@@ -13,8 +13,6 @@ interface ModalContextType {
     setExpandedPost: React.Dispatch<React.SetStateAction<{ post: PostItem; boundingBox: DOMRect } | null>>;
     selectedMarkdown: string | null;
     setSelectedMarkdown: React.Dispatch<React.SetStateAction<string | null>>;
-    previousPath: string | null;
-    setPreviousPath: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 // Create Context
@@ -25,9 +23,10 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [selectedPost, setSelectedPost] = useState<PostItem | null>(null);
     const [expandedPost, setExpandedPost] = useState<{ post: PostItem; boundingBox: DOMRect } | null>(null);
     const [selectedMarkdown, setSelectedMarkdown] = useState<string | null>(null);
-    const [previousPath, setPreviousPath] = useState<string | null>(null);
 
     const pathname = usePathname();
+
+    const router = useRouter();
 
     useEffect(() => {
         // Automatically close modal if URL doesn't match the selected post
@@ -41,26 +40,19 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         ArticleModal logic
     */
 
-    const openModal = (post: PostItem, markdown: string, previousPath: string) => {
+    const openModal = (post: PostItem, markdown: string) => {
         setSelectedPost(post);
         setSelectedMarkdown(markdown);
-        setPreviousPath(previousPath);
 
         // Update the URL state
-        window.history.pushState({}, '', `/${post?.slug}`);
+        router.push(`/${post?.slug}`, { scroll: false });
     };
 
     const closeModal = () => {
+        router.back();
+
         setSelectedPost(null);
         setSelectedMarkdown(null);
-
-        const currentPath = window.location.href;
-
-        if (previousPath === currentPath) {
-            window.history.pushState({}, '', `/`);
-        } else {
-            window.history.pushState({}, '', previousPath ? previousPath : '/');
-        }
     };
 
     return (
@@ -74,8 +66,6 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 setExpandedPost,
                 selectedMarkdown,
                 setSelectedMarkdown,
-                previousPath,
-                setPreviousPath,
             }}>
             {children}
         </ModalContext.Provider>

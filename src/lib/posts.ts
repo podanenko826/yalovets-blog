@@ -43,7 +43,7 @@ function transformPostData(data: any[]): PostItem[] {
             postGroup: post.postGroup?.S,
             sponsoredBy: post.sponsoredBy?.S,
             sponsorUrl: post.sponsorUrl?.S,
-        }
+        };
     });
 }
 
@@ -56,14 +56,14 @@ export function sortPosts(postsData: PostItem[]): PostItem[] {
     const sortedPostsData = [...postsData].sort((a, b) => {
         const dateOne = moment(a.date);
         const dateTwo = moment(b.date);
-        
+
         return dateTwo.diff(dateOne); // Descending order
     });
 
     return sortedPostsData;
 }
 
-export const getPaginatedPosts = async (page: number, limit: number, paginationData: PaginationState): Promise<{ posts: PostItem[], lastKey: string }> => {
+export const getPaginatedPosts = async (page: number, limit: number, paginationData: PaginationState): Promise<{ posts: PostItem[]; lastKey: string }> => {
     if (!limit || limit > 50) return { posts: [], lastKey: '' };
 
     if (page > paginationData.totalPages) return { posts: [], lastKey: '' };
@@ -75,7 +75,7 @@ export const getPaginatedPosts = async (page: number, limit: number, paginationD
 
         const pageStartingKey = paginationData.paginationData[page].date;
 
-        const response = await fetch(`${baseUrl}/api/posts?limit=${limit}&lastKey=${pageStartingKey}`);
+        const response = await fetch(`${baseUrl}/api/posts?limit=${limit}&lastKey=${pageStartingKey}`, { cache: "force-cache" });
 
         if (!response.ok) {
             console.error('API returned an error:', response.status, await response.text());
@@ -84,8 +84,8 @@ export const getPaginatedPosts = async (page: number, limit: number, paginationD
 
         const data: FetchPostsResponse = await response.json();
         const transformedPostData = transformPostData(data.posts);
-        const sortedPostsData = sortPosts(transformedPostData)
-        
+        const sortedPostsData = sortPosts(transformedPostData);
+
         return { posts: sortedPostsData, lastKey: data.lastKey };
     } catch (err) {
         console.error('Failed to fetch posts from the database: ', err);
@@ -93,14 +93,13 @@ export const getPaginatedPosts = async (page: number, limit: number, paginationD
     }
 };
 
-export const getSortedPosts = async (limit: number, lastKey?: string ): Promise<{ posts: PostItem[], lastKey: string }> => {
+export const getSortedPosts = async (limit: number, lastKey?: string): Promise<{ posts: PostItem[]; lastKey: string }> => {
     if (!limit || limit > 50) return { posts: [], lastKey: '' };
 
     try {
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
-        const response = lastKey ? await fetch(`${baseUrl}/api/posts?limit=${limit}&lastKey=${lastKey}`) 
-                    : await fetch(`${baseUrl}/api/posts?limit=${limit}`);
+        const response = lastKey ? await fetch(`${baseUrl}/api/posts?limit=${limit}&lastKey=${lastKey}`, { cache: "force-cache" }) : await fetch(`${baseUrl}/api/posts?limit=${limit}`, { cache: "force-cache" });
 
         if (!response.ok) {
             console.error('API returned an error:', response.status, await response.text());
@@ -112,7 +111,7 @@ export const getSortedPosts = async (limit: number, lastKey?: string ): Promise<
         const transformedPostData = transformPostData(data.posts);
 
         const sortedPostsData = sortPosts(transformedPostData);
-        
+
         return { posts: sortedPostsData, lastKey: data.lastKey };
     } catch (err) {
         console.error('Failed to fetch posts from the database: ', err);
@@ -120,14 +119,13 @@ export const getSortedPosts = async (limit: number, lastKey?: string ): Promise<
     }
 };
 
-export const getAuthorPosts = async (email: string, limit: number, lastKey?: string ): Promise<{ posts: PostItem[], lastKey: string }> => {
+export const getAuthorPosts = async (email: string, limit: number, lastKey?: string): Promise<{ posts: PostItem[]; lastKey: string }> => {
     if (!email || !limit || limit > 50) return { posts: [], lastKey: '' };
 
     try {
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
-        const response = lastKey ? await fetch(`${baseUrl}/api/posts-by-author?email=${email}&limit=${limit}&lastKey=${lastKey}`) 
-                    : await fetch(`${baseUrl}/api/posts-by-author?email=${email}&limit=${limit}`);
+        const response = lastKey ? await fetch(`${baseUrl}/api/posts-by-author?email=${email}&limit=${limit}&lastKey=${lastKey}`, { cache: "force-cache" }) : await fetch(`${baseUrl}/api/posts-by-author?email=${email}&limit=${limit}`, { cache: "force-cache" });
 
         if (!response.ok) {
             console.error('API returned an error:', response.status, await response.text());
@@ -139,7 +137,7 @@ export const getAuthorPosts = async (email: string, limit: number, lastKey?: str
         const transformedPostData = transformPostData(data.posts);
 
         const sortedPostsData = sortPosts(transformedPostData);
-        
+
         return { posts: sortedPostsData, lastKey: data.lastKey };
     } catch (err) {
         console.error('Failed to fetch posts from the database: ', err);
@@ -149,10 +147,10 @@ export const getAuthorPosts = async (email: string, limit: number, lastKey?: str
 
 export const getPost = async (slug: string): Promise<PostItem> => {
     const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
-    const response = await fetch(`${baseUrl}/api/post-by-slug?slug=${slug}`, { method: 'GET' });
+    const response = await fetch(`${baseUrl}/api/post-by-slug?slug=${slug}`, { method: 'GET', next: { revalidate: 3600 }, cache: "force-cache" });
     const data: PostItem[] = await response.json();
 
-    let post: any[] = []
+    let post: any[] = [];
 
     if (data.length > 0) {
         post = [...data];
@@ -164,8 +162,8 @@ export const getPost = async (slug: string): Promise<PostItem> => {
 
 export const getPostsCount = async (): Promise<number> => {
     const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
-    const authorLengthResponse = await fetch(`${baseUrl}/api/author-list`);
-    const authorLength = await authorLengthResponse.json() || [];
+    const authorLengthResponse = await fetch(`${baseUrl}/api/author-list`, { cache: "force-cache" });
+    const authorLength = (await authorLengthResponse.json()) || [];
 
     const params = {
         TableName: DYNAMODB_TABLE_NAME,
@@ -177,9 +175,9 @@ export const getPostsCount = async (): Promise<number> => {
     if (!response.Table?.ItemCount) return 0;
 
     const postsCount = Number(response.Table.ItemCount) - authorLength.length;
-    
+
     return postsCount || 0;
-}
+};
 
 export const formatPostDate = (date: Date) => {
     // const year = date.getFullYear();
@@ -197,6 +195,7 @@ export const getMDXContent = async (slug: string, date: string): Promise<{ slug:
         // Fetch the markdown content
         const response = await fetch(`${baseUrl}/api/mdx?slug=${slug}&date=${date}`, {
             method: 'GET',
+            cache: "force-cache",
         });
         if (!response.ok) {
             console.error('Failed to fetch markdown content');
@@ -247,12 +246,12 @@ export const saveMDXContent = async (postTitle: string, markdown: string, date: 
         }
 
         const content = await response.text();
-        return {content, slug};
+        return { content, slug };
     } catch (error) {
         console.error('Error:', error);
     }
 
-    return {content: '', slug: ''};
+    return { content: '', slug: '' };
 };
 
 export const deleteMDXContent = async (slug: string, date: string): Promise<{ success: boolean; slug: string }> => {
@@ -272,13 +271,13 @@ export const deleteMDXContent = async (slug: string, date: string): Promise<{ su
         console.error('Error:', error);
     }
 
-    return {success: false, slug: ''};
+    return { success: false, slug: '' };
 };
 
 export const rebuildPagination = async (): Promise<Record<number, PaginationEntry>> => {
     try {
         console.log('Started pagination rebuild.');
-        
+
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
         const response = await fetch(`${baseUrl}/api/posts`, { method: 'GET' });
 
@@ -292,13 +291,15 @@ export const rebuildPagination = async (): Promise<Record<number, PaginationEntr
         const transformedPostData = transformPostData(data.posts);
 
         const sortedPostsData = sortPosts(transformedPostData);
-        
+
         let newPagination: Record<number, PaginationEntry> = {};
 
         for (let index = 0; index < sortedPostsData.length; index++) {
-            if (index % 14 === 0) { // Every 14th post
+            if (index % 14 === 0) {
+                // Every 14th post
                 const post = sortedPostsData[index];
-                newPagination[index / 14 + 1] = { // +1 to make the page number 1-based
+                newPagination[index / 14 + 1] = {
+                    // +1 to make the page number 1-based
                     date: post.date as string,
                 };
             }
@@ -311,21 +312,21 @@ export const rebuildPagination = async (): Promise<Record<number, PaginationEntr
         const result = updatePagination(newPagination);
 
         if (Object.keys(result).length > 0) console.log('Pagination rebuilt successfully.');
-        
+
         return result;
     } catch (err) {
         console.error('Failed to rebuild pagination: ', err);
         return {};
     }
-}
+};
 
 export const createPost = async (postData: Partial<PostItem>, markdown: string): Promise<{ slug: string; markdown: string }> => {
     const { email, title, description, date, imageUrl, readTime, postType, tags, sponsoredBy, sponsorUrl } = postData;
     let { slug } = postData;
-    
+
     if (!email || !title || !description || !date || !imageUrl || !readTime || !postType) {
         console.error('Recieved invalid or incomplete post data');
-        return {slug: '', markdown: ''};
+        return { slug: '', markdown: '' };
     }
 
     if (!slug) {
@@ -341,7 +342,7 @@ export const createPost = async (postData: Partial<PostItem>, markdown: string):
         const savedMarkdown = await saveMDXContent(title, markdown, date, slug);
 
         if (savedMarkdown.content === '' || savedMarkdown.slug === '') {
-            console.error('Failed to save markdown content to file system. Post creation aborted.')
+            console.error('Failed to save markdown content to file system. Post creation aborted.');
             return { slug: '', markdown: '' };
         }
 
@@ -361,11 +362,10 @@ export const createPost = async (postData: Partial<PostItem>, markdown: string):
             sponsoredBy,
             sponsorUrl,
         };
-        
 
         const response = await fetch(`${baseUrl}/api/posts`, {
             method: 'POST',
-            headers: { 
+            headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(newPost),
@@ -374,26 +374,26 @@ export const createPost = async (postData: Partial<PostItem>, markdown: string):
         if (!response.ok) {
             console.error('Failed to upload post metadata to DB. Post creation aborted.');
             await deleteMDXContent(slug, newPost.date as string);
-            return { slug: '', markdown: '' };  // Return a failed result
+            return { slug: '', markdown: '' }; // Return a failed result
         }
 
         await rebuildPagination();
 
         console.log('Post successfully uploaded:', newPost);
-        return {slug, markdown: savedMarkdown.slug};
+        return { slug, markdown: savedMarkdown.slug };
     } catch (error) {
         console.error('Failed to upload post:', error);
     }
 
-    return {slug: '', markdown: ''};
+    return { slug: '', markdown: '' };
 };
 
 export const updatePost = async (postData: Partial<PostItem>, markdown: string): Promise<{ slug: string; markdown: string }> => {
     const { email, slug, title, description, date, modifyDate, imageUrl, readTime, postType, viewsCount, tags, sponsoredBy, sponsorUrl } = postData;
-    
+
     if (!email || !slug || !title || !description || !date || !imageUrl || !readTime || !postType) {
         console.error('Recieved invalid or incomplete post data');
-        return {slug: '', markdown: ''};
+        return { slug: '', markdown: '' };
     }
 
     try {
@@ -402,7 +402,7 @@ export const updatePost = async (postData: Partial<PostItem>, markdown: string):
         const savedMarkdown = await saveMDXContent(title, markdown, date, slug);
 
         if (savedMarkdown.content === '' || savedMarkdown.slug === '') {
-            console.error('Failed to save markdown content to file system. Post updating aborted.')
+            console.error('Failed to save markdown content to file system. Post updating aborted.');
             return { slug: '', markdown: '' };
         }
 
@@ -422,11 +422,10 @@ export const updatePost = async (postData: Partial<PostItem>, markdown: string):
             sponsoredBy,
             sponsorUrl,
         };
-        
 
         const response = await fetch(`${baseUrl}/api/posts`, {
             method: 'PUT',
-            headers: { 
+            headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(updatedPost),
@@ -434,19 +433,19 @@ export const updatePost = async (postData: Partial<PostItem>, markdown: string):
 
         if (!response.ok) {
             console.error('Failed to upload post metadata to DB. Post creation aborted.');
-            return { slug: '', markdown: '' };  // Return a failed result
+            return { slug: '', markdown: '' }; // Return a failed result
         }
 
         console.log('Post successfully updated:', updatedPost);
-        return {slug, markdown: savedMarkdown.slug};
+        return { slug, markdown: savedMarkdown.slug };
     } catch (error) {
         console.error('Failed to update post:', error);
     }
 
-    return {slug: '', markdown: ''};
+    return { slug: '', markdown: '' };
 };
 
-export const deletePost = async (postData: { email: string; slug: string, date: string }): Promise<string> => {
+export const deletePost = async (postData: { email: string; slug: string; date: string }): Promise<string> => {
     try {
         const { email, slug } = postData;
 
@@ -467,14 +466,14 @@ export const deletePost = async (postData: { email: string; slug: string, date: 
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ email, slug }),
-        })
+        });
 
         if (!response.ok) {
             console.error('Failed to delete post metadata to DB. Post deleting aborted.');
             return ''; // Return empty slug
         }
         console.log('Post successfully deleted:', slug);
-        
+
         // Deletes the Article folder in file system after successful metadata deletion
         const deletedPost = await deleteMDXContent(slug, postData.date);
 
@@ -500,11 +499,10 @@ export const getPostsData = async (
     authorData: AuthorItem;
 }> => {
     try {
-        
         const postData = await getPost(slug);
-        
+
         const authorData = await getAuthorByEmail(postData.email);
-        
+
         const mdxContent = await getMDXContent(slug, postData.date as string);
         const markdown = mdxContent.markdown;
 

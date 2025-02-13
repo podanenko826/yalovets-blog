@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { usePostContext } from '../Context/PostDataContext';
 import { AuthorItem, PostItem } from '@/types';
 import LazyPostCard from './LazyPostCard';
@@ -15,17 +15,16 @@ interface PostListProps {
     authorEmail?: string;
 }
 
-const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexIncrement = 0, infiniteScroll = false, postsData, authorEmail }) => {
+const PostList: React.FC<PostListProps> = React.memo(({ displayMode, style, limit, indexIncrement = 0, infiniteScroll = false, postsData, authorEmail }) => {
     const { posts, setPosts } = usePostContext();
     const { authors, setAuthors } = usePostContext();
     const { fetchPosts } = usePostContext();
     const { fetchPostsByAuthor } = usePostContext();
-    const { loading } = usePostContext();
-    const { lastKey } = usePostContext();
-    const { authorFetchLastKey } = usePostContext();
 
     const [sortedPosts, setSortedPosts] = useState<PostItem[]>([]);
 
+    const [loading, setLoading] = useState<boolean>(true);
+    
     let memoizedPosts: PostItem[] = [];
     if (postsData && postsData?.length > 0) {
         memoizedPosts = useMemo(() => postsData, [postsData]);
@@ -64,7 +63,12 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
         if (loading) return;
 
         if (authorEmail) {
+            setLoading(true);
             fetchPostsByAuthor(authorEmail);
+            
+            setTimeout(() => {
+                setLoading(false);
+            }, 1500)
         } else {
             fetchPosts(limit); // Increment the page for the next fetch
         }
@@ -78,27 +82,33 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
                     <LazyPostCard 
                         post={post} 
                         authorData={authors.find((author) => author.email === post.email) as AuthorItem} 
-                        key={post.slug} 
+                        key={post.slug}
                         index={index + indexIncrement} 
                         style={style} 
+                        isLoading={loading}
+                        setLoading={setLoading}
                     />
                 ))
             ): displayMode === 'latest' ? (
                     <LazyPostCard 
                         post={latest} 
                         authorData={authors.find((author) => author.email === latest.email) as AuthorItem} 
-                        key={latest.slug} 
-                        index={indexIncrement} 
+                        key={latest.slug}
+                        index={indexIncrement}
                         style={style} 
+                        isLoading={loading}
+                        setLoading={setLoading}
                     />
             ): displayMode === 'recent' ? (
                 recent.map((post, index) => (
                     <LazyPostCard 
                         post={post} 
                         authorData={authors.find((author) => author.email === post.email) as AuthorItem} 
-                        key={post.slug} 
+                        key={`${post.slug}-${index}`}
                         index={index + posts.length + indexIncrement} 
                         style={style} 
+                        isLoading={loading}
+                        setLoading={setLoading}
                     />
                 ))
             ): (
@@ -106,15 +116,17 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
                     <LazyPostCard 
                         post={post} 
                         authorData={authors.find((author) => author.email === post.email) as AuthorItem} 
-                        key={post.slug} 
+                        key={`${post.slug}-${index}`} 
                         index={index + posts.length + indexIncrement} 
                         style={style} 
+                        isLoading={loading}
+                        setLoading={setLoading}
                     />
                 ))
             )}
 
             {/* Show a "Load More" button if more posts are available */}
-            {(lastKey || authorFetchLastKey) && infiniteScroll && !loading && (
+            {infiniteScroll && !loading && (
                 <button onClick={loadMorePosts} className="btn-outlined my-5 py-3">
                     Load More Posts
                 </button>
@@ -127,7 +139,9 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
             )}
         </>
     );
-};
+}, (prevProps, nextProps) => {
+    return prevProps.postsData === nextProps.postsData;
+});
 
 export default PostList;
 

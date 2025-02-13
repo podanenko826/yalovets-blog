@@ -13,6 +13,7 @@ import PostList from '@/components/PostCard/PostList';
 
 import { useModalContext } from '@/components/Context/ModalContext';
 import { usePostContext } from '@/components/Context/PostDataContext';
+import { usePathname } from 'next/navigation';
 
 const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
 const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
@@ -32,10 +33,13 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     const [authorData, setAuthorData] = useState<AuthorItem | null>(null);
     const [authorPosts, setAuthorPosts] = useState<PostItem[]>([]);
 
+    const currentPath = usePathname() + '/';
+    const slug = currentPath.split('/').pop();
+
     useEffect(() => {
         window.scrollTo(0, 0); // Scroll to top on route change
-      }, []);
-    
+    }, []);
+
     useEffect(() => {
         if (authors.length > 0 && !authorData) {
             setAuthorData(authors.find(author => author.authorKey === authorKey) as AuthorItem);
@@ -43,14 +47,14 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     }, [authors, authorData]);
 
     useEffect(() => {
-        if (!selectedPost && typeof document !== "undefined") {
+        if (!selectedPost && typeof document !== 'undefined') {
             document.title = `${authorData?.fullName || 'Author'} / Yalovets Blog`;
         }
     }, [authorData, selectedPost]);
 
     useEffect(() => {
         if (authorData?.email) {
-            fetchPostsByAuthor(authorData.email);    
+            fetchPostsByAuthor(authorData.email);
         }
     }, [authorData]);
 
@@ -70,29 +74,33 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
         <>
             <Suspense fallback={<div></div>}>
                 <PostPreviewModal />
-                <ArticleModal selectedPost={selectedPost!} />
+                <ArticleModal selectedPost={selectedPost!} slug={slug || ''} />
             </Suspense>
             {authorData && authorPosts.length > 0 && (
                 <div className="container">
                     <div className="container mb-5">
                         <div className={`${postCardStyles.profile_info} d-flex justify-content-center mt-4`}>
                             <Image className={`${postCardStyles.pfp}`} src={`/${authorData.profileImageUrl}`} alt="pfp" width={42.5} height={42.5} />
-                            <h2 className="p-2 m-0" id='col-heading-1'>{authorData.fullName} {authorData.isGuest && <span className='badge badge-guest'>Guest</span>}</h2>
+                            <h2 className="p-2 m-0" id="col-heading-1">
+                                {authorData.fullName} {authorData.isGuest && <span className="badge badge-guest">Guest</span>}
+                            </h2>
                         </div>
                         <div className="my-4 d-flex justify-content-center">
-                            <h5 className="m-0 p-0 col-9 subheading-small text-center" id='col-text'>{authorData.bio}</h5>
+                            <h5 className="m-0 p-0 col-9 subheading-small text-center" id="col-text">
+                                {authorData.bio}
+                            </h5>
                         </div>
                     </div>
 
                     <div className="container posts" id="posts">
                         <div className="row post-list">
                             <div className="d-flex justify-content-center p-0 m-0 mt-5">
-                                <h3 id='col-text'>
+                                <h3 id="col-text">
                                     {authorData.fullName}
                                     {authorData.fullName.at(-1)?.toLowerCase() === 's' ? "'" : "'s"} posts
                                 </h3>
                             </div>
-                            <PostList displayMode='linear' limit={28} style='full' postsData={authorPosts} infiniteScroll authorEmail={authorData.email} />
+                            <PostList displayMode="linear" limit={28} style="full" postsData={authorPosts} infiniteScroll authorEmail={authorData.email} />
                         </div>
                     </div>
                 </div>

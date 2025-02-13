@@ -6,7 +6,7 @@ import { TagItem } from '@/types';
 import { usePostContext } from '@/components/Context/PostDataContext';
 import { useModalContext } from '@/components/Context/ModalContext';
 import { getTagData, getTagsData } from '@/lib/tags';
-import { notFound } from 'next/navigation';
+import { notFound, usePathname } from 'next/navigation';
 import PostList from '@/components/PostCard/PostList';
 
 const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
@@ -21,19 +21,22 @@ export default function TagPage({ params }: { params: { tag: string } }) {
 
     const [tagData, setTagData] = useState<TagItem | null>(null);
 
+    const currentPath = usePathname() + '/';
+    const slug = currentPath.split('/').pop();
+
     const ARTICLES_PER_PAGE = 28;
 
     useEffect(() => {
-        if (!selectedPost && typeof document !== "undefined") {
+        if (!selectedPost && typeof document !== 'undefined') {
             document.title = `#${params.tag} / Yalovets Blog`;
         }
     }, [selectedPost]);
 
     useEffect(() => {
         if (ARTICLES_PER_PAGE) {
-            fetchPosts(ARTICLES_PER_PAGE); 
+            fetchPosts(ARTICLES_PER_PAGE);
         }
-    }, [ARTICLES_PER_PAGE])
+    }, [ARTICLES_PER_PAGE]);
 
     useEffect(() => {
         const getTag = async () => {
@@ -76,7 +79,7 @@ export default function TagPage({ params }: { params: { tag: string } }) {
         <>
             <Suspense fallback={<div></div>}>
                 <PostPreviewModal />
-                <ArticleModal selectedPost={selectedPost!} />
+                <ArticleModal selectedPost={selectedPost!} slug={slug || ''} />
             </Suspense>
             {tagData && (
                 <main id="body">
@@ -89,7 +92,7 @@ export default function TagPage({ params }: { params: { tag: string } }) {
                         </p>
 
                         <div className="row post-list">
-                            <PostList displayMode='linear' limit={28} style='full' postsData={posts} infiniteScroll />
+                            <PostList displayMode="linear" limit={28} style="full" postsData={posts} infiniteScroll />
                         </div>
                     </div>
                 </main>

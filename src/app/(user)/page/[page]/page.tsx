@@ -16,8 +16,8 @@ const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
 
 import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from 'react-icons/md';
 import { MdOutlineKeyboardDoubleArrowLeft, MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md';
-import { MdSettings } from "react-icons/md";
-import { notFound } from 'next/navigation';
+import { MdSettings } from 'react-icons/md';
+import { notFound, usePathname } from 'next/navigation';
 
 export default function BlogPage({ params }: { params: { page: string } }) {
     const currentPage = parseInt(params.page, 10) || 1;
@@ -29,13 +29,16 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     const { postCount, setPostCount } = usePostContext();
 
     const [paginationModalOpen, setPaginationModalOpen] = useState<boolean>(false);
-    
+
+    const currentPath = usePathname() + '/';
+    const slug = currentPath.split('/').pop();
+
     useEffect(() => {
         window.scrollTo(0, 0); // Scroll to top on route change
-      }, []);
-      
+    }, []);
+
     useEffect(() => {
-        if (!selectedPost && typeof document !== "undefined") {
+        if (!selectedPost && typeof document !== 'undefined') {
             document.title = `Page ${currentPage || 1} / Yalovets Blog`;
         }
     }, [selectedPost]);
@@ -49,15 +52,14 @@ export default function BlogPage({ params }: { params: { page: string } }) {
             const count = await getPostsCount();
 
             if (count) setPostCount(count);
-        }
+        };
 
         getPostsLength();
-    }, [postCount, setPostCount])
+    }, [postCount, setPostCount]);
 
     // Getting the exact starting key for the particular page
     const _pagination: PaginationState = pagination as PaginationState;
-    const startingKey: PaginationEntry | undefined = Object.entries(_pagination.paginationData)
-        .find(([key, value]) => key.toString() === params.page)?.[1];
+    const startingKey: PaginationEntry | undefined = Object.entries(_pagination.paginationData).find(([key, value]) => key.toString() === params.page)?.[1];
 
     const ARTICLES_PER_PAGE = userConfig.postsPerPage; // Define the number of posts per page //? (should be 14 by design and adjustable to 30 or 44)
     const pageCount = pagination.totalPages;
@@ -67,9 +69,9 @@ export default function BlogPage({ params }: { params: { page: string } }) {
 
     useEffect(() => {
         if (params.page) {
-            fetchPostsByPage(Number(params.page)); 
+            fetchPostsByPage(Number(params.page));
         }
-    }, [params.page, pagination.totalPages])
+    }, [params.page, pagination.totalPages]);
 
     // Pagination logic
     const rangeStart = Math.max(currentPage - 2, 1); // At least 2 pages to the left
@@ -92,25 +94,24 @@ export default function BlogPage({ params }: { params: { page: string } }) {
         <>
             <Suspense fallback={<div></div>}>
                 <PostPreviewModal />
-                <ArticleModal selectedPost={selectedPost!} />
+                <ArticleModal selectedPost={selectedPost!} slug={slug || ''} />
             </Suspense>
             {posts.length > 0 && paginatedArticles.length > 0 ? (
                 <main id="body">
                     <div className="container posts" id="posts">
-                        <div className='container p-0'>
-                            <div className='container d-flex p-0 pt-3 mt-5 justify-content-between'>
+                        <div className="container p-0">
+                            <div className="container d-flex p-0 pt-3 mt-5 justify-content-between">
                                 <h1 className="heading m-0 p-0 heading-large">Page {currentPage}</h1>
-                                <button onClick={() => setPaginationModalOpen(prev => !prev)} className='btn-pill py-2 px-2'><MdSettings className='btn-pill-svg' /></button>
-
+                                <button onClick={() => setPaginationModalOpen(prev => !prev)} className="btn-pill py-2 px-2">
+                                    <MdSettings className="btn-pill-svg" />
+                                </button>
                             </div>
 
-                            {paginationModalOpen && (
-                                <PaginationPreferences setModalOpen={setPaginationModalOpen} />
-                            )}
+                            {paginationModalOpen && <PaginationPreferences setModalOpen={setPaginationModalOpen} />}
                         </div>
 
                         <div className="row post-list">
-                            <PostList displayMode='linear' limit={ARTICLES_PER_PAGE} style='full' postsData={paginatedArticles} />
+                            <PostList displayMode="linear" limit={ARTICLES_PER_PAGE} style="full" postsData={paginatedArticles} />
                         </div>
 
                         <div className="container mt-5 mb-2">
@@ -169,13 +170,13 @@ export default function BlogPage({ params }: { params: { page: string } }) {
                         </div>
                     </div>
                 </main>
-            ): (
+            ) : (
                 <>
-                    <main id='body'>        
-                        <div className='container'>
+                    <main id="body">
+                        <div className="container">
                             <h1 className="heading heading-large mt-5">Page {currentPage}</h1>
 
-                            <div className='loading-spinning my-5'></div>
+                            <div className="loading-spinning my-5"></div>
                         </div>
                     </main>
                 </>

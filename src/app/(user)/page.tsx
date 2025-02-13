@@ -12,6 +12,7 @@ import { usePostContext } from '@/components/Context/PostDataContext';
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { useModalContext } from '@/components/Context/ModalContext';
 import { Metadata } from 'next';
+import { notFound, usePathname } from 'next/navigation';
 
 const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
 const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
@@ -41,8 +42,15 @@ async function generateMetadata(post: PostItem): Promise<Metadata> {
 }
 
 const Home: React.FC<HomeProps> = ({ slug }) => {
-    const { selectedPost } = useModalContext();
+    const [selectedPost, setSelectedPost] = useState<PostItem | null>(null);
     const { fetchPosts } = usePostContext();
+
+    const currentPath = usePathname();
+    const fetched = useRef(false);
+
+    slug = currentPath.split('/').pop();
+
+    console.log(slug);
 
     useEffect(() => {
         if (!selectedPost && typeof document !== 'undefined') {
@@ -53,11 +61,10 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
     }, [selectedPost]);
 
     useEffect(() => {
-        const fetchData = async () => {
+        if (!fetched.current) {
             fetchPosts(9);
-        };
-
-        fetchData();
+            fetched.current = true; // ✅ Prevents future calls
+        }
     }, []);
 
     const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -87,13 +94,21 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
   # Connect to the instance using SSH
   ssh -i my-key.pem ec2-user@$EC2_IP
     `;
+    const [showModal, setShowModal] = useState(!!slug);
+
+    useEffect(() => {
+        if (!slug) {
+            setTimeout(() => setShowModal(true), 500);
+        }
+    }, [slug]);
+
 
     return (
         <>
             <Suspense fallback={<div></div>}>
                 <PostPreviewModal />
-                <ArticleModal selectedPost={selectedPost!} />
             </Suspense>
+            {showModal && <ArticleModal slug={slug || ''} setValue={setSelectedPost} />}
             <main id="body">
                 {/* Welcome section (Mobile) */}
                 <div className="container welcome-xs d-block d-lg-none">
@@ -186,7 +201,9 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                     </div>
 
                     <div className="row post-list">
-                        <PostList displayMode="recent" style="standard" indexIncrement={2} limit={9} />
+                        <Suspense fallback={<div></div>}>
+                            <PostList displayMode="recent" style="standard" indexIncrement={2} limit={9} />
+                        </Suspense>
                     </div>
                 </div>
 
