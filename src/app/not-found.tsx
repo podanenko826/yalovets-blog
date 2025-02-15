@@ -1,8 +1,9 @@
-import React, { lazy } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Metadata } from "next";
+import Link from 'next/link';
 
-const NavBar = lazy(() => import('@/components/NavBar'));
-const Footer = lazy(() => import('@/components/Footer'));
+// const NavBar = lazy(() => import('@/components/NavBar'));
+// const Footer = lazy(() => import('@/components/Footer'));
 
 export const dynamic = "force-static";
 
@@ -14,8 +15,8 @@ export const metadata: Metadata = {
 const PageNotFound = () => {
     return (
         <html>
-            {/* <body>    
-                <NavBar />
+            <body>    
+                {/* <NavBar /> */}
                 <div className="container-fluid align-content-center py-5">
                     <div className="mb-5 container justify-content-between my-5">
                         <h1 className="heading-xlarge pb-4" id="col-primary">
@@ -35,10 +36,13 @@ const PageNotFound = () => {
                             Remember, behind every 404 is a developer crying
                             into their coffee.
                         </h4>
+
+                        <Link href={'/'}>
+                            <button className='btn-filled mt-5 px-5'>Go to Home</button>
+                        </Link>
                     </div>
                 </div>
-                <Footer />
-            </body> */}
+            </body>
         </html>
     );
 };
