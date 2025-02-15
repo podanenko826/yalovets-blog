@@ -9,8 +9,6 @@ export const metadata: Metadata = {
     description: 'Ivan Yalovets Blog Website',
 };
 
-// const PostProvider = lazy(() => import('@/components/Context/PostProvider'));
-
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -20,9 +18,7 @@ export default function RootLayout({
         <AppRouterCacheProvider>
             <html lang="en">
                 <body>
-                    {/* <PostProvider> */}
-                        {children}
-                    {/* </PostProvider> */}
+                    {children}
                 </body>
             </html>
         </AppRouterCacheProvider>

@@ -1,5 +1,5 @@
 'use client';
-import React, { lazy, useEffect, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import Image from 'next/image';
 import styles from './Modals.module.css';
 import moment from 'moment';
@@ -16,6 +16,7 @@ import { useMDXComponents } from '../../../mdx-components';
 import { notFound, useRouter } from 'next/navigation';
 import { usePostStore } from '../posts/store';
 import { useAuthorStore } from '../authors/store';
+import LoadingSkeleton from '../LoadingSkeleton';
 
 const NavBar = lazy(() => import('@/components/NavBar'));
 const Footer = lazy(() => import('@/components/Footer'));
@@ -233,13 +234,13 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                     <div className="col-12 col-md-8">
                                         <article className="article">
                                             {serializedMarkdown ? (
-                                                <MDXProvider components={components}>
-                                                    <MDXRemote compiledSource={serializedMarkdown?.compiledSource as string} scope={serializedMarkdown?.scope} frontmatter={serializedMarkdown?.frontmatter} />
-                                                </MDXProvider>
+                                                <Suspense fallback={<LoadingSkeleton />}>
+                                                    <MDXProvider components={components}>
+                                                        <MDXRemote compiledSource={serializedMarkdown?.compiledSource as string} scope={serializedMarkdown?.scope} frontmatter={serializedMarkdown?.frontmatter} />
+                                                    </MDXProvider>
+                                                </Suspense>
                                             ) : (
-                                                <div className="container d-flex justify-content-center py-4">
-                                                    <div className="loading-spinning"></div>
-                                                </div>
+                                                <LoadingSkeleton />
                                             )}
                                         </article>
                                     </div>

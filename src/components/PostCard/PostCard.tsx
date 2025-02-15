@@ -76,8 +76,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         (prevProps, nextProps) => prevProps.descLength === nextProps.descLength && prevProps.noLimit === nextProps.noLimit
     );
 
-    const handlePostOpen = async () => {
-        router.push(`/${post.slug}`, { scroll: false });
+    const handlePostOpen = () => {
+        window.history.pushState(null, "", `/${post.slug}`);
     };
 
     const handlePostDeletion = async (email: string, slug: string, date: string) => {

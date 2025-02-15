@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 const PageNotFound = () => {
     return (
         <html>
-            <body>    
+            {/* <body>    
                 <NavBar />
                 <div className="container-fluid align-content-center py-5">
                     <div className="mb-5 container justify-content-between my-5">
@@ -38,7 +38,7 @@ const PageNotFound = () => {
                     </div>
                 </div>
                 <Footer />
-            </body>
+            </body> */}
         </html>
     );
 };

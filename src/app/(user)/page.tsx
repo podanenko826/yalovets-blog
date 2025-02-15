@@ -13,6 +13,10 @@ import { Metadata } from 'next';
 import { notFound, usePathname } from 'next/navigation';
 import { usePostStore } from '@/components/posts/store';
 import { useAuthorStore } from '@/components/authors/store';
+import LoadingBanner from '@/components/Modals/LoadingBanner';
+
+const NavBar = lazy(() => import('@/components/NavBar'));
+const Footer = lazy(() => import('@/components/Footer'));
 
 const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
 const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
@@ -107,9 +111,11 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
         }
     }, [fetchAuthors]);
 
+    if (posts.length === 0) return <LoadingBanner />
+
     return (
         <>
-            
+            <NavBar />
             {showModal && <PostPreviewModal />}
             {showModal && <ArticleModal slug={slug || ''} />}
             <main id="body">
@@ -257,6 +263,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                     </div>
                 </div>
             </main>
+            <Footer />
         </>
     );
 };
