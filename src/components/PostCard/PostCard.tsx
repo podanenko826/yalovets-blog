@@ -13,7 +13,6 @@ import { deletePost, getMDXContent } from '@/lib/posts';
 import LazyImage from '../LazyImage';
 
 import { FaCoffee } from 'react-icons/fa';
-import { useModalContext } from '../Context/ModalContext';
 import { usePostStore } from '../posts/store';
 
 type PostCardProps = {
