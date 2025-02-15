@@ -132,7 +132,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
         }
     }, [slug]);
 
-    if (paginatedArticles.length === 0) return <LoadingBanner />
+    if (posts.length === 0) return <LoadingBanner />
 
     return (
         <>
@@ -217,14 +217,20 @@ export default function BlogPage({ params }: { params: { page: string } }) {
                 <>
                     <main id="body">
                         <div className="container">
-                            <h1 className="heading heading-large mt-5">Page {currentPage}</h1>
+                            <div className="container d-flex p-0 pt-3 mt-5">
+                                <h1 className="heading m-0 p-0 heading-large">Page {currentPage}</h1>
+                            </div>
 
-                            <div className="loading-spinning my-5"></div>
+                            <div className='container d-flex justify-content-center my-5'>
+                                <div className="loading-spinning my-5"></div>
+                            </div>
                         </div>
                     </main>
                 </>
             )}
-            <Footer />
+            {paginatedArticles.length > 0 && (
+                <Footer />
+            )}
         </>
     );
 }
