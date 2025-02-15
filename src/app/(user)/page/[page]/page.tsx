@@ -34,8 +34,13 @@ export default function BlogPage({ params }: { params: { page: string } }) {
 
     const [paginationModalOpen, setPaginationModalOpen] = useState<boolean>(false);
 
-    const currentPath = usePathname() + '/';
-    const slug = currentPath.split('/').pop();
+    const currentPath = usePathname();
+    const slug = !currentPath.split('/').includes('page') ? currentPath.split('/').pop() : '';
+
+    useEffect(() => {
+        console.log(slug);
+        
+    }, [slug]);
 
     useEffect(() => {
         window.scrollTo(0, 0); // Scroll to top on route change
@@ -133,7 +138,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
         <>
             <NavBar />
             {showModal && <PostPreviewModal />}
-            {showModal && <ArticleModal slug={slug || ''} />}
+            <ArticleModal slug={slug || ''} />
             {posts.length > 0 && paginatedArticles.length > 0 ? (
                 <main id="body">
                     <div className="container posts" id="posts">
