@@ -4,6 +4,8 @@ import { usePostContext } from '../Context/PostDataContext';
 import { AuthorItem, PostItem } from '@/types';
 import LazyPostCard from './LazyPostCard';
 import moment from 'moment';
+import { usePostStore } from '../posts/store';
+import { useAuthorStore } from '../authors/store';
 
 interface PostListProps {
     displayMode: 'linear' | 'latest' | 'recent' | 'popular';
@@ -15,48 +17,24 @@ interface PostListProps {
     authorEmail?: string;
 }
 
-const PostList: React.FC<PostListProps> = React.memo(({ displayMode, style, limit, indexIncrement = 0, infiniteScroll = false, postsData, authorEmail }) => {
-    const { posts, setPosts } = usePostContext();
-    const { authors, setAuthors } = usePostContext();
-    const { fetchPosts } = usePostContext();
-    const { fetchPostsByAuthor } = usePostContext();
-
-    const [sortedPosts, setSortedPosts] = useState<PostItem[]>([]);
+const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexIncrement = 0, infiniteScroll = false, postsData, authorEmail }) => {
+    const posts = usePostStore((state) => state.posts);
+    const authors = useAuthorStore((state) => state.authors);
 
     const [loading, setLoading] = useState<boolean>(true);
-    
-    let memoizedPosts: PostItem[] = [];
-    if (postsData && postsData?.length > 0) {
-        memoizedPosts = useMemo(() => postsData, [postsData]);
-    } else {
-        memoizedPosts = useMemo(() => posts, [posts]);
-    }
+    console.log('PostList re-renders...');
 
+    // if (!posts || posts.length === 0 || !Array.isArray(posts)) return null;
+    // if (!authors || authors.length === 0 || !Array.isArray(authors)) return null;
+    const memoizedPosts = useMemo(() => posts.slice(), [posts]);
+    const memoizedAuthors = useMemo(() => new Map(authors.map((author) => [author.email, author])), [authors]);
 
-    useEffect(() => {
-        let sortedPosts;
+    const recent = useMemo(() => memoizedPosts.slice(0, 9), [memoizedPosts]);
 
-        if (memoizedPosts && memoizedPosts?.length > 0) {
-            sortedPosts = [...memoizedPosts];
-        } else {
-            sortedPosts = [...posts].sort((a, b) => {
-                const dateOne = moment(a.date);
-                const dateTwo = moment(b.date);
-                return dateTwo.diff(dateOne); // Sorting by date (descending)
-            });
-        }
-
-
-        setSortedPosts(sortedPosts); // Set sorted posts state
-    }, [memoizedPosts]);  // Recalculate whenever `posts` change
-
-
-    const recent = sortedPosts.slice(0, 9);
-    
-    const latest = sortedPosts[0] || null;
-    const mostViewed = [...sortedPosts]
-    .sort((a, b) => (b.viewsCount ?? 0) - (a.viewsCount ?? 0)) // Sort by viewsCount in descending order
-    .slice(0, 3);
+    const latest = useMemo(() => memoizedPosts[0] || null, [memoizedPosts]);
+    const mostViewed = useMemo(() => 
+        [...memoizedPosts].sort((a, b) => (b.viewsCount ?? 0) - (a.viewsCount ?? 0)).slice(0, 3),
+        [memoizedPosts]);
 
     // Scroll-based pagination or load more trigger
     const loadMorePosts = () => {
@@ -64,13 +42,13 @@ const PostList: React.FC<PostListProps> = React.memo(({ displayMode, style, limi
 
         if (authorEmail) {
             setLoading(true);
-            fetchPostsByAuthor(authorEmail);
+            // fetchPostsByAuthor(authorEmail);
             
             setTimeout(() => {
                 setLoading(false);
             }, 1500)
         } else {
-            fetchPosts(limit); // Increment the page for the next fetch
+            // fetchPosts(limit); // Increment the page for the next fetch
         }
     };
 
@@ -78,10 +56,10 @@ const PostList: React.FC<PostListProps> = React.memo(({ displayMode, style, limi
         <>
             {/* Render dynamically fetched posts */}
             {displayMode === 'linear' ? (
-                sortedPosts.map((post, index) => (
+                posts.map((post, index) => (
                     <LazyPostCard 
                         post={post} 
-                        authorData={authors.find((author) => author.email === post.email) as AuthorItem} 
+                        authorData={memoizedAuthors.get(post.email) as AuthorItem} 
                         key={post.slug}
                         index={index + indexIncrement} 
                         style={style} 
@@ -92,10 +70,10 @@ const PostList: React.FC<PostListProps> = React.memo(({ displayMode, style, limi
             ): displayMode === 'latest' ? (
                     <LazyPostCard 
                         post={latest} 
-                        authorData={authors.find((author) => author.email === latest.email) as AuthorItem} 
+                        authorData={memoizedAuthors.get(latest.email) as AuthorItem} 
                         key={latest.slug}
                         index={indexIncrement}
-                        style={style} 
+                        style={style}
                         isLoading={loading}
                         setLoading={setLoading}
                     />
@@ -103,10 +81,10 @@ const PostList: React.FC<PostListProps> = React.memo(({ displayMode, style, limi
                 recent.map((post, index) => (
                     <LazyPostCard 
                         post={post} 
-                        authorData={authors.find((author) => author.email === post.email) as AuthorItem} 
+                        authorData={memoizedAuthors.get(post.email) as AuthorItem} 
                         key={`${post.slug}-${index}`}
                         index={index + posts.length + indexIncrement} 
-                        style={style} 
+                        style={style}
                         isLoading={loading}
                         setLoading={setLoading}
                     />
@@ -115,10 +93,10 @@ const PostList: React.FC<PostListProps> = React.memo(({ displayMode, style, limi
                 mostViewed.map((post, index) => (
                     <LazyPostCard 
                         post={post} 
-                        authorData={authors.find((author) => author.email === post.email) as AuthorItem} 
+                        authorData={memoizedAuthors.get(post.email) as AuthorItem} 
                         key={`${post.slug}-${index}`} 
                         index={index + posts.length + indexIncrement} 
-                        style={style} 
+                        style={style}
                         isLoading={loading}
                         setLoading={setLoading}
                     />
@@ -139,9 +117,7 @@ const PostList: React.FC<PostListProps> = React.memo(({ displayMode, style, limi
             )}
         </>
     );
-}, (prevProps, nextProps) => {
-    return prevProps.postsData === nextProps.postsData;
-});
+};
 
 export default PostList;
 

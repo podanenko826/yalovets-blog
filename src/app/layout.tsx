@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     description: 'Ivan Yalovets Blog Website',
 };
 
-const PostProvider = lazy(() => import('@/components/Context/PostProvider'));
+// const PostProvider = lazy(() => import('@/components/Context/PostProvider'));
 
 export default function RootLayout({
     children,
@@ -17,14 +17,14 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
-            <body>
-                <AppRouterCacheProvider>
-                    <PostProvider>
+        <AppRouterCacheProvider>
+            <html lang="en">
+                <body>
+                    {/* <PostProvider> */}
                         {children}
-                    </PostProvider>
-                </AppRouterCacheProvider>
-            </body>
-        </html>
+                    {/* </PostProvider> */}
+                </body>
+            </html>
+        </AppRouterCacheProvider>
     );
 }

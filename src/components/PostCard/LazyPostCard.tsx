@@ -1,6 +1,6 @@
 'use client';
 import { PostItem, PostPreviewItem, AuthorItem } from '@/types';
-import React, { lazy, useEffect, useRef, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import PostCard from './PostCard';
 
@@ -18,7 +18,7 @@ type PostCardProps = {
 
 const LazyPostCard = React.memo(
     ({ post, previewData, authorData, style, index, isLoading, setLoading }: PostCardProps) => {
-        const [isVisible, setIsVisible] = useState(!isLoading);
+        const [isVisible, setIsVisible] = useState(false);
 
         const ref = useRef(null);
 
@@ -26,19 +26,27 @@ const LazyPostCard = React.memo(
             const observer = new IntersectionObserver(([entry]) => {
                 if (entry.isIntersecting) {
                     setIsVisible(true);
-                    setLoading(false);
+                    if (setLoading) setLoading(false);
                 };
-            }, { threshold: 0.3 });
+            }, { 
+                rootMargin: "800px", // start loading 200px before entering viewport
+                threshold: 0.01 
+            });
     
             if (ref.current) observer.observe(ref.current);
     
             return () => observer.disconnect();
         }, []);
 
+        console.log('LazyPostCard re-renders...');
+
+
         return (
             <>
                 {isVisible ? (
-                    <PostCard post={post} authorData={authorData} index={index} key={index} style={style} />
+                    <Suspense fallback={<div>Loading...</div>}>
+                        <PostCard post={post} authorData={authorData} index={index} key={index} style={style} />
+                    </Suspense>
                 ) : style === 'massive' ? (
                     <div className={`${styles.latest_post} col-12`} id="latest-post" ref={ref}>
                         <div className="container row p-0">
@@ -265,7 +273,7 @@ const LazyPostCard = React.memo(
             </>
         );
     },
-    (prevProps, nextProps) => prevProps.post.slug === nextProps.post.slug
+    (prevProps, nextProps) => prevProps.post.imageUrl === nextProps.post.imageUrl
 );
 
 export default LazyPostCard;

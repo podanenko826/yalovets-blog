@@ -52,6 +52,31 @@ type FetchPostsResponse = {
     lastKey: string; // The last key is the exclusive start key for pagination
 };
 
+const POSTS_STORAGE_KEY = "cachedPosts";
+const POSTS_EXPIRATION_TIME = 1000 * 60 * 60 * 2; // 2 hours
+
+const savePostsToLocalStorage = (newPosts: PostItem[]) => {
+    const storedData = localStorage.getItem(POSTS_STORAGE_KEY);
+    let existingPosts: PostItem[] = [];
+
+    if (storedData) {
+        const parsedData = JSON.parse(storedData);
+        if (Date.now() - parsedData.timestamp < POSTS_EXPIRATION_TIME) {
+            existingPosts = parsedData.posts;
+        }
+    }
+
+    const postMap = new Map(existingPosts.map(post => [post.slug, post]));
+    newPosts.forEach(post => postMap.set(post.slug, post));
+
+    const updatedPosts = Array.from(postMap.values());
+
+    localStorage.setItem(POSTS_STORAGE_KEY, JSON.stringify({
+        posts: updatedPosts,
+        timestamp: Date.now(),
+    }));
+};
+
 export function sortPosts(postsData: PostItem[]): PostItem[] {
     const sortedPostsData = [...postsData].sort((a, b) => {
         const dateOne = moment(a.date);
@@ -85,6 +110,8 @@ export const getPaginatedPosts = async (page: number, limit: number, paginationD
         const data: FetchPostsResponse = await response.json();
         const transformedPostData = transformPostData(data.posts);
         const sortedPostsData = sortPosts(transformedPostData);
+
+        savePostsToLocalStorage(sortedPostsData);
 
         return { posts: sortedPostsData, lastKey: data.lastKey };
     } catch (err) {

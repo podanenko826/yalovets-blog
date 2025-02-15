@@ -2,7 +2,7 @@
 import { getAuthorByKey, getAuthors } from '@/lib/authors';
 import { AuthorItem, PostItem } from '@/types';
 // import { notFound } from 'next/navigation';
-import React, { FC, Suspense, lazy, useEffect, useState } from 'react';
+import React, { FC, Suspense, lazy, useEffect, useMemo, useState } from 'react';
 
 import Image from 'next/image';
 
@@ -14,6 +14,9 @@ import PostList from '@/components/PostCard/PostList';
 import { useModalContext } from '@/components/Context/ModalContext';
 import { usePostContext } from '@/components/Context/PostDataContext';
 import { usePathname } from 'next/navigation';
+import { usePostStore } from '@/components/posts/store';
+import { useAuthorStore } from '@/components/authors/store';
+import { usePaginationStore } from '@/components/pagination/store';
 
 const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
 const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
@@ -25,10 +28,9 @@ interface AuthorPageProps {
 const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     const { authorKey } = params;
 
-    const { posts, setPosts } = usePostContext();
-    const { authors, setAuthors } = usePostContext();
-    const { selectedPost } = useModalContext();
-    const { fetchPostsByAuthor } = usePostContext();
+    const { posts, selectedPost, fetchPostsByAuthor } = usePostStore();
+    const { fetchAuthors } = useAuthorStore();
+    const { pagination } = usePaginationStore();
 
     const [authorData, setAuthorData] = useState<AuthorItem | null>(null);
     const [authorPosts, setAuthorPosts] = useState<PostItem[]>([]);
@@ -36,15 +38,23 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     const currentPath = usePathname() + '/';
     const slug = currentPath.split('/').pop();
 
+    const POSTS_PER_PAGE = 30;
+
     useEffect(() => {
         window.scrollTo(0, 0); // Scroll to top on route change
     }, []);
 
     useEffect(() => {
-        if (authors.length > 0 && !authorData) {
-            setAuthorData(authors.find(author => author.authorKey === authorKey) as AuthorItem);
-        }
-    }, [authors, authorData]);
+        const fetchAuthorsData = async () => {
+            const authors = await fetchAuthors();
+            
+            const author = authors.find(author => author.authorKey === authorKey);
+            if (author) setAuthorData(author);
+        };
+
+        fetchAuthorsData();
+    }, [fetchAuthors]);
+
 
     useEffect(() => {
         if (!selectedPost && typeof document !== 'undefined') {
@@ -53,9 +63,14 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     }, [authorData, selectedPost]);
 
     useEffect(() => {
-        if (authorData?.email) {
-            fetchPostsByAuthor(authorData.email);
-        }
+        const fetchAuthorPosts = async () => {
+            if (authorData?.email) {
+                const authorPosts = await fetchPostsByAuthor(authorData.email, POSTS_PER_PAGE, pagination);
+                setAuthorPosts(authorPosts.posts);
+            }
+        };
+
+        fetchAuthorPosts();
     }, [authorData]);
 
     useEffect(() => {
@@ -74,9 +89,10 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
         <>
             <Suspense fallback={<div></div>}>
                 <PostPreviewModal />
-                <ArticleModal selectedPost={selectedPost!} slug={slug || ''} />
+                <ArticleModal slug={slug || ''} />
             </Suspense>
-            {authorData && authorPosts.length > 0 && (
+            {authorData && (
+
                 <div className="container">
                     <div className="container mb-5">
                         <div className={`${postCardStyles.profile_info} d-flex justify-content-center mt-4`}>

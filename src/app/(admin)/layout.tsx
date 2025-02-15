@@ -14,8 +14,8 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <AppRouterCacheProvider>
+        <>
             {children}
-        </AppRouterCacheProvider>
+        </>
     );
 }

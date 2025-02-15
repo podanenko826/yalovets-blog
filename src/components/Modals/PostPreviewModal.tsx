@@ -4,8 +4,8 @@ import styles from './Modals.module.css';
 import LazyPostCard from '../PostCard/LazyPostCard';
 import { IoMdClose } from 'react-icons/io';
 
-import { usePostContext } from '../Context/PostDataContext';
-import { useModalContext } from '../Context/ModalContext';
+import { usePostStore } from '../posts/store';
+import { useAuthorStore } from '../authors/store';
 
 const useWindowSize = () => {
     if (typeof window === 'undefined') return { width: 0, height: 0 };
@@ -26,15 +26,14 @@ const useWindowSize = () => {
 };
 
 const PostPreviewModal = () => {
-    const { expandedPost, setExpandedPost } = useModalContext();
-    const { selectedPost } = useModalContext();
-    const { authors } = usePostContext();
 
+    const { selectedPost, expandedPost, setExpandedPost } = usePostStore();
+    const { authors } = useAuthorStore();
     const { width } = useWindowSize();
     const [expanded, setExpanded] = useState<boolean>(false);
     const [startY, setStartY] = useState<number | null>(null);
 
-    const authorData = authors.find(author => author.email === expandedPost?.post.email);
+    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
         if (selectedPost && expandedPost) {
@@ -178,7 +177,9 @@ const PostPreviewModal = () => {
         handleClose();
     }, [width]);
 
-    if (!authorData || !expandedPost) return null;
+    const selectedAuthor = authors.find((author) => author.email === expandedPost?.post.email);
+
+    if (!selectedAuthor || !expandedPost) return null;
 
     return (
         <div className={`${styles.articlePage} ${styles.previewModal}`} onClick={() => handleClose()} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
@@ -189,7 +190,7 @@ const PostPreviewModal = () => {
                                 <IoMdClose className={styles.icon} />
                             </button>
                         )}
-                        <LazyPostCard post={expandedPost.post} authorData={authorData} style="expanded" index={1000} />
+                        <LazyPostCard post={expandedPost.post} authorData={selectedAuthor} style="expanded" index={1000} isLoading={loading} setLoading={setLoading} />
                     </div>
                 </div>
         </div>

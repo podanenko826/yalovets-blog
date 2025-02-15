@@ -5,8 +5,6 @@ import Link from 'next/link';
 
 import { getPostsCount, sortPosts } from '@/lib/posts';
 import { AuthorItem, PaginationEntry, PaginationState, PostItem } from '@/types';
-import { usePostContext } from '@/components/Context/PostDataContext';
-import { useModalContext } from '@/components/Context/ModalContext';
 
 import PostList from '@/components/PostCard/PostList';
 import PaginationPreferences from '@/components/Modals/PaginationPreferences';
@@ -18,15 +16,17 @@ import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from 'react-icons/md'
 import { MdOutlineKeyboardDoubleArrowLeft, MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md';
 import { MdSettings } from 'react-icons/md';
 import { notFound, usePathname } from 'next/navigation';
+import { usePostStore } from '@/components/posts/store';
+import { usePaginationStore } from '@/components/pagination/store';
+import { useAuthorStore } from '@/components/authors/store';
+import { useUserConfigStore } from '@/components/userConfig/store';
 
 export default function BlogPage({ params }: { params: { page: string } }) {
     const currentPage = parseInt(params.page, 10) || 1;
-    const { posts } = usePostContext();
-    const { fetchPostsByPage } = usePostContext();
-    const { userConfig } = usePostContext();
-    const { selectedPost } = useModalContext();
-    const { pagination } = usePostContext();
-    const { postCount, setPostCount } = usePostContext();
+    const { posts, selectedPost, fetchPostsByPage } = usePostStore();
+    const { postsPerPage } = useUserConfigStore();
+    const { authors, fetchAuthors } = useAuthorStore();
+    const { pagination, setPagination, postCount, setPostCount, fetchPagination } = usePaginationStore();
 
     const [paginationModalOpen, setPaginationModalOpen] = useState<boolean>(false);
 
@@ -44,6 +44,18 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     }, [selectedPost]);
 
     if (Object.keys(pagination.paginationData).length > 0 && parseInt(params.page) > pagination.totalPages) return notFound();
+    // if (posts.length === 0 || authors.length === 0) return null;
+
+    useEffect(() => {
+        const fetchPaginationData = async () => {
+            if (Object.keys(pagination.paginationData).length === 0) {
+                const paginationData = await fetchPagination();
+                setPagination(paginationData);
+                
+            }
+        }
+        fetchPaginationData();
+    }, [fetchPagination]);
 
     useEffect(() => {
         const getPostsLength = async () => {
@@ -58,20 +70,33 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     }, [postCount, setPostCount]);
 
     // Getting the exact starting key for the particular page
-    const _pagination: PaginationState = pagination as PaginationState;
-    const startingKey: PaginationEntry | undefined = Object.entries(_pagination.paginationData).find(([key, value]) => key.toString() === params.page)?.[1];
+    const startingKey: PaginationEntry | undefined = Object.entries(pagination.paginationData).find(([key, value]) => key.toString() === params.page)?.[1];
 
-    const ARTICLES_PER_PAGE = userConfig.postsPerPage; // Define the number of posts per page //? (should be 14 by design and adjustable to 30 or 44)
+    const ARTICLES_PER_PAGE = postsPerPage; // Define the number of posts per page //? (should be 14 by design and adjustable to 30 or 44)
     const pageCount = pagination.totalPages;
     const startIndex = posts.findIndex(article => article.date === startingKey?.date);
 
     const paginatedArticles = posts.slice(startIndex, startIndex + ARTICLES_PER_PAGE);
 
     useEffect(() => {
-        if (params.page) {
-            fetchPostsByPage(Number(params.page));
+        const fetchPostsData = async () => {
+            if (params.page) {
+                const postsData = await fetchPostsByPage(Number(params.page), ARTICLES_PER_PAGE, pagination);
+                console.log('paginatedposts: ', postsData);
+                console.log(Number(params.page), ARTICLES_PER_PAGE, pagination);
+                
+            }
         }
-    }, [params.page, pagination.totalPages]);
+
+        fetchPostsData();
+    }, [params.page, pagination]);
+
+    useEffect(() => {
+        if (authors.length === 0) {
+            fetchAuthors();
+
+        }
+    }, [fetchAuthors]);
 
     // Pagination logic
     const rangeStart = Math.max(currentPage - 2, 1); // At least 2 pages to the left
@@ -94,7 +119,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
         <>
             <Suspense fallback={<div></div>}>
                 <PostPreviewModal />
-                <ArticleModal selectedPost={selectedPost!} slug={slug || ''} />
+                <ArticleModal slug={slug || ''} />
             </Suspense>
             {posts.length > 0 && paginatedArticles.length > 0 ? (
                 <main id="body">

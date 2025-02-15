@@ -3,33 +3,24 @@ import React, { useEffect, useState } from 'react';
 import styles from './Modals.module.css';
 import { usePostContext } from '../Context/PostDataContext';
 import { IoMdClose } from 'react-icons/io';
+import { useUserConfigStore } from '../userConfig/store';
 
 type PaginationPreferencesProps = {
     setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const PaginationPreferences = ({ setModalOpen }: PaginationPreferencesProps) => {
-    const { userConfig, setUserConfig } = usePostContext();
-    const [postsPerPage, setPostsPerPage] = useState<number>(0);
+    const { postsPerPage, setPostsPerPage } = useUserConfigStore();
 
     const handlePostsPerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPostsPerPage(parseInt(e.target.value));
     }
 
     const handlePostsPerPageSave = () => {
-        setUserConfig(prev => ({
-            ...prev,
-            postsPerPage,
-        }))
+        setPostsPerPage(postsPerPage);
 
         handleClose();
     }
-
-    useEffect(() => {
-        if (!postsPerPage) {
-            setPostsPerPage(userConfig.postsPerPage);
-        }
-    }, [userConfig])
 
     const handleClose = () => {
         if (!window) return;

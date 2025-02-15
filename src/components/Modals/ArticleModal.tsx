@@ -2,7 +2,6 @@
 import React, { lazy, useEffect, useState } from 'react';
 import Image from 'next/image';
 import styles from './Modals.module.css';
-import { usePostContext } from '../Context/PostDataContext';
 import moment from 'moment';
 import Link from 'next/link';
 import { FaXTwitter } from 'react-icons/fa6';
@@ -15,13 +14,14 @@ import { MDXProvider } from '@mdx-js/react';
 import { mdSerialize } from '../../services/mdSerializer';
 import { useMDXComponents } from '../../../mdx-components';
 import { notFound, useRouter } from 'next/navigation';
+import { usePostStore } from '../posts/store';
+import { useAuthorStore } from '../authors/store';
 
 const NavBar = lazy(() => import('@/components/NavBar'));
 const Footer = lazy(() => import('@/components/Footer'));
 
 interface ArticleModalProps {
     slug: string;
-    setValue?: React.Dispatch<React.SetStateAction<PostItem | null>>;
 }
 
 /**
@@ -33,11 +33,10 @@ interface ArticleModalProps {
  * Optional. Pass a useState setter to get the up-to-date selected post from the ArticleModal.
  */
 
-const ArticleModal: React.FC<ArticleModalProps> = ({ slug, setValue }) => {
-    const { posts } = usePostContext();
-    const { authors } = usePostContext();
+const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
+    const { posts, selectedPost, setSelectedPost } = usePostStore();
+    const { authors } = useAuthorStore();
 
-    const [selectedPost, setSelectedPost] = useState<PostItem | null>(null);
     const [selectedMarkdown, setSelectedMarkdown] = useState<string | null>(null);
     const [serializedMarkdown, setSerializedMarkdown] = useState<MDXRemoteSerializeResult<Record<string, unknown>, Record<string, unknown>>>();
 
@@ -97,6 +96,8 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug, setValue }) => {
                 }
 
                 if (!post) return;
+                console.log('rvdfvfvd');
+                
 
                 const MdxContent = await getMDXContent(post.slug, post.date as string);
                 const markdown = MdxContent.markdown;
@@ -104,8 +105,6 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug, setValue }) => {
                 if (post && markdown) {
                     setSelectedPost(post);
                     setSelectedMarkdown(markdown);
-                    // If setValue is passed as a prop, set the post to the parent component
-                    if (setValue) setValue(post);
                 }
             }
         };
@@ -127,8 +126,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug, setValue }) => {
 
     const closeModal = () => {
         slug = '';
-        // If setValue is passed as a prop, pass the empty post to the parent component
-        if (setValue) setValue(null);
+        setSelectedPost(null);
 
         router.back();
     };

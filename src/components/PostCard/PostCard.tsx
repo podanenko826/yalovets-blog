@@ -14,6 +14,7 @@ import LazyImage from '../LazyImage';
 
 import { FaCoffee } from 'react-icons/fa';
 import { useModalContext } from '../Context/ModalContext';
+import { usePostStore } from '../posts/store';
 
 type PostCardProps = {
     post: PostItem;
@@ -27,7 +28,8 @@ type PostCardProps = {
 
 const PostCard = ({ post, previewData, authorData, style, index, setValue, onVisible }: PostCardProps) => {
     const cardRef = useRef<HTMLDivElement>(null);
-    const { setExpandedPost } = useModalContext();
+
+    const { setExpandedPost } = usePostStore();
 
     const PostInfoSection = React.memo(
         (props: { descLength: number; noLimit?: boolean }) => {
@@ -623,7 +625,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                             <div className={`${styles.profile_info} d-flex`}>
                                 <div className="align-content-center">
                                     <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
-                                        <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                        <LazyImage className={`${styles.pfp} img-fluid`} src={authorData.profileImageUrl && `/${authorData.profileImageUrl}`} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
                                     </Link>
                                 </div>
                                 <div className={styles.profile_info__details}>

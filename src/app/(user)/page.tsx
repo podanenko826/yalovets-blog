@@ -8,11 +8,11 @@ import StartReadingButton from '@/components/Button/StartReadingButton';
 
 import Image from 'next/image';
 import PostList from '@/components/PostCard/PostList';
-import { usePostContext } from '@/components/Context/PostDataContext';
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
-import { useModalContext } from '@/components/Context/ModalContext';
 import { Metadata } from 'next';
 import { notFound, usePathname } from 'next/navigation';
+import { usePostStore } from '@/components/posts/store';
+import { useAuthorStore } from '@/components/authors/store';
 
 const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
 const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
@@ -42,15 +42,15 @@ async function generateMetadata(post: PostItem): Promise<Metadata> {
 }
 
 const Home: React.FC<HomeProps> = ({ slug }) => {
-    const [selectedPost, setSelectedPost] = useState<PostItem | null>(null);
-    const { fetchPosts } = usePostContext();
+    const { selectedPost } = usePostStore();
+
+    const posts = usePostStore((state) => state.posts);
+    const fetchPosts = usePostStore((state) => state.fetchPosts);
+    const { authors, fetchAuthors } = useAuthorStore();
 
     const currentPath = usePathname();
-    const fetched = useRef(false);
 
     slug = currentPath.split('/').pop();
-
-    console.log(slug);
 
     useEffect(() => {
         if (!selectedPost && typeof document !== 'undefined') {
@@ -60,29 +60,23 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
         }
     }, [selectedPost]);
 
-    useEffect(() => {
-        if (!fetched.current) {
-            fetchPosts(9);
-            fetched.current = true; // ✅ Prevents future calls
-        }
-    }, []);
 
-    const [isVisible, setIsVisible] = useState<boolean>(false);
+    // const [isVisible, setIsVisible] = useState<boolean>(false);
 
-    useEffect(() => {
-        const targetElement = document.querySelector(`arrow-container`);
-        if (!targetElement) return;
+    // useEffect(() => {
+    //     const targetElement = document.querySelector(`arrow-container`);
+    //     if (!targetElement) return;
 
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                setIsVisible(entry.isIntersecting);
-            },
-            { threshold: 0.5 }
-        );
+    //     const observer = new IntersectionObserver(
+    //         ([entry]) => {
+    //             setIsVisible(entry.isIntersecting);
+    //         },
+    //         { threshold: 0.5 }
+    //     );
 
-        observer.observe(targetElement);
-        return () => observer.disconnect();
-    }, []);
+    //     observer.observe(targetElement);
+    //     return () => observer.disconnect();
+    // }, []);
 
     const codeBlock = `
   # Ensure you have AWS CLI configured
@@ -102,14 +96,25 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
         }
     }, [slug]);
 
+    useEffect(() => {
+        fetchPosts(9);
+    }, [fetchPosts]);
+
+    useEffect(() => {
+        if (authors.length === 0) {
+            fetchAuthors();
+
+        }
+    }, [fetchAuthors]);
 
     return (
         <>
-            <Suspense fallback={<div></div>}>
-                <PostPreviewModal />
-            </Suspense>
-            {showModal && <ArticleModal slug={slug || ''} setValue={setSelectedPost} />}
+            
+            {showModal && <PostPreviewModal />}
+            {showModal && <ArticleModal slug={slug || ''} />}
             <main id="body">
+                <button onClick={() => console.log(posts)}>Print posts</button>
+                <button onClick={() => console.log(authors)}>Print authors</button>
                 {/* Welcome section (Mobile) */}
                 <div className="container welcome-xs d-block d-lg-none">
                     <div className="row">
@@ -223,7 +228,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                     </div>
 
                     <div className="row post-list">
-                        <PostList displayMode="popular" style="standard" indexIncrement={15} limit={3} />
+                        {/* <PostList displayMode="popular" style="standard" indexIncrement={15} limit={3} /> */}
                     </div>
                 </div>
 

@@ -11,7 +11,7 @@ import { IoMdMenu } from 'react-icons/io';
 import { IoMdClose } from 'react-icons/io';
 import { IoMoonOutline } from "react-icons/io5";
 import { IoSunnyOutline } from "react-icons/io5";
-import { usePostContext } from './Context/PostDataContext';
+import { useUserConfigStore } from './userConfig/store';
 
 export const navigation = [
     {
@@ -50,12 +50,12 @@ const NavBar = () => {
     const currentPath = usePathname();
     const [mobileMenuOpened, setMobileMenuOpened] = useState<boolean>(false);
 
-    const { userConfig, setUserConfig } = usePostContext();
+    const { theme, setTheme } = useUserConfigStore();
     const [isDarkTheme, setIsDarkTheme] = useState<boolean>(false);
 
     useEffect(() => {
-        setIsDarkTheme(userConfig.theme === 'dark' ? true : false);
-    }, [userConfig])
+        setIsDarkTheme(theme === 'dark' ? true : false);
+    }, [theme]);
 
     const handleMobileNavigation = () => {
         setMobileMenuOpened(!mobileMenuOpened);
@@ -74,10 +74,7 @@ const NavBar = () => {
     };
 
     const handleThemeChange = () => {
-        setUserConfig(prev => ({
-            ...prev,
-            theme: !isDarkTheme ? 'dark' : 'light',
-        }));
+        setTheme(isDarkTheme ? 'dark' : 'light');
 
         setIsDarkTheme(prev => !prev);
     }

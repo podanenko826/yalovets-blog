@@ -5,7 +5,6 @@ import '@/app/globals.css';
 
 import React, { Suspense, lazy } from 'react';
 import LoadingBanner from '@/components/Modals/LoadingBanner';
-import Home from './page';
 
 const NavBar = lazy(() => import('@/components/NavBar'));
 const Footer = lazy(() => import('@/components/Footer'));
@@ -25,11 +24,11 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <AppRouterCacheProvider>
+        <>
             <NavBar />
             <LoadingBanner />
             {children}
             <Footer />
-        </AppRouterCacheProvider>
+        </>
     );
 }
