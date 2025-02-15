@@ -9,6 +9,9 @@ import { AuthorItem, PaginationEntry, PaginationState, PostItem } from '@/types'
 import PostList from '@/components/PostCard/PostList';
 import PaginationPreferences from '@/components/Modals/PaginationPreferences';
 
+const NavBar = lazy(() => import('@/components/NavBar'));
+const Footer = lazy(() => import('@/components/Footer'));
+
 const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
 const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
 
@@ -20,6 +23,7 @@ import { usePostStore } from '@/components/posts/store';
 import { usePaginationStore } from '@/components/pagination/store';
 import { useAuthorStore } from '@/components/authors/store';
 import { useUserConfigStore } from '@/components/userConfig/store';
+import LoadingBanner from '@/components/Modals/LoadingBanner';
 
 export default function BlogPage({ params }: { params: { page: string } }) {
     const currentPage = parseInt(params.page, 10) || 1;
@@ -115,12 +119,21 @@ export default function BlogPage({ params }: { params: { page: string } }) {
         mobilePageNumbers.push(i);
     }
 
+    const [showModal, setShowModal] = useState(!!slug);
+
+    useEffect(() => {
+        if (!slug) {
+            setTimeout(() => setShowModal(true), 500);
+        }
+    }, [slug]);
+
+    if (paginatedArticles.length === 0) return <LoadingBanner />
+
     return (
         <>
-            <Suspense fallback={<div></div>}>
-                <PostPreviewModal />
-                <ArticleModal slug={slug || ''} />
-            </Suspense>
+            <NavBar />
+            {showModal && <PostPreviewModal />}
+            {showModal && <ArticleModal slug={slug || ''} />}
             {posts.length > 0 && paginatedArticles.length > 0 ? (
                 <main id="body">
                     <div className="container posts" id="posts">
@@ -206,6 +219,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
                     </main>
                 </>
             )}
+            <Footer />
         </>
     );
 }

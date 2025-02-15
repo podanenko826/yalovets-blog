@@ -11,12 +11,14 @@ import { getPost, getSortedPosts } from '@/lib/posts';
 import dynamic from 'next/dynamic';
 import PostList from '@/components/PostCard/PostList';
 
-import { useModalContext } from '@/components/Context/ModalContext';
-import { usePostContext } from '@/components/Context/PostDataContext';
 import { usePathname } from 'next/navigation';
 import { usePostStore } from '@/components/posts/store';
 import { useAuthorStore } from '@/components/authors/store';
 import { usePaginationStore } from '@/components/pagination/store';
+import LoadingBanner from '@/components/Modals/LoadingBanner';
+
+const NavBar = lazy(() => import('@/components/NavBar'));
+const Footer = lazy(() => import('@/components/Footer'));
 
 const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
 const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
@@ -85,8 +87,11 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
         }
     }, [posts, authorData]);
 
+    if (authorPosts.length === 0) return <LoadingBanner />
+
     return (
         <>
+            <NavBar />
             <Suspense fallback={<div></div>}>
                 <PostPreviewModal />
                 <ArticleModal slug={slug || ''} />
@@ -121,6 +126,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
                     </div>
                 </div>
             )}
+            <Footer />
         </>
     );
 };
