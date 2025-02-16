@@ -50,11 +50,21 @@ const NavBar = () => {
     const currentPath = usePathname();
     const [mobileMenuOpened, setMobileMenuOpened] = useState<boolean>(false);
 
-    const { theme, setTheme } = useUserConfigStore();
+    const { theme, setTheme, loadUserConfigFromStorage } = useUserConfigStore();
     const [isDarkTheme, setIsDarkTheme] = useState<boolean>(false);
 
     useEffect(() => {
+        loadUserConfigFromStorage();
+    }, [])
+
+    useEffect(() => {
         setIsDarkTheme(theme === 'dark' ? true : false);
+
+        if (theme === 'dark') {
+            document.body.classList.add('dark');
+        } else {
+            document.body.classList.remove('dark')
+        }
     }, [theme]);
 
     const handleMobileNavigation = () => {
@@ -74,7 +84,7 @@ const NavBar = () => {
     };
 
     const handleThemeChange = () => {
-        setTheme(isDarkTheme ? 'dark' : 'light');
+        setTheme(isDarkTheme ? 'light' : 'dark');
 
         setIsDarkTheme(prev => !prev);
     }

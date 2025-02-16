@@ -1,6 +1,5 @@
 'use client';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { usePostContext } from '../Context/PostDataContext';
 import { AuthorItem, PostItem } from '@/types';
 import LazyPostCard from './LazyPostCard';
 import moment from 'moment';

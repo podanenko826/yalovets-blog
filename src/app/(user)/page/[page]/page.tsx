@@ -1,6 +1,6 @@
 'use client';
 import '@/app/page.css';
-import React, { Suspense, lazy, useEffect, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 
 import { getPostsCount, sortPosts } from '@/lib/posts';
@@ -28,22 +28,21 @@ import LoadingBanner from '@/components/Modals/LoadingBanner';
 export default function BlogPage({ params }: { params: { page: string } }) {
     const currentPage = parseInt(params.page, 10) || 1;
     const { posts, selectedPost, fetchPostsByPage } = usePostStore();
-    const { postsPerPage } = useUserConfigStore();
+    const { postsPerPage, theme, loadUserConfigFromStorage } = useUserConfigStore();
     const { authors, fetchAuthors } = useAuthorStore();
-    const { pagination, setPagination, postCount, setPostCount, fetchPagination } = usePaginationStore();
+    const { pagination, setPagination, originalPagination, postCount, setPostCount, fetchPagination } = usePaginationStore();
 
     const [paginationModalOpen, setPaginationModalOpen] = useState<boolean>(false);
+
+    const [paginationData, setPaginationData] = useState<PaginationState>({ totalPages: 1, paginationData: {} });
 
     const currentPath = usePathname();
     const slug = !currentPath.split('/').includes('page') ? currentPath.split('/').pop() : '';
 
     useEffect(() => {
-        console.log(slug);
-        
-    }, [slug]);
-
-    useEffect(() => {
         window.scrollTo(0, 0); // Scroll to top on route change
+
+        loadUserConfigFromStorage();
     }, []);
 
     useEffect(() => {
@@ -67,6 +66,39 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     }, [fetchPagination]);
 
     useEffect(() => {
+        if (!originalPagination || !postsPerPage) return;
+    
+        if (postsPerPage === 14) {
+            // Restore original pagination
+            setPagination(originalPagination);
+            return;
+        }
+    
+        let modifiedPagination: Record<number, PaginationEntry> = {};
+        if (originalPagination?.paginationData) {
+            Object.entries(originalPagination.paginationData).forEach(([key, value], index) => {
+                if (postsPerPage === 28 && index % 2 === 0) {
+                    modifiedPagination[parseInt(key) > 1 ? parseInt(key) - 1 : parseInt(key)] = { date: value.date };
+                } else if (postsPerPage === 42 && index % 3 === 0) {
+                    modifiedPagination[parseInt(key)] = { date: value.date };
+                }
+            });
+        }      
+
+        setPagination({
+            totalPages: Object.keys(modifiedPagination).length,
+            paginationData: modifiedPagination,
+        });
+
+        setPaginationData({
+            totalPages: Object.keys(modifiedPagination).length,
+            paginationData: modifiedPagination,
+        })
+
+    
+    }, [postsPerPage, originalPagination]);
+
+    useEffect(() => {
         const getPostsLength = async () => {
             if (postCount > 0) return;
 
@@ -77,6 +109,10 @@ export default function BlogPage({ params }: { params: { page: string } }) {
 
         getPostsLength();
     }, [postCount, setPostCount]);
+
+    useEffect(() => {
+        setPaginationData(pagination);
+    }, [pagination]);
 
     // Getting the exact starting key for the particular page
     const startingKey: PaginationEntry | undefined = Object.entries(pagination.paginationData).find(([key, value]) => key.toString() === params.page)?.[1];
@@ -90,15 +126,15 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     useEffect(() => {
         const fetchPostsData = async () => {
             if (params.page) {
-                const postsData = await fetchPostsByPage(Number(params.page), ARTICLES_PER_PAGE, pagination);
+                const postsData = await fetchPostsByPage(Number(params.page), ARTICLES_PER_PAGE, paginationData);
                 console.log('paginatedposts: ', postsData);
-                console.log(Number(params.page), ARTICLES_PER_PAGE, pagination);
+                console.log(Number(params.page), ARTICLES_PER_PAGE, paginationData);
                 
             }
         }
 
         fetchPostsData();
-    }, [params.page, pagination]);
+    }, [params.page, paginationData]);
 
     useEffect(() => {
         if (authors.length === 0) {
@@ -139,6 +175,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
             <NavBar />
             {showModal && <PostPreviewModal />}
             <ArticleModal slug={slug || ''} />
+            <button onClick={() => console.log(`Theme: ${theme}, PostsPerPage: ${postsPerPage}`)}>Print userConfig</button>
             {posts.length > 0 && paginatedArticles.length > 0 ? (
                 <main id="body">
                     <div className="container posts" id="posts">
@@ -150,7 +187,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
                                 </button>
                             </div>
 
-                            {paginationModalOpen && <PaginationPreferences setModalOpen={setPaginationModalOpen} />}
+                            {paginationModalOpen && <PaginationPreferences postsPerPage={ARTICLES_PER_PAGE} setModalOpen={setPaginationModalOpen} />}
                         </div>
 
                         <div className="row post-list">

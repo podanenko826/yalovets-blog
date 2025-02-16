@@ -1,23 +1,24 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import styles from './Modals.module.css';
-import { usePostContext } from '../Context/PostDataContext';
 import { IoMdClose } from 'react-icons/io';
 import { useUserConfigStore } from '../userConfig/store';
 
 type PaginationPreferencesProps = {
+    postsPerPage: number;
     setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const PaginationPreferences = ({ setModalOpen }: PaginationPreferencesProps) => {
-    const { postsPerPage, setPostsPerPage } = useUserConfigStore();
+const PaginationPreferences = ({ postsPerPage, setModalOpen }: PaginationPreferencesProps) => {
+    const { setPostsPerPage } = useUserConfigStore();
+    const [currentPostsPerPage, setCurrentPostsPerPage] = useState<number>(postsPerPage || 14);
 
     const handlePostsPerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPostsPerPage(parseInt(e.target.value));
+        setCurrentPostsPerPage(parseInt(e.target.value));
     }
 
     const handlePostsPerPageSave = () => {
-        setPostsPerPage(postsPerPage);
+        setPostsPerPage(currentPostsPerPage);
 
         handleClose();
     }
@@ -95,7 +96,6 @@ const PaginationPreferences = ({ setModalOpen }: PaginationPreferencesProps) => 
 
                 <div className="container">
                     <div className={`${styles.postDataContainer} ${styles.paginationPreferences}`} onClick={e => e.stopPropagation()}>
-
                         <button className={`${styles.expandedPostCloseBtn} btn-pill`} onClick={() => handleClose()}>
                             <IoMdClose className={styles.icon} />
                         </button>
@@ -112,7 +112,7 @@ const PaginationPreferences = ({ setModalOpen }: PaginationPreferencesProps) => 
                                         name="listGroupRadio"
                                         value={value}
                                         id={`${value}posts`}
-                                        checked={postsPerPage === value}
+                                        checked={currentPostsPerPage === value}
                                         onChange={handlePostsPerPageChange}
                                     />
                                     <label className="form-check-label" htmlFor={`${value}posts`}>

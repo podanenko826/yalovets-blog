@@ -1,6 +1,8 @@
 import { getPaginationData } from "@/lib/pagination";
-import { PaginationState } from "@/types";
+import { PaginationEntry, PaginationState } from "@/types";
+import { useEffect } from "react";
 import { create } from "zustand";
+import { useUserConfigStore } from "../userConfig/store";
 
 interface PaginationStore {
     pagination: PaginationState;
@@ -12,13 +14,14 @@ interface PaginationStore {
     fetchPagination: () => Promise<PaginationState>;
 }
 
+
 export const usePaginationStore = create<PaginationStore>((set) => {
     const pagination: PaginationState = { 
-        totalPages: 0,
+        totalPages: 1,
         paginationData: {},
     };
-    const originalPagination: PaginationState | null = null;
-
+    let originalPagination: PaginationState | null = null;
+        
     const PAGINATION_STORAGE_KEY = "cachedPagination";
     const PAGINATION_EXPIRATION_TIME = 1000 * 60 * 60 * 2; // 2 hours
 
@@ -34,30 +37,34 @@ export const usePaginationStore = create<PaginationStore>((set) => {
 
     const loadPaginationFromStorage = (): PaginationState | null => {
         if (typeof localStorage === 'undefined') return null;
-
+    
         const data = localStorage.getItem(PAGINATION_STORAGE_KEY);
         if (!data) return null;
-
-        const { pagination, timestamp } = JSON.parse(data);
-
-        // Check expiration
-        if (Date.now() - timestamp > PAGINATION_EXPIRATION_TIME) {
-            localStorage.removeItem(PAGINATION_STORAGE_KEY);
+    
+        try {
+            const parsedData: { pagination: PaginationState; timestamp: number } = JSON.parse(data);
+    
+            if (Date.now() - parsedData.timestamp > PAGINATION_EXPIRATION_TIME) {
+                localStorage.removeItem(PAGINATION_STORAGE_KEY);
+                return null;
+            }
+    
+            return parsedData.pagination;
+        } catch (error) {
+            console.error("Error parsing pagination data:", error);
             return null;
         }
-
-        return pagination;
     };
 
     loadPaginationFromStorage();
 
     const setPagination = (pagination: PaginationState) => {
         set({ pagination });
-        savePaginationToLocalStorage(pagination);
     };
-
+    
     const setOriginalPagination = (pagination: PaginationState | null) => {
         set({ originalPagination: pagination });
+        if (pagination) savePaginationToLocalStorage(pagination);
     };
 
     const postCount = 0;
@@ -97,7 +104,7 @@ export const usePaginationStore = create<PaginationStore>((set) => {
             };
         }
         return {
-            totalPages: 0,
+            totalPages: 1,
             paginationData: {},
         };
     };
