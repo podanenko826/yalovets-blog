@@ -15,7 +15,23 @@ export default function RootLayout({
 }>) {
     return (
         <AppRouterCacheProvider>
-            <html lang="en">
+            <html lang="en" className='no-theme' suppressHydrationWarning>
+                <head>
+                    <script dangerouslySetInnerHTML={{
+                        __html: `
+                            (function() {
+                                try {
+                                    var config = localStorage.getItem('userConfig');
+                                    if (config) {
+                                        var parsedConfig = JSON.parse(config);
+                                        document.documentElement.classList.remove('no-theme');
+                                        document.documentElement.classList.add(parsedConfig.theme === 'dark' ? 'dark' : 'light');
+                                    }
+                                } catch (e) {}
+                            })();
+                        `
+                    }} />
+                </head>
                 <body>
                     {children}
                 </body>

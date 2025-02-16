@@ -18,11 +18,19 @@ export const useUserConfigStore = create<UserConfigStore>((set, get) => {
         localStorage.setItem('userConfig', JSON.stringify(userConfig));
     }
 
-    const theme = 'light';
+    const theme = typeof window !== "undefined" 
+        ? JSON.parse(localStorage.getItem("userConfig") || `{"theme": "light"}`).theme 
+        : "light";
 
     const setTheme = (theme: 'light' | 'dark') => {
         set({ theme });
         saveUserConfigToStorage({ theme, postsPerPage: get().postsPerPage || 14 });
+
+        if (theme === "dark") {
+            document.documentElement.classList.add("dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+        }
     };
 
     const postsPerPage = 14;

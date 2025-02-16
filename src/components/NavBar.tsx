@@ -51,20 +51,10 @@ const NavBar = () => {
     const [mobileMenuOpened, setMobileMenuOpened] = useState<boolean>(false);
 
     const { theme, setTheme, loadUserConfigFromStorage } = useUserConfigStore();
-    const [isDarkTheme, setIsDarkTheme] = useState<boolean>(false);
+    const [isDarkTheme, setIsDarkTheme] = useState<boolean>(document.documentElement.classList.contains('dark'));
 
     useEffect(() => {
-        loadUserConfigFromStorage();
-    }, [])
-
-    useEffect(() => {
-        setIsDarkTheme(theme === 'dark' ? true : false);
-
-        if (theme === 'dark') {
-            document.body.classList.add('dark');
-        } else {
-            document.body.classList.remove('dark')
-        }
+        setIsDarkTheme(theme === 'dark');
     }, [theme]);
 
     const handleMobileNavigation = () => {
@@ -85,8 +75,6 @@ const NavBar = () => {
 
     const handleThemeChange = () => {
         setTheme(isDarkTheme ? 'light' : 'dark');
-
-        setIsDarkTheme(prev => !prev);
     }
     
     return (
@@ -115,9 +103,9 @@ const NavBar = () => {
                         <button className="btn-outlined">Subscribe</button>
                         <button className='btn-pill' onClick={() => handleThemeChange()}>
                             {isDarkTheme ? (
-                                <IoMoonOutline className='btn-pill-svg px-1' />
-                            ): (
                                 <IoSunnyOutline className='btn-pill-svg px-1' />
+                            ) : (
+                                <IoMoonOutline className='btn-pill-svg px-1' />
                             )}
                         </button>
                     </div>
@@ -130,9 +118,9 @@ const NavBar = () => {
                         {mobileMenuOpened && (
                             <button className='btn-outlined h-min mx-3 px-2 p-0' onClick={() => handleThemeChange()}>
                                 {isDarkTheme ? (
-                                    <IoMoonOutline />
-                                ): (
                                     <IoSunnyOutline />
+                                ) : (
+                                    <IoMoonOutline />
                                 )}
                             </button>
                         )}

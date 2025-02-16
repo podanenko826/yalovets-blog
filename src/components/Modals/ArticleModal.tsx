@@ -136,7 +136,6 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
 
     const author = authors.find(author => author.email === selectedPost?.email);
 
-    // if (typeof window === 'undefined') return null;
     if (!slug) return null;
 
     return (
