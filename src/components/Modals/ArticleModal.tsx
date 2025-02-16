@@ -128,6 +128,8 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
     const closeModal = () => {
         slug = '';
         setSelectedPost(null);
+        setSelectedMarkdown(null);
+        setSerializedMarkdown(undefined);
 
         router.back();
     };
