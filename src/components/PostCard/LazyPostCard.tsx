@@ -38,9 +38,6 @@ const LazyPostCard = React.memo(
             return () => observer.disconnect();
         }, []);
 
-        console.log('LazyPostCard re-renders...');
-
-
         return (
             <>
                 {isVisible ? (

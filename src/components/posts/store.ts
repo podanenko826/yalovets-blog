@@ -69,8 +69,6 @@ export const usePostStore = create<PostStore>((set) => {
 
         const savedPosts = localStorage.getItem(POSTS_STORAGE_KEY);
         if (savedPosts) {
-            console.log('Got from cache', JSON.parse(savedPosts).posts);
-    
             setPosts(JSON.parse(savedPosts).posts);
         }
     }
@@ -83,7 +81,6 @@ export const usePostStore = create<PostStore>((set) => {
         
         try {
             let postsData;
-            console.log('Already fetched posts:', posts);
 
             if (lastKey) {
                 postsData = await getSortedPosts(limit, lastKey);

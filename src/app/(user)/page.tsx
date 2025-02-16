@@ -119,8 +119,6 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
             {showModal && <PostPreviewModal />}
             {showModal && <ArticleModal slug={slug || ''} />}
             <main id="body">
-                <button onClick={() => console.log(posts)}>Print posts</button>
-                <button onClick={() => console.log(authors)}>Print authors</button>
                 {/* Welcome section (Mobile) */}
                 <div className="container welcome-xs d-block d-lg-none">
                     <div className="row">

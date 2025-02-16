@@ -13,7 +13,7 @@ import { getMDXContent, getPost, trackView } from '@/lib/posts';
 import { MDXProvider } from '@mdx-js/react';
 import { mdSerialize } from '../../services/mdSerializer';
 import { useMDXComponents } from '../../../mdx-components';
-import { notFound, useRouter } from 'next/navigation';
+import { notFound, usePathname, useRouter } from 'next/navigation';
 import { usePostStore } from '../posts/store';
 import { useAuthorStore } from '../authors/store';
 import LoadingSkeleton from '../LoadingSkeleton';
@@ -49,6 +49,8 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
     const postUrl = encodeURIComponent(baseShareUrl + '/' + selectedPost?.slug);
     const postText = encodeURIComponent(selectedPost?.title as string);
 
+    const pathname = usePathname();
+    
     const router = useRouter();
 
     const components = useMDXComponents();
@@ -64,8 +66,15 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
     }, [posts]);
 
     useEffect(() => {
-        console.log('Article Slug:', slug);
+        // Automatically close modal if URL doesn't match the selected post
+        if (selectedPost && pathname !== `/${selectedPost?.slug}`) {
+            setSelectedPost(null);
+            setSelectedMarkdown(null);
+            setSerializedMarkdown(undefined);
+        }
+    }, [pathname, selectedPost]);
 
+    useEffect(() => {
         if (slug) {
             document.title = `${selectedPost?.title} / Yalovets Blog`;
 
@@ -97,8 +106,6 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                 }
 
                 if (!post) return;
-                console.log('rvdfvfvd');
-                
 
                 const MdxContent = await getMDXContent(post.slug, post.date as string);
                 const markdown = MdxContent.markdown;
@@ -111,7 +118,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
         };
 
         returnToPost();
-    }, [slug]);
+    }, [slug, selectedPost]);
 
     useEffect(() => {
         const processMarkdown = async () => {

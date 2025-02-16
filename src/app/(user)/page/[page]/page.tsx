@@ -28,7 +28,7 @@ import LoadingBanner from '@/components/Modals/LoadingBanner';
 export default function BlogPage({ params }: { params: { page: string } }) {
     const currentPage = parseInt(params.page, 10) || 1;
     const { posts, selectedPost, fetchPostsByPage } = usePostStore();
-    const { postsPerPage, theme, loadUserConfigFromStorage } = useUserConfigStore();
+    const { postsPerPage, loadUserConfigFromStorage } = useUserConfigStore();
     const { authors, fetchAuthors } = useAuthorStore();
     const { pagination, setPagination, originalPagination, postCount, setPostCount, fetchPagination } = usePaginationStore();
 
@@ -52,7 +52,6 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     }, [selectedPost]);
 
     if (Object.keys(pagination.paginationData).length > 0 && parseInt(params.page) > pagination.totalPages) return notFound();
-    // if (posts.length === 0 || authors.length === 0) return null;
 
     useEffect(() => {
         const fetchPaginationData = async () => {
@@ -126,10 +125,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     useEffect(() => {
         const fetchPostsData = async () => {
             if (params.page) {
-                const postsData = await fetchPostsByPage(Number(params.page), ARTICLES_PER_PAGE, paginationData);
-                console.log('paginatedposts: ', postsData);
-                console.log(Number(params.page), ARTICLES_PER_PAGE, paginationData);
-                
+                await fetchPostsByPage(Number(params.page), ARTICLES_PER_PAGE, paginationData);
             }
         }
 
@@ -175,7 +171,6 @@ export default function BlogPage({ params }: { params: { page: string } }) {
             <NavBar />
             {showModal && <PostPreviewModal />}
             <ArticleModal slug={slug || ''} />
-            <button onClick={() => console.log(`Theme: ${theme}, PostsPerPage: ${postsPerPage}`)}>Print userConfig</button>
             {posts.length > 0 && paginatedArticles.length > 0 ? (
                 <main id="body">
                     <div className="container posts" id="posts">

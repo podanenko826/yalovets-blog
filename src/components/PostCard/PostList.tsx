@@ -21,10 +21,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
     const authors = useAuthorStore((state) => state.authors);
 
     const [loading, setLoading] = useState<boolean>(true);
-    console.log('PostList re-renders...');
 
-    // if (!posts || posts.length === 0 || !Array.isArray(posts)) return null;
-    // if (!authors || authors.length === 0 || !Array.isArray(authors)) return null;
     const memoizedPosts = useMemo(() => posts.slice(), [posts]);
     const memoizedAuthors = useMemo(() => new Map(authors.map((author) => [author.email, author])), [authors]);
 
