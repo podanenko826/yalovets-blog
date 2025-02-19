@@ -43,6 +43,8 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
 
     const [popularPosts, setPopularPosts] = useState<PostItem[]>([]);
 
+    const [loading, setLoading] = useState<boolean>(true);
+
     //? Encoded link and text for sharing purpose on social media
     // const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
     const baseShareUrl = 'https://yalovets.blog';
@@ -133,13 +135,19 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
     }, [selectedMarkdown]);
 
     const closeModal = () => {
-        slug = '';
         setSelectedPost(null);
         setSelectedMarkdown(null);
-        setSerializedMarkdown(undefined);
+        setLoading(true);
 
         router.back();
     };
+
+    useEffect(() => {
+        if (selectedMarkdown) {
+            //? Fake loading time, adjust the time if needed
+            setTimeout(() => setLoading(false), 300);
+        }
+    }, [serializedMarkdown]);
 
     const author = authors.find(author => author.email === selectedPost?.email);
 
@@ -165,7 +173,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                         </div>
                                     </div>
                                     <div className="col-md-8 text-center">
-                                        {selectedPost && (
+                                        {!loading && selectedPost && (
                                             <>
                                                 <h1 className="d-none d-lg-block px-2 heading-xlarge w-100 col-md-11 col-lg-12 text-center" id="col-heading-1">
                                                     {selectedPost.title}
@@ -178,7 +186,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                                 </h1>
                                             </>
                                         )}
-                                        {selectedPost && author && (
+                                        {!loading && selectedPost && author && (
                                             <div className="d-flex justify-content-center gap-2">
                                                 <Link href={`/author/${author.authorKey}`} className="d-flex align-items-center gap-1 a-link h-min">
                                                     {author.fullName}
@@ -198,12 +206,12 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                                 )}
                                             </div>
                                         )}
-                                        {selectedPost && moment.utc(selectedPost.modifyDate).isAfter(moment.utc(selectedPost.date)) && !selectedPost.sponsoredBy && (
+                                        {!loading && selectedPost && moment.utc(selectedPost.modifyDate).isAfter(moment.utc(selectedPost.date)) && !selectedPost.sponsoredBy && (
                                             <span className="d-md-none px-2 mb-4 rounded-pill text-bg-secondary" id="mobileUpdatedBadge">
                                                 {'Updated ' + moment.utc(selectedPost.modifyDate).fromNow()}
                                             </span>
                                         )}
-                                        {selectedPost && selectedPost.sponsoredBy && (
+                                        {!loading && selectedPost && selectedPost.sponsoredBy && (
                                             <span className="px-2 mb-4 rounded-pill badge-sponsored">
                                                 Sponsored by{' '}
                                                 {selectedPost.sponsorUrl ? (
@@ -219,7 +227,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                 </div>
                                 <div className="row mt-5">
                                     <div className={`col-12 col-md-2 ${styles.socialLinks}`}>
-                                        {selectedPost && (
+                                        {!loading && selectedPost && (
                                             <>
                                                 <Link href={`https://x.com/share?url=${postUrl}&text=${postText}`} title="Share on X" target="_blank">
                                                     <FaXTwitter className="fs-1 p-1" />
@@ -241,7 +249,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                     </div>
                                     <div className="col-12 col-md-8">
                                         <article className="article">
-                                            {serializedMarkdown ? (
+                                            {!loading && serializedMarkdown ? (
                                                 <Suspense fallback={<LoadingSkeleton />}>
                                                     <MDXProvider components={components}>
                                                         <MDXRemote compiledSource={serializedMarkdown?.compiledSource as string} scope={serializedMarkdown?.scope} frontmatter={serializedMarkdown?.frontmatter} />
