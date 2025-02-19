@@ -30,12 +30,14 @@ interface AuthorPageProps {
 const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     const { authorKey } = params;
 
-    const { posts, selectedPost, fetchPostsByAuthor } = usePostStore();
+    const { posts, selectedPost, fetchPostsByAuthor, loadPostsFromStorage } = usePostStore();
     const { fetchAuthors } = useAuthorStore();
     const { pagination } = usePaginationStore();
 
     const [authorData, setAuthorData] = useState<AuthorItem | null>(null);
     const [authorPosts, setAuthorPosts] = useState<PostItem[]>([]);
+
+    const [loading, setLoading] = useState<boolean>(false);
 
     const currentPath = usePathname() + '/';
     const slug = currentPath.split('/').pop();
@@ -44,6 +46,8 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
 
     useEffect(() => {
         window.scrollTo(0, 0); // Scroll to top on route change
+        
+        loadPostsFromStorage();
     }, []);
 
     useEffect(() => {
@@ -67,13 +71,20 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     useEffect(() => {
         const fetchAuthorPosts = async () => {
             if (authorData?.email) {
+                setLoading(true);
+
                 const authorPosts = await fetchPostsByAuthor(authorData.email, POSTS_PER_PAGE, pagination);
-                setAuthorPosts(authorPosts.posts);
+
+                if (authorPosts.posts.length > 0) {
+                    setAuthorPosts(authorPosts.posts);
+
+                    setLoading(false);
+                }
             }
         };
 
         fetchAuthorPosts();
-    }, [authorData]);
+    }, [authorData?.email]);
 
     useEffect(() => {
         if (posts.length > 0 && authorData) {
@@ -87,8 +98,6 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
         }
     }, [posts, authorData]);
 
-    if (authorPosts.length === 0) return <LoadingBanner />
-
     return (
         <>
             <NavBar />
@@ -97,7 +106,6 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
                 <ArticleModal slug={slug || ''} />
             </Suspense>
             {authorData && (
-
                 <div className="container">
                     <div className="container mb-5">
                         <div className={`${postCardStyles.profile_info} d-flex justify-content-center mt-4`}>

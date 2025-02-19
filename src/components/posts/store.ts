@@ -6,19 +6,23 @@ import { getAuthorPosts, getPaginatedPosts, getSortedPosts, sortPosts } from "@/
 interface PostStore {
     posts: PostItem[];
     setPosts: (posts: PostItem[]) => void;
+    loadPostsFromStorage: () => void;
     selectedPost: PostItem | null;
     setSelectedPost: (post: PostItem | null) => void;
     expandedPost: { post: PostItem; boundingBox: DOMRect } | null;
     setExpandedPost: (post: { post: PostItem; boundingBox: DOMRect } | null) => void;
-    // loadPostsFromStorage: () => void;
+    lastKey: string | null;
+    setLastKey: (lastKey: string | null) => void;
     fetchPosts: (limit: number) => Promise<{ posts: PostItem[], lastKey: string }>;
     fetchPostsByPage: (page: number, postsPerPage: number, pagination: PaginationState) => Promise<PostItem[]>;
     fetchPostsByAuthor: (authorEmail: string, postsPerPage: number, pagination: PaginationState, lastKey?: string) => Promise<{ posts: PostItem[], lastKey: string }>;
 }
 
-export const usePostStore = create<PostStore>((set) => {
+export const usePostStore = create<PostStore>((set, get) => {
     
     const posts: PostItem[] = [];
+    const lastKey: string | null = null;
+
 
     const setPosts = (posts: PostItem[]) => {
         set({ posts });
@@ -35,6 +39,19 @@ export const usePostStore = create<PostStore>((set) => {
 
     const setExpandedPost = (value: { post: PostItem; boundingBox: DOMRect } | null) => {
         set({ expandedPost: value });
+    };
+
+
+    const setLastKey = (key: string | null) => {
+        console.log("⏳ Attempting to set lastKey:", key);
+        console.log("🔍 Current Zustand lastKey:", get().lastKey);
+
+        if (get().lastKey !== key) {
+            console.log("✅ Zustand is updating lastKey to:", key);
+            set({ lastKey: key })
+        } else {
+            console.log("🚫 Skipping lastKey update, it's the same.");
+        }
     };
 
     const POSTS_STORAGE_KEY = "cachedPosts";
@@ -69,21 +86,30 @@ export const usePostStore = create<PostStore>((set) => {
 
         const savedPosts = localStorage.getItem(POSTS_STORAGE_KEY);
         if (savedPosts) {
-            setPosts(JSON.parse(savedPosts).posts);
+            const parsedPosts = JSON.parse(savedPosts).posts;
+            
+            if (Array.isArray(parsedPosts) && parsedPosts.length > 0) {
+                const lastKeyFromStorage = parsedPosts.at(-1)?.date ?? null;
+                setPosts(parsedPosts);
+                console.log("Loaded lastKey from storage:", lastKeyFromStorage);
+                setLastKey(lastKeyFromStorage);
+            }
         }
-    }
+    };
 
     loadPostsFromStorage();
 
 
-    const fetchPosts = async (limit: number, lastKey?: string): Promise<{ posts: PostItem[], lastKey: string }> => {
+    const fetchPosts = async (limit: number): Promise<{ posts: PostItem[], lastKey: string }> => {
         if (!limit || limit > 50) return { posts: [], lastKey: "" };
         
         try {
+            const { posts, lastKey } = get();
+
             let postsData;
 
             if (lastKey) {
-                postsData = await getSortedPosts(limit, lastKey);
+                postsData = await getSortedPosts(limit, lastKey || undefined);
             } else {
                 postsData = await getSortedPosts(limit);
             }
@@ -98,6 +124,12 @@ export const usePostStore = create<PostStore>((set) => {
             
             savePostsToLocalStorage([...sortedCombinedPosts]);
             setPosts([...sortedCombinedPosts]);
+
+            // Update lastKey for pagination (only if it changes)
+            if (postsData.lastKey) {
+                // set({ lastKey: postsData.lastKey });
+            }
+
             return { posts: [...sortedCombinedPosts], lastKey: postsData.lastKey };
         } catch (error) {
             console.error("Error fetching posts:", error);
@@ -152,12 +184,12 @@ export const usePostStore = create<PostStore>((set) => {
         }
     };
 
-    const fetchPostsByAuthor = async (authorEmail: string, postsPerPage: number, pagination: PaginationState, lastKey?: string): Promise<{ posts: PostItem[], lastKey: string}> => {
+    const fetchPostsByAuthor = async (authorEmail: string, postsPerPage: number, pagination: PaginationState): Promise<{ posts: PostItem[], lastKey: string}> => {
         if (!authorEmail || !postsPerPage) return { posts: [], lastKey: "" };
         if (Object.keys(pagination.paginationData).length === 0) return { posts: [], lastKey: "" };
         
         try {
-            const postsData = await getAuthorPosts(authorEmail, postsPerPage, lastKey);
+            const postsData = await getAuthorPosts(authorEmail, postsPerPage, lastKey || undefined);
 
             if (postsData.posts.length > 0) {
                 const existingSlugs = new Set(posts.map(post => post.slug));
@@ -167,6 +199,11 @@ export const usePostStore = create<PostStore>((set) => {
                 const sortedCombinedPosts = sortPosts(combinedPosts);
                 setPosts([...sortedCombinedPosts]);
                 savePostsToLocalStorage([...sortedCombinedPosts]);
+
+                // Update lastKey for pagination (only if it changes)
+                if (postsData.lastKey && postsData.lastKey !== lastKey) {
+                    setLastKey(postsData.lastKey);
+                }
 
                 return { posts: [...sortedCombinedPosts], lastKey: postsData.lastKey };
             }
@@ -180,11 +217,14 @@ export const usePostStore = create<PostStore>((set) => {
 
     return {
         posts,
+        setPosts,
+        loadPostsFromStorage,
         selectedPost,
         setSelectedPost,
         expandedPost,
         setExpandedPost,
-        setPosts,
+        lastKey,
+        setLastKey,
         fetchPosts,
         fetchPostsByPage,
         fetchPostsByAuthor

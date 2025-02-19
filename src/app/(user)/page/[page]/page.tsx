@@ -24,10 +24,11 @@ import { usePaginationStore } from '@/components/pagination/store';
 import { useAuthorStore } from '@/components/authors/store';
 import { useUserConfigStore } from '@/components/userConfig/store';
 import LoadingBanner from '@/components/Modals/LoadingBanner';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
 
 export default function BlogPage({ params }: { params: { page: string } }) {
     const currentPage = parseInt(params.page, 10) || 1;
-    const { posts, selectedPost, fetchPostsByPage } = usePostStore();
+    const { posts, selectedPost, fetchPostsByPage, loadPostsFromStorage } = usePostStore();
     const { postsPerPage, loadUserConfigFromStorage } = useUserConfigStore();
     const { authors, fetchAuthors } = useAuthorStore();
     const { pagination, setPagination, originalPagination, postCount, setPostCount, fetchPagination } = usePaginationStore();
@@ -36,8 +37,14 @@ export default function BlogPage({ params }: { params: { page: string } }) {
 
     const [paginationData, setPaginationData] = useState<PaginationState>({ totalPages: 1, paginationData: {} });
 
+    const [loading, setLoading] = useState<boolean>(false);
+
     const currentPath = usePathname();
     const slug = !currentPath.split('/').includes('page') ? currentPath.split('/').pop() : '';
+
+    useEffect(() => {
+        loadPostsFromStorage();
+    }, []);
 
     useEffect(() => {
         window.scrollTo(0, 0); // Scroll to top on route change
@@ -125,7 +132,11 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     useEffect(() => {
         const fetchPostsData = async () => {
             if (params.page) {
-                await fetchPostsByPage(Number(params.page), ARTICLES_PER_PAGE, paginationData);
+                setLoading(true);
+
+                const postsData = await fetchPostsByPage(Number(params.page), ARTICLES_PER_PAGE, paginationData);
+
+                if (postsData.length > 0) setLoading(false);
             }
         }
 
@@ -165,13 +176,14 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     }, [slug]);
 
     if (posts.length === 0) return <LoadingBanner />
+    if (!loadUserConfigFromStorage) return <LoadingBanner />
 
     return (
         <>
             <NavBar />
             {showModal && <PostPreviewModal />}
             <ArticleModal slug={slug || ''} />
-            {posts.length > 0 && paginatedArticles.length > 0 ? (
+            {!loading && paginatedArticles.length > 0 ? (
                 <main id="body">
                     <div className="container posts" id="posts">
                         <div className="container p-0">
@@ -253,16 +265,12 @@ export default function BlogPage({ params }: { params: { page: string } }) {
                                 <h1 className="heading m-0 p-0 heading-large">Page {currentPage}</h1>
                             </div>
 
-                            <div className='container d-flex justify-content-center my-5'>
-                                <div className="loading-spinning my-5"></div>
-                            </div>
+                            <LoadingSkeleton />
                         </div>
                     </main>
                 </>
             )}
-            {paginatedArticles.length > 0 && (
-                <Footer />
-            )}
+            <Footer />
         </>
     );
 }

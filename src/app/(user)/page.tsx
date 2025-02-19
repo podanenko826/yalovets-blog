@@ -48,13 +48,16 @@ async function generateMetadata(post: PostItem): Promise<Metadata> {
 const Home: React.FC<HomeProps> = ({ slug }) => {
     const { selectedPost } = usePostStore();
 
-    const posts = usePostStore((state) => state.posts);
-    const fetchPosts = usePostStore((state) => state.fetchPosts);
+    const { posts, fetchPosts, lastKey, loadPostsFromStorage } = usePostStore()
     const { authors, fetchAuthors } = useAuthorStore();
 
     const currentPath = usePathname();
 
     slug = currentPath.split('/').pop();
+
+    useEffect(() => {
+        loadPostsFromStorage();
+    }, []);
 
     useEffect(() => {
         if (!selectedPost && typeof document !== 'undefined') {
@@ -119,6 +122,8 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
             {showModal && <PostPreviewModal />}
             {showModal && <ArticleModal slug={slug || ''} />}
             <main id="body">
+                <button onClick={() => console.log(posts)}>Print posts</button>
+                <button onClick={() => console.log(lastKey)}>Print lastKey</button>
                 {/* Welcome section (Mobile) */}
                 <div className="container welcome-xs d-block d-lg-none">
                     <div className="row">
@@ -211,7 +216,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
 
                     <div className="row post-list">
                         <Suspense fallback={<div></div>}>
-                            <PostList displayMode="recent" style="standard" indexIncrement={2} limit={9} />
+                            <PostList displayMode="linear" style="standard" indexIncrement={2} limit={9} infiniteScroll />
                         </Suspense>
                     </div>
                 </div>

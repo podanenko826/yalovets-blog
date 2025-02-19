@@ -50,8 +50,8 @@ const NavBar = () => {
     const currentPath = usePathname();
     const [mobileMenuOpened, setMobileMenuOpened] = useState<boolean>(false);
 
-    const { theme, setTheme, loadUserConfigFromStorage } = useUserConfigStore();
-    const [isDarkTheme, setIsDarkTheme] = useState<boolean>(document.documentElement.classList.contains('dark'));
+    const { theme, setTheme } = useUserConfigStore();
+    const [isDarkTheme, setIsDarkTheme] = useState<boolean>(false);
 
     useEffect(() => {
         setIsDarkTheme(theme === 'dark');

@@ -5,6 +5,8 @@ import LazyPostCard from './LazyPostCard';
 import moment from 'moment';
 import { usePostStore } from '../posts/store';
 import { useAuthorStore } from '../authors/store';
+import { usePaginationStore } from '../pagination/store';
+import LoadingSkeleton from '../LoadingSkeleton';
 
 interface PostListProps {
     displayMode: 'linear' | 'latest' | 'recent' | 'popular';
@@ -17,10 +19,13 @@ interface PostListProps {
 }
 
 const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexIncrement = 0, infiniteScroll = false, postsData, authorEmail }) => {
-    const posts = usePostStore((state) => state.posts);
-    const authors = useAuthorStore((state) => state.authors);
+    const { posts, fetchPosts, fetchPostsByAuthor } = usePostStore()
+    const { authors } = useAuthorStore();
+    const { pagination } = usePaginationStore();
 
     const [loading, setLoading] = useState<boolean>(true);
+
+    const POSTS_PER_PAGE = 28;
 
     const memoizedPosts = useMemo(() => posts.slice(), [posts]);
     const memoizedAuthors = useMemo(() => new Map(authors.map((author) => [author.email, author])), [authors]);
@@ -33,19 +38,21 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
         [memoizedPosts]);
 
     // Scroll-based pagination or load more trigger
-    const loadMorePosts = () => {
+    const loadMorePosts = async () => {
         if (loading) return;
+        setLoading(true);
 
         if (authorEmail) {
-            setLoading(true);
-            // fetchPostsByAuthor(authorEmail);
-            
-            setTimeout(() => {
-                setLoading(false);
-            }, 1500)
+            fetchPostsByAuthor(authorEmail, POSTS_PER_PAGE, pagination);
         } else {
-            // fetchPosts(limit); // Increment the page for the next fetch
+            const posts = await fetchPosts(limit); // Increment the page for the next fetch
+            console.log('fetched: ', posts);
+            
         }
+
+        setTimeout(() => {
+            setLoading(false);
+        }, 1500)
     };
 
     return (
@@ -63,7 +70,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
                         setLoading={setLoading}
                     />
                 ))
-            ): displayMode === 'latest' ? (
+            ) : displayMode === 'latest' ? (
                     <LazyPostCard 
                         post={latest} 
                         authorData={memoizedAuthors.get(latest.email) as AuthorItem} 
@@ -73,7 +80,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
                         isLoading={loading}
                         setLoading={setLoading}
                     />
-            ): displayMode === 'recent' ? (
+            ) : displayMode === 'recent' ? (
                 recent.map((post, index) => (
                     <LazyPostCard 
                         post={post} 
@@ -85,7 +92,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
                         setLoading={setLoading}
                     />
                 ))
-            ): (
+            ) : (
                 mostViewed.map((post, index) => (
                     <LazyPostCard 
                         post={post} 
@@ -107,9 +114,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
             )}
 
             {loading && (
-                <div className="container d-flex justify-content-center py-4">
-                    <div className="loading-spinning"></div>
-                </div>
+                <LoadingSkeleton />
             )}
         </>
     );
