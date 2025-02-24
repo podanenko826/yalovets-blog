@@ -43,14 +43,8 @@ export const usePostStore = create<PostStore>((set, get) => {
 
 
     const setLastKey = (key: string | null) => {
-        console.log("⏳ Attempting to set lastKey:", key);
-        console.log("🔍 Current Zustand lastKey:", get().lastKey);
-
         if (get().lastKey !== key) {
-            console.log("✅ Zustand is updating lastKey to:", key);
             set({ lastKey: key })
-        } else {
-            console.log("🚫 Skipping lastKey update, it's the same.");
         }
     };
 
@@ -91,7 +85,6 @@ export const usePostStore = create<PostStore>((set, get) => {
             if (Array.isArray(parsedPosts) && parsedPosts.length > 0) {
                 const lastKeyFromStorage = parsedPosts.at(-1)?.date ?? null;
                 setPosts(parsedPosts);
-                console.log("Loaded lastKey from storage:", lastKeyFromStorage);
                 setLastKey(lastKeyFromStorage);
             }
         }
@@ -127,7 +120,7 @@ export const usePostStore = create<PostStore>((set, get) => {
 
             // Update lastKey for pagination (only if it changes)
             if (postsData.lastKey) {
-                // set({ lastKey: postsData.lastKey });
+                set({ lastKey: postsData.lastKey });
             }
 
             return { posts: [...sortedCombinedPosts], lastKey: postsData.lastKey };
@@ -186,7 +179,6 @@ export const usePostStore = create<PostStore>((set, get) => {
 
     const fetchPostsByAuthor = async (authorEmail: string, postsPerPage: number, pagination: PaginationState): Promise<{ posts: PostItem[], lastKey: string}> => {
         if (!authorEmail || !postsPerPage) return { posts: [], lastKey: "" };
-        if (Object.keys(pagination.paginationData).length === 0) return { posts: [], lastKey: "" };
         
         try {
             const postsData = await getAuthorPosts(authorEmail, postsPerPage, lastKey || undefined);
