@@ -18,6 +18,8 @@ import { usePostStore } from '../posts/store';
 import { useAuthorStore } from '../authors/store';
 import LoadingSkeleton from '../LoadingSkeleton';
 
+import YouTubeEmbed from '@/components/mdx/YouTubeEmbed';
+
 const NavBar = lazy(() => import('@/components/NavBar'));
 const Footer = lazy(() => import('@/components/Footer'));
 
@@ -252,7 +254,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                             {!loading && serializedMarkdown ? (
                                                 <Suspense fallback={<LoadingSkeleton />}>
                                                     <MDXProvider components={components}>
-                                                        <MDXRemote compiledSource={serializedMarkdown?.compiledSource as string} scope={serializedMarkdown?.scope} frontmatter={serializedMarkdown?.frontmatter} />
+                                                        <MDXRemote compiledSource={serializedMarkdown?.compiledSource as string} scope={serializedMarkdown?.scope} frontmatter={serializedMarkdown?.frontmatter} components={{YouTubeEmbed}} />
                                                     </MDXProvider>
                                                 </Suspense>
                                             ) : (

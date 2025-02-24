@@ -1,20 +1,23 @@
 'use client';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
-import { headingsPlugin, listsPlugin, quotePlugin, thematicBreakPlugin, markdownShortcutPlugin, codeMirrorPlugin, linkDialogPlugin, imagePlugin, sandpackPlugin, tablePlugin, diffSourcePlugin, MDXEditor, type MDXEditorMethods, type MDXEditorProps, ConditionalContents, codeBlockPlugin, linkPlugin, ListsToggle } from '@mdxeditor/editor';
+import { headingsPlugin, listsPlugin, quotePlugin, thematicBreakPlugin, markdownShortcutPlugin, codeMirrorPlugin, linkDialogPlugin, imagePlugin, sandpackPlugin, tablePlugin, diffSourcePlugin, MDXEditor, type MDXEditorMethods, ConditionalContents, codeBlockPlugin, linkPlugin, ListsToggle, usePublisher, insertDirective$, DialogButton, directivesPlugin, GenericDirectiveEditor, DirectiveDescriptor, RealmPlugin, $createDirectiveNode, insertJsx$, GenericJsxEditor, jsxComponentDescriptors$, jsxPlugin, JsxComponentDescriptor, NestedLexicalEditor } from '@mdxeditor/editor';
 
 /* MDXEditor toolbar components */
 import { toolbarPlugin, UndoRedo, BoldItalicUnderlineToggles, BlockTypeSelect, ChangeCodeMirrorLanguage, CodeToggle, CreateLink, InsertCodeBlock, InsertImage, InsertTable, Separator, InsertThematicBreak, DiffSourceToggleWrapper } from '@mdxeditor/editor';
 import '@mdxeditor/editor/style.css';
 
-import { ChangeEvent, FC, FormEvent, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import { AuthorItem, PostItem, PostPreviewItem, TagItem } from '@/types';
 
-import { createPost, formatPostDate, saveMDXContent, updatePost } from '@/lib/posts';
+import { createPost, formatPostDate, updatePost } from '@/lib/posts';
 import React from 'react';
 import moment from 'moment';
 import dynamic from 'next/dynamic';
+import { YouTubeButton, YouTubeEmbedded } from './mdx/YouTubeEmbed';
+import { MdxJsxTextElement } from 'mdast-util-mdx-jsx';
+import { CopyGenericJsxEditor } from './CopyGenericJsxEditor';
 
 const PostCard = dynamic(() => import('@/components/PostCard/PostCard'), { ssr: false });
 
@@ -26,6 +29,18 @@ interface EditorProps {
     tagsData: TagItem[];
     editorRef?: React.MutableRefObject<MDXEditorMethods | null>;
 }
+
+const jsxComponentDescriptors: JsxComponentDescriptor[] = [
+    {
+        name: 'YouTubeEmbed',
+        kind: 'flow',
+        source: '@/components/mdx/YouTubeEmbed',
+        props: [
+            {name: 'id', type: 'string', required: true},
+        ],
+        Editor: (props) => CopyGenericJsxEditor({...props, TargetNode: YouTubeEmbedded}),
+    },
+  ]
 
 const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsData, editorRef }) => {
     const [currentMarkdown, setCurrentMarkdown] = useState(markdown); // Track current markdown
@@ -185,6 +200,9 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
 
     return (
         <div>
+            <script type="module">
+                import remarkDirective from 'https://esm.sh/remark-directive@3?bundle'
+            </script>
             <div className="container col-md-9 mt-5">
                 <div className="text-center pt-4">
                     <textarea className="heading-xlarge w-100 col-md-11 col-lg-12 text-center align-content-center" id="col-heading-1" disabled={slug ? true : false} placeholder={slug ? slug : 'Enter the post title'} onChange={e => handlePostTitleChange(e.target.value)} value={postTitle} />
@@ -229,10 +247,10 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
                         ref={editorRef}
                         markdown={currentMarkdown}
                         plugins={[
-                            // Example Plugin Usage
                             headingsPlugin(),
                             listsPlugin(),
                             quotePlugin(),
+                            jsxPlugin({ jsxComponentDescriptors }),
                             thematicBreakPlugin(),
                             markdownShortcutPlugin(),
                             codeBlockPlugin({
@@ -296,6 +314,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
                                                                 <Separator />
                                                                 <CreateLink />
                                                                 <InsertImage />
+                                                                <YouTubeButton />
                                                                 <Separator />
                                                                 <InsertTable />
                                                                 <InsertThematicBreak />

@@ -338,6 +338,11 @@ button {
     }
 }
 
+.editor-youtube-icon {
+    font-size: 1.25rem;
+    margin: 0 3px;
+}
+
 .article {
     line-height: 1.75rem;
     color: var(--col-heading-1);
@@ -403,6 +408,11 @@ button {
 
 .article > ul > li {
     padding: 4px 0;
+}
+
+.article > div > iframe {
+    margin-top: 1.6rem;
+    margin-bottom: 1.2rem;
 }
 
 .codeblock {
