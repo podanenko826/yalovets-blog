@@ -237,7 +237,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                     </div>
 
                     <div className="row post-list">
-                        {/* <PostList displayMode="popular" style="standard" indexIncrement={15} limit={3} /> */}
+                        <PostList displayMode="popular" style="standard" indexIncrement={15} limit={3} />
                     </div>
                 </div>
 

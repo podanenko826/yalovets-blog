@@ -172,6 +172,32 @@ export const getAuthorPosts = async (email: string, limit: number, lastKey?: str
     }
 };
 
+export const getPopularPosts = async (limit: number): Promise<PostItem[]> => {
+    if (!limit || limit > 50) return [];
+
+    try {
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+        const response = await fetch(`${baseUrl}/api/posts-by-views?limit=${limit}`, { cache: "force-cache" });
+
+        if (!response.ok) {
+            console.error('API returned an error:', response.status, await response.text());
+            return [];
+        }
+
+        const data: PostItem[] = await response.json();
+
+        const transformedPostData = transformPostData(data);
+
+        const sortedPostsData = sortPosts(transformedPostData);
+
+        return sortedPostsData;
+    } catch (err) {
+        console.error('Failed to fetch posts from the database: ', err);
+        return [];
+    }
+};
+
 export const getPost = async (slug: string): Promise<PostItem> => {
     const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
     const response = await fetch(`${baseUrl}/api/post-by-slug?slug=${slug}`, { method: 'GET', next: { revalidate: 3600 }, cache: "force-cache" });

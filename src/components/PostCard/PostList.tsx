@@ -7,6 +7,7 @@ import { usePostStore } from '../posts/store';
 import { useAuthorStore } from '../authors/store';
 import { usePaginationStore } from '../pagination/store';
 import LoadingSkeleton from '../LoadingSkeleton';
+import { getPopularPosts } from '@/lib/posts';
 
 interface PostListProps {
     displayMode: 'linear' | 'latest' | 'recent' | 'popular' | 'admin';
@@ -34,9 +35,20 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
     const recent = useMemo(() => memoizedPosts.slice(0, 9), [memoizedPosts]);
 
     const latest = useMemo(() => memoizedPosts[0] || null, [memoizedPosts]);
-    const mostViewed = useMemo(() => 
-        [...memoizedPosts].sort((a, b) => (b.viewsCount ?? 0) - (a.viewsCount ?? 0)).slice(0, 3),
-        [memoizedPosts]);
+
+    const [mostViewed, setMostViewed] = useState<PostItem[]>([]);
+
+    useEffect(() => {
+        const fetchPopularPosts = async () => {
+            if (displayMode === 'popular' && mostViewed.length === 0) {
+                const popularPosts = await getPopularPosts(3);
+
+                if (popularPosts.length > 0) setMostViewed(popularPosts);
+            }
+        }
+
+        fetchPopularPosts();
+    }, [displayMode])
 
     // Scroll-based pagination or load more trigger
     const loadMorePosts = async () => {
