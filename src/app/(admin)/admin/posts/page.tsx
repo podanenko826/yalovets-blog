@@ -48,7 +48,7 @@ const PostsPage = () => {
                                 <Link href={'/admin/posts/new'}>
                                     <div className={postCardStyles.image}>
                                         <Image
-                                            className={`img-fluid full-image ${postCardStyles.newPostImage}`}
+                                            className={`img-fluid full-image admin-image ${postCardStyles.newPostImage}`}
                                             src={'/ui/addpost.png'} // Using the image URL, including the placeholder logic if needed
                                             alt={'Create new post'}
                                             title={'Create new post'}
