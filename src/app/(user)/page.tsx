@@ -216,7 +216,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
 
                     <div className="row post-list">
                         <Suspense fallback={<div></div>}>
-                            <PostList displayMode="linear" style="standard" indexIncrement={2} limit={9} infiniteScroll />
+                            <PostList displayMode="recent" style="standard" indexIncrement={2} limit={9} />
                         </Suspense>
                     </div>
                 </div>

@@ -37,12 +37,10 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     const [authorData, setAuthorData] = useState<AuthorItem | null>(null);
     const [authorPosts, setAuthorPosts] = useState<PostItem[]>([]);
 
-    const [loading, setLoading] = useState<boolean>(false);
-
     const currentPath = usePathname() + '/';
     const slug = currentPath.split('/').pop();
 
-    const POSTS_PER_PAGE = 30;
+    const POSTS_PER_PAGE = 28;
 
     useEffect(() => {
         window.scrollTo(0, 0); // Scroll to top on route change
@@ -71,14 +69,10 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     useEffect(() => {
         const fetchAuthorPosts = async () => {
             if (authorData?.email) {
-                setLoading(true);
-
                 const authorPosts = await fetchPostsByAuthor(authorData.email, POSTS_PER_PAGE, pagination);
 
                 if (authorPosts.posts.length > 0) {
                     setAuthorPosts(authorPosts.posts);
-
-                    setLoading(false);
                 }
             }
         };
@@ -122,7 +116,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
                     </div>
 
                     <div className="container posts" id="posts">
-                        <div className="row post-list">
+                        <div className="row post-list mb-5">
                             <div className="d-flex justify-content-center p-0 m-0 mt-5">
                                 <h3 id="col-text">
                                     {authorData.fullName}

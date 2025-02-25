@@ -93,7 +93,7 @@ export const usePostStore = create<PostStore>((set, get) => {
     loadPostsFromStorage();
 
 
-    const fetchPosts = async (limit: number): Promise<{ posts: PostItem[], lastKey: string }> => {
+    const fetchPosts = async (limit: number, lastKey?: string): Promise<{ posts: PostItem[], lastKey: string }> => {
         if (!limit || limit > 50) return { posts: [], lastKey: "" };
         
         try {
@@ -119,7 +119,7 @@ export const usePostStore = create<PostStore>((set, get) => {
             setPosts([...sortedCombinedPosts]);
 
             // Update lastKey for pagination (only if it changes)
-            if (postsData.lastKey) {
+            if (!lastKey && postsData.lastKey) {
                 set({ lastKey: postsData.lastKey });
             }
 

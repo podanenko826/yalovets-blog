@@ -24,6 +24,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
     const { pagination } = usePaginationStore();
 
     const [loading, setLoading] = useState<boolean>(true);
+    const [isAllFetched, setAllFetched] = useState<boolean>(false);
 
     const POSTS_PER_PAGE = 28;
 
@@ -41,13 +42,19 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
     const loadMorePosts = async () => {
         if (loading) return;
         setLoading(true);
+        
+        const existingSlugs = new Set(posts.map(post => post.slug));
 
         if (authorEmail) {
-            fetchPostsByAuthor(authorEmail, POSTS_PER_PAGE, pagination);
+            const posts = await fetchPostsByAuthor(authorEmail, POSTS_PER_PAGE, pagination);
+            const newUniquePosts = posts.posts.filter(post => !existingSlugs.has(post.slug));
+
+            if (newUniquePosts.length === 0) setAllFetched(true);
         } else {
             const posts = await fetchPosts(limit); // Increment the page for the next fetch
-            console.log('fetched: ', posts);
+            const newUniquePosts = posts.posts.filter(post => !existingSlugs.has(post.slug));
             
+            if (newUniquePosts.length === 0) setAllFetched(true);
         }
 
         setTimeout(() => {
@@ -121,7 +128,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
             )}
 
             {/* Show a "Load More" button if more posts are available */}
-            {infiniteScroll && !loading && (
+            {!isAllFetched && infiniteScroll && !loading && (
                 <button onClick={loadMorePosts} className="btn-outlined my-5 py-3">
                     Load More Posts
                 </button>
