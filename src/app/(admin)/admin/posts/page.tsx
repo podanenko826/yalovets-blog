@@ -8,9 +8,10 @@ import Link from 'next/link';
 import PostList from '@/components/PostCard/PostList';
 import { usePostStore } from '@/components/posts/store';
 import { PostItem } from '@/types';
+import { IoMdRefresh } from 'react-icons/io';
 
 const PostsPage = () => {
-    const { posts, fetchPosts } = usePostStore();
+    const { posts, setPosts, setLastKey, fetchPosts } = usePostStore();
 
     const ARTICLES_PER_PAGE = 14;
 
@@ -18,15 +19,29 @@ const PostsPage = () => {
         fetchPosts(ARTICLES_PER_PAGE);
     }, [fetchPosts]);
 
+    const refreshPosts = async () => {
+        setLastKey(null);
+        localStorage.removeItem('cachedPosts');
+
+        if (posts.length > 0) {
+            setPosts([]);
+        }
+
+        fetchPosts(ARTICLES_PER_PAGE);
+    };
+
     return (
         <div>
             <div className="container-fluid posts" id="posts">
-                <div>
+                <div className='d-flex gap-4'>
                     <Link href={'/admin'}>
                         <button className="btn-filled px-3 py-3 mt-4">←Back to console</button>
                     </Link>
+                    <button className="btn-outlined px-3 py-2 mt-4" onClick={() => refreshPosts()}>
+                            <IoMdRefresh /> Refresh
+                    </button>
                 </div>
-                <div className="container-lg">
+                <div className="container-lg mt-5">
                     <div className="row post-list">
                         <div className="col-md-6 col-lg-4">
                             <div className="col-12">
