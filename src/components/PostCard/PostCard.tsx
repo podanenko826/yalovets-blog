@@ -392,7 +392,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                     </button>
                     <a role="button" data-bs-toggle="modal" data-bs-target={`#leavingModal-${post.slug}`}>
                         <Image
-                            className="img-fluid full-image"
+                            className="img-fluid full-image admin-image"
                             src={post.imageUrl || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
                             alt={post.title}
                             title={post.title}

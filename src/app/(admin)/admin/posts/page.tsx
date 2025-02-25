@@ -1,21 +1,22 @@
-import React from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
 
-import { getSortedPosts } from '@/lib/posts';
-import { getAuthors } from '@/lib/authors';
-import { AuthorItem, PostItem } from '@/types';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
 
 import postCardStyles from '@/components/PostCard/PostCard.module.css';
 import Link from 'next/link';
 import PostList from '@/components/PostCard/PostList';
+import { usePostStore } from '@/components/posts/store';
+import { PostItem } from '@/types';
 
-const LazyPostCard = dynamic(() => import('@/components/PostCard/LazyPostCard'), { ssr: false });
+const PostsPage = () => {
+    const { posts, fetchPosts } = usePostStore();
 
-const PostsPage = async () => {
-    const postData = await getSortedPosts(5);
+    const ARTICLES_PER_PAGE = 14;
 
-    const authorData: AuthorItem[] = await getAuthors();
+    useEffect(() => {
+        fetchPosts(ARTICLES_PER_PAGE);
+    }, [fetchPosts]);
 
     return (
         <div>
@@ -87,10 +88,7 @@ const PostsPage = async () => {
                             <LazyPostCard post={post} authorData={authorData.find(author => author.email === post.email) as AuthorItem} style="admin" index={index} key={index} />
                             </div>
                         ))} */}
-                            <PostList postsData={postData.posts} displayMode='linear' style='admin' limit={30} infiniteScroll />
-                        <div className="col-md-6 col-lg-4">
-                                
-                        </div>
+                        <PostList postsData={posts} displayMode='admin' style='admin' limit={ARTICLES_PER_PAGE} infiniteScroll />
                     </div>
                 </div>
             </div>

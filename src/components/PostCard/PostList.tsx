@@ -9,7 +9,7 @@ import { usePaginationStore } from '../pagination/store';
 import LoadingSkeleton from '../LoadingSkeleton';
 
 interface PostListProps {
-    displayMode: 'linear' | 'latest' | 'recent' | 'popular';
+    displayMode: 'linear' | 'latest' | 'recent' | 'popular' | 'admin';
     style: 'massive' | 'full' | 'expanded' | 'preview' | 'admin' | 'standard';
     limit: number;  // Add limit as a prop for pagination
     indexIncrement?: number;
@@ -91,6 +91,20 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
                         isLoading={loading}
                         setLoading={setLoading}
                     />
+                ))
+            ) : displayMode === 'admin' ? (
+                posts.map((post, index) => (
+                    <div className="col-md-6 col-lg-4">
+                        <LazyPostCard 
+                            post={post} 
+                            authorData={memoizedAuthors.get(post.email) as AuthorItem} 
+                            key={`${post.slug}-${index}`}
+                            index={index + posts.length + indexIncrement} 
+                            style={style}
+                            isLoading={loading}
+                            setLoading={setLoading}
+                        />
+                    </div>
                 ))
             ) : (
                 mostViewed.map((post, index) => (

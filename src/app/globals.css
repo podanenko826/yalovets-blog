@@ -598,6 +598,10 @@ blockquote > span,
     height: 210px !important;
 }
 
+.admin-image {
+    border-radius: 7px !important;
+}
+
 .preview-author-select {
     width: min-content;
     height: min-content;

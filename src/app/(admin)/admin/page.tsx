@@ -7,7 +7,7 @@ import Image from 'next/image';
 import postCardStyles from '@/components/PostCard/PostCard.module.css';
 import Link from 'next/link';
 
-const AdminPage = async () => {
+const AdminPage = () => {
     const managementItems = [
         {
             id: 1,
