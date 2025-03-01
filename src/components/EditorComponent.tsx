@@ -15,7 +15,7 @@ import { createPost, formatPostDate, updatePost } from '@/lib/posts';
 import React from 'react';
 import moment from 'moment';
 import dynamic from 'next/dynamic';
-import { YouTubeButton, YouTubeEmbedded } from './mdx/YouTubeEmbed';
+import YouTubeEmbed, { YouTubeButton } from './mdx/YouTubeEmbed';
 import { MdxJsxTextElement } from 'mdast-util-mdx-jsx';
 import { CopyGenericJsxEditor } from './CopyGenericJsxEditor';
 
@@ -34,11 +34,11 @@ const jsxComponentDescriptors: JsxComponentDescriptor[] = [
     {
         name: 'YouTubeEmbed',
         kind: 'flow',
-        source: '@/components/mdx/YouTubeEmbed',
         props: [
             {name: 'id', type: 'string', required: true},
         ],
-        Editor: (props) => CopyGenericJsxEditor({...props, TargetNode: YouTubeEmbedded}),
+        hasChildren: true,
+        Editor: (props) => CopyGenericJsxEditor({...props, TargetNode: YouTubeEmbed}),
     },
   ]
 
