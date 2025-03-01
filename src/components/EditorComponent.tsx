@@ -1,7 +1,7 @@
 'use client';
 import { useRouter } from 'next/navigation';
 
-import { headingsPlugin, listsPlugin, quotePlugin, thematicBreakPlugin, markdownShortcutPlugin, codeMirrorPlugin, linkDialogPlugin, imagePlugin, sandpackPlugin, tablePlugin, diffSourcePlugin, MDXEditor, type MDXEditorMethods, ConditionalContents, codeBlockPlugin, linkPlugin, ListsToggle, usePublisher, insertDirective$, DialogButton, directivesPlugin, GenericDirectiveEditor, DirectiveDescriptor, RealmPlugin, $createDirectiveNode, insertJsx$, GenericJsxEditor, jsxComponentDescriptors$, jsxPlugin, JsxComponentDescriptor, NestedLexicalEditor } from '@mdxeditor/editor';
+import { headingsPlugin, listsPlugin, quotePlugin, thematicBreakPlugin, markdownShortcutPlugin, codeMirrorPlugin, linkDialogPlugin, imagePlugin, sandpackPlugin, tablePlugin, diffSourcePlugin, MDXEditor, type MDXEditorMethods, ConditionalContents, codeBlockPlugin, linkPlugin, ListsToggle, usePublisher, insertDirective$, DialogButton, directivesPlugin, GenericDirectiveEditor, DirectiveDescriptor, RealmPlugin, $createDirectiveNode, insertJsx$, GenericJsxEditor, jsxComponentDescriptors$, jsxPlugin, JsxComponentDescriptor, NestedLexicalEditor, StrikeThroughSupSubToggles } from '@mdxeditor/editor';
 
 /* MDXEditor toolbar components */
 import { toolbarPlugin, UndoRedo, BoldItalicUnderlineToggles, BlockTypeSelect, ChangeCodeMirrorLanguage, CodeToggle, CreateLink, InsertCodeBlock, InsertImage, InsertTable, Separator, InsertThematicBreak, DiffSourceToggleWrapper } from '@mdxeditor/editor';
@@ -306,6 +306,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
                                                                 <UndoRedo />
                                                                 <Separator />
                                                                 <BoldItalicUnderlineToggles />
+                                                                <StrikeThroughSupSubToggles options={['Strikethrough', 'Sup']} />
                                                                 <CodeToggle />
                                                                 <Separator />
                                                                 <ListsToggle />
