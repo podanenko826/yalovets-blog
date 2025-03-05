@@ -14,6 +14,7 @@ import { notFound, usePathname } from 'next/navigation';
 import { usePostStore } from '@/components/posts/store';
 import { useAuthorStore } from '@/components/authors/store';
 import LoadingBanner from '@/components/Modals/LoadingBanner';
+import { uploadImage } from '@/lib/images';
 
 const NavBar = lazy(() => import('@/components/NavBar'));
 const Footer = lazy(() => import('@/components/Footer'));
@@ -122,8 +123,6 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
             {showModal && <PostPreviewModal />}
             {showModal && <ArticleModal slug={slug || ''} />}
             <main id="body">
-                <button onClick={() => console.log(posts)}>Print posts</button>
-                <button onClick={() => console.log(lastKey)}>Print lastKey</button>
                 {/* Welcome section (Mobile) */}
                 <div className="container welcome-xs d-block d-lg-none">
                     <div className="row">
