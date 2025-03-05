@@ -22,11 +22,11 @@ type PostCardProps = {
     style: 'massive' | 'full' | 'expanded' | 'preview' | 'admin' | 'standard';
     index?: number | 1;
     setValue?: React.Dispatch<React.SetStateAction<string>>;
-    setImageFormData?: React.Dispatch<React.SetStateAction<FormData | null>>;
+    setImageFile?: React.Dispatch<React.SetStateAction<File | null>>;
     onVisible?: () => void;
 };
 
-const PostCard = ({ post, previewData, authorData, style, index, setValue, setImageFormData, onVisible }: PostCardProps) => {
+const PostCard = ({ post, previewData, authorData, style, index, setValue, setImageFile, onVisible }: PostCardProps) => {
     const cardRef = useRef<HTMLDivElement>(null);
 
     const [imagePreview, setImagePreview] = useState<string | null>(null); // Store the image preview
@@ -39,11 +39,9 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setIm
                 const newName = file.name.replace(/\s+/g, '');
                 // Create a new File object with the modified name
                 const newFile = new File([file], newName, { type: file.type, lastModified: file.lastModified });
-                
-                const formData = new FormData();
-                formData.append('image', newFile);
-                // Pass the uploaded image FormData back to EditorComponent
-                if (setImageFormData) setImageFormData(formData);
+
+                // Pass the uploaded image file back to EditorComponent
+                if (setImageFile) setImageFile(newFile);
 
                 const reader = new FileReader(); // Create a new FileReader
 

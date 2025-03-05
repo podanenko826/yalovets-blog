@@ -1,4 +1,4 @@
-export const uploadImage = async (formData: FormData, year: string, month: string): Promise<{
+export const uploadImage = async (imageFile: File, year: string, month: string): Promise<{
     originalName: string,
     extension: string,
     filePath: string,
@@ -6,6 +6,10 @@ export const uploadImage = async (formData: FormData, year: string, month: strin
     mimetype: string,
 }> => {
     try {
+        const formData = new FormData();
+
+        formData.append('image', imageFile);
+
         if (!formData) {
             return { originalName: '', extension: '', filePath: '', size: 0, mimetype: '' };
         }

@@ -51,7 +51,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
     const [postType, setPostType] = useState<string>('Article');
     const [readTime, setReadTime] = useState<number>(0);
     const [tags, setTags] = useState<string[]>([]);
-    const [imageFormData, setImageFormData] = useState<FormData | null>(null);
+    const [imageFile, setImageFile] = useState<File | null>(null);
 
     const [isSponsored, setIsSponsored] = useState<boolean>(false);
     const [sponsoredBy, setSponsoredBy] = useState<string | undefined>(undefined);
@@ -97,7 +97,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
 
     useEffect(() => {
         const uploadBannerImage = async () => {
-            if (imageFormData) {
+            if (imageFile) {
                 let date = moment.utc().toDate();
     
                 if (postData?.date) {
@@ -107,18 +107,16 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
                 const year: string = date.getFullYear().toString();
                 const month: string = String(date.getMonth() + 1).padStart(2, '0');
 
-                const file = imageFormData.get('image') as File;
-
-                const newImageUrl: string = `/images/${year}/${month}/${file.name}`;
+                const newImageUrl: string = `/images/${year}/${month}/${imageFile.name}`;
     
-                await uploadImage(imageFormData, year, month);
+                await uploadImage(imageFile, year, month);
     
                 setImageUrl(newImageUrl);
             }
         }
 
         uploadBannerImage();
-    }, [imageFormData]);
+    }, [imageFile]);
 
     if (postData?.date === 'Invalid date') {
         postData.date = moment.utc().toISOString();
@@ -365,8 +363,8 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
                 <div className="row">
                     <div className="container">
                         <h1 className="text-center py-3">Preview</h1>
-                        <button onClick={(() => console.log(imageFormData))}>Print</button>
-                        <PostCard post={Post} previewData={PostPreview} authorData={selectedAuthor || authorData[0]} style="preview" setValue={setDescription} setImageFormData={setImageFormData} />
+                        <button onClick={(() => console.log(imageFile))}>Print</button>
+                        <PostCard post={Post} previewData={PostPreview} authorData={selectedAuthor || authorData[0]} style="preview" setValue={setDescription} setImageFile={setImageFile} />
                     </div>
                 </div>
             </div>
