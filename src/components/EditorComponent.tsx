@@ -118,6 +118,26 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
         uploadBannerImage();
     }, [imageFile]);
 
+    async function imageUploadHandler(image: File) {
+        const newName = image.name.replace(/\s+/g, '');
+        // Create a new File object with the modified name
+        const newImage = new File([image], newName, { type: image.type, lastModified: image.lastModified });
+
+        let date = moment.utc().toDate();
+    
+        if (postData?.date) {
+            date = moment(postData.date).toDate();
+        }
+
+        const year: string = date.getFullYear().toString();
+        const month: string = String(date.getMonth() + 1).padStart(2, '0');
+        // send the file to your server and return
+        // the URL of the uploaded image in the response
+        const { filePath } = await uploadImage(newImage, year, month);
+
+        return filePath;
+    }
+
     if (postData?.date === 'Invalid date') {
         postData.date = moment.utc().toISOString();
     }
@@ -304,7 +324,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
                             }),
                             linkPlugin(),
                             linkDialogPlugin(),
-                            imagePlugin(),
+                            imagePlugin({ imageUploadHandler }),
                             sandpackPlugin({
                                 sandpackConfig: {
                                     defaultPreset: '',
