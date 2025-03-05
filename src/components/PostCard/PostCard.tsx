@@ -22,11 +22,46 @@ type PostCardProps = {
     style: 'massive' | 'full' | 'expanded' | 'preview' | 'admin' | 'standard';
     index?: number | 1;
     setValue?: React.Dispatch<React.SetStateAction<string>>;
+    setImageFormData?: React.Dispatch<React.SetStateAction<FormData | null>>;
     onVisible?: () => void;
 };
 
-const PostCard = ({ post, previewData, authorData, style, index, setValue, onVisible }: PostCardProps) => {
+const PostCard = ({ post, previewData, authorData, style, index, setValue, setImageFormData, onVisible }: PostCardProps) => {
     const cardRef = useRef<HTMLDivElement>(null);
+
+    const [imagePreview, setImagePreview] = useState<string | null>(null); // Store the image preview
+    const fileInputRef = useRef<HTMLInputElement | null>(null); // Reference for the file input
+
+    // Handle file selection
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            const file = e.target.files?.[0]; // Get the first selected file
+            if (file) {
+                const newName = file.name.replace(/\s+/g, '');
+                // Create a new File object with the modified name
+                const newFile = new File([file], newName, { type: file.type, lastModified: file.lastModified });
+                
+                const formData = new FormData();
+                formData.append('image', newFile);
+                // Pass the uploaded image FormData back to EditorComponent
+                if (setImageFormData) setImageFormData(formData);
+
+                const reader = new FileReader(); // Create a new FileReader
+
+                // Once the file is loaded, set the image preview
+                reader.onloadend = () => {
+                    if (reader.result) {
+                    setImagePreview(reader.result as string); // Store the image data URL in state
+                    }
+                };
+
+                reader.readAsDataURL(file); // Read the file as a data URL (image)
+            }
+    };
+
+  // Trigger file input click when the image div is clicked
+  const handleImageClick = () => {
+    fileInputRef.current?.click(); // Trigger the file input click
+  };
 
     const { setExpandedPost } = usePostStore();
 
@@ -541,10 +576,34 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                     <div className="row align-items-center justify-content-center">
                         {previewData.imageUrl && (
                             <div className="col-lg-8">
-                                <picture className="img-fluid">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    style={{ display: 'none' }}
+                                    onChange={handleFileChange}
+                                    ref={fileInputRef} // Assigning ref to file input
+                                />
+
+                                {/* Image used as the button (it will also act as the preview once uploaded) */}
+                                <div
+                                    style={{
+                                        cursor: 'pointer',
+                                        border: '2px dashed #ccc',
+                                        minWidth: '354px',
+                                        minHeight: '180px',
+                                        maxHeight: '180px',
+                                        overflow: 'hidden',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        backgroundColor: '#f4f4f4',
+                                    }}
+                                    onClick={handleImageClick}
+                                    className='admin-image img-fluid'
+                                >
                                     <Image
-                                        className="img-fluid"
-                                        src={post.imageUrl || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
+                                        className="img-fluid admin-image"
+                                        src={imagePreview || '/ui/addpost.png'} // Using the image URL, including the placeholder logic if needed
                                         alt={post.title}
                                         title={post.title}
                                         loading="lazy"
@@ -552,7 +611,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                         height={180}
                                         sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                                     />
-                                </picture>
+                                </div>
                             </div>
                         )}
 

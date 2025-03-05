@@ -18,6 +18,7 @@ import dynamic from 'next/dynamic';
 import YouTubeEmbed, { YouTubeButton } from './mdx/YouTubeEmbed';
 import { MdxJsxTextElement } from 'mdast-util-mdx-jsx';
 import { CopyGenericJsxEditor } from './CopyGenericJsxEditor';
+import { uploadImage } from '@/lib/images';
 
 const PostCard = dynamic(() => import('@/components/PostCard/PostCard'), { ssr: false });
 
@@ -50,12 +51,13 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
     const [postType, setPostType] = useState<string>('Article');
     const [readTime, setReadTime] = useState<number>(0);
     const [tags, setTags] = useState<string[]>([]);
+    const [imageFormData, setImageFormData] = useState<FormData | null>(null);
 
     const [isSponsored, setIsSponsored] = useState<boolean>(false);
     const [sponsoredBy, setSponsoredBy] = useState<string | undefined>(undefined);
     const [sponsorUrl, setSponsorUrl] = useState<string | undefined>(undefined);
 
-    const [imageUrl, setImageUrl] = useState(postData ? postData.imageUrl : '/img/AWS-beginning.png');
+    const [imageUrl, setImageUrl] = useState(postData ? postData.imageUrl : '');
 
     const format = 'YYYY-MM-DD';
 
@@ -93,6 +95,31 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
         }
     }, [slug, postData, authorData]);
 
+    useEffect(() => {
+        const uploadBannerImage = async () => {
+            if (imageFormData) {
+                let date = moment.utc().toDate();
+    
+                if (postData?.date) {
+                    date = moment(postData.date).toDate();
+                }
+    
+                const year: string = date.getFullYear().toString();
+                const month: string = String(date.getMonth() + 1).padStart(2, '0');
+
+                const file = imageFormData.get('image') as File;
+
+                const newImageUrl: string = `/images/${year}/${month}/${file.name}`;
+    
+                await uploadImage(imageFormData, year, month);
+    
+                setImageUrl(newImageUrl);
+            }
+        }
+
+        uploadBannerImage();
+    }, [imageFormData]);
+
     if (postData?.date === 'Invalid date') {
         postData.date = moment.utc().toISOString();
     }
@@ -117,7 +144,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
     const PostPreview: PostPreviewItem = {
         title: postTitle,
         description,
-        imageUrl: imageUrl as string,
+        imageUrl: imageUrl || '/ui/addpost.png',
         date: postData?.date || moment(Date.now()).format(format),
         modifyDate: moment(formatPostDate(moment(postData?.modifyDate).toDate()), format).format(format) || moment(Date.now()).format(format),
         postType: postData?.postType || 'Article',
@@ -338,7 +365,8 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
                 <div className="row">
                     <div className="container">
                         <h1 className="text-center py-3">Preview</h1>
-                        <PostCard post={Post} previewData={PostPreview} authorData={selectedAuthor || authorData[0]} style="preview" setValue={setDescription} />
+                        <button onClick={(() => console.log(imageFormData))}>Print</button>
+                        <PostCard post={Post} previewData={PostPreview} authorData={selectedAuthor || authorData[0]} style="preview" setValue={setDescription} setImageFormData={setImageFormData} />
                     </div>
                 </div>
             </div>
