@@ -13,29 +13,39 @@ const AdminPage = () => {
             id: 1,
             title: 'Manage posts',
             description: 'Create, update and remove posts from your blog in one place.',
-            imageUrl: '/img/addpost.png',
+            imageUrl: '/ui/postmanage.png',
             url: '/admin/posts',
         },
+        // {
+        //     id: 2,
+        //     title: 'Manage tags',
+        //     description: 'Create, update and remove tags you assign to each post on your blog in one place.',
+        //     imageUrl: '/ui/tagmanage.png',
+        //     url: '/admin/tags',
+        // },
         {
             id: 2,
-            title: 'Manage tags',
-            description: 'Create, update and remove tags you assign to each post on your blog in one place.',
-            imageUrl: '/img/addpost.png',
-            url: '/admin/tags',
-        },
-        {
-            id: 3,
             title: 'Manage authors',
             description: 'Create, update and remove authors that can write posts on your blog in one place.',
-            imageUrl: '/img/addpost.png',
+            imageUrl: '/ui/authormanage.png',
             url: '/admin/authors',
         },
         {
-            id: 4,
+            id: 3,
             title: 'Manage subscribers',
             description: 'View whoever is subscribed to your blog and remove their subscribtions in one place.',
-            imageUrl: '/img/addpost.png',
+            imageUrl: '/ui/subscribermanage.png',
             url: '/admin/subscribers',
+        },
+    ];
+
+    const otherItems = [
+        {
+            id: 1,
+            title: 'Remove images',
+            description: 'Remove images you ever uploaded to the server.',
+            imageUrl: '/ui/imagemanage.png',
+            url: '/admin/images',
         },
     ];
 
@@ -109,13 +119,48 @@ const AdminPage = () => {
                     <div>
                         <div className="row post-list">
                             {managementItems.map(item => (
-                                <div className="col-12 col-md-6 col-lg-3" key={item.id}>
+                                <div className="col-12 col-md-6 col-lg-4" key={item.id}>
                                     <div className="col-12">
                                         <Link href={item.url}>
                                             <div className={postCardStyles.image}>
                                                 <Image
                                                     className={`img-fluid full-image admin-image ${postCardStyles.newPostImage}`}
-                                                    src={'/ui/addpost.png'} // Using the image URL, including the placeholder logic if needed
+                                                    src={item.imageUrl} // Using the image URL, including the placeholder logic if needed
+                                                    alt={item.title}
+                                                    title={item.title}
+                                                    priority={true} // Ensuring the image is preloaded and prioritized
+                                                    width={354}
+                                                    height={180}
+                                                    sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                                                />
+                                            </div>
+
+                                            <div className={postCardStyles.postInfo}>
+                                                <h2 className={postCardStyles.heading} id="col-heading-1">
+                                                    {item.title}
+                                                </h2>
+                                                <p className={postCardStyles.description}>{item.description}</p>
+                                            </div>
+                                        </Link>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="container-fluid my-4">
+                    <h1 className="heading-large">Other</h1>
+                    <div>
+                        <div className="row post-list">
+                            {otherItems.map(item => (
+                                <div className="col-12 col-md-6 col-lg-4" key={item.id}>
+                                    <div className="col-12">
+                                        <Link href={item.url}>
+                                            <div className={postCardStyles.image}>
+                                                <Image
+                                                    className={`img-fluid full-image admin-image ${postCardStyles.newPostImage}`}
+                                                    src={item.imageUrl} // Using the image URL, including the placeholder logic if needed
                                                     alt={item.title}
                                                     title={item.title}
                                                     priority={true} // Ensuring the image is preloaded and prioritized
