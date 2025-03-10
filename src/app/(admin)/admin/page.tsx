@@ -42,8 +42,8 @@ const AdminPage = () => {
     const otherItems = [
         {
             id: 1,
-            title: 'Remove images',
-            description: 'Remove images you ever uploaded to the server.',
+            title: 'Browse images',
+            description: 'See what images are uploaded to the server and delete unused ones.',
             imageUrl: '/ui/imagemanage.png',
             url: '/admin/images',
         },
