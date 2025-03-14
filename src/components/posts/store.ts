@@ -79,14 +79,27 @@ export const usePostStore = create<PostStore>((set, get) => {
         if (typeof localStorage === 'undefined') return;
 
         const savedPosts = localStorage.getItem(POSTS_STORAGE_KEY);
-        if (savedPosts) {
-            const parsedPosts = JSON.parse(savedPosts).posts;
-            
+        if (!savedPosts) return;
+
+        try {
+            const parsedData = JSON.parse(savedPosts);
+            const parsedPosts = parsedData.posts;
+            const parsedTimestamp = parsedData.timestamp;
+
+            // Check if data is expired
+            if (!parsedTimestamp || (Date.now() - parsedTimestamp) >= POSTS_EXPIRATION_TIME) {
+                localStorage.removeItem(POSTS_STORAGE_KEY);
+                return; // Expired, so we don't set posts
+            }
+
             if (Array.isArray(parsedPosts) && parsedPosts.length > 0) {
                 const lastKeyFromStorage = parsedPosts.at(-1)?.date ?? null;
                 setPosts(parsedPosts);
                 setLastKey(lastKeyFromStorage);
             }
+        } catch (err) {
+            console.error("Error parsing posts from storage:", err);
+            localStorage.removeItem(POSTS_STORAGE_KEY);
         }
     };
 

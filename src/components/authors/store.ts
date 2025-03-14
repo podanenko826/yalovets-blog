@@ -48,10 +48,27 @@ export const useAuthorStore = create<AuthorStore>((set) => {
 
     const loadAuthorsFromStorage = () => {
         if (typeof localStorage === 'undefined') return;
-
+    
         const savedAuthors = localStorage.getItem(AUTHORS_STORAGE_KEY);
-        if (savedAuthors) {
-            set({ authors: JSON.parse(savedAuthors) });
+        if (!savedAuthors) return;
+    
+        try {
+            const parsedData = JSON.parse(savedAuthors);
+            const parsedAuthors = parsedData.authors;
+            const parsedTimestamp = parsedData.timestamp;
+    
+            // Check if data is expired
+            if (!parsedTimestamp || (Date.now() - parsedTimestamp) >= AUTHORS_EXPIRATION_TIME) {
+                localStorage.removeItem(AUTHORS_STORAGE_KEY);
+                return; // Expired, so do not set authors
+            }
+    
+            if (Array.isArray(parsedAuthors) && parsedAuthors.length > 0) {
+                set({ authors: parsedAuthors });
+            }
+        } catch (err) {
+            console.error("Error parsing authors from storage:", err);
+            localStorage.removeItem(AUTHORS_STORAGE_KEY); // Remove corrupt data
         }
     };
 
