@@ -14,6 +14,41 @@ import { MdContentCopy, MdOutlineDoneAll, MdClear } from 'react-icons/md';
 
 export function useMDXComponents(components?: MDXComponents): MDXComponents {
     return {
+        img: (props: React.DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>) => {
+            const filename = props.src?.replace(/\.[^/.]+$/, "");
+            const isWebP = props.src?.endsWith('.webp') ?? false;
+            const hasResolution = /@\d+w(\d+x)?$/.test(filename ?? '');
+
+            // if (!filename) return <img {...props} />;
+
+            return (
+                <img
+                    {...props}
+                    className="img-fluid"
+                    srcSet={
+                        isWebP && !hasResolution && !props.srcSet
+                            ? `
+                                ${filename}@730w.webp 730w,
+                                ${filename}@1460w.webp 1460w,
+                                ${filename}@610w.webp 610w,
+                                ${filename}@1220w.webp 1220w,
+                                ${filename}@450w.webp 450w,
+                                ${filename}@900w.webp 900w,
+                                ${filename}@660w.webp 660w,
+                                ${filename}@1090w.webp 1090w
+                            `
+                            : props.srcSet || ''
+                    }
+                    sizes="(min-width: 1200px) 730px,
+                            (min-width: 992px) 660px,
+                            (min-width: 768px) 610px,
+                            (min-width: 576px) 450px,
+                            450px"
+                    width={props.width ? props.width : '354'}
+                    height={props.height ? props.height : '180'}
+                />
+            );
+        },
         table: (props: React.JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableElement> & React.TableHTMLAttributes<HTMLTableElement>) => (
             <div className="container">
                 <div className="row overflow-scroll">

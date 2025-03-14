@@ -22,11 +22,44 @@ type PostCardProps = {
     style: 'massive' | 'full' | 'expanded' | 'preview' | 'admin' | 'standard';
     index?: number | 1;
     setValue?: React.Dispatch<React.SetStateAction<string>>;
+    setImageFile?: React.Dispatch<React.SetStateAction<File | null>>;
     onVisible?: () => void;
 };
 
-const PostCard = ({ post, previewData, authorData, style, index, setValue, onVisible }: PostCardProps) => {
+const PostCard = ({ post, previewData, authorData, style, index, setValue, setImageFile, onVisible }: PostCardProps) => {
     const cardRef = useRef<HTMLDivElement>(null);
+
+    const [imagePreview, setImagePreview] = useState<string | null>(null); // Store the image preview
+    const fileInputRef = useRef<HTMLInputElement | null>(null); // Reference for the file input
+
+    // Handle file selection
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            const file = e.target.files?.[0]; // Get the first selected file
+            if (file) {
+                const newName = file.name.replace(/\s+/g, '');
+                // Create a new File object with the modified name
+                const newFile = new File([file], newName, { type: file.type, lastModified: file.lastModified });
+
+                // Pass the uploaded image file back to EditorComponent
+                if (setImageFile) setImageFile(newFile);
+
+                const reader = new FileReader(); // Create a new FileReader
+
+                // Once the file is loaded, set the image preview
+                reader.onloadend = () => {
+                    if (reader.result) {
+                        setImagePreview(reader.result as string); // Store the image data URL in state
+                    }
+                };
+
+                reader.readAsDataURL(file); // Read the file as a data URL (image)
+            }
+    };
+
+  // Trigger file input click when the image div is clicked
+  const handleImageClick = () => {
+    fileInputRef.current?.click(); // Trigger the file input click
+  };
 
     const { setExpandedPost } = usePostStore();
 
@@ -232,6 +265,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
             }
         }
     }, [popoverVisible, handleMouseEnter, handleMouseLeave]);
+
+    let postImageUrl = post.imageUrl?.replace(/\.[^/.]+$/, "");
 
     return style === 'massive' ? (
         <div className={styles.latest_post}>
@@ -541,10 +576,34 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                     <div className="row align-items-center justify-content-center">
                         {previewData.imageUrl && (
                             <div className="col-lg-8">
-                                <picture className="img-fluid">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    style={{ display: 'none' }}
+                                    onChange={handleFileChange}
+                                    ref={fileInputRef} // Assigning ref to file input
+                                />
+
+                                {/* Image used as the button (it will also act as the preview once uploaded) */}
+                                <div
+                                    style={{
+                                        cursor: 'pointer',
+                                        border: '2px dashed #ccc',
+                                        minWidth: '354px',
+                                        minHeight: '180px',
+                                        maxHeight: '180px',
+                                        overflow: 'hidden',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        backgroundColor: '#f4f4f4',
+                                    }}
+                                    onClick={handleImageClick}
+                                    className='admin-image img-fluid'
+                                >
                                     <Image
-                                        className="img-fluid"
-                                        src={post.imageUrl || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
+                                        className="img-fluid admin-image"
+                                        src={imagePreview || '/ui/addpost.png'} // Using the image URL, including the placeholder logic if needed
                                         alt={post.title}
                                         title={post.title}
                                         loading="lazy"
@@ -552,7 +611,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                                         height={180}
                                         sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                                     />
-                                </picture>
+                                </div>
                             </div>
                         )}
 
@@ -599,11 +658,40 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
         </div>
     ) : (
         <div ref={cardRef} className={`${styles.card} col-12 col-md-4`} key={index}>
-            {post.imageUrl && (
-                <a role="button" onClick={handlePostOpen}>
+            {postImageUrl && (
+                    <a role="button" onClick={handlePostOpen}>
                     <div className={styles.image}>
                         <picture className={`img-fluid ${styles.imageWrapper}`}>
-                            <Image className="img-fluid" src={post.imageUrl || '/ui/not-found.png'} alt={post.title} title={post.title} width={354} height={180} loading="lazy" sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
+                            {/* WebP Images */}
+                            {/* Fallback Image */}
+                            <img
+                                className="img-fluid"
+                                src={`${postImageUrl}.webp` || '/ui/not-found.png'}
+                                alt={post.title}
+                                title={post.title}
+                                srcSet={
+                                    !postImageUrl.includes('@')
+                                        ? `
+                                            ${postImageUrl}@730w.webp 730w,
+                                            ${postImageUrl}@1460w.webp 1460w,
+                                            ${postImageUrl}@610w.webp 610w,
+                                            ${postImageUrl}@1220w.webp 1220w,
+                                            ${postImageUrl}@450w.webp 450w,
+                                            ${postImageUrl}@900w.webp 900w,
+                                            ${postImageUrl}@660w.webp 660w,
+                                            ${postImageUrl}@1090w.webp 1090w
+                                        `
+                                        : ''
+                                }
+                                sizes="(min-width: 1200px) 730px,
+                                        (min-width: 992px) 660px,
+                                        (min-width: 768px) 610px,
+                                        (min-width: 576px) 450px,
+                                        450px"
+                                width={354}
+                                height={180}
+                                loading="lazy"
+                            />
                             {post.postType && (
                                 <span className={`d-inline-block ${styles.articleLabel} ${post.postType === 'Guide' ? styles.articleLabel_Guide : post.postType === 'Review' ? styles.articleLabel_Review : post.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
                                     <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
@@ -613,6 +701,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, onVis
                         </picture>
                     </div>
                 </a>
+            
             )}
 
             <PostInfoSection descLength={140} />

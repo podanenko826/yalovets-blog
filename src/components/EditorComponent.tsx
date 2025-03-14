@@ -1,7 +1,7 @@
 'use client';
 import { useRouter } from 'next/navigation';
 
-import { headingsPlugin, listsPlugin, quotePlugin, thematicBreakPlugin, markdownShortcutPlugin, codeMirrorPlugin, linkDialogPlugin, imagePlugin, sandpackPlugin, tablePlugin, diffSourcePlugin, MDXEditor, type MDXEditorMethods, ConditionalContents, codeBlockPlugin, linkPlugin, ListsToggle, usePublisher, insertDirective$, DialogButton, directivesPlugin, GenericDirectiveEditor, DirectiveDescriptor, RealmPlugin, $createDirectiveNode, insertJsx$, GenericJsxEditor, jsxComponentDescriptors$, jsxPlugin, JsxComponentDescriptor, NestedLexicalEditor } from '@mdxeditor/editor';
+import { headingsPlugin, listsPlugin, quotePlugin, thematicBreakPlugin, markdownShortcutPlugin, codeMirrorPlugin, linkDialogPlugin, imagePlugin, sandpackPlugin, tablePlugin, diffSourcePlugin, MDXEditor, type MDXEditorMethods, ConditionalContents, codeBlockPlugin, linkPlugin, ListsToggle, usePublisher, insertDirective$, DialogButton, directivesPlugin, GenericDirectiveEditor, DirectiveDescriptor, RealmPlugin, $createDirectiveNode, insertJsx$, GenericJsxEditor, jsxComponentDescriptors$, jsxPlugin, JsxComponentDescriptor, NestedLexicalEditor, StrikeThroughSupSubToggles } from '@mdxeditor/editor';
 
 /* MDXEditor toolbar components */
 import { toolbarPlugin, UndoRedo, BoldItalicUnderlineToggles, BlockTypeSelect, ChangeCodeMirrorLanguage, CodeToggle, CreateLink, InsertCodeBlock, InsertImage, InsertTable, Separator, InsertThematicBreak, DiffSourceToggleWrapper } from '@mdxeditor/editor';
@@ -15,9 +15,10 @@ import { createPost, formatPostDate, updatePost } from '@/lib/posts';
 import React from 'react';
 import moment from 'moment';
 import dynamic from 'next/dynamic';
-import { YouTubeButton, YouTubeEmbedded } from './mdx/YouTubeEmbed';
+import YouTubeEmbed, { YouTubeButton } from './mdx/YouTubeEmbed';
 import { MdxJsxTextElement } from 'mdast-util-mdx-jsx';
 import { CopyGenericJsxEditor } from './CopyGenericJsxEditor';
+import { uploadImage } from '@/lib/images';
 
 const PostCard = dynamic(() => import('@/components/PostCard/PostCard'), { ssr: false });
 
@@ -34,11 +35,11 @@ const jsxComponentDescriptors: JsxComponentDescriptor[] = [
     {
         name: 'YouTubeEmbed',
         kind: 'flow',
-        source: '@/components/mdx/YouTubeEmbed',
         props: [
             {name: 'id', type: 'string', required: true},
         ],
-        Editor: (props) => CopyGenericJsxEditor({...props, TargetNode: YouTubeEmbedded}),
+        hasChildren: true,
+        Editor: (props) => CopyGenericJsxEditor({...props, TargetNode: YouTubeEmbed}),
     },
   ]
 
@@ -50,12 +51,13 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
     const [postType, setPostType] = useState<string>('Article');
     const [readTime, setReadTime] = useState<number>(0);
     const [tags, setTags] = useState<string[]>([]);
+    const [imageFile, setImageFile] = useState<File | null>(null);
 
     const [isSponsored, setIsSponsored] = useState<boolean>(false);
     const [sponsoredBy, setSponsoredBy] = useState<string | undefined>(undefined);
     const [sponsorUrl, setSponsorUrl] = useState<string | undefined>(undefined);
 
-    const [imageUrl, setImageUrl] = useState(postData ? postData.imageUrl : '/img/AWS-beginning.png');
+    const [imageUrl, setImageUrl] = useState(postData ? postData.imageUrl : '');
 
     const format = 'YYYY-MM-DD';
 
@@ -65,7 +67,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
             if (postData) {
                 setPostTitle(postData.title);
                 setDescription(postData.description);
-                setImageUrl(postData.imageUrl || '/img/AWS-beginning.png');
+                setImageUrl(postData.imageUrl || '/ui/addpost.png');
                 setSelectedAuthor(authorData.find(author => author.email === postData.email) || authorData[0]);
 
                 if (postData.postType) {
@@ -93,6 +95,51 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
         }
     }, [slug, postData, authorData]);
 
+    useEffect(() => {
+        const uploadBannerImage = async () => {
+            if (imageFile) {
+                let date = moment.utc().toDate();
+    
+                if (postData?.date) {
+                    date = moment(postData.date).toDate();
+                }
+    
+                const year: string = date.getFullYear().toString();
+                const month: string = String(date.getMonth() + 1).padStart(2, '0');
+
+                const filename = imageFile.name.replace(/\.[^/.]+$/, ""); // Remove extension
+
+                const newImageUrl: string = `/images/${year}/${month}/${filename}.webp`;
+    
+                await uploadImage(imageFile, year, month);
+    
+                setImageUrl(newImageUrl);
+            }
+        }
+
+        uploadBannerImage();
+    }, [imageFile]);
+
+    async function imageUploadHandler(image: File) {
+        const newName = image.name.replace(/\s+/g, '');
+        // Create a new File object with the modified name
+        const newImage = new File([image], newName, { type: image.type, lastModified: image.lastModified });
+
+        let date = moment.utc().toDate();
+    
+        if (postData?.date) {
+            date = moment(postData.date).toDate();
+        }
+
+        const year: string = date.getFullYear().toString();
+        const month: string = String(date.getMonth() + 1).padStart(2, '0');
+        // send the file to your server and return
+        // the URL of the uploaded image in the response
+        const { filePath } = await uploadImage(newImage, year, month);
+
+        return filePath;
+    }
+
     if (postData?.date === 'Invalid date') {
         postData.date = moment.utc().toISOString();
     }
@@ -117,7 +164,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
     const PostPreview: PostPreviewItem = {
         title: postTitle,
         description,
-        imageUrl: imageUrl as string,
+        imageUrl: imageUrl || '/ui/addpost.png',
         date: postData?.date || moment(Date.now()).format(format),
         modifyDate: moment(formatPostDate(moment(postData?.modifyDate).toDate()), format).format(format) || moment(Date.now()).format(format),
         postType: postData?.postType || 'Article',
@@ -279,7 +326,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
                             }),
                             linkPlugin(),
                             linkDialogPlugin(),
-                            imagePlugin(),
+                            imagePlugin({ imageUploadHandler }),
                             sandpackPlugin({
                                 sandpackConfig: {
                                     defaultPreset: '',
@@ -306,6 +353,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
                                                                 <UndoRedo />
                                                                 <Separator />
                                                                 <BoldItalicUnderlineToggles />
+                                                                <StrikeThroughSupSubToggles options={['Strikethrough', 'Sup']} />
                                                                 <CodeToggle />
                                                                 <Separator />
                                                                 <ListsToggle />
@@ -337,7 +385,8 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
                 <div className="row">
                     <div className="container">
                         <h1 className="text-center py-3">Preview</h1>
-                        <PostCard post={Post} previewData={PostPreview} authorData={selectedAuthor || authorData[0]} style="preview" setValue={setDescription} />
+                        <button onClick={(() => console.log(imageFile))}>Print</button>
+                        <PostCard post={Post} previewData={PostPreview} authorData={selectedAuthor || authorData[0]} style="preview" setValue={setDescription} setImageFile={setImageFile} />
                     </div>
                 </div>
             </div>

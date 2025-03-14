@@ -1,5 +1,4 @@
-import { DialogButton, JsxComponentDescriptor, insertJsx$, usePublisher } from "@mdxeditor/editor";
-import { CopyGenericJsxEditor } from "../CopyGenericJsxEditor";
+import { DialogButton, insertJsx$, usePublisher } from "@mdxeditor/editor";
 
 import { SlSocialYoutube } from "react-icons/sl";
 
@@ -36,21 +35,12 @@ export const YouTubeButton = () => {
                   insertJsx({
                       name: 'YouTubeEmbed',
                       kind: 'flow',
-                      props: { id: videoId }
+                      props: { id: videoId },
                   })
               } else {
                   alert('Invalid YouTube URL')
               }
           }}
       />
-  )
-}
-
-export function YouTubeEmbedded({ id }: { id: string }) {
-  return (
-      <div className='container'>
-          <YouTubeEmbed id={id} />
-          <h1>bebra</h1>
-      </div>
   )
 }
