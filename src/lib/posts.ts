@@ -610,7 +610,7 @@ async function incrementViewCount(email: string, slug: string) {
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
         const response = await fetch(`${baseUrl}/api/increment-view-count`, {
-            method: 'POST',
+            method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, slug }),
         });
