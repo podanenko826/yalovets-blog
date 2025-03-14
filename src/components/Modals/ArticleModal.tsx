@@ -189,7 +189,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                             </>
                                         )}
                                         {!loading && selectedPost && author && (
-                                            <div className="d-flex justify-content-center gap-2">
+                                            <div className="d-flex justify-content-center mb-1 gap-2">
                                                 <Link href={`/author/${author.authorKey}`} className="d-flex align-items-center gap-1 a-link h-min">
                                                     {author.fullName}
                                                 </Link>
