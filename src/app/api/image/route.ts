@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import sharp from 'sharp';
 
 const IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"];
 
@@ -29,53 +30,63 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
-        const year = searchParams.get('year')?.split('/').at(-1);
-        const month = searchParams.get('month')?.split('/').at(-1);
+        const year = searchParams.get("year")?.split("/").at(-1);
+        const month = searchParams.get("month")?.split("/").at(-1);
 
         if (!year || !month) {
-            return NextResponse.json({ error: 'Either year or month is not passed to search parameters' }, { status: 400 });
+            return NextResponse.json(
+                { error: "Either year or month is not passed to search parameters" },
+                { status: 400 }
+            );
         }
 
         // Get the form data from the request
         const formData = await request.formData();
+        const file = formData.get("image") as File;
 
-        // Get the file from the form data
-        const file = formData.get('image') as File;
-        
         if (!file) {
-            return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
+            return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
         }
 
         // Get file metadata
-        const originalName = file.name;
-        const extension = path.extname(originalName);
+        const originalName = file.name.replace(/\s+/g, ""); // Remove spaces
+        const filename = originalName.replace(/\.[^/.]+$/, ""); // Remove extension
         const size = file.size;
         const mimetype = file.type;
 
-        // Set the upload directory (e.g., public/images)
+        // Set the upload directory (e.g., public/images/{year}/{month})
         const uploadDir = path.join(process.cwd(), `public/images/${year}/${month}`);
-        
-        // Ensure the directory exists
         fs.mkdirSync(uploadDir, { recursive: true });
 
-        // Define the file path where the image will be saved
-        const filePath = path.join(uploadDir, originalName);
-
-        // Convert the file to a buffer and save it to disk
+        // Convert the file to a buffer
         const buffer = Buffer.from(await file.arrayBuffer());
-        fs.writeFileSync(filePath, buffer);
+
+        // Image sizes for responsive sources
+        const sizes = [730, 1460, 610, 1220, 450, 900, 660, 1090];
+
+        // Create images in WebP and JPG formats
+        const processingTasks = sizes.flatMap((width) => [
+            sharp(buffer).resize(width).toFormat("webp").toFile(path.join(uploadDir, `${filename}@${width}w.webp`)),
+        ]);
+
+        // Also store an unmodified copy as WebP & JPG
+        processingTasks.push(
+            sharp(buffer).toFormat("webp").toFile(path.join(uploadDir, `${filename}.webp`)),
+        );
+
+        // Run all conversions in parallel
+        await Promise.all(processingTasks);
 
         // Return the response with file metadata
         return NextResponse.json({
-          originalName,
-          extension,
-          size,
-          mimetype,
-          filePath: `/images/${year}/${month}/${originalName}`,
+            originalName,
+            size,
+            mimetype,
+            filePath: `/images/${year}/${month}/${filename}.webp`,
         });
     } catch (error) {
-        console.error('Error during file upload:', error);
-        return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 });
+        console.error("Error during file upload:", error);
+        return NextResponse.json({ error: "Failed to upload file" }, { status: 500 });
     }
 }
 

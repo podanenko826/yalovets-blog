@@ -67,7 +67,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
             if (postData) {
                 setPostTitle(postData.title);
                 setDescription(postData.description);
-                setImageUrl(postData.imageUrl || '/img/AWS-beginning.png');
+                setImageUrl(postData.imageUrl || '/ui/addpost.png');
                 setSelectedAuthor(authorData.find(author => author.email === postData.email) || authorData[0]);
 
                 if (postData.postType) {
@@ -107,7 +107,9 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
                 const year: string = date.getFullYear().toString();
                 const month: string = String(date.getMonth() + 1).padStart(2, '0');
 
-                const newImageUrl: string = `/images/${year}/${month}/${imageFile.name}`;
+                const filename = imageFile.name.replace(/\.[^/.]+$/, ""); // Remove extension
+
+                const newImageUrl: string = `/images/${year}/${month}/${filename}.webp`;
     
                 await uploadImage(imageFile, year, month);
     

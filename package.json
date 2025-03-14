@@ -48,6 +48,7 @@
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.1",
     "sass": "^1.78.0",
+    "sharp": "^0.33.5",
     "styled-components": "^6.1.12",
     "zustand": "^5.0.3"
   },

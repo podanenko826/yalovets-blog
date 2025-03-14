@@ -387,11 +387,6 @@ button {
     margin-bottom: 1.2rem;
 }
 
-.article > img,
-.article > p > img {
-    width: max-content;
-}
-
 .article > p > a {
     color: var(--col-secondary);
 }

@@ -48,7 +48,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setIm
                 // Once the file is loaded, set the image preview
                 reader.onloadend = () => {
                     if (reader.result) {
-                    setImagePreview(reader.result as string); // Store the image data URL in state
+                        setImagePreview(reader.result as string); // Store the image data URL in state
                     }
                 };
 
@@ -265,6 +265,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setIm
             }
         }
     }, [popoverVisible, handleMouseEnter, handleMouseLeave]);
+
+    let postImageUrl = post.imageUrl?.replace(/\.[^/.]+$/, "");
 
     return style === 'massive' ? (
         <div className={styles.latest_post}>
@@ -656,11 +658,40 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setIm
         </div>
     ) : (
         <div ref={cardRef} className={`${styles.card} col-12 col-md-4`} key={index}>
-            {post.imageUrl && (
-                <a role="button" onClick={handlePostOpen}>
+            {postImageUrl && (
+                    <a role="button" onClick={handlePostOpen}>
                     <div className={styles.image}>
                         <picture className={`img-fluid ${styles.imageWrapper}`}>
-                            <Image className="img-fluid" src={post.imageUrl || '/ui/not-found.png'} alt={post.title} title={post.title} width={354} height={180} loading="lazy" sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
+                            {/* WebP Images */}
+                            {/* Fallback Image */}
+                            <img
+                                className="img-fluid"
+                                src={`${postImageUrl}.webp` || '/ui/not-found.png'}
+                                alt={post.title}
+                                title={post.title}
+                                srcSet={
+                                    !postImageUrl.includes('@')
+                                        ? `
+                                            ${postImageUrl}@730w.webp 730w,
+                                            ${postImageUrl}@1460w.webp 1460w,
+                                            ${postImageUrl}@610w.webp 610w,
+                                            ${postImageUrl}@1220w.webp 1220w,
+                                            ${postImageUrl}@450w.webp 450w,
+                                            ${postImageUrl}@900w.webp 900w,
+                                            ${postImageUrl}@660w.webp 660w,
+                                            ${postImageUrl}@1090w.webp 1090w
+                                        `
+                                        : ''
+                                }
+                                sizes="(min-width: 1200px) 730px,
+                                        (min-width: 992px) 660px,
+                                        (min-width: 768px) 610px,
+                                        (min-width: 576px) 450px,
+                                        450px"
+                                width={354}
+                                height={180}
+                                loading="lazy"
+                            />
                             {post.postType && (
                                 <span className={`d-inline-block ${styles.articleLabel} ${post.postType === 'Guide' ? styles.articleLabel_Guide : post.postType === 'Review' ? styles.articleLabel_Review : post.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
                                     <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
@@ -670,6 +701,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setIm
                         </picture>
                     </div>
                 </a>
+            
             )}
 
             <PostInfoSection descLength={140} />

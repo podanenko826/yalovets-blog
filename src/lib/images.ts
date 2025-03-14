@@ -17,7 +17,7 @@ export const uploadImage = async (imageFile: File, year: string, month: string):
         const response = await fetch(`/api/image?year=${year}&month=${month}`, {
             method: 'POST',
             body: formData,
-        })
+        });
         if (!response.ok) {
             console.error('Failed to upload the image');
             return { originalName: '', extension: '', filePath: '', size: 0, mimetype: '' };
