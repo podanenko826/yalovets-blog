@@ -131,6 +131,8 @@ export default function BlogPage({ params }: { params: { page: string } }) {
 
     useEffect(() => {
         const fetchPostsData = async () => {
+            if (Object.keys(paginationData.paginationData).length === 0) return;
+
             if (params.page) {
                 setLoading(true);
 
@@ -141,7 +143,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
         }
 
         fetchPostsData();
-    }, [params.page, paginationData]);
+    }, [params.page, paginationData.paginationData]);
 
     useEffect(() => {
         if (authors.length === 0) {
