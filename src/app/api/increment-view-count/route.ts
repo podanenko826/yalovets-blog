@@ -18,14 +18,10 @@ export async function PATCH(request: Request) {
     
 
     if (!TABLE_NAME) {
-        console.log('Table name is not defined in environment variables');
-        
         return NextResponse.json({ error: 'Table name is not defined in environment variables' }, { status: 500 });
     }
 
     if (!email || !slug) {
-        console.log('Invalid email or slug format');
-        
         return NextResponse.json({ error: 'Invalid email or slug format' }, { status: 400 });
     }
 
