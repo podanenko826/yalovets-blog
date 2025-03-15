@@ -270,35 +270,34 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                 <div className="container d-flex row align-items-center justify-content-center">
                                     <div className="col-7 col-md-4 col-lg-3">
                                         <div className="pb-3">
-                                            <h1 className="subheading" id="col-heading-1">
-                                                {author.fullName}
-                                            </h1>
+                                            <Link className='a-link a-button' href={`/author/${author.authorKey}`}>
+                                                <h1 className="subheading" id="col-heading-1">
+                                                    {author.fullName}
+                                                </h1>
+                                            </Link>
                                         </div>
                                         <Image className="img-fluid ivan-yalovets" src={`/${author.profileImageUrl}`} alt="pfp" title={author.fullName.split(' ').at(0)} width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
                                     </div>
                                     <div className="col-9 mt-3 mt-md-0 col-md-5 offset-md-1">
-                                        <p className="pt-2 subheading-small" id="col-heading-1">
+                                        <p className="pt-2 subheading-smaller" id="col-heading-1">
                                             {author.bio}
                                         </p>
-                                        <p className="subheading-small" id="col-heading-1">
+                                        <p className="subheading-small pt-4" id="col-heading-1">
                                             You can find me on these social media:
                                         </p>
                                         <ul className={styles.socialMediaLinks}>
-                                            <li>
-                                                <Link href={author.socialLinks.instagramUrl} className="a-link" id="col-heading-1" target="_blank">
-                                                    Instagram
-                                                </Link>
-                                            </li>
-                                            <li>
-                                                <Link href={author.socialLinks.facebookUrl} className="a-link" id="col-heading-1" target="_blank">
-                                                    Facebook
-                                                </Link>
-                                            </li>
-                                            <li>
-                                                <Link href={author.socialLinks.linkedInUrl} className="a-link" id="col-heading-1" target="_blank">
-                                                    LinkedIn
-                                                </Link>
-                                            </li>
+                                            {Object.entries(author.socialLinks).map(([platform, url]) => {
+                                                if (!url) return;
+                                                if (platform === 'Email' || platform === 'GitHub') return;
+
+                                                return (
+                                                    <li key={platform}>
+                                                        <Link href={url} className="a-link a-btn a-button" id="col-heading-1" target="_blank">
+                                                            {platform}
+                                                        </Link>
+                                                    </li>
+                                                );
+                                            })}
                                         </ul>
                                     </div>
                                 </div>

@@ -7,13 +7,13 @@ export type AuthorItem = {
     bio: string;
     isGuest: boolean;
     socialLinks: {
-        emailAddress: string;
-        githubUrl: string;
-        instagramUrl: string;
-        linkedInUrl: string;
-        xUrl: string;
-        facebookUrl: string;
-        redditUrl: string;
+        Email: string;
+        GitHub: string;
+        Instagram: string;
+        LinkedIn: string;
+        X: string;
+        Facebook: string;
+        Reddit: string;
     };
 };
 
