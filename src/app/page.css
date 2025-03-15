@@ -282,15 +282,24 @@
     justify-content: center;
 }
 
-.read-further > div > a > div {
+.read-further-button {
     background: rgba(128, 128, 128, 0.2);
     padding: 1rem;
     margin: 8px;
     vertical-align: middle;
     align-items: center;
+    transition-duration: 150ms;
 }
 
-.read-further > div > a > div > h5 {
+.read-further-button:hover {
+    background: rgba(150, 150, 150, 0.2);
+}
+
+.read-further-button:active {
+    background: rgba(122, 122, 122, 0.2);
+}
+
+.read-further-button > h5 {
     margin: 0;
 }
 
