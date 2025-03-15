@@ -143,7 +143,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                     <div className="row">
                         <div className="col-11 offset-1 col-sm-10 offset-sm-2 col-md-7 offset-md-5">
                             <picture className="img-fluid teaser-img">
-                                <Image className="img-fluid teaser-img" src={'/coffeman.jpg'} style={{ width: 'auto' }} alt="Teaser" title="Teaser" width={635} height={476} priority={true} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
+                                <Image className="img-fluid teaser-img" src={'/ui/coffeman.jpg'} style={{ width: 'auto' }} alt="Teaser" title="Teaser" width={635} height={476} priority={true} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
                             </picture>
                         </div>
                     </div>
@@ -159,7 +159,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                     <div className="row">
                         <div className="col-lg-6 offset-lg-7">
                             <picture className="img-fluid teaser-img">
-                                <Image className="img-fluid teaser-img" src={'/coffeman.jpg'} style={{ width: '50vw', maxHeight: '70vh' }} alt="Teaser" width={1080} height={1350} loading="lazy" sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
+                                <Image className="img-fluid teaser-img" src={'/ui/coffeman.jpg'} style={{ width: '50vw', maxHeight: '70vh' }} alt="Teaser" width={1080} height={1350} loading="lazy" sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
                             </picture>
                         </div>
                     </div>
