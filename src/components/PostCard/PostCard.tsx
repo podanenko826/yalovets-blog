@@ -278,12 +278,18 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setIm
                                 <picture className={`img-fluid ${styles.imageWrapper}`}>
                                     <Image
                                         className={`img-fluid ${styles.massive_img}`}
-                                        src={post.imageUrl || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
+                                        src={`${postImageUrl}.webp` || '/ui/not-found.png'}
                                         alt={post.title}
                                         title={post.title}
+                                        sizes="(max-width: 576px) 100vw,   
+                                                (max-width: 768px) 80vw,   
+                                                (max-width: 992px) 70vw,   
+                                                (max-width: 1200px) 60vw,  
+                                                (max-width: 1400px) 50vw,  
+                                                730px"
                                         width={546}
                                         height={307}
-                                        sizes="(min-width: 1200px) 960px, (min-width: 992px) 680px"
+                                        loading="lazy"
                                     />
                                 </picture>
                             </div>
@@ -325,7 +331,21 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setIm
                 <a role="button" onClick={handlePostOpen}>
                     <div className={styles.image}>
                         <picture className={`img-fluid ${styles.imageWrapper}`}>
-                            <Image className="img-fluid" src={post.imageUrl || '/ui/not-found.png'} alt={post.title} title={post.title} width={546} height={182} loading="lazy" sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
+                            <Image
+                                className="img-fluid"
+                                src={`${postImageUrl}.webp` || '/ui/not-found.png'}
+                                alt={post.title}
+                                title={post.title}
+                                sizes="(max-width: 576px) 100vw,   
+                                        (max-width: 768px) 80vw,   
+                                        (max-width: 992px) 70vw,   
+                                        (max-width: 1200px) 60vw,  
+                                        (max-width: 1400px) 50vw,  
+                                        730px"
+                                width={546}
+                                height={182}
+                                loading="lazy"
+                            />
                             {post.postType && (
                                 <span className={`d-inline-block ${styles.articleLabel} ${post.postType === 'Guide' ? styles.articleLabel_Guide : post.postType === 'Review' ? styles.articleLabel_Review : post.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
                                     <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
@@ -371,14 +391,19 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setIm
                     <div className={styles.image}>
                         <picture className={`img-fluid ${styles.imageWrapper}`}>
                             <Image
-                                className="img-fluid full-image"
-                                src={post.imageUrl || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
+                                className="img-fluid"
+                                src={`${postImageUrl}.webp` || '/ui/not-found.png'}
                                 alt={post.title}
                                 title={post.title}
-                                loading="lazy"
+                                sizes="(max-width: 576px) 100vw,   
+                                        (max-width: 768px) 80vw,   
+                                        (max-width: 992px) 70vw,   
+                                        (max-width: 1200px) 60vw,  
+                                        (max-width: 1400px) 50vw,  
+                                        730px"
                                 width={546}
                                 height={182}
-                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                                loading="lazy"
                             />
                             {post.postType && (
                                 <span className={`d-inline-block ${styles.articleLabel} ${post.postType === 'Guide' ? styles.articleLabel_Guide : post.postType === 'Review' ? styles.articleLabel_Review : post.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
@@ -662,32 +687,17 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setIm
                     <a role="button" onClick={handlePostOpen}>
                     <div className={styles.image}>
                         <picture className={`img-fluid ${styles.imageWrapper}`}>
-                            {/* WebP Images */}
-                            {/* Fallback Image */}
-                            <img
+                            <Image
                                 className="img-fluid"
                                 src={`${postImageUrl}.webp` || '/ui/not-found.png'}
                                 alt={post.title}
                                 title={post.title}
-                                srcSet={
-                                    !postImageUrl.includes('@')
-                                        ? `
-                                            ${postImageUrl}@730w.webp 730w,
-                                            ${postImageUrl}@1460w.webp 1460w,
-                                            ${postImageUrl}@610w.webp 610w,
-                                            ${postImageUrl}@1220w.webp 1220w,
-                                            ${postImageUrl}@450w.webp 450w,
-                                            ${postImageUrl}@900w.webp 900w,
-                                            ${postImageUrl}@660w.webp 660w,
-                                            ${postImageUrl}@1090w.webp 1090w
-                                        `
-                                        : ''
-                                }
-                                sizes="(min-width: 1200px) 730px,
-                                        (min-width: 992px) 660px,
-                                        (min-width: 768px) 610px,
-                                        (min-width: 576px) 450px,
-                                        450px"
+                                sizes="(max-width: 576px) 100vw,   
+                                        (max-width: 768px) 80vw,   
+                                        (max-width: 992px) 70vw,   
+                                        (max-width: 1200px) 60vw,  
+                                        (max-width: 1400px) 50vw,  
+                                        730px"
                                 width={354}
                                 height={180}
                                 loading="lazy"
