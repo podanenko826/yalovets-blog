@@ -318,7 +318,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                         .map((post, index) => (
                                             <Link href={`/${post.slug}`} className="col-md-9" key={index}>
                                                 <div className='read-further-button'>
-                                                    <h5 id="col-heading-1">Article: {post.title}</h5>
+                                                    <h5 id="col-heading-1">{post.postType}: {post.title}</h5>
                                                 </div>
                                             </Link>
                                         ))}
