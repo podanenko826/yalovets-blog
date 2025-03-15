@@ -83,7 +83,9 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setIm
                         </a>
                     </div>
                     {props.noLimit ? (
-                        <p className={styles.description}>{post.description.length > 160 ? <>{post.description}</> : post.description}</p>
+                        <a role='button' onClick={handlePostOpen}>
+                            <p className={styles.description}>{post.description.length > 160 ? <>{post.description}</> : post.description}</p>
+                        </a>
                     ) : (
                         <p className={styles.description}>
                             {post.description && post.description.length > props.descLength ? (
