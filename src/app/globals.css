@@ -470,6 +470,7 @@ button {
 #copyIcon {
     font-size: 14px;
     margin-right: 3px;
+    margin-bottom: 1.5px;
 }
 
 .codeblock > pre {
