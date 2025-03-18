@@ -105,7 +105,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     // Redirect user to the latest page if accessed the page that doesn't exist yet
     useEffect(() => {
         if (Object.keys(pagination.paginationData).length > 0 && parseInt(params.page) > pagination.totalPages) {
-            router.push(`/page/${Object.keys(pagination.paginationData).length}`);
+            // router.push(`/page/${Object.keys(pagination.paginationData).length}`);
         }
     }, [pagination.paginationData, params.page, pagination.totalPages, router]);
 
