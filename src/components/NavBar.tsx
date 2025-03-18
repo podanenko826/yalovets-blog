@@ -60,7 +60,11 @@ const NavBar = () => {
     const handleMobileNavigation = () => {
         setMobileMenuOpened(!mobileMenuOpened);
 
-        window.scrollTo(0, 0);
+        const navbarElement = document.getElementById('mobileNavBar');
+        
+        if (navbarElement) {
+            navbarElement.scrollIntoView({ behavior: 'instant', block: 'start', inline: 'start' });
+        }
 
         // To make sure user cannot scroll the page when nav menu is opened
         if (mobileMenuOpened) {
@@ -110,7 +114,7 @@ const NavBar = () => {
                         </button>
                     </div>
                 </div>
-                <div className="navbar navbar-expand-lg xs-nav p-0 row d-flex justify-content-center d-lg-none container">
+                <div className="navbar navbar-expand-lg xs-nav p-0 row d-flex justify-content-center d-lg-none container" id='mobileNavBar'>
                     <div className="col-3 d-flex">
                         <button id={styles.mobileNavigation} type="button" aria-controls="mobileNavigation" aria-expanded={mobileMenuOpened} aria-label="Toggle navigation" onClick={handleMobileNavigation}>
                             {mobileMenuOpened ? <IoMdClose className={styles.mobileNavIcon} id={styles.menu_opened} /> : <IoMdMenu className={styles.mobileNavIcon} />}
