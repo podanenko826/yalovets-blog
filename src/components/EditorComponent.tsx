@@ -9,7 +9,7 @@ import '@mdxeditor/editor/style.css';
 
 import { FC, useEffect, useState } from 'react';
 
-import { AuthorItem, PostItem, PostPreviewItem, TagItem } from '@/types';
+import { AuthorItem, PostItem, PostPreviewItem } from '@/types';
 
 import { createPost, formatPostDate, updatePost } from '@/lib/posts';
 import React from 'react';
@@ -27,7 +27,6 @@ interface EditorProps {
     slug?: string;
     postData?: PostItem;
     authorData: AuthorItem[];
-    tagsData: TagItem[];
     editorRef?: React.MutableRefObject<MDXEditorMethods | null>;
 }
 
@@ -43,14 +42,13 @@ const jsxComponentDescriptors: JsxComponentDescriptor[] = [
     },
   ]
 
-const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsData, editorRef }) => {
+const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorRef }) => {
     const [currentMarkdown, setCurrentMarkdown] = useState(markdown); // Track current markdown
     const [selectedAuthor, setSelectedAuthor] = useState(postData ? authorData.find(author => author.email === postData.email) : authorData.find(author => author.authorKey === 'ivanyalovets') || authorData[0]);
     const [postTitle, setPostTitle] = useState(postData ? postData.title : '');
     const [description, setDescription] = useState(postData ? postData.description : '');
     const [postType, setPostType] = useState<string>('Article');
     const [readTime, setReadTime] = useState<number>(0);
-    const [tags, setTags] = useState<string[]>([]);
     const [imageFile, setImageFile] = useState<File | null>(null);
 
     const [isSponsored, setIsSponsored] = useState<boolean>(false);
@@ -76,10 +74,6 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
 
                 if (postData.readTime && postData.readTime > 0) {
                     setReadTime(postData.readTime);
-                }
-
-                if (postData.tags && postData.tags?.length > 0) {
-                    setTags(postData.tags);
                 }
 
                 if (postData.sponsoredBy) {
@@ -152,7 +146,6 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
         date: postData?.date || moment.utc().toISOString(),
         modifyDate: moment.utc().toISOString(),
         imageUrl,
-        tags: tags || [],
         postType,
         readTime,
         viewsCount: postData?.viewsCount || 0,
@@ -197,20 +190,6 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
 
     const handlePostTitleChange = (e: string) => {
         setPostTitle(e);
-    };
-
-    const handleTagAdd = (tagSlug: string) => {
-        let _tags = [...tags];
-
-        _tags.push(tagSlug);
-
-        setTags(_tags);
-    };
-
-    const handleTagRemove = (tagSlug: string) => {
-        const updatedTags = tags.filter(tag => tag !== tagSlug);
-
-        setTags(updatedTags);
     };
 
     const handleSave = async () => {
@@ -385,7 +364,6 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
                 <div className="row">
                     <div className="container">
                         <h1 className="text-center py-3">Preview</h1>
-                        <button onClick={(() => console.log(imageFile))}>Print</button>
                         <PostCard post={Post} previewData={PostPreview} authorData={selectedAuthor || authorData[0]} style="preview" setValue={setDescription} setImageFile={setImageFile} />
                     </div>
                 </div>
@@ -425,35 +403,6 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsDat
             </div>
             <div className="container d-flex justify-content-center col-md-9 my-5">
                 <div className="row">
-                    <div className="container">
-                        <h1 className="text-center py-3">Tags</h1>
-
-                        <select className="form-select preview-tags-select py-1 px-2" value={''} aria-label="Select tag" onChange={e => handleTagAdd(e.target.value)}>
-                            <option key={0} value={''} className="w-auto p-0 m-0 text-center">
-                                Add tag
-                            </option>
-                            {tagsData.length > 0 &&
-                                tagsData.map(tag => (
-                                    <option key={tag.id} value={tag.tag} className="w-auto p-0 m-0 text-center" disabled={tags.includes(tag.tag)}>
-                                        {tag.tag}
-                                    </option>
-                                ))}
-                        </select>
-
-                        <div className="row d-flex">
-                            {tags?.map(tag => (
-                                <div className="d-flex col-6 align-items-center justify-content-center gap-3 bg-grey">
-                                    <h3>{tag}</h3>
-                                    <div>
-                                        <button className="btn-outlined py-1" onClick={() => handleTagRemove(tag)}>
-                                            Remove
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
                     <div className="col-12 d-flex container justify-content-center py-4">
                         <button onClick={handleSave} className="py-2 px-3 m-3 btn-filled" type="submit">
                             {postData ? 'Update' : 'Post'}

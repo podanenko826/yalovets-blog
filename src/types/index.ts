@@ -27,7 +27,6 @@ export type PostItem = {
     date?: string;
     modifyDate?: string;
     postType?: string;
-    tags?: string[];
     readTime?: number;
     viewsCount?: number;
     sponsoredBy?: string;
@@ -43,14 +42,6 @@ export type PostPreviewItem = {
     postType: string;
     readTime: number;
     authorData: AuthorItem;
-};
-
-export type TagItem = {
-    id: number;
-    tag: string;
-    title: string;
-    description: string;
-    postCount: number;
 };
 
 export type PaginationEntry = {

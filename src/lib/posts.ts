@@ -37,7 +37,6 @@ function transformPostData(data: any[]): PostItem[] {
             date: post.date?.S,
             modifyDate: post.modifyDate?.S,
             postType: post.postType?.S,
-            tags: post.tags?.L ? post.tags.L.map((tag: { S: any }) => tag.S) : [],
             readTime: parseInt(post.readTime?.N || '0'),
             viewsCount: parseInt(post.viewsCount?.N || '0'),
             postGroup: post.postGroup?.S,
@@ -374,7 +373,7 @@ export const rebuildPagination = async (): Promise<Record<number, PaginationEntr
 };
 
 export const createPost = async (postData: Partial<PostItem>, markdown: string): Promise<{ slug: string; markdown: string }> => {
-    const { email, title, description, date, imageUrl, readTime, postType, tags, sponsoredBy, sponsorUrl } = postData;
+    const { email, title, description, date, imageUrl, readTime, postType, sponsoredBy, sponsorUrl } = postData;
     let { slug } = postData;
 
     if (!email || !title || !description || !date || !imageUrl || !readTime || !postType) {
@@ -408,7 +407,6 @@ export const createPost = async (postData: Partial<PostItem>, markdown: string):
             date,
             modifyDate: date,
             postType,
-            tags: tags || [],
             readTime,
             viewsCount: 0,
             postGroup: 'ALL_POSTS',
@@ -442,7 +440,7 @@ export const createPost = async (postData: Partial<PostItem>, markdown: string):
 };
 
 export const updatePost = async (postData: Partial<PostItem>, markdown: string): Promise<{ slug: string; markdown: string }> => {
-    const { email, slug, title, description, date, modifyDate, imageUrl, readTime, postType, viewsCount, tags, sponsoredBy, sponsorUrl } = postData;
+    const { email, slug, title, description, date, modifyDate, imageUrl, readTime, postType, viewsCount, sponsoredBy, sponsorUrl } = postData;
 
     if (!email || !slug || !title || !description || !date || !imageUrl || !readTime || !postType) {
         console.error('Recieved invalid or incomplete post data');
@@ -468,7 +466,6 @@ export const updatePost = async (postData: Partial<PostItem>, markdown: string):
             date,
             modifyDate: modifyDate || moment.utc().toISOString(),
             postType,
-            tags: tags || [],
             readTime,
             viewsCount: viewsCount || 0,
             postGroup: 'ALL_POSTS',

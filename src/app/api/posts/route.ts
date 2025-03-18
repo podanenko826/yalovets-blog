@@ -86,7 +86,7 @@ export async function POST(request: Request) {
     const postSlug = searchParams.get('slug')?.split('/').at(-1);
 
     const postData = await request.json();
-    const { email, description, imageUrl, date, modifyDate, postType, tags, readTime, viewsCount, sponsoredBy } = postData;
+    const { email, description, imageUrl, date, modifyDate, postType, readTime, viewsCount, sponsoredBy } = postData;
     let {slug, title, sponsorUrl} = postData;
 
     if (!TABLE_NAME) {
@@ -133,7 +133,6 @@ export async function POST(request: Request) {
         date,
         modifyDate: modifyDate || date, // Automatically generated modifyDate
         postType,
-        tags: tags || [],
         readTime: readTime,
         viewsCount: viewsCount || 0,
         postGroup: 'ALL_POSTS',
@@ -157,7 +156,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     const postData = await request.json();
-    const { email, slug, description, imageUrl, date, postType, tags, readTime, sponsoredBy } = postData;
+    const { email, slug, description, imageUrl, date, postType, readTime, sponsoredBy } = postData;
     let { title, modifyDate, sponsorUrl } = postData;
 
     if (!TABLE_NAME) {
@@ -194,7 +193,6 @@ export async function PUT(request: Request) {
                     imageUrl = :imageUrl,
                     modifyDate = :modifyDate,
                     postType = :postType,
-                    tags = :tags,
                     readTime = :readTime,
                     sponsoredBy = :sponsoredBy,
                     sponsorUrl = :sponsorUrl
@@ -205,7 +203,6 @@ export async function PUT(request: Request) {
                 ":imageUrl": imageUrl,
                 ":modifyDate": modifyDate,
                 ":postType": postType,
-                ":tags": tags || [],
                 ":readTime": readTime,
                 ":sponsoredBy": sponsoredBy || '',
                 ":sponsorUrl": modifiedSponsorUrl || ''

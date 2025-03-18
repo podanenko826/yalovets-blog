@@ -16,13 +16,6 @@ const AdminPage = () => {
             imageUrl: '/ui/postmanage.png',
             url: '/admin/posts',
         },
-        // {
-        //     id: 2,
-        //     title: 'Manage tags',
-        //     description: 'Create, update and remove tags you assign to each post on your blog in one place.',
-        //     imageUrl: '/ui/tagmanage.png',
-        //     url: '/admin/tags',
-        // },
         {
             id: 2,
             title: 'Manage authors',
