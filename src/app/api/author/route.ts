@@ -83,16 +83,16 @@ export async function POST(request: Request) {
                 .replaceAll('-', '')
                 .toLowerCase()}`;
 
-            const { emailAddress = '', githubUrl = '', instagramUrl = '', linkedInUrl = '', xUrl = '', facebookUrl = '', redditUrl = '' } = socialLinks || {};
+            const { Email = '', GitHub = '', Instagram = '', LinkedIn = '', X = '', Facebook = '', Reddit = '' } = socialLinks || {};
 
             const formattedSocialLinks = {
-                emailAddress,
-                githubUrl,
-                instagramUrl,
-                linkedInUrl,
-                xUrl,
-                facebookUrl,
-                redditUrl,
+                Email,
+                GitHub,
+                Instagram,
+                LinkedIn,
+                X,
+                Facebook,
+                Reddit,
             };
 
             const newAuthor = {
@@ -141,16 +141,16 @@ export async function PUT(request: Request) {
                 .replaceAll('-', '')
                 .toLowerCase()}`;
 
-            const { emailAddress = '', githubUrl = '', instagramUrl = '', linkedInUrl = '', xUrl = '', facebookUrl = '', redditUrl = '' } = socialLinks || {};
+            const { Email = '', GitHub = '', Instagram = '', LinkedIn = '', X = '', Facebook = '', Reddit = '' } = socialLinks || {};
 
             const formattedSocialLinks = {
-                emailAddress,
-                githubUrl,
-                instagramUrl,
-                linkedInUrl,
-                xUrl,
-                facebookUrl,
-                redditUrl,
+                Email,
+                GitHub,
+                Instagram,
+                LinkedIn,
+                X,
+                Facebook,
+                Reddit,
             };
 
             const updatedAuthor = {

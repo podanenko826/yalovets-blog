@@ -129,13 +129,13 @@ export const createAuthor = async (author: AuthorItem) => {
         profileImageUrl: author.profileImageUrl,
         isGuest: author.isGuest || false,
         socialLinks: {
-            emailAddress: author.socialLinks.Email || '',
-            githubUrl: author.socialLinks.GitHub,
-            instagramUrl: author.socialLinks.Instagram || '',
-            linkedInUrl: author.socialLinks.LinkedIn || '',
-            xUrl: author.socialLinks.X || '',
-            facebookUrl: author.socialLinks.Facebook || '',
-            redditUrl: author.socialLinks.Reddit || '',
+            Email: author.socialLinks.Email || '',
+            GitHub: author.socialLinks.GitHub,
+            Instagram: author.socialLinks.Instagram || '',
+            LinkedIn: author.socialLinks.LinkedIn || '',
+            X: author.socialLinks.X || '',
+            Facebook: author.socialLinks.Facebook || '',
+            Reddit: author.socialLinks.Reddit || '',
         },
     };
 
@@ -164,13 +164,13 @@ export const updateAuthor = async (author: AuthorItem) => {
         profileImageUrl: author.profileImageUrl,
         isGuest: author.isGuest,
         socialLinks: {
-            emailAddress: author.socialLinks.Email || '',
-            githubUrl: author.socialLinks.GitHub || '',
-            instagramUrl: author.socialLinks.Instagram || '',
-            linkedInUrl: author.socialLinks.LinkedIn || '',
-            xUrl: author.socialLinks.X || '',
-            facebookUrl: author.socialLinks.Facebook || '',
-            redditUrl: author.socialLinks.Reddit || '',
+            Email: author.socialLinks.Email || '',
+            GitHub: author.socialLinks.GitHub || '',
+            Instagram: author.socialLinks.Instagram || '',
+            LinkedIn: author.socialLinks.LinkedIn || '',
+            X: author.socialLinks.X || '',
+            Facebook: author.socialLinks.Facebook || '',
+            Reddit: author.socialLinks.Reddit || '',
         },
     };
 

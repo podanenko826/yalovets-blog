@@ -20,6 +20,9 @@ const AuthorsPage = () => {
     const [currentModal, setCurrentModal] = useState<bootstrap.Modal | null>(null);
     const modalRef = useRef<Modal | null>(null);
 
+    console.log(authorData);
+    
+
     useEffect(() => {
         const getAuthorData = async () => {
             if (refreshAuthors) {
@@ -112,6 +115,9 @@ const AuthorsPage = () => {
     const handleEditSocialChange = (field: keyof AuthorItem['socialLinks'], value: string): void => {
         setSelectedAuthor(prevAuthor => {
             if (!prevAuthor) return null;
+
+            console.log(field, value);
+            
 
             return {
                 ...prevAuthor,
@@ -240,7 +246,7 @@ const AuthorsPage = () => {
                                                 <MdEmail className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your Email address for contact (optional)" value={newAuthor?.socialLinks?.emailAddress || ''} onChange={e => handleCreateSocialChange('emailAddress', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your Email address for contact (optional)" value={newAuthor?.socialLinks?.Email || ''} onChange={e => handleCreateSocialChange('Email', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
                                         <label htmlFor="socialLinks" className="col-form-label mx-2">
@@ -248,7 +254,7 @@ const AuthorsPage = () => {
                                                 <FaGithub className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your GitHub profile URL (optional)" value={newAuthor?.socialLinks?.githubUrl || ''} onChange={e => handleCreateSocialChange('githubUrl', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your GitHub profile URL (optional)" value={newAuthor?.socialLinks?.GitHub || ''} onChange={e => handleCreateSocialChange('GitHub', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
                                         <label htmlFor="socialLinks" className="col-form-label mx-2">
@@ -256,7 +262,7 @@ const AuthorsPage = () => {
                                                 <FaInstagram className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your Instagram profile URL (optional)" value={newAuthor?.socialLinks?.instagramUrl || ''} onChange={e => handleCreateSocialChange('instagramUrl', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your Instagram profile URL (optional)" value={newAuthor?.socialLinks?.Instagram || ''} onChange={e => handleCreateSocialChange('Instagram', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
                                         <label htmlFor="socialLinks" className="col-form-label mx-2">
@@ -264,7 +270,7 @@ const AuthorsPage = () => {
                                                 <FaLinkedin className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your LinkedIn profile URL (optional)" value={newAuthor?.socialLinks?.linkedInUrl || ''} onChange={e => handleCreateSocialChange('linkedInUrl', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your LinkedIn profile URL (optional)" value={newAuthor?.socialLinks?.LinkedIn || ''} onChange={e => handleCreateSocialChange('LinkedIn', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
                                         <label htmlFor="socialLinks" className="col-form-label mx-2">
@@ -272,7 +278,7 @@ const AuthorsPage = () => {
                                                 <FaXTwitter className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your X profile URL (optional)" value={newAuthor?.socialLinks?.xUrl || ''} onChange={e => handleCreateSocialChange('xUrl', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your X profile URL (optional)" value={newAuthor?.socialLinks?.X || ''} onChange={e => handleCreateSocialChange('X', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
                                         <label htmlFor="socialLinks" className="col-form-label mx-2">
@@ -280,7 +286,7 @@ const AuthorsPage = () => {
                                                 <FaFacebookF className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your Facebook profile URL (optional)" value={newAuthor?.socialLinks?.facebookUrl || ''} onChange={e => handleCreateSocialChange('facebookUrl', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your Facebook profile URL (optional)" value={newAuthor?.socialLinks?.Facebook || ''} onChange={e => handleCreateSocialChange('Facebook', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
                                         <label htmlFor="socialLinks" className="col-form-label mx-2">
@@ -288,7 +294,7 @@ const AuthorsPage = () => {
                                                 <FaRedditAlien className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your Reddit profile URL (optional)" value={newAuthor?.socialLinks?.redditUrl || ''} onChange={e => handleCreateSocialChange('redditUrl', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your Reddit profile URL (optional)" value={newAuthor?.socialLinks?.Reddit || ''} onChange={e => handleCreateSocialChange('Reddit', e.target.value)}></input>
                                     </div>
                                 </form>
                             </div>
@@ -356,7 +362,7 @@ const AuthorsPage = () => {
                                                 <MdEmail className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your Email address for contact (optional)" value={selectedAuthor?.socialLinks?.emailAddress || ''} onChange={e => handleEditSocialChange('emailAddress', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your Email address for contact (optional)" value={selectedAuthor?.socialLinks?.Email || ''} onChange={e => handleEditSocialChange('Email', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
                                         <label htmlFor="socialLinks" className="col-form-label mx-2">
@@ -364,7 +370,7 @@ const AuthorsPage = () => {
                                                 <FaGithub className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your GitHub profile URL (optional)" value={selectedAuthor?.socialLinks?.githubUrl || ''} onChange={e => handleEditSocialChange('githubUrl', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your GitHub profile URL (optional)" value={selectedAuthor?.socialLinks?.GitHub || ''} onChange={e => handleEditSocialChange('GitHub', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
                                         <label htmlFor="socialLinks" className="col-form-label mx-2">
@@ -372,7 +378,7 @@ const AuthorsPage = () => {
                                                 <FaInstagram className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your Instagram profile URL (optional)" value={selectedAuthor?.socialLinks?.instagramUrl || ''} onChange={e => handleEditSocialChange('instagramUrl', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your Instagram profile URL (optional)" value={selectedAuthor?.socialLinks?.Instagram || ''} onChange={e => handleEditSocialChange('Instagram', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
                                         <label htmlFor="socialLinks" className="col-form-label mx-2">
@@ -380,7 +386,7 @@ const AuthorsPage = () => {
                                                 <FaLinkedin className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your LinkedIn profile URL (optional)" value={selectedAuthor?.socialLinks?.linkedInUrl || ''} onChange={e => handleEditSocialChange('linkedInUrl', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your LinkedIn profile URL (optional)" value={selectedAuthor?.socialLinks?.LinkedIn || ''} onChange={e => handleEditSocialChange('LinkedIn', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
                                         <label htmlFor="socialLinks" className="col-form-label mx-2">
@@ -388,7 +394,7 @@ const AuthorsPage = () => {
                                                 <FaXTwitter className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your X profile URL (optional)" value={selectedAuthor?.socialLinks?.xUrl || ''} onChange={e => handleEditSocialChange('xUrl', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your X profile URL (optional)" value={selectedAuthor?.socialLinks?.X || ''} onChange={e => handleEditSocialChange('X', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
                                         <label htmlFor="socialLinks" className="col-form-label mx-2">
@@ -396,7 +402,7 @@ const AuthorsPage = () => {
                                                 <FaFacebookF className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your Facebook profile URL (optional)" value={selectedAuthor?.socialLinks?.facebookUrl || ''} onChange={e => handleEditSocialChange('facebookUrl', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your Facebook profile URL (optional)" value={selectedAuthor?.socialLinks?.Facebook || ''} onChange={e => handleEditSocialChange('Facebook', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
                                         <label htmlFor="socialLinks" className="col-form-label mx-2">
@@ -404,7 +410,7 @@ const AuthorsPage = () => {
                                                 <FaRedditAlien className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your Reddit profile URL (optional)" value={selectedAuthor?.socialLinks?.redditUrl || ''} onChange={e => handleEditSocialChange('redditUrl', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your Reddit profile URL (optional)" value={selectedAuthor?.socialLinks?.Reddit || ''} onChange={e => handleEditSocialChange('Reddit', e.target.value)}></input>
                                     </div>
                                 </form>
                             </div>
