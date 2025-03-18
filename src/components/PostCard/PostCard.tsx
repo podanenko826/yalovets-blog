@@ -630,7 +630,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setIm
                                 >
                                     <Image
                                         className="img-fluid admin-image"
-                                        src={imagePreview || '/ui/addpost.png'} // Using the image URL, including the placeholder logic if needed
+                                        src={imagePreview || previewData.imageUrl || '/ui/addpost.png'} // Using the image URL, including the placeholder logic if needed
                                         alt={post.title}
                                         title={post.title}
                                         loading="lazy"
