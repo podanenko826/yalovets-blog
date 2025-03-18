@@ -276,7 +276,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                                 </h1>
                                             </Link>
                                         </div>
-                                        <Image className="img-fluid ivan-yalovets" src={`/${author.profileImageUrl}`} alt="pfp" title={author.fullName.split(' ').at(0)} width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
+                                        <Image className="img-fluid ivan-yalovets" src={author.profileImageUrl} alt="pfp" title={author.fullName.split(' ').at(0)} width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
                                     </div>
                                     <div className="col-9 mt-3 mt-md-0 col-md-5 offset-md-1">
                                         <p className="pt-2 subheading-smaller" id="col-heading-1">

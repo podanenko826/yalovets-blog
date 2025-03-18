@@ -124,11 +124,16 @@
 
 .pfp {
     width: 42.5px;
+    height: 42.5px;
     border-radius: 100%;
 }
 
 .popoverPfp {
-    min-width: 55px;
+    width: 61.5px;
+    height: 61.5px;
+    max-width: 61.5px;
+    max-height: 61.5px;
+
     border-radius: 100%;
 }
 

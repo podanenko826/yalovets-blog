@@ -4,11 +4,13 @@ import { AuthorItem } from '@/types';
 import { Modal } from 'bootstrap';
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 
 import { IoMdRefresh } from 'react-icons/io';
 import { FaXTwitter } from 'react-icons/fa6';
 import { FaFacebookF, FaLinkedin, FaRedditAlien, FaInstagram, FaGithub } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
+import { uploadProfilePicture } from '@/lib/images';
 
 const AuthorsPage = () => {
     const [authorData, setAuthorData] = useState<AuthorItem[]>([]);
@@ -20,8 +22,8 @@ const AuthorsPage = () => {
     const [currentModal, setCurrentModal] = useState<bootstrap.Modal | null>(null);
     const modalRef = useRef<Modal | null>(null);
 
-    console.log(authorData);
-    
+    const [imagePreview, setImagePreview] = useState<string | null>(null); // Store the image preview
+    const fileInputRef = useRef<HTMLInputElement | null>(null); // Reference for the file input
 
     useEffect(() => {
         const getAuthorData = async () => {
@@ -129,6 +131,55 @@ const AuthorsPage = () => {
         });
     };
 
+    // Handle file selection
+    const handleCreatePictureChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]; // Get the first selected file
+        if (file) {
+            const newName = file.name.replace(/\s+/g, '');
+            // Create a new File object with the modified name
+            const newFile = new File([file], newName, { type: file.type, lastModified: file.lastModified });
+
+            const { filePath } = await uploadProfilePicture(newFile);
+
+            handleCreateInputChange('profileImageUrl', filePath);
+
+            const reader = new FileReader(); // Create a new FileReader
+
+            // Once the file is loaded, set the image preview
+            reader.onloadend = () => {
+                if (reader.result) {
+                    setImagePreview(reader.result as string); // Store the image data URL in state
+                }
+            };
+
+            reader.readAsDataURL(file); // Read the file as a data URL (image)
+        }
+    };
+
+    const handleEditPictureChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]; // Get the first selected file
+        if (file) {
+            const newName = file.name.replace(/\s+/g, '');
+            // Create a new File object with the modified name
+            const newFile = new File([file], newName, { type: file.type, lastModified: file.lastModified });
+
+            const { filePath } = await uploadProfilePicture(newFile);
+
+            handleEditInputChange('profileImageUrl', filePath);
+
+            const reader = new FileReader(); // Create a new FileReader
+
+            // Once the file is loaded, set the image preview
+            reader.onloadend = () => {
+                if (reader.result) {
+                    setImagePreview(reader.result as string); // Store the image data URL in state
+                }
+            };
+
+            reader.readAsDataURL(file); // Read the file as a data URL (image)
+        }
+    };
+
     return (
         <>
             <div>
@@ -229,7 +280,22 @@ const AuthorsPage = () => {
                                         <label htmlFor="profileImageUrl" className="col-form-label">
                                             <strong>Profile Image URL:</strong>
                                         </label>
-                                        <textarea className="form-control" value={newAuthor?.profileImageUrl || ''} onChange={e => handleCreateInputChange('profileImageUrl', e.target.value)}></textarea>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleCreatePictureChange}
+                                            ref={fileInputRef} // Assigning ref to file input
+                                        />
+                                        <Image
+                                            className="admin-image"
+                                            src={imagePreview || selectedAuthor?.profileImageUrl || '/ui/placeholder-pfp.png'} // Using the image URL, including the placeholder logic if needed
+                                            alt={'Profile Picture Preview'}
+                                            title={'Profile Picture Preview'}
+                                            loading="lazy"
+                                            style={{width: '100px'}}
+                                            width={100}
+                                            height={100}
+                                        />
                                     </div>
                                     <div className='mb-3'>
                                         <label htmlFor="isGuest" className="col-form-label">
@@ -345,7 +411,23 @@ const AuthorsPage = () => {
                                         <label htmlFor="profileImageUrl" className="col-form-label">
                                             <strong>Profile Image URL:</strong>
                                         </label>
-                                        <textarea className="form-control" value={selectedAuthor?.profileImageUrl || ''} onChange={e => handleEditInputChange('profileImageUrl', e.target.value)}></textarea>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleEditPictureChange}
+                                            ref={fileInputRef} // Assigning ref to file input
+                                        />
+                                        <Image
+                                            className="admin-image"
+                                            src={imagePreview || selectedAuthor?.profileImageUrl || '/ui/placeholder-pfp.png'} // Using the image URL, including the placeholder logic if needed
+                                            alt={'Profile Picture Preview'}
+                                            title={'Profile Picture Preview'}
+                                            loading="lazy"
+                                            style={{width: '100px'}}
+                                            width={100}
+                                            height={100}
+                                        />
+                                        {/* <textarea className="form-control" value={selectedAuthor?.profileImageUrl || ''} onChange={e => handleEditInputChange('profileImageUrl', e.target.value)}></textarea> */}
                                     </div>
                                     <div className='mb-3'>
                                         <label htmlFor="isGuest" className="col-form-label">

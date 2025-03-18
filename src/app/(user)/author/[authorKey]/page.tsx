@@ -103,7 +103,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
                 <div className="container">
                     <div className="container mb-5">
                         <div className={`${postCardStyles.profile_info} d-flex justify-content-center mt-4`}>
-                            <Image className={`${postCardStyles.pfp}`} src={`/${authorData.profileImageUrl}`} alt="pfp" width={42.5} height={42.5} />
+                            <Image className={`${postCardStyles.pfp}`} src={authorData.profileImageUrl} alt="pfp" width={42.5} height={42.5} />
                             <h2 className="p-2 m-0" id="col-heading-1">
                                 {authorData.fullName} {authorData.isGuest && <span className="badge badge-guest">Guest</span>}
                             </h2>

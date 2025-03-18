@@ -197,7 +197,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setIm
                             </div>
             
                             <div class="col-md-3 p-0 mr-2">
-                                <Image class="${styles.popoverPfp}" src="/${authorData.profileImageUrl}" width={50} height={50} />
+                                <Image class="${styles.popoverPfp}" src="${authorData.profileImageUrl}" width={50} height={50} />
                             </div>
             
                             <div class="col-md-12 horisontal-line horisontal-line-thin"></div>
@@ -368,7 +368,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setIm
                             <div className={`${styles.profile_info} d-flex`}>
                                 <div className="align-content-center">
                                     <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
-                                        <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                        <LazyImage className={`${styles.pfp} img-fluid`} src={authorData.profileImageUrl || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
                                     </Link>
                                 </div>
                                 <div className={styles.profile_info__details}>
@@ -427,7 +427,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setIm
                             <div className={`${styles.profile_info} d-flex`}>
                                 <div className="align-content-center">
                                     <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
-                                        <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                        <LazyImage className={`${styles.pfp} img-fluid`} src={authorData.profileImageUrl || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
                                     </Link>
                                 </div>
                                 <div className={styles.profile_info__details}>
@@ -544,7 +544,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setIm
                         <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
                             <div className={`${styles.profile_info} d-flex`}>
                                 <div className="align-content-center">
-                                    <LazyImage onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                    <LazyImage onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.pfp} img-fluid`} src={authorData.profileImageUrl || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
                                 </div>
                                 <div className={styles.profile_info__details}>
                                     <Link href={''} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
@@ -666,7 +666,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setIm
                             <span className="d-inline-block">
                                 <div className={`${styles.profile_info} d-flex`}>
                                     <div className="align-content-center">
-                                        <LazyImage className={`${styles.pfp} img-fluid`} src={`/${authorData.profileImageUrl}` || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                        <LazyImage className={`${styles.pfp} img-fluid`} src={authorData.profileImageUrl || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
                                     </div>
                                     <div className={styles.profile_info__details}>
                                         <p className={`${styles.profile_info__text} m-0 p-0`}>{authorData.fullName}</p>
@@ -725,7 +725,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setIm
                             <div className={`${styles.profile_info} d-flex`}>
                                 <div className="align-content-center">
                                     <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
-                                        <LazyImage className={`${styles.pfp} img-fluid`} src={authorData.profileImageUrl && `/${authorData.profileImageUrl}`} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                        <LazyImage className={`${styles.pfp} img-fluid`} src={authorData.profileImageUrl} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
                                     </Link>
                                 </div>
                                 <div className={styles.profile_info__details}>
