@@ -18,7 +18,7 @@ const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
 import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from 'react-icons/md';
 import { MdOutlineKeyboardDoubleArrowLeft, MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md';
 import { MdSettings } from 'react-icons/md';
-import { notFound, usePathname } from 'next/navigation';
+import { notFound, usePathname, useRouter } from 'next/navigation';
 import { usePostStore } from '@/components/posts/store';
 import { usePaginationStore } from '@/components/pagination/store';
 import { useAuthorStore } from '@/components/authors/store';
@@ -27,6 +27,8 @@ import LoadingBanner from '@/components/Modals/LoadingBanner';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
 
 export default function BlogPage({ params }: { params: { page: string } }) {
+    const router = useRouter();
+
     const currentPage = parseInt(params.page, 10) || 1;
     const { posts, selectedPost, fetchPostsByPage, loadPostsFromStorage } = usePostStore();
     const { postsPerPage, loadUserConfigFromStorage } = useUserConfigStore();
@@ -57,8 +59,6 @@ export default function BlogPage({ params }: { params: { page: string } }) {
             document.title = `Page ${currentPage || 1} / Yalovets Blog`;
         }
     }, [selectedPost]);
-
-    if (Object.keys(pagination.paginationData).length > 0 && parseInt(params.page) > pagination.totalPages) return notFound();
 
     useEffect(() => {
         const fetchPaginationData = async () => {
@@ -100,9 +100,14 @@ export default function BlogPage({ params }: { params: { page: string } }) {
             totalPages: Object.keys(modifiedPagination).length,
             paginationData: modifiedPagination,
         })
-
-    
     }, [postsPerPage, originalPagination]);
+
+    // Redirect user to the latest page if accessed the page that doesn't exist yet
+    useEffect(() => {
+        if (Object.keys(pagination.paginationData).length > 0 && parseInt(params.page) > pagination.totalPages) {
+            router.push(`/page/${Object.keys(pagination.paginationData).length}`);
+        }
+    }, [pagination.paginationData, params.page, pagination.totalPages, router]);
 
     useEffect(() => {
         const getPostsLength = async () => {
