@@ -286,16 +286,19 @@ const AuthorsPage = () => {
                                             onChange={handleCreatePictureChange}
                                             ref={fileInputRef} // Assigning ref to file input
                                         />
-                                        <Image
-                                            className="admin-image"
-                                            src={imagePreview || selectedAuthor?.profileImageUrl || '/ui/placeholder-pfp.png'} // Using the image URL, including the placeholder logic if needed
-                                            alt={'Profile Picture Preview'}
-                                            title={'Profile Picture Preview'}
-                                            loading="lazy"
-                                            style={{width: '100px'}}
-                                            width={100}
-                                            height={100}
-                                        />
+                                        <div className='d-flex'>
+                                            <Image
+                                                className="admin-image"
+                                                src={imagePreview || newAuthor?.profileImageUrl || '/ui/placeholder-pfp.png'} // Using the image URL, including the placeholder logic if needed
+                                                alt={'Profile Picture Preview'}
+                                                title={'Profile Picture Preview'}
+                                                loading="lazy"
+                                                style={{width: '100px'}}
+                                                width={100}
+                                                height={100}
+                                            />
+                                            <p className='m-2 align-middle'>URL: {newAuthor?.profileImageUrl}</p>
+                                        </div>
                                     </div>
                                     <div className='mb-3'>
                                         <label htmlFor="isGuest" className="col-form-label">
@@ -409,7 +412,7 @@ const AuthorsPage = () => {
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="profileImageUrl" className="col-form-label">
-                                            <strong>Profile Image URL:</strong>
+                                            <strong>Profile Image:</strong>
                                         </label>
                                         <input
                                             type="file"
@@ -417,16 +420,19 @@ const AuthorsPage = () => {
                                             onChange={handleEditPictureChange}
                                             ref={fileInputRef} // Assigning ref to file input
                                         />
-                                        <Image
-                                            className="admin-image"
-                                            src={imagePreview || selectedAuthor?.profileImageUrl || '/ui/placeholder-pfp.png'} // Using the image URL, including the placeholder logic if needed
-                                            alt={'Profile Picture Preview'}
-                                            title={'Profile Picture Preview'}
-                                            loading="lazy"
-                                            style={{width: '100px'}}
-                                            width={100}
-                                            height={100}
-                                        />
+                                        <div className='d-flex'>
+                                            <Image
+                                                className="admin-image"
+                                                src={imagePreview || selectedAuthor?.profileImageUrl || '/ui/placeholder-pfp.png'} // Using the image URL, including the placeholder logic if needed
+                                                alt={'Profile Picture Preview'}
+                                                title={'Profile Picture Preview'}
+                                                loading="lazy"
+                                                style={{width: '100px'}}
+                                                width={100}
+                                                height={100}
+                                            />
+                                            <p className='m-2 align-middle'>URL: {selectedAuthor?.profileImageUrl}</p>
+                                        </div>
                                         {/* <textarea className="form-control" value={selectedAuthor?.profileImageUrl || ''} onChange={e => handleEditInputChange('profileImageUrl', e.target.value)}></textarea> */}
                                     </div>
                                     <div className='mb-3'>
