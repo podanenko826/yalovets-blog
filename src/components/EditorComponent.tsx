@@ -332,7 +332,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
                                                                 <UndoRedo />
                                                                 <Separator />
                                                                 <BoldItalicUnderlineToggles />
-                                                                <StrikeThroughSupSubToggles options={['Strikethrough', 'Sup']} />
+                                                                <StrikeThroughSupSubToggles options={['Strikethrough']} />
                                                                 <CodeToggle />
                                                                 <Separator />
                                                                 <ListsToggle />
