@@ -163,6 +163,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
         postType: postType || 'Article',
         readTime,
         authorData: (selectedAuthor as AuthorItem) || authorData[0],
+        isSponsored,
     };
 
     const router = useRouter();

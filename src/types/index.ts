@@ -42,6 +42,7 @@ export type PostPreviewItem = {
     postType: string;
     readTime: number;
     authorData: AuthorItem;
+    isSponsored: boolean;
 };
 
 export type PaginationEntry = {

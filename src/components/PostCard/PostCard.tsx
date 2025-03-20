@@ -670,6 +670,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                                 <div className="d-flex align-content-center m-0">
                                     <h2 className={`${styles.heading} subheading`} id="col-heading-1">
                                         {previewData.title || 'Enter the post title'} {moment.utc(post.modifyDate).isAfter(moment.utc(post.date)) && <span className="badge">Updated</span>}
+                                        {previewData.isSponsored && <span className="badge badge-sponsored">Sponsored</span>}
                                     </h2>
                                 </div>
                                 {setValue ? (
@@ -684,6 +685,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                                 ) : (
                                     <p className={styles.description}>{previewData.description}</p>
                                 )}
+
                             </div>
 
                             <span className="d-inline-block">
