@@ -9,7 +9,7 @@ import styles from './PostCard.module.css';
 import { Popover, Offcanvas, Modal } from 'bootstrap';
 
 import type { AuthorItem, PostItem, PostPreviewItem } from '@/types';
-import { deletePost, getMDXContent } from '@/lib/posts';
+import { deletePost, getMDXContent, postTypes } from '@/lib/posts';
 import LazyImage from '../LazyImage';
 
 import { FaCoffee } from 'react-icons/fa';
@@ -22,14 +22,16 @@ type PostCardProps = {
     style: 'massive' | 'full' | 'expanded' | 'preview' | 'admin' | 'standard';
     index?: number | 1;
     setValue?: React.Dispatch<React.SetStateAction<string>>;
+    setPostType?: React.Dispatch<React.SetStateAction<string>>;
     setImageFile?: React.Dispatch<React.SetStateAction<File | null>>;
     onVisible?: () => void;
 };
 
-const PostCard = ({ post, previewData, authorData, style, index, setValue, setImageFile, onVisible }: PostCardProps) => {
+const PostCard = ({ post, previewData, authorData, style, index, setValue, setPostType, setImageFile, onVisible }: PostCardProps) => {
     const cardRef = useRef<HTMLDivElement>(null);
 
     const [imagePreview, setImagePreview] = useState<string | null>(null); // Store the image preview
+    const [selectedPostType, setSelectedPostType] = useState<string>('Article'); // Store the image preview
     const fileInputRef = useRef<HTMLInputElement | null>(null); // Reference for the file input
 
     // Handle file selection
@@ -56,10 +58,18 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setIm
             }
     };
 
-  // Trigger file input click when the image div is clicked
-  const handleImageClick = () => {
-    fileInputRef.current?.click(); // Trigger the file input click
-  };
+    // Trigger file input click when the image div is clicked
+    const handleImageClick = () => {
+        fileInputRef.current?.click(); // Trigger the file input click
+    };
+
+    const handlePostTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedPostType(e.target.value);
+
+        if (setPostType) {
+            setPostType(e.target.value);
+        }
+    };
 
     const { setExpandedPost } = usePostStore();
 
@@ -614,30 +624,43 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setIm
                                 {/* Image used as the button (it will also act as the preview once uploaded) */}
                                 <div
                                     style={{
-                                        cursor: 'pointer',
-                                        border: '2px dashed #ccc',
-                                        minWidth: '354px',
-                                        minHeight: '180px',
-                                        maxHeight: '180px',
-                                        overflow: 'hidden',
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        backgroundColor: '#f4f4f4',
+                                        // cursor: 'pointer',
+                                        // border: '2px dashed #ccc',
+                                        // minWidth: '354px',
+                                        // minHeight: '180px',
+                                        // maxHeight: '180px',
+                                        // overflow: 'hidden',
+                                        // display: 'flex',
+                                        // justifyContent: 'center',
+                                        // alignItems: 'center',
+                                        // backgroundColor: '#f4f4f4',
                                     }}
-                                    onClick={handleImageClick}
-                                    className='admin-image img-fluid'
+                                    className={`${styles.image}`}
                                 >
-                                    <Image
-                                        className="img-fluid admin-image"
-                                        src={imagePreview || previewData.imageUrl || '/ui/addpost.png'} // Using the image URL, including the placeholder logic if needed
-                                        alt={post.title}
-                                        title={post.title}
-                                        loading="lazy"
-                                        width={354}
-                                        height={180}
-                                        sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
-                                    />
+                                    <picture className={`img-fluid ${styles.imageWrapper}`}>
+
+                                        <Image
+                                            className="img-fluid admin-image"
+                                            style={{cursor: 'pointer'}}
+                                            src={imagePreview || previewData.imageUrl || '/ui/addpost.png'} // Using the image URL, including the placeholder logic if needed
+                                            alt={post.title}
+                                            title={post.title}
+                                            loading="lazy"
+                                            width={354}
+                                            height={180}
+                                            onClick={handleImageClick}
+                                            sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                                        />
+                                        <span className={`d-inline-block ${styles.articleLabel} ${previewData.postType === 'Guide' ? styles.articleLabel_Guide : previewData.postType === 'Review' ? styles.articleLabel_Review : previewData.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
+                                            <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
+                                            <select onChange={handlePostTypeChange} value={selectedPostType} className={`d-inline-block ${styles.articleLabelSelect} ${previewData.postType === 'Guide' ? styles.articleLabel_Guide : previewData.postType === 'Review' ? styles.articleLabel_Review : previewData.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
+                                                {previewData.postType || 'Article'} {/* Display the post type */}
+                                                {postTypes.map(type => (
+                                                    <option>{type}</option>
+                                                ))}
+                                            </select>
+                                        </span>
+                                    </picture>
                                 </div>
                             </div>
                         )}

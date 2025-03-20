@@ -160,7 +160,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
         imageUrl: imageUrl || '/ui/addpost.png',
         date: postData?.date || moment(Date.now()).format(format),
         modifyDate: moment(formatPostDate(moment(postData?.modifyDate).toDate()), format).format(format) || moment(Date.now()).format(format),
-        postType: postData?.postType || 'Article',
+        postType: postType || 'Article',
         readTime,
         authorData: (selectedAuthor as AuthorItem) || authorData[0],
     };
@@ -364,7 +364,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
                 <div className="row">
                     <div className="container">
                         <h1 className="text-center py-3">Preview</h1>
-                        <PostCard post={Post} previewData={PostPreview} authorData={selectedAuthor || authorData[0]} style="preview" setValue={setDescription} setImageFile={setImageFile} />
+                        <PostCard post={Post} previewData={PostPreview} authorData={selectedAuthor || authorData[0]} style="preview" setValue={setDescription} setPostType={setPostType} setImageFile={setImageFile} />
                     </div>
                 </div>
             </div>

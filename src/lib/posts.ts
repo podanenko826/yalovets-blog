@@ -46,6 +46,13 @@ function transformPostData(data: any[]): PostItem[] {
     });
 }
 
+export const postTypes = [
+    'Article',
+    'Review',
+    'Guide',
+    'News'
+]
+
 type FetchPostsResponse = {
     posts: PostItem[];
     lastKey: string; // The last key is the exclusive start key for pagination
