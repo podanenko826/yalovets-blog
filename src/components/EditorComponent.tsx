@@ -366,14 +366,6 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
                     <div className="container">
                         <h1 className="text-center py-3">Preview</h1>
                         <PostCard post={Post} previewData={PostPreview} authorData={selectedAuthor || authorData[0]} style="preview" setValue={setDescription} setPostType={setPostType} setImageFile={setImageFile} />
-                    </div>
-                </div>
-            </div>
-            <div className="container d-flex justify-content-center col-md-9 my-5">
-                <div className="row">
-                    <div className="container col-12">
-                        <h1 className="text-center py-3">Sponsorship</h1>
-
                         <li className="list-group-item py-2 py-lg-1">
                             <input
                                 className="form-check-input me-2"
@@ -386,7 +378,6 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
                                 Is Sponsored
                             </label>
                         </li>
-
                         {isSponsored && (
                             <>
                                 <div>
@@ -402,6 +393,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
                     </div>
                 </div>
             </div>
+            
             <div className="container d-flex justify-content-center col-md-9 my-5">
                 <div className="row">
                     <div className="col-12 d-flex container justify-content-center py-4">
