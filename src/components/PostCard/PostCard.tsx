@@ -480,6 +480,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                 <div className={styles.postInfo}>
                     <h2 className={`${styles.heading} subheading d-flex flex-wrap align-content-center gap-1`} id="col-heading-1">
                         {post.title} {moment.utc(post.modifyDate).isAfter(moment.utc(post.date)) && <span className="px-2 py-1 text-wrap badge">{'Updated ' + moment.utc(post.modifyDate).fromNow()}</span>}
+                        {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
                     </h2>
                     <p className={styles.description}>{post.description}</p>
                 </div>
