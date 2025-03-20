@@ -9,15 +9,27 @@ import PostList from '@/components/PostCard/PostList';
 import { usePostStore } from '@/components/posts/store';
 import { PostItem } from '@/types';
 import { IoMdRefresh } from 'react-icons/io';
+import { useAuthorStore } from '@/components/authors/store';
 
 const PostsPage = () => {
     const { posts, setPosts, setLastKey, fetchPosts } = usePostStore();
+    const { authors, setAuthors, fetchAuthors } = useAuthorStore();
 
     const ARTICLES_PER_PAGE = 14;
 
     useEffect(() => {
         fetchPosts(ARTICLES_PER_PAGE);
     }, [fetchPosts]);
+
+    useEffect(() => {
+        const fetchAuthorData = async () => {
+            const authorData = await fetchAuthors();
+
+            setAuthors(authorData);
+        }
+
+        fetchAuthorData();
+    }, [fetchAuthors]);
 
     const refreshPosts = async () => {
         setLastKey(null);
@@ -98,12 +110,10 @@ const PostsPage = () => {
                                 </div>
                             </div>
                         </div>
-                        {/* {postData.posts.map((post, index) => (
-                            <div className="col-md-6 col-lg-4" key={index}>
-                            <LazyPostCard post={post} authorData={authorData.find(author => author.email === post.email) as AuthorItem} style="admin" index={index} key={index} />
-                            </div>
-                        ))} */}
-                        <PostList postsData={posts} displayMode='admin' style='admin' limit={ARTICLES_PER_PAGE} infiniteScroll />
+
+                        {authors.length > 0 && (
+                            <PostList postsData={posts} displayMode='admin' style='admin' limit={ARTICLES_PER_PAGE} infiniteScroll />
+                        )}
                     </div>
                 </div>
             </div>
