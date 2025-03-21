@@ -2,6 +2,7 @@
 
 import Footer from '@/components/Footer';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
+import ArticleModal from '@/components/Modals/ArticleModal';
 import NavBar from '@/components/NavBar';
 import { mdSerialize } from '@/services/mdSerializer';
 import { MDXProvider } from '@mdx-js/react';
@@ -27,6 +28,7 @@ const ImprintPage = () => {
     return (
         <>
             <NavBar />
+            <ArticleModal slug='' />
             <div className='container py-5'>
                 <article className="article">
                     {serializedMarkdown ? (
