@@ -16,9 +16,9 @@ import { usePostStore } from '@/components/posts/store';
 import { useAuthorStore } from '@/components/authors/store';
 import { usePaginationStore } from '@/components/pagination/store';
 import LoadingBanner from '@/components/Modals/LoadingBanner';
-
-const NavBar = lazy(() => import('@/components/NavBar'));
-const Footer = lazy(() => import('@/components/Footer'));
+import LoadingSkeleton from '@/components/LoadingSkeleton';
+import Footer from '@/components/Footer';
+import NavBar from '@/components/NavBar';
 
 const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
 const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
@@ -99,7 +99,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
                 <PostPreviewModal />
                 <ArticleModal slug={slug || ''} />
             </Suspense>
-            {authorData && (
+            {authorData ? (
                 <div className="container">
                     <div className="container mb-5">
                         <div className={`${postCardStyles.profile_info} d-flex justify-content-center mt-4`}>
@@ -127,6 +127,8 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
                         </div>
                     </div>
                 </div>
+            ) : (
+                <LoadingSkeleton />
             )}
             <Footer />
         </>
