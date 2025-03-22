@@ -287,7 +287,10 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
                         )}
                     </div>
                 ) : (
-                    <h1 className='py-4 heading-xlarge w-100 col-md-11 col-lg-12 text-center align-content-center'>{legalMdx === 'privacy-policy' ? 'Privacy Policy' : 'Imprint'}</h1>
+                    <>
+                        <p className='text-center' style={{ color: 'red' }}>DON'T FORGET TO CHANGE THE "LAST UPDATED" DATE</p>
+                        <h1 className='py-4 heading-xlarge w-100 col-md-11 col-lg-12 text-center align-content-center'>{legalMdx === 'privacy-policy' ? 'Privacy Policy' : 'Imprint'}</h1>
+                    </>
                 )}
             </div>
             <div className="row">
