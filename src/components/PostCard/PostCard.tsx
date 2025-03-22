@@ -81,7 +81,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                         <a role="button" onClick={handlePostOpen}>
                             {props.noLimit ? (
                                 <h2 className={`${styles.heading} subheading d-flex flex-wrap align-items-center gap-1`} id="col-heading-1">
-                                    {post.title} {moment.utc(post.modifyDate).isAfter(moment.utc(post.date)) && moment.utc(post.modifyDate).diff(moment.utc(post.date), 'days') <= 30 && !post.sponsoredBy && <span className="badge text-wrap">{'Updated ' + moment.utc(post.modifyDate).fromNow()}</span>}
+                                    {post.title} {moment.utc(post.modifyDate).isAfter(moment.utc(post.date)) && moment.utc(post.modifyDate).diff(Date.now(), 'days') >= -30 && !post.sponsoredBy && <span className="badge text-wrap">{'Updated ' + moment.utc(post.modifyDate).fromNow()}</span>}
                                     {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
                                 </h2>
                             ) : (
