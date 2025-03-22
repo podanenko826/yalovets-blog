@@ -35,19 +35,14 @@ const Footer = () => {
 
     const footerLinks = [
         {
-            label: 'About Yalovets Blog',
-            href: '#',
-            id: 1,
-        },
-        {
             label: 'Privacy Policy',
             href: '/privacy-policy',
-            id: 2,
+            id: 1,
         },
         {
             label: 'Imprint',
             href: '/imprint',
-            id: 3,
+            id: 2,
         },
     ];
 
