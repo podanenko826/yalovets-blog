@@ -21,10 +21,7 @@ export async function GET() {
 
 export async function PUT(request: Request) {
     const { content } = await request.json();
-
-    console.log(content);
     
-
     // Define the directory to save the file
     const dirPath = `src/app/(user)/privacy-policy`;
 

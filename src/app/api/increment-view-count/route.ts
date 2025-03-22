@@ -14,8 +14,6 @@ export async function PATCH(request: Request) {
     const TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
 
     const { email, slug } = await request.json();
-    console.log(email, slug);
-    
 
     if (!TABLE_NAME) {
         return NextResponse.json({ error: 'Table name is not defined in environment variables' }, { status: 500 });
