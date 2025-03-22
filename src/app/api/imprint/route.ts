@@ -1,5 +1,4 @@
 import fs from 'fs';
-import moment from 'moment';
 import { NextResponse } from 'next/server';
 import path from 'path';
 
@@ -20,59 +19,24 @@ export async function GET() {
     });
 }
 
-// export async function POST(request: Request) {
-//     const { searchParams } = new URL(request.url);
-//     const date = searchParams.get('date');
+export async function PUT(request: Request) {
+    const { content } = await request.json();
 
-//     const year = moment.utc(date).year().toString();
-//     const month = (moment.utc(date).month() + 1).toString().padStart(2, '0');
+    // Define the directory to save the file
+    const dirPath = `src/app/(user)/imprint`;
 
-//     const { fileName, content } = await request.json();
-
-//     // Define the directory to save the file
-//     const dirPath = `src/articles/${year}/${month}`;
-
-//     // Ensure the directory exists
-//     if (!fs.existsSync(dirPath)) {
-//         fs.mkdirSync(dirPath);
-//     }
+    // Ensure the directory exists
+    if (!fs.existsSync(dirPath)) {
+        return NextResponse.json({ message: 'The Imprint directory is not found' }, { status: 200 });
+    }
     
-//     const filePath = path.join(dirPath, `${fileName}.mdx`);
+    const filePath = path.join(dirPath, 'imprint.mdx');
 
-//     // Write the file to the filesystem
-//     try {
-//         fs.writeFileSync(filePath, content);
-//         return NextResponse.json(filePath, { status: 200 });
-//     } catch (err) {
-//         return NextResponse.json({ message: 'Failed to save file' }, { status: 500 });
-//     }
-// }
-
-// export async function DELETE(request: Request) {
-//     const { searchParams } = new URL(request.url);
-//     const slug = searchParams.get('slug');
-//     const date = searchParams.get('date');
-
-//     if (!slug || !date) {
-//         console.error('Missing slug or date paramether');
-//         return NextResponse.json(false, { status: 400 });
-//     }
-
-//     const year = moment.utc(date).year().toString();
-//     const month = (moment.utc(date).month() + 1).toString().padStart(2, '0');
-
-//     const dirPath = `src/articles/${year}/${month}`;
-//     const filePath = path.join(process.cwd(), dirPath, `${slug}.mdx`);
-
-//     if (!fs.existsSync(filePath)) {
-//         return NextResponse.json(false, { status: 404 });
-//     }
-
-//     try {
-//         await fs.promises.rm(filePath);
-//         return NextResponse.json(true, { status: 200 });
-//     } catch (err) {
-//         console.error('File deletion error:', err);
-//         return NextResponse.json(false, { status: 500 });
-//     }
-// }
+    // Write the file to the filesystem
+    try {
+        fs.writeFileSync(filePath, content);
+        return NextResponse.json(filePath, { status: 200 });
+    } catch (err) {
+        return NextResponse.json({ message: 'Failed to save file' }, { status: 500 });
+    }
+}

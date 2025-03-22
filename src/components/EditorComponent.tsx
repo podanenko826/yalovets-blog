@@ -28,6 +28,7 @@ interface EditorProps {
     postData?: PostItem;
     authorData: AuthorItem[];
     editorRef?: React.MutableRefObject<MDXEditorMethods | null>;
+    legalMdx?: 'privacy-policy' | 'imprint';
 }
 
 const jsxComponentDescriptors: JsxComponentDescriptor[] = [
@@ -42,7 +43,7 @@ const jsxComponentDescriptors: JsxComponentDescriptor[] = [
     },
   ]
 
-const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorRef }) => {
+const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorRef, legalMdx }) => {
     const [currentMarkdown, setCurrentMarkdown] = useState(markdown); // Track current markdown
     const [selectedAuthor, setSelectedAuthor] = useState(postData ? authorData.find(author => author.email === postData.email) : authorData.find(author => author.authorKey === 'ivanyalovets') || authorData[0]);
     const [postTitle, setPostTitle] = useState(postData ? postData.title : '');
@@ -194,7 +195,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
     };
 
     const handleSave = async () => {
-        if (slug) {
+        if (!legalMdx && slug) {
             console.log(Post);
             
             const { markdown, slug } = await updatePost(Post, currentMarkdown);
@@ -204,6 +205,23 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
                 setTimeout(() => {
                     return router.push(`/admin/posts`);
                 }, 12000);
+            }
+        } else if (legalMdx) {
+            const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+            const response = await fetch(`${baseUrl}/api/${legalMdx}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ content: currentMarkdown }),
+            });
+
+            if (response.ok) {
+                window.open(`/${legalMdx}`, '_blank', 'noopener,noreferrer');
+                setTimeout(() => {
+                    return router.push(`/admin/posts`);
+                }, 1000);
             }
         } else {
             console.log(Post);
@@ -220,7 +238,11 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
     };
 
     const handleCancel = () => {
-        router.push('/admin/posts');
+        if (legalMdx) {
+            router.push('/admin');
+        } else {
+            router.push('/admin/posts');
+        }
     };
 
     if (!selectedAuthor) return null;
@@ -231,37 +253,42 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
                 import remarkDirective from 'https://esm.sh/remark-directive@3?bundle'
             </script>
             <div className="container col-md-9 mt-5">
-                <div className="text-center pt-4">
-                    <textarea className="heading-xlarge w-100 col-md-11 col-lg-12 text-center align-content-center" id="col-heading-1" disabled={slug ? true : false} placeholder={slug ? slug : 'Enter the post title'} onChange={e => handlePostTitleChange(e.target.value)} value={postTitle} />
-                    <div className="d-flex justify-content-center gap-1">
-                        <select className="form-select preview-author-select p-0 px-2" aria-label="Select author" value={selectedAuthor?.email} disabled={slug ? true : false} onChange={handleChange}>
-                            {authorData.map(author => (
-                                <option key={author.email} value={author.email} className="w-auto p-0 m-0 text-center">
-                                    {author.fullName}
-                                </option>
-                            ))}
-                        </select>
-                        <p className="m-0">•</p>
+                {!legalMdx ? (
 
-                        <div className="d-flex justify-content-center gap-2">
-                            <p className="m-0">{postData ? moment(postData.date, format).format('D MMM YYYY') : moment(Date.now()).format('DD MMM YYYY')}</p>
+                    <div className="text-center pt-4">
+                        <textarea className="heading-xlarge w-100 col-md-11 col-lg-12 text-center align-content-center" id="col-heading-1" disabled={slug ? true : false} placeholder={slug ? slug : 'Enter the post title'} onChange={e => handlePostTitleChange(e.target.value)} value={postTitle} />
+                        <div className="d-flex justify-content-center gap-1">
+                            <select className="form-select preview-author-select p-0 px-2" aria-label="Select author" value={selectedAuthor?.email} disabled={slug ? true : false} onChange={handleChange}>
+                                {authorData.map(author => (
+                                    <option key={author.email} value={author.email} className="w-auto p-0 m-0 text-center">
+                                        {author.fullName}
+                                    </option>
+                                ))}
+                            </select>
+                            <p className="m-0">•</p>
 
-                            {moment(postData?.modifyDate, format).isAfter(moment(postData?.date, format)) && (
-                                <>
-                                    <p className="d-none d-md-block m-0">•</p>
-                                    <span className="d-none d-md-block px-2 m-0 rounded-pill text-bg-secondary">{'Updated ' + moment(postData?.modifyDate, format).fromNow()}</span>
-                                </>
-                            )}
+                            <div className="d-flex justify-content-center gap-2">
+                                <p className="m-0">{postData ? moment(postData.date, format).format('D MMM YYYY') : moment(Date.now()).format('DD MMM YYYY')}</p>
+
+                                {moment(postData?.modifyDate, format).isAfter(moment(postData?.date, format)) && (
+                                    <>
+                                        <p className="d-none d-md-block m-0">•</p>
+                                        <span className="d-none d-md-block px-2 m-0 rounded-pill text-bg-secondary">{'Updated ' + moment(postData?.modifyDate, format).fromNow()}</span>
+                                    </>
+                                )}
+                            </div>
                         </div>
+                        {moment(postData?.modifyDate, format).isAfter(moment(postData?.date, format)) && (
+                            <>
+                                <span className="d-md-none px-2 m-0 rounded-pill text-bg-secondary" id="mobileUpdatedBadge">
+                                    {'Updated ' + moment(postData?.modifyDate, format).fromNow()}
+                                </span>
+                            </>
+                        )}
                     </div>
-                    {moment(postData?.modifyDate, format).isAfter(moment(postData?.date, format)) && (
-                        <>
-                            <span className="d-md-none px-2 m-0 rounded-pill text-bg-secondary" id="mobileUpdatedBadge">
-                                {'Updated ' + moment(postData?.modifyDate, format).fromNow()}
-                            </span>
-                        </>
-                    )}
-                </div>
+                ) : (
+                    <h1 className='py-4 heading-xlarge w-100 col-md-11 col-lg-12 text-center align-content-center'>{legalMdx === 'privacy-policy' ? 'Privacy Policy' : 'Imprint'}</h1>
+                )}
             </div>
             <div className="row">
                 <div className="col-md-8 offset-md-2 container">
@@ -361,44 +388,47 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
                     />
                 </div>
             </div>
-            <div className="container d-flex justify-content-center col-md-9" style={{ marginTop: '40rem' }}>
-                <div className="row">
-                    <div className="container">
-                        <h1 className="text-center py-3">Preview</h1>
-                        <PostCard post={Post} previewData={PostPreview} authorData={selectedAuthor || authorData[0]} style="preview" setValue={setDescription} setPostType={setPostType} setImageFile={setImageFile} />
-                        <li className="list-group-item py-2 py-lg-1">
-                            <input
-                                className="form-check-input me-2"
-                                type="checkbox"
-                                name="listGroupRadio"
-                                checked={isSponsored}
-                                onChange={e => setIsSponsored(e.target.checked)}
-                            />
-                            <label className="form-check-label">
-                                Is Sponsored
-                            </label>
-                        </li>
-                        {isSponsored && (
-                            <>
-                                <div>
-                                    <label htmlFor="" className='mx-3'>Enter sponsor company name</label>
-                                    <input type="text" placeholder='Coffeeman Corporation' value={sponsoredBy} onChange={e => setSponsoredBy(e.target.value)} />
-                                </div>
-                                <div className='mt-3'>
-                                    <label htmlFor="" className='mx-3'>Enter company's website URL (optional)</label>
-                                    <input type="text" placeholder='www.yalovets.blog/' value={sponsorUrl} onChange={e => setSponsorUrl(e.target.value)} />
-                                </div>
-                            </>
-                        )}
+
+            {!legalMdx && (
+                <div className="container d-flex justify-content-center col-md-9" style={{ marginTop: '40rem' }}>
+                    <div className="row">
+                        <div className="container">
+                            <h1 className="text-center py-3">Preview</h1>
+                            <PostCard post={Post} previewData={PostPreview} authorData={selectedAuthor || authorData[0]} style="preview" setValue={setDescription} setPostType={setPostType} setImageFile={setImageFile} />
+                            <li className="list-group-item py-2 py-lg-1">
+                                <input
+                                    className="form-check-input me-2"
+                                    type="checkbox"
+                                    name="listGroupRadio"
+                                    checked={isSponsored}
+                                    onChange={e => setIsSponsored(e.target.checked)}
+                                />
+                                <label className="form-check-label">
+                                    Is Sponsored
+                                </label>
+                            </li>
+                            {isSponsored && (
+                                <>
+                                    <div>
+                                        <label htmlFor="" className='mx-3'>Enter sponsor company name</label>
+                                        <input type="text" placeholder='Coffeeman Corporation' value={sponsoredBy} onChange={e => setSponsoredBy(e.target.value)} />
+                                    </div>
+                                    <div className='mt-3'>
+                                        <label htmlFor="" className='mx-3'>Enter company's website URL (optional)</label>
+                                        <input type="text" placeholder='www.yalovets.blog/' value={sponsorUrl} onChange={e => setSponsorUrl(e.target.value)} />
+                                    </div>
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
-            
+            )}
+
             <div className="container d-flex justify-content-center col-md-9 my-5">
                 <div className="row">
                     <div className="col-12 d-flex container justify-content-center py-4">
                         <button onClick={handleSave} className="py-2 px-3 m-3 btn-filled" type="submit">
-                            {postData ? 'Update' : 'Post'}
+                            {legalMdx || postData ? 'Update' : 'Post'}
                         </button>
                         <button onClick={handleCancel} className="py-2 px-3 m-3 btn-outlined">
                             Cancel

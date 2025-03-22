@@ -40,6 +40,27 @@ const AdminPage = () => {
             imageUrl: '/ui/imagemanage.png',
             url: '/admin/images',
         },
+        {
+            id: 2,
+            title: 'Edit About Yalovets Blog',
+            description: 'Update the About Yalovets Blog page in the footer of the website.',
+            imageUrl: '/ui/editaboutyalovetsblog.png',
+            url: '/admin/posts/privacy-policy',
+        },
+        {
+            id: 3,
+            title: 'Edit Privacy Policy',
+            description: 'Update the Privacy Policy if some legal changes are needed.',
+            imageUrl: '/ui/editprivacypolicy.png',
+            url: '/admin/posts/privacy-policy',
+        },
+        {
+            id: 4,
+            title: 'Edit Imprint',
+            description: 'Update the Imprint in case the contact info changes.',
+            imageUrl: '/ui/editimprint.png',
+            url: '/admin/posts/imprint',
+        },
     ];
 
     return (
@@ -147,7 +168,7 @@ const AdminPage = () => {
                     <div>
                         <div className="row post-list">
                             {otherItems.map(item => (
-                                <div className="col-12 col-md-6 col-lg-4" key={item.id}>
+                                <div className="col-12 col-md-6 col-lg-3" key={item.id}>
                                     <div className="col-12">
                                         <Link href={item.url}>
                                             <div className={postCardStyles.image}>
