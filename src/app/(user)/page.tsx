@@ -248,7 +248,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                                     Hi, I&rsquo;m Ivan Yalovets!
                                 </h1>
                             </div>
-                            <Image className="img-fluid ivan-yalovets" src="/img/ivan-pfp.png" alt="Ivan" title="Ivan Yalovets" width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
+                            <Image className="img-fluid ivan-yalovets" src="/pfp/ivan-pfp.webp" alt="Ivan" title="Ivan Yalovets" width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
                         </div>
                         <div className="col-10 mt-3 mt-md-0 col-md-5 col-lg-5 offset-md-1">
                             <p className="pt-2 subheading-small" id="col-heading-1">
