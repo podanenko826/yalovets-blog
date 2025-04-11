@@ -24,11 +24,11 @@ export const navigation = [
         href: '/page',
         id: 1,
     },
-    {
-        label: 'Books',
-        href: '/books',
-        id: 2,
-    },
+    // {
+    //     label: 'Books',
+    //     href: '/books',
+    //     id: 2,
+    // },
     // {
     //     label: 'Podcasts',
     //     href: '/podcasts',
