@@ -1,6 +1,6 @@
 export type AuthorItem = {
     email: string;
-    slug: string;
+    slug: string; // Would always be 'author-account'
     fullName: string;
     authorKey: string;
     profileImageUrl: string;
@@ -53,3 +53,13 @@ export type PaginationState = {
     totalPages: number;
     paginationData: Record<number, PaginationEntry>;
 };
+
+export type BookItem = {
+    email: string;
+    slug: string; // Would always be 'book'
+    title: string;
+    description: string;
+    postGroup: string;
+    imageUrl?: string;
+    purchaseLinks?: Record<string, string>; // key: shop name, value: URL       
+}

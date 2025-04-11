@@ -280,6 +280,26 @@ button {
     font-weight: 600;
 }
 
+.btn-purchase {
+    padding: 20px 36px;
+    background: rgb(139, 104, 16) !important;
+    color: white;
+    font-weight: 600;
+}
+
+.btn-purchase:hover {
+    background: rgb(116, 88, 17) !important;
+}
+
+.btn-purchase:active {
+    background: rgb(94, 72, 15) !important;
+}
+
+.btn-filled-svg {
+    font-size: 1.25rem;
+    margin: 0px 4px 4px 0px;
+}
+
 .btn-filled:hover {
     /* background: rgb(220, 0, 0); */
     background: var(--col-highlight) !important;
@@ -594,7 +614,8 @@ blockquote > span,
     height: 210px !important;
 }
 
-.admin-image {
+.admin-image,
+.rounded-image {
     border-radius: 7px !important;
 }
 

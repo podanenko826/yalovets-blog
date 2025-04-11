@@ -26,7 +26,7 @@ export const navigation = [
     },
     {
         label: 'Books',
-        href: '/books-recomendation',
+        href: '/books',
         id: 2,
     },
     // {
