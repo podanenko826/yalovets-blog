@@ -104,7 +104,9 @@ const NavBar = () => {
                                 </Link>
                             );
                         })}
-                        <button className="btn-outlined">Subscribe</button>
+
+                        <button className={`btn-outlined ${styles.btn_subscribe}`}>Subscribe</button>
+
                         <button className='btn-pill' onClick={() => handleThemeChange()}>
                             {isDarkTheme ? (
                                 <IoSunnyOutline className='btn-pill-svg px-1' />
@@ -130,7 +132,7 @@ const NavBar = () => {
                         )}
                     </div>
                     <div className="d-flex col-9 justify-content-end p-0 m-0">
-                        <Link className={styles.btn_subscribe} href="#">
+                        <Link className={styles.btn_subscribe_mobile} href="#">
                             Subscribe
                         </Link>
                     </div>
