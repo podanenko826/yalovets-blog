@@ -152,6 +152,11 @@ input {
     transition-duration: 75ms;
 }
 
+.dark input {
+    background: var(--col-background-elements);
+    color: var(--col-text);
+}
+
 textarea {
     line-height: 100% !important;
     font-weight: bolder;
@@ -326,6 +331,20 @@ button {
 .btn-danger:active {
     outline: slategrey auto 10px;
     background: var(--col-primary) !important;
+}
+
+.btn-filled.btn-disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+  
+/* Remove hover/active effects */
+.btn-filled.btn-disabled:hover,
+.btn-filled.btn-disabled:active,
+.btn-filled.btn-disabled:focus {
+    background: inherit;
+    box-shadow: none;
+    transform: none;
 }
 
 .horisontal-line {
