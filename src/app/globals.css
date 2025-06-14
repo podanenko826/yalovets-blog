@@ -33,7 +33,7 @@
 
     --col-background: rgb(20, 20, 20);
     --col-background-elements: rgb(27, 27, 27);
-    --col-background-modals: rgb(35, 35, 35);
+    --col-background-modals: rgba(35, 35, 35, 0.8);
     --col-link: rgb(220, 220, 220);
     --col-button: rgb(50, 50, 50);
     --col-button-hover: rgb(40, 40, 40);
