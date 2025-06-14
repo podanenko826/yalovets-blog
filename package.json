@@ -9,8 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-cdk/aws-iam": "^1.203.0",
+    "@aws-cdk/aws-lambda": "^1.203.0",
+    "@aws-cdk/aws-lambda-nodejs": "^1.203.0",
+    "@aws-cdk/aws-ses": "^1.203.0",
+    "@aws-cdk/aws-ses-actions": "^1.203.0",
     "@aws-sdk/client-dynamodb": "^3.687.0",
     "@aws-sdk/client-s3": "^3.682.0",
+    "@aws-sdk/client-ses": "^3.817.0",
     "@aws-sdk/credential-providers": "^3.687.0",
     "@aws-sdk/lib-dynamodb": "^3.687.0",
     "@aws-sdk/util-dynamodb": "^3.687.0",

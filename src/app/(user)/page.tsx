@@ -15,6 +15,7 @@ import { usePostStore } from '@/components/posts/store';
 import { useAuthorStore } from '@/components/authors/store';
 import LoadingBanner from '@/components/Modals/LoadingBanner';
 import { uploadImage } from '@/lib/images';
+import { run } from '@/services/sendEmail';
 
 const NavBar = lazy(() => import('@/components/NavBar'));
 const Footer = lazy(() => import('@/components/Footer'));
@@ -115,11 +116,16 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
         }
     }, [fetchAuthors]);
 
+    async function sendTestEmail() {
+        await run();
+    }
+
     if (posts.length === 0) return <LoadingBanner />
 
     return (
         <>
             <NavBar />
+            <button onClick={sendTestEmail}>Send a test email</button>
             {showModal && <PostPreviewModal />}
             {showModal && <ArticleModal slug={slug || ''} />}
             <main id="body">
