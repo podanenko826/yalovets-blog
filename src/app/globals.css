@@ -635,7 +635,7 @@ blockquote > span,
 
 .admin-image,
 .rounded-image {
-    border-radius: 7px !important;
+    border-radius: 14px !important;
 }
 
 .preview-author-select {
