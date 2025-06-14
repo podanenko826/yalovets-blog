@@ -31,7 +31,7 @@ const createSendEmailCommand = (fromAddress, toAddress) => {
         Data: "Test Email from SDK",
       },
     },
-    Source: 'podanenko826@gmail.com',
+    Source: process.env.NEXT_PUBLIC_SENDER_EMAIL,
     ReplyToAddresses: [
       /* more items */
     ],
