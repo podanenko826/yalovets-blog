@@ -266,7 +266,7 @@
 }
 
 .expandedContainer {
-    background: var(--col-background-modals);
+    /* background: var(--col-background-modals); */
     /* border-radius: 16px; */
     box-sizing: border-box;
 }
