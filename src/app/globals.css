@@ -238,6 +238,7 @@ button {
     border-radius: 5px;
     border: none;
     outline: none;
+    border-radius: 14px;
 }
 
 .btn-pill {
