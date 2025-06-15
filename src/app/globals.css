@@ -21,6 +21,8 @@
     --col-heading-1: rgb(80, 80, 80);
     --col-heading-2: rgb(105, 120, 136);
     --col-footer: rgb(31, 90, 139);
+
+    --default-backdrop: blur(4px);
 }
 
 .dark {
@@ -249,6 +251,7 @@ button {
     height: 50px;
     box-sizing: border-box;
     font-size: 23px;
+    backdrop-filter: var(--default-backdrop);
 }
 
 .btn-pill > .btn-pill-svg {
