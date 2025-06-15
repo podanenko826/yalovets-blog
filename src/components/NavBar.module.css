@@ -93,14 +93,6 @@
     }
 }
 
-.btn_subscribe {
-    border-radius: 7px;
-}
-
-.btn_subscribe:hover {
-    background: var(--col-primary);
-}
-
 .btn_subscribe_mobile {
     text-decoration: none;
     padding: 0;

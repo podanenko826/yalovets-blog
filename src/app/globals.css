@@ -239,6 +239,7 @@ button {
     border: none;
     outline: none;
     border-radius: 14px;
+    backdrop-filter: var(--default-backdrop);
 }
 
 .btn-pill {
@@ -276,6 +277,7 @@ button {
 
 .btn-outlined:hover {
     text-decoration: underline;
+    background: rgba(0, 0, 0, 0.2) !important;
 }
 
 .btn-outlined > svg {
