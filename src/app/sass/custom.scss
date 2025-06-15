@@ -32,6 +32,10 @@ $popover-body-padding-y: 10px !important;
 $popover-max-width: 280px !important;
 $popover-bg: rgba(255, 255, 255, 0.95) !important;
 
+.popover {
+    z-index: 9999 !important;
+}
+
 .row {
     display: flex !important;
     flex-wrap: wrap !important;

@@ -20,6 +20,10 @@
   }
 }
 
+.popover {
+  z-index: 9999 !important;
+}
+
 .row {
   display: flex !important;
   flex-wrap: wrap !important;
