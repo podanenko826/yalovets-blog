@@ -60,8 +60,9 @@
     border: 0.5px solid gray;
     /* Transition only GPU-accelerated properties */
     transition: transform 0.3s ease, opacity 0.3s ease, width 0.3s ease, height 0.3s ease;
-
+    
     padding: 1rem;
+    padding-bottom: 5rem;
     border-end-start-radius: 0;
     border-end-end-radius: 0;
 }
@@ -147,6 +148,10 @@
     .postDataContainer {
         min-width: min-content;
         border-radius: 32px;
+    }
+
+    .previewModal > div {
+        align-items: center;
     }
 
     .paginationPreferences {
