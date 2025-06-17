@@ -152,6 +152,10 @@
         padding-bottom: 2.25rem !important;
     }
 
+    .previewModal {
+        border-radius: 0;
+    }
+
     .previewModal > div {
         align-items: center;
     }
