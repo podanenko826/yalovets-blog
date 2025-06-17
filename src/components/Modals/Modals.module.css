@@ -15,7 +15,7 @@
 .previewModal {
     z-index: 2000;
     height: 100vh;
-    border-radius: 16px 16px 0 0;
+    border-radius: 32px 32px 0 0;
     display: flex;
     will-change: transform, width, height, padding;
 
@@ -53,7 +53,7 @@
     background: var(--col-background-modals);
     backdrop-filter: var(--default-backdrop);
     min-height: min-content;
-    border-radius: 16px;
+    border-radius: 32px;
     transform: scale(1);
     opacity: 1;
     min-width: 100%;
@@ -78,9 +78,9 @@
     transition: all 0.3s ease-in-out;
 }
 
-.paginationPreferences {
-    border-radius: 16px !important;
-}
+/* .paginationPreferences {
+    border-radius: 32px !important;
+} */
 
 @keyframes screenTint {
     0% {
@@ -146,7 +146,7 @@
 
     .postDataContainer {
         min-width: min-content;
-        border-radius: 16px;
+        border-radius: 32px;
     }
 
     .paginationPreferences {
