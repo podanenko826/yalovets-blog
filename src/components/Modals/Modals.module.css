@@ -79,9 +79,10 @@
     transition: all 0.3s ease-in-out;
 }
 
-/* .paginationPreferences {
-    border-radius: 32px !important;
-} */
+.paginationPreferences {
+    border-radius: 32px;
+    padding-bottom: 1rem;
+}
 
 @keyframes screenTint {
     0% {
