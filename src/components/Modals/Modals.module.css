@@ -67,6 +67,39 @@
     border-end-end-radius: 0;
 }
 
+.dialogBox {
+    display: flex;
+    justify-content: center;
+    align-self: start !important;
+    margin-top: 1.75rem !important;
+
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+    border: 0.5px solid gray;
+    
+    transition: transform 0.3s ease, opacity 0.3s ease, width 0.3s ease, height 0.3s ease;
+
+    min-height: min-content;
+    border-radius: 32px;
+    transform: scale(1);
+    opacity: 1;
+    z-index: 9999;
+
+    padding: 1rem 2rem !important;
+    padding-top: 1.5rem !important;
+}
+
+.dialogBox_green {
+    background: rgba(80, 200, 50, 0.6);
+}
+
+.dialogBox_red {
+    background: rgba(255, 62, 62, 0.6);
+}
+
+.dialogBox > h3, .dialogBox > p {
+    color: white !important;
+}
+
 .expandedPostCloseBtn {
     display: flex;
     font-size: 10px;

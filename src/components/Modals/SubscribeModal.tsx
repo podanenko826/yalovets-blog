@@ -6,6 +6,7 @@ import { useUserConfigStore } from '../userConfig/store';
 import Link from 'next/link';
 import { SubscriberItem } from '@/types';
 import moment from 'moment';
+import { createSubscriber } from '@/lib/subscribers';
 
 type SubscribeModalProps = {
     setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,6 +24,7 @@ const SubscribeModal = ({ setModalOpen }: SubscribeModalProps) => {
     const [newSubscriber, setNewSubscriber] = useState<SubscriberItem>(emptySubscriberObject);
 
     const [isSubscribeDisabled, setIsSubscribeDisabled] = useState<boolean>(true);
+    const [subscribeStatus, setSubscribeStatus] = useState<boolean | null>(null); // If set to true, then succeeded, if false, then failed.
 
     const handleClose = () => {
         if (!window) return;
@@ -68,6 +70,16 @@ const SubscribeModal = ({ setModalOpen }: SubscribeModalProps) => {
         setNewSubscriber({ ...(newSubscriber as SubscriberItem), [field]: value }); // Update the selected tag's data
     };
 
+    const handleSubscribeClick = async () => {
+        const createdSubscriber = await createSubscriber(newSubscriber.email, newSubscriber.name);
+
+        if (!Object.values(createdSubscriber).every(value => value !== undefined && value !== '')) {
+            setSubscribeStatus(false);
+        } else {
+            setSubscribeStatus(true);
+        }
+    }
+
     useEffect(() => {
         if (!window) return;
 
@@ -100,6 +112,25 @@ const SubscribeModal = ({ setModalOpen }: SubscribeModalProps) => {
         <div className={`${styles.articlePage} ${styles.previewModal}`} onClick={() => handleClose()}>
 
                 <div className="container">
+                    {subscribeStatus !== null && (
+                        <div className={`${styles.dialogBox} ${styles.subscribeModal} ${subscribeStatus ? styles.dialogBox_green : styles.dialogBox_red} p-5`} onClick={e => {
+                            e.stopPropagation();
+                            setSubscribeStatus(null);
+                        }}>
+                            {subscribeStatus ? (
+                                <div>
+                                    <h3 className='heading text-center text-white'>You are all set!</h3>
+                                    <p className='subheading-small text-center text-light'>You have successfully subscribed!</p>
+                                </div>
+                            ) : (
+                                <div>
+                                    <h3 className='subheading text-center text-white'>Error: Unable to subscribe</h3>
+                                    <p className='text-center text-light'>Please ensure all the required fields are set</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     <div className={`${styles.postDataContainer} ${styles.subscribeModal} p-5`} onClick={e => e.stopPropagation()}>
                         <button className={`${styles.expandedPostCloseBtn} btn-pill`} onClick={() => handleClose()}>
                             <IoMdClose className={styles.icon} />
@@ -130,7 +161,7 @@ const SubscribeModal = ({ setModalOpen }: SubscribeModalProps) => {
                             </div>
 
                             <div className='d-flex justify-content-start gap-3'>
-                                <button type='button' className={`btn-filled py-3 px-4 ${isSubscribeDisabled && 'btn-disabled'}`} disabled={isSubscribeDisabled}>Subscribe</button>
+                                <button type='button' className={`btn-filled py-3 px-4 ${isSubscribeDisabled && 'btn-disabled'}`} disabled={isSubscribeDisabled} onClick={handleSubscribeClick}>Subscribe</button>
                             </div>
                         </form>
                     </div>
