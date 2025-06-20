@@ -16,6 +16,7 @@ import { useAuthorStore } from '@/components/authors/store';
 import LoadingBanner from '@/components/Modals/LoadingBanner';
 import { uploadImage } from '@/lib/images';
 import { run } from '@/services/sendEmail';
+import { getSubscriberByEmail, getSubscribers, getSubscribersByStatus } from '@/lib/subscribers';
 
 const NavBar = lazy(() => import('@/components/NavBar'));
 const Footer = lazy(() => import('@/components/Footer'));
@@ -120,12 +121,34 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
         await run();
     }
 
+    async function getSubsByStatus() {
+        const subs = await getSubscribersByStatus('subscribed');
+
+        console.log(subs);
+        
+    }
+
+    async function getSubs() {
+        const subs = await getSubscribers();
+
+        console.log(subs)
+    }
+
+    async function getSubByEmail() {
+        const sub = await getSubscriberByEmail('Yalovechik2012@gmail.com');
+
+        console.log(sub)
+    }
+
     if (posts.length === 0) return <LoadingBanner />
 
     return (
         <>
             <NavBar />
             <button onClick={sendTestEmail}>Send a test email</button>
+            <button onClick={getSubsByStatus}>Get subs by status</button>
+            <button onClick={getSubByEmail}>Get sub by email</button>
+            <button onClick={getSubs}>Get subs</button>
             {showModal && <PostPreviewModal />}
             {showModal && <ArticleModal slug={slug || ''} />}
             <main id="body">
