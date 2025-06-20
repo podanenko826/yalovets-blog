@@ -79,6 +79,10 @@ export const getSubscribersByStatus = async (status: string): Promise<Subscriber
 };
 
 export const createSubscriber = async (email: string, name: string) => {
+    if (!email || !name) {
+        return emptySubscriberObject;
+    }
+
     const newSubscriber: SubscriberItem = {
         email,
         slug: 'subscriber',
