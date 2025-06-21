@@ -125,21 +125,20 @@ export async function PUT(request: Request) {
             const command = new UpdateCommand({
                 TableName: TABLE_NAME,
                 Key: {
-                    email: email, // Partition key
-                    slug: 'subscriber', // Sort key (fixed)
+                    email,
+                    slug: 'subscriber',
                 },
-                UpdateExpression: `
-                    SET 
-                        email = :email,
-                        name = :name,
-                        status = :status,
-                `,
+                UpdateExpression: 'SET #n = :name, #s = :status, subscribedAt = :subscribedAt',
+                ExpressionAttributeNames: {
+                    '#n': 'name', // alias 'name' to avoid reserved word issue
+                    '#s': 'status', // alias 'status' to avoid reserved word issue
+                },
                 ExpressionAttributeValues: {
-                    ':email': email,
                     ':name': name,
                     ':status': status,
+                    ':subscribedAt': subscribedAt,
                 },
-                ReturnValues: 'UPDATED_NEW', // Return the updated fields
+                ReturnValues: 'UPDATED_NEW',
             });
 
             try {

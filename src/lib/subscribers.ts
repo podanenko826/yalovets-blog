@@ -114,6 +114,8 @@ export const updateSubscriber = async (subscriber: SubscriberItem) => {
         subscribedAt: subscriber.subscribedAt,
         status: subscriber.status
     };
+    console.log('sub to be updated: ', updatedSubscriber);
+    
 
     const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
