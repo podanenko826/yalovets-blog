@@ -1,6 +1,6 @@
 import { SubscriberItem, PostItem } from '@/types';
 import { DynamoDBClient, ScanCommand } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import moment from 'moment';
 import { NextResponse } from 'next/server';
 
@@ -155,5 +155,36 @@ export async function PUT(request: Request) {
     } catch (err) {
         console.error('Failed to update a subscriber: ', err);
         return new Response('Failed to update a subscriber', { status: 500 });
+    }
+}
+
+export async function DELETE(request: Request) {
+    const TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
+
+    try {
+        const { email } = await request.json();
+
+        const slug = 'subscriber';
+
+        // Check that the required slug is provided
+        if (!email) {
+            return NextResponse.json({ error: 'Missing required identifier: email.' }, { status: 500 })
+        }
+
+        // Create the delete command with the specified TableName and Key (slug in this case)
+        const command = new DeleteCommand({
+            TableName: TABLE_NAME,
+            Key: {
+                email,
+                slug
+            },
+        });
+        
+        await dbClient.send(command);
+        
+        return NextResponse.json({ message: 'Successfully deleted subscriber' }, { status: 200 });
+    } catch (err) {
+        console.error('Failed to delete subscriber:', err);
+        return NextResponse.json({ error: 'Failed to delete subscriber' }, { status: 500 });
     }
 }

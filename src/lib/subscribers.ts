@@ -114,8 +114,6 @@ export const updateSubscriber = async (subscriber: SubscriberItem) => {
         subscribedAt: subscriber.subscribedAt,
         status: subscriber.status
     };
-    console.log('sub to be updated: ', updatedSubscriber);
-    
 
     const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
@@ -131,3 +129,19 @@ export const updateSubscriber = async (subscriber: SubscriberItem) => {
 
     return content;
 };
+
+export const deleteSubscriber = async (email: string) => {
+    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+    const response = await fetch(`${baseUrl}/api/subscriber`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({email}),
+    });
+
+    const success = response.ok;
+
+    return success;
+}

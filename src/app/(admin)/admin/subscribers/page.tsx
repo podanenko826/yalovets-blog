@@ -1,5 +1,5 @@
 'use client';
-import { emptySubscriberObject, getSubscribers, updateSubscriber } from '@/lib/subscribers';
+import { deleteSubscriber, emptySubscriberObject, getSubscribers, updateSubscriber } from '@/lib/subscribers';
 import { SubscriberItem } from '@/types';
 import { Modal } from 'bootstrap';
 import Link from 'next/link';
@@ -78,9 +78,17 @@ const SubscribersPage = () => {
         }
     };
 
-    const handleDeleteClick = (author: SubscriberItem): void => {
-        setSelectedSubscriber(author);
+    const handleDeleteClick = (subscriber: SubscriberItem): void => {
+        setSelectedSubscriber(subscriber);
     };
+
+    const handleDelete = (): void => {
+        if (selectedSubscriber) {
+            deleteSubscriber(selectedSubscriber.email);
+
+            // window.location.reload();
+        }
+    }
 
     return (
         <>
@@ -219,7 +227,7 @@ const SubscribersPage = () => {
                                 <button type="button" className="btn btn-secondary py-2 px-3" data-bs-dismiss="modal">
                                     Close
                                 </button>
-                                <button type="button" className="btn btn-danger py-2 px-3">
+                                <button type="button" className="btn btn-danger py-2 px-3" onClick={handleDelete}>
                                     Delete Subscriber
                                 </button>
                             </div>
