@@ -21,6 +21,13 @@ export const sendEmailsOnPost = async (postData: PostItem): Promise<boolean> => 
 
     const subscribedUsers: SubscriberItem[] = await getSubscribersByStatus("subscribed");
 
+    if (!postData.slug) {
+      postData.slug = `${postData.title
+        .replace(/[^a-zA-Z0-9 ]/g, '')
+        .replaceAll(' ', '-')
+        .toLowerCase()}`;
+    }
+
     const destinations = subscribedUsers.map(user => ({
         Destination: {
             ToAddresses: [user.email],
