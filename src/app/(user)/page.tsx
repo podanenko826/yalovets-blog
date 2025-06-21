@@ -15,7 +15,7 @@ import { usePostStore } from '@/components/posts/store';
 import { useAuthorStore } from '@/components/authors/store';
 import LoadingBanner from '@/components/Modals/LoadingBanner';
 import { uploadImage } from '@/lib/images';
-import { run } from '@/services/sendEmail';
+import { sendEmailsOnPost } from '@/services/sendEmailsOnPost';
 import { getSubscriberByEmail, getSubscribers, getSubscribersByStatus } from '@/lib/subscribers';
 import { UpdateEmailTemplate } from '@/services/updateEmailTemplate';
 
@@ -119,7 +119,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
     }, [fetchAuthors]);
 
     async function sendTestEmail() {
-        await run(posts[6]);
+        await sendEmailsOnPost(posts[6]);
     }
 
     async function getSubsByStatus() {

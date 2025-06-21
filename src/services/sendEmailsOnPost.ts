@@ -1,5 +1,4 @@
-import { ListTemplatesCommand, SendBulkTemplatedEmailCommand, SendEmailCommand, UpdateTemplateCommand } from "@aws-sdk/client-ses";
-import { CreateTemplateCommand } from "@aws-sdk/client-ses";
+import { ListTemplatesCommand, SendBulkTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { sesClient } from "../lib/sesClient";
 import { PostItem, SubscriberItem } from "@/types/index";
 import { getSubscribersByStatus } from "@/lib/subscribers";
@@ -10,7 +9,7 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
   );
 }
 
-export const run = async (postData: PostItem) => {
+export const sendEmailsOnPost = async (postData: PostItem) => {
   const sender = process.env.NEXT_PUBLIC_SENDER_EMAIL;
   if (!sender) throw new Error("Missing sender email");
 
