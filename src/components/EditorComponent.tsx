@@ -19,6 +19,8 @@ import YouTubeEmbed, { YouTubeButton } from './mdx/YouTubeEmbed';
 import { MdxJsxTextElement } from 'mdast-util-mdx-jsx';
 import { CopyGenericJsxEditor } from './CopyGenericJsxEditor';
 import { uploadImage } from '@/lib/images';
+import LoadingSpinnerModal from './Modals/LoadingSpinnerModal';
+import { sendEmailsOnPost } from '@/services/sendEmailsOnPost';
 
 const PostCard = dynamic(() => import('@/components/PostCard/PostCard'), { ssr: false });
 
@@ -57,6 +59,8 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
     const [sponsorUrl, setSponsorUrl] = useState<string | undefined>(undefined);
 
     const [imageUrl, setImageUrl] = useState(postData ? postData.imageUrl : '');
+
+    const [loadingMessage, setLoadingMessage] = useState<string | null>(null);
 
     const format = 'YYYY-MM-DD';
 
@@ -227,7 +231,19 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
             console.log(Post);
             
             const { markdown, slug } = await createPost(Post, currentMarkdown);
-    
+
+            setLoadingMessage('Sending emails on newsletter');
+
+            const isSuccessfullySent = await sendEmailsOnPost(Post);
+
+            if (!isSuccessfullySent) {
+                setLoadingMessage('Failed to send emails');
+            }
+
+            setTimeout(() => {
+                setLoadingMessage(null);
+            }, 1500)
+            
             if (markdown && slug) {
                 window.open(`/${slug}`, '_blank', 'noopener,noreferrer');
                 setTimeout(() => {
@@ -252,6 +268,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
             <script type="module">
                 import remarkDirective from 'https://esm.sh/remark-directive@3?bundle'
             </script>
+            {loadingMessage !== null && <LoadingSpinnerModal message={loadingMessage} />}
             <div className="container col-md-9 mt-5">
                 {!legalMdx ? (
 

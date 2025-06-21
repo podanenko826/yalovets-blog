@@ -20,6 +20,10 @@
   }
 }
 
+.popover {
+  z-index: 9999 !important;
+}
+
 .row {
   display: flex !important;
   flex-wrap: wrap !important;
@@ -48,7 +52,7 @@ img {
 
 .img-fluid img {
   height: 180px;
-  border-radius: 7px !important;
+  border-radius: 13px !important;
 }
 
 @media (max-width: 992px) {
@@ -5944,7 +5948,7 @@ textarea.form-control-lg {
   --bs-popover-zindex: 1070;
   --bs-popover-max-width: 280px !important;
   --bs-popover-font-size: 0.875rem;
-  --bs-popover-bg: var(--bs-body-bg);
+  --bs-popover-bg: rgba(255, 255, 255, 0.95) !important;
   --bs-popover-border-width: var(--bs-border-width);
   --bs-popover-border-color: var(--bs-border-color-translucent);
   --bs-popover-border-radius: 5px !important;

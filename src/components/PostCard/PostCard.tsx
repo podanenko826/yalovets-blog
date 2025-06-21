@@ -732,7 +732,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                             />
                             {post.postType && (
                                 <span className={`d-inline-block ${styles.articleLabel} ${post.postType === 'Guide' ? styles.articleLabel_Guide : post.postType === 'Review' ? styles.articleLabel_Review : post.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
-                                    <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
+                                    <FaCoffee className="mx-1 subheading-xxsmall" id={styles.labelIcon} />
                                     {post.postType} {/* Display the post type */}
                                 </span>
                             )}

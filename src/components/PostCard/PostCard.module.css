@@ -1,6 +1,6 @@
 .image {
     border: 1px solid var(--col-outline-default) !important;
-    border-radius: 8px !important;
+    border-radius: 14px !important;
 }
 
 @media (min-width: 768px) {
@@ -67,6 +67,9 @@
     align-items: center; /* This ensures vertical alignment */
     flex-wrap: wrap;
     column-gap: 4px;
+
+    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
 .heading > span {
@@ -88,6 +91,8 @@
 
 .description > a {
     font-size: inherit;
+    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
 .profile_info {
@@ -168,14 +173,14 @@
     animation: blink-underscore 3.5s infinite step-start;
     animation-fill-mode: both;
     max-height: 180px;
-    border-radius: 7px;
+    border-radius: 14px;
 }
 
 .placeholder_image_massive {
     animation: blink-underscore 3.5s infinite step-start;
     animation-fill-mode: both;
     max-height: 307px;
-    border-radius: 7px;
+    border-radius: 14px;
 }
 
 .placeholder_heading__dot {
@@ -209,11 +214,12 @@
     position: absolute;
     top: 315%;
     left: 7.5px;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.4);
     color: rgb(240, 240, 240);
     padding: 0px 6px;
     font-size: 12px;
-    border-radius: 4px;
+    border-radius: 7px;
+    backdrop-filter: blur(2px);
     font-weight: 600 !important;
     font-size: 11px;
     z-index: 1;
@@ -222,7 +228,7 @@
 }
 
 .articleLabelSelect {
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.4);
     color: rgb(240, 240, 240);
 }
 
@@ -230,21 +236,21 @@
     /* background: rgba(40, 167, 69, 0.6); */
     /* background-color: rgba(0, 128, 128, 0.6); */
     /* background-color: rgba(128, 0, 128, 0.6); */
-    background-color: rgba(106, 90, 205, 0.6);
-    background-color: rgba(210, 180, 140, 0.6);
+    background-color: rgba(106, 90, 205, 0.4);
+    background-color: rgba(210, 180, 140, 0.4);
 }
 
 .articleLabel_Review {
     /* background: rgba(255, 193, 7, 0.6); */
     /* background-color: rgba(255, 221, 51, 0.6); */
-    background-color: rgba(128, 128, 0, 0.6);
+    background-color: rgba(128, 128, 0, 0.4);
 
     /* color: rgb(30, 30, 30); */
 }
 
 .articleLabel_News {
     /* background: rgba(220, 53, 69, 0.6); */
-    background-color: rgba(112, 128, 144, 0.6);
+    background-color: rgba(112, 128, 144, 0.4);
 }
 
 .imageWrapper {
@@ -265,7 +271,7 @@
 }
 
 .expandedContainer {
-    background: var(--col-background-modals);
+    /* background: var(--col-background-modals); */
     /* border-radius: 16px; */
     box-sizing: border-box;
 }
@@ -306,15 +312,15 @@
     }
 
     .expandedContainer {
-        border-radius: 8px;
-        /* padding: 0.3rem 0.3rem; */
+        border-radius: 14px;
+        padding: 0.3rem 0.3rem;
         overflow-y: scroll;
     }
 }
 
 @media (min-width: 993px) {
     .articleLabel {
-        top: 365%;
+        top: 359%;
     }
 }
 

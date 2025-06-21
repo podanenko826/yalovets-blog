@@ -30,6 +30,11 @@ $popover-border-radius: 5px !important;
 $popover-body-padding-x: 0 !important;
 $popover-body-padding-y: 10px !important;
 $popover-max-width: 280px !important;
+$popover-bg: rgba(255, 255, 255, 0.95) !important;
+
+.popover {
+    z-index: 9999 !important;
+}
 
 .row {
     display: flex !important;
@@ -67,7 +72,7 @@ img {
 
 .img-fluid img {
     height: 180px;
-    border-radius: 7px !important;
+    border-radius: 13px !important;
 }
 
 @media (max-width: 992px) {

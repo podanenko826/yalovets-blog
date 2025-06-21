@@ -15,6 +15,9 @@ import { usePostStore } from '@/components/posts/store';
 import { useAuthorStore } from '@/components/authors/store';
 import LoadingBanner from '@/components/Modals/LoadingBanner';
 import { uploadImage } from '@/lib/images';
+import { sendEmailsOnPost } from '@/services/sendEmailsOnPost';
+import { getSubscriberByEmail, getSubscribers, getSubscribersByStatus } from '@/lib/subscribers';
+import { UpdateEmailTemplate } from '@/services/updateEmailTemplate';
 
 const NavBar = lazy(() => import('@/components/NavBar'));
 const Footer = lazy(() => import('@/components/Footer'));

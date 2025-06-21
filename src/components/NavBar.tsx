@@ -12,6 +12,7 @@ import { IoMdClose } from 'react-icons/io';
 import { IoMoonOutline } from "react-icons/io5";
 import { IoSunnyOutline } from "react-icons/io5";
 import { useUserConfigStore } from './userConfig/store';
+import SubscribeModal from './Modals/SubscribeModal';
 
 export const navigation = [
     {
@@ -49,6 +50,8 @@ export const navigation = [
 const NavBar = () => {
     const currentPath = usePathname();
     const [mobileMenuOpened, setMobileMenuOpened] = useState<boolean>(false);
+
+    const [subscribeModalOpen, setSubscribeModalOpen] = useState<boolean>(false);
 
     const { theme, setTheme } = useUserConfigStore();
     const [isDarkTheme, setIsDarkTheme] = useState<boolean>(false);
@@ -105,7 +108,7 @@ const NavBar = () => {
                             );
                         })}
 
-                        <button className={`btn-outlined ${styles.btn_subscribe}`}>Subscribe</button>
+                        <button className={`btn-outlined ${styles.btn_subscribe}`} onClick={() => setSubscribeModalOpen(prev => !prev)}>Subscribe</button>
 
                         <button className='btn-pill' onClick={() => handleThemeChange()}>
                             {isDarkTheme ? (
@@ -132,7 +135,7 @@ const NavBar = () => {
                         )}
                     </div>
                     <div className="d-flex col-9 justify-content-end p-0 m-0">
-                        <Link className={styles.btn_subscribe_mobile} href="#">
+                        <Link className={styles.btn_subscribe_mobile} href="#" onClick={() => setSubscribeModalOpen(prev => !prev)}>
                             Subscribe
                         </Link>
                     </div>
@@ -152,6 +155,8 @@ const NavBar = () => {
                     </div>
                 </div>
             </header>
+
+            {subscribeModalOpen && <SubscribeModal setModalOpen={setSubscribeModalOpen} />}
         </>
     );
 };
