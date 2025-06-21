@@ -67,6 +67,9 @@
     align-items: center; /* This ensures vertical alignment */
     flex-wrap: wrap;
     column-gap: 4px;
+
+    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
 .heading > span {
@@ -88,6 +91,8 @@
 
 .description > a {
     font-size: inherit;
+    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
 .profile_info {
