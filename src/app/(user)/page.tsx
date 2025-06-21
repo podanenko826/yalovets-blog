@@ -118,39 +118,11 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
         }
     }, [fetchAuthors]);
 
-    async function sendTestEmail() {
-        await sendEmailsOnPost(posts[6]);
-    }
-
-    async function getSubsByStatus() {
-        const subs = await getSubscribersByStatus('subscribed');
-
-        console.log(subs);
-        
-    }
-
-    async function getSubs() {
-        const subs = await getSubscribers();
-
-        console.log(subs)
-    }
-
-    async function getSubByEmail() {
-        const sub = await getSubscriberByEmail('Yalovechik2012@gmail.com');
-
-        console.log(sub)
-    }
-
     if (posts.length === 0) return <LoadingBanner />
 
     return (
         <>
             <NavBar />
-            <button onClick={sendTestEmail}>Send a test email</button>
-            <button onClick={async () => await UpdateEmailTemplate()}>Update email template</button>
-            <button onClick={getSubsByStatus}>Get subs by status</button>
-            <button onClick={getSubByEmail}>Get sub by email</button>
-            <button onClick={getSubs}>Get subs</button>
             {showModal && <PostPreviewModal />}
             {showModal && <ArticleModal slug={slug || ''} />}
             <main id="body">
