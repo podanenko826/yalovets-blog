@@ -17,6 +17,7 @@ import LoadingBanner from '@/components/Modals/LoadingBanner';
 import { uploadImage } from '@/lib/images';
 import { run } from '@/services/sendEmail';
 import { getSubscriberByEmail, getSubscribers, getSubscribersByStatus } from '@/lib/subscribers';
+import { UpdateEmailTemplate } from '@/services/updateEmailTemplate';
 
 const NavBar = lazy(() => import('@/components/NavBar'));
 const Footer = lazy(() => import('@/components/Footer'));
@@ -118,7 +119,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
     }, [fetchAuthors]);
 
     async function sendTestEmail() {
-        await run();
+        await run(posts[6]);
     }
 
     async function getSubsByStatus() {
@@ -146,6 +147,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
         <>
             <NavBar />
             <button onClick={sendTestEmail}>Send a test email</button>
+            <button onClick={async () => await UpdateEmailTemplate()}>Update email template</button>
             <button onClick={getSubsByStatus}>Get subs by status</button>
             <button onClick={getSubByEmail}>Get sub by email</button>
             <button onClick={getSubs}>Get subs</button>
