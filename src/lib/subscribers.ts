@@ -145,3 +145,27 @@ export const deleteSubscriber = async (email: string) => {
 
     return success;
 }
+
+export const updateSubscriberStatus = async (subscriber: SubscriberItem, status: string) => {
+    const updatedSubscriber: SubscriberItem = {
+        email: subscriber.email,
+        slug: 'subscriber',
+        name: subscriber.name,
+        subscribedAt: subscriber.subscribedAt,
+        status,
+    };
+
+    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+    const response = await fetch(`${baseUrl}/api/subscriber`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedSubscriber),
+    });
+
+    const content = await response.json();
+
+    return content;
+};

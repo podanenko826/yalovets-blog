@@ -67,6 +67,12 @@
     border-end-end-radius: 0;
 }
 
+.unsubscribeBox {
+    padding: 0rem 2rem !important;
+    align-self: start;
+    margin-top: 1.75rem !important;
+}
+
 .dialogBox {
     display: flex;
     justify-content: center;
