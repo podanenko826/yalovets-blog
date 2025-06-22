@@ -284,11 +284,14 @@
 
 .read-further-button {
     background: rgba(128, 128, 128, 0.2);
+    backdrop-filter: var(--default-dackdrop);
     padding: 1rem;
     margin: 8px;
     vertical-align: middle;
     align-items: center;
     transition-duration: 150ms;
+
+    border-radius: var(--radius-sm);
 }
 
 .read-further-button:hover {
