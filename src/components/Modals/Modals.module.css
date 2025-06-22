@@ -15,7 +15,7 @@
 .previewModal {
     z-index: 2000;
     height: 100vh;
-    border-radius: 32px 32px 0 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     display: flex;
     will-change: transform, width, height, padding;
 
@@ -53,7 +53,7 @@
     background: var(--col-background-modals);
     backdrop-filter: var(--default-backdrop);
     min-height: min-content;
-    border-radius: 32px;
+    border-radius: var(--radius-lg);
     transform: scale(1);
     opacity: 1;
     min-width: 100%;
@@ -85,7 +85,7 @@
     transition: transform 0.3s ease, opacity 0.3s ease, width 0.3s ease, height 0.3s ease;
 
     min-height: min-content;
-    border-radius: 32px;
+    border-radius: var(--radius-lg);
     transform: scale(1);
     opacity: 1;
     z-index: 9999;
@@ -119,7 +119,7 @@
 }
 
 .paginationPreferences {
-    border-radius: 32px;
+    border-radius: var(--radius-lg);
     padding-bottom: 1rem !important;
 }
 
@@ -187,7 +187,7 @@
 
     .postDataContainer {
         min-width: min-content;
-        border-radius: 32px;
+        border-radius: var(--radius-lg);
         padding-bottom: 2.25rem !important;
     }
 

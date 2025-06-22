@@ -1,6 +1,6 @@
 .image {
     border: 1px solid var(--col-outline-default) !important;
-    border-radius: 14px !important;
+    border-radius: calc(var(--radius-md) + 1px) !important;
 }
 
 @media (min-width: 768px) {
@@ -173,14 +173,14 @@
     animation: blink-underscore 3.5s infinite step-start;
     animation-fill-mode: both;
     max-height: 180px;
-    border-radius: 14px;
+    border-radius: var(--radius-md);
 }
 
 .placeholder_image_massive {
     animation: blink-underscore 3.5s infinite step-start;
     animation-fill-mode: both;
     max-height: 307px;
-    border-radius: 14px;
+    border-radius: var(--radius-md);
 }
 
 .placeholder_heading__dot {
@@ -218,7 +218,7 @@
     color: rgb(240, 240, 240);
     padding: 0px 6px;
     font-size: 12px;
-    border-radius: 7px;
+    border-radius: var(--radius-sm);
     backdrop-filter: blur(2px);
     font-weight: 600 !important;
     font-size: 11px;
@@ -312,7 +312,7 @@
     }
 
     .expandedContainer {
-        border-radius: 14px;
+        border-radius: var(--radius-md);
         padding: 0.3rem 0.3rem;
         overflow-y: scroll;
     }

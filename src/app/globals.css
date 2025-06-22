@@ -23,6 +23,11 @@
     --col-footer: rgb(31, 90, 139);
 
     --default-backdrop: blur(4px);
+
+    --radius-md: 14px;
+    --radius-tiny: calc(var(--radius-md) * 0.25);
+    --radius-sm: calc(var(--radius-md) * 0.5);
+    --radius-lg: calc(var(--radius-md) * 2);
 }
 
 .dark {
@@ -114,7 +119,7 @@ button {
 
 a.a-btn {
     line-height: 1rem !important;
-    border-radius: 5px;
+    border-radius: var(--radius-tiny);
     align-content: center;
     color: var(--col-link);
 }
@@ -148,7 +153,7 @@ p {
 
 input {
     outline: none;
-    border-radius: 5px;
+    border-radius: var(--radius-tiny);
     padding: 5.5px 0;
     border: 1px solid var(--col-outline-default);
     transition-duration: 75ms;
@@ -235,10 +240,10 @@ span {
 }
 
 button {
-    border-radius: 5px;
+    border-radius: var(--radius-tiny);
     border: none;
     outline: none;
-    border-radius: 14px;
+    border-radius: var(--radius-md);
     backdrop-filter: var(--default-backdrop);
 }
 
@@ -462,7 +467,7 @@ button {
 .codeblock {
     background-color: #ececec80;
     border: 0.5px solid lightgrey;
-    border-radius: 7px;
+    border-radius: var(--radius-tiny);
     line-height: 21px;
     overflow-y: auto;
     position: relative;
@@ -535,7 +540,7 @@ code {
     background: rgba(210, 210, 210, 0.2);
     /* color: rgb(130, 130, 130); */
     color: var(--col-text);
-    border-radius: 2.5px;
+    border-radius: var(--radius-tiny);
     font-family: monospace !important;
 }
 
@@ -645,7 +650,7 @@ blockquote > span,
 
 .admin-image,
 .rounded-image {
-    border-radius: 14px !important;
+    border-radius: var(--radius-md) !important;
 }
 
 .preview-author-select {

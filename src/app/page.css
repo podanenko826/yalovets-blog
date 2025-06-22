@@ -161,7 +161,7 @@
     width: 4px; /* Thickness of arrow lines */
     height: 70px; /* Length of arrow lines */
     background-color: var(--col-primary);
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
 }
 
 .arrow-down::before {
@@ -273,7 +273,7 @@
 
 .ivan-yalovets {
     width: 290px;
-    border-radius: 7px;
+    border-radius: var(--radius-sm);
 }
 
 .read-further {

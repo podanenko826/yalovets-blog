@@ -26,7 +26,7 @@ $secondary: rgb(45, 110, 164);
     }
 }
 
-$popover-border-radius: 5px !important;
+$popover-border-radius: var(--radius-tiny) !important;
 $popover-body-padding-x: 0 !important;
 $popover-body-padding-y: 10px !important;
 $popover-max-width: 280px !important;
@@ -72,7 +72,7 @@ img {
 
 .img-fluid img {
     height: 180px;
-    border-radius: 13px !important;
+    border-radius: var(--radius-md) !important;
 }
 
 @media (max-width: 992px) {
@@ -116,7 +116,7 @@ img {
     background-color: var(--col-highlight);
     // background-color: #f2f2f2;
     // color: #595959 !important;
-    border-radius: 5px !important;
+    border-radius: var(--radius-sm) !important;
     padding: 4px 7px !important;
     font-weight: 750 !important;
     font-stretch: semi-condensed;
