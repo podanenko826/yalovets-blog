@@ -590,6 +590,17 @@ blockquote > span,
     margin-right: 12px;
 }
 
+.list-group {
+    border-radius: var(--radius-sm);
+    background: transparent;
+    backdrop-filter: var(--default-backdrop);
+}
+
+.list-group-item {
+    background: transparent;
+    backdrop-filter: var(--default-backdrop);
+}
+
 .dark .list-group > li {
     background-color: var(--col-button);
     border-color: var(--col-outline-default);
