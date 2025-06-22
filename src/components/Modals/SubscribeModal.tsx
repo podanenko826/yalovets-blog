@@ -161,7 +161,7 @@ const SubscribeModal = ({ setModalOpen }: SubscribeModalProps) => {
                             </div>
 
                             <div className='d-flex justify-content-start gap-3'>
-                                <button type='button' className={`btn-filled py-3 px-4 ${isSubscribeDisabled && 'btn-disabled'}`} disabled={isSubscribeDisabled} onClick={handleSubscribeClick}>Subscribe</button>
+                                <button type='button' className={`btn-filled btn-full py-3 px-4 ${isSubscribeDisabled && 'btn-disabled'}`} disabled={isSubscribeDisabled} onClick={handleSubscribeClick}>Subscribe</button>
                             </div>
                         </form>
                     </div>

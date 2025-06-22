@@ -96,7 +96,7 @@ const UnsubscribePage = () => {
                             <h3 className='heading text-white'>Success!</h3>
                             <p className='subheading-small text-light'>You have successfully unsubscribed!</p>
 
-                            <button className={`btn-outlined mt-3 ${!unsubscribeStatus ? 'btn-disabled' : ''}`} onClick={handleResubscribeClick}>Resubscribe</button>
+                            <button className={`btn-outlined btn-full mt-3 ${!unsubscribeStatus ? 'btn-disabled' : ''}`} onClick={handleResubscribeClick}>Resubscribe</button>
                         </div>
                     </div>
                 )}
@@ -111,7 +111,7 @@ const UnsubscribePage = () => {
                             <h1 className='heading' id='col-heading-1'>{subscriberData?.name},</h1>
                             <p className='subheading-smaller' id='col-heading-1'>By clicking Unsubscribe, you’ll no longer receive emails regarding post annoucements and product updates.</p>
 
-                            <button className={`btn-filled mt-3 ${unsubscribeStatus ? 'btn-disabled' : ''}`} onClick={handleUnsubscribeClick}>Unsubscribe</button>
+                            <button className={`btn-filled btn-full mt-3 ${unsubscribeStatus ? 'btn-disabled' : ''}`} onClick={handleUnsubscribeClick}>Unsubscribe</button>
                         </div>
                     </div>
                 )}

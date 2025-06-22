@@ -242,6 +242,10 @@ button {
     backdrop-filter: var(--default-backdrop);
 }
 
+.btn-full {
+    width: 100%;
+}
+
 .btn-pill {
     background: transparent !important;
     border-radius: 100%;
