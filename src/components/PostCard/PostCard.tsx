@@ -202,7 +202,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                     content: `
                         <div class="row mx-3 mt-2">
                             <div class="col-12 col-md-9 p-0">
-                                <a role="button" class="subheading-smaller a-link m-0" id="author-link-${index}">${authorData.fullName}</a>
+                                <a role="button" href="/author/${authorData.authorKey}" class="subheading-smaller a-link m-0" id="author-link-${index}">${authorData.fullName}</a>
                                 <h6 class="subheading-xsmall text-thinner py-2" id="col-heading-1">${authorData.bio}</h6>
                             </div>
             
@@ -214,7 +214,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
             
                             <div class="col-12 d-flex justify-content-between p-0 align-content-center">
                                 <p class="p-0 m-0">Visit my profile</p>
-                                <a role="button" class="a-btn btn-outlined px-2 py-0" id="visit-button-${index}">
+                                <a role="button" href="/author/${authorData.authorKey}" class="a-btn btn-outlined px-2 py-0" id="visit-button-${index}">
                                     Visit
                                 </a>
                             </div>
