@@ -62,14 +62,22 @@ const NavBar = () => {
 
     const handleMobileNavigation = () => {
         setMobileMenuOpened(!mobileMenuOpened);
-
+    
         const navbarElement = document.getElementById('mobileNavBar');
-        
+    
         if (navbarElement) {
-            navbarElement.scrollIntoView({ behavior: 'instant', block: 'start', inline: 'start' });
-        }
+            // Delay scroll to allow state/UI changes to apply
+            const rect = navbarElement.getBoundingClientRect();
+            const offsetTop = window.scrollY + rect.top;
+            const extraSpace = navbarElement.offsetHeight || 60; // Fallback to 60px if height is 0
 
-        // To make sure user cannot scroll the page when nav menu is opened
+            window.scrollTo({
+                top: offsetTop - extraSpace,
+                behavior: 'instant',
+            });
+        }
+    
+        // Toggle body scroll lock
         if (mobileMenuOpened) {
             document.body.classList.remove('overflow-hidden');
             document.getElementById('modal')?.classList.remove('overflow-hidden');
