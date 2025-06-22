@@ -467,7 +467,7 @@ button {
 .codeblock {
     background-color: #ececec80;
     border: 0.5px solid lightgrey;
-    border-radius: var(--radius-tiny);
+    border-radius: var(--radius-sm);
     line-height: 21px;
     overflow-y: auto;
     position: relative;
