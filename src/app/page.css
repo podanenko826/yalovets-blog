@@ -268,12 +268,33 @@
     display: flex;
     width: 100% !important;
     justify-content: center;
-    background: var(--col-background-elements) !important;
+    /* background: var(--col-background-elements) !important; */
+}
+
+.about-me > div {
+    justify-content: center;
+    gap: 8px;
 }
 
 .ivan-yalovets {
-    width: 290px;
-    border-radius: var(--radius-sm);
+    /* width: 290px; */
+    min-width: 75px;
+    min-height: 75px;
+
+    max-width: 75px;
+    max-height: 75px;
+
+    border-radius: 100%;
+}
+
+@media (min-width: 1200px) {
+    .ivan-yalovets {
+        min-width: 80px;
+        min-height: 80px;
+    
+        max-width: 80px;
+        max-height: 80px;
+    }
 }
 
 .read-further {

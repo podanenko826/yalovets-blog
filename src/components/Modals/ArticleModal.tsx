@@ -267,22 +267,38 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                         </div>
                         {author && (
                             <div className="container-fluid about-me py-5 mt-5">
-                                <div className="container d-flex row align-items-center justify-content-center">
-                                    <div className="col-7 col-md-4 col-lg-3">
-                                        <div className="pb-3">
-                                            <Link className='a-link a-button' href={`/author/${author.authorKey}`}>
-                                                <h1 className="subheading" id="col-heading-1">
-                                                    {author.fullName}
-                                                </h1>
-                                            </Link>
-                                        </div>
+                                <div className="container row">
+                                    <div className="col-3 col-lg-1 d-flex">
                                         <Image className="img-fluid ivan-yalovets" src={author.profileImageUrl} alt="pfp" title={author.fullName.split(' ').at(0)} width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
                                     </div>
-                                    <div className="col-9 mt-3 mt-md-0 col-md-5 offset-md-1">
-                                        <p className="pt-2 subheading-smaller" id="col-heading-1">
+                                    <div className="col-8 mt-md-0 col-md-7">
+                                        <div className='d-flex justify-content-between mb-1'>
+                                            <div className='d-sm-none'>
+                                                <Link className='a-link a-button' href={`/author/${author.authorKey}`}>
+                                                    <h1 className="subheading-smaller">
+                                                        Written by <br /> {author.fullName}
+                                                    </h1>
+                                                </Link>
+                                            </div>
+
+                                            <div className='d-none d-sm-block'>
+                                                <Link className='a-link a-button' href={`/author/${author.authorKey}`}>
+                                                    <h1 className="subheading-smaller">
+                                                        Written by {author.fullName}
+                                                    </h1>
+                                                </Link>
+                                            </div>
+                                            
+                                            <div className='d-none d-sm-block'>
+                                                <Link href={`/author/${author.authorKey}`}>
+                                                    <button className='btn-outlined py-1 py-lg-0'>Visit</button>
+                                                </Link>
+                                            </div>
+                                        </div>
+                                        <p className="subheading-xsmall" id="col-heading-1">
                                             {author.bio}
                                         </p>
-                                        <p className="subheading-small pt-4" id="col-heading-1">
+                                        {/* <p className="subheading-small pt-4" id="col-heading-1">
                                             You can find me on these social media:
                                         </p>
                                         <ul className={styles.socialMediaLinks}>
@@ -298,8 +314,9 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                                     </li>
                                                 );
                                             })}
-                                        </ul>
+                                        </ul> */}
                                     </div>
+                                    
                                 </div>
                             </div>
                         )}
