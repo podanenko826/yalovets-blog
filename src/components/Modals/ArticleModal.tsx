@@ -17,6 +17,7 @@ import { notFound, usePathname, useRouter } from 'next/navigation';
 import { usePostStore } from '../posts/store';
 import { useAuthorStore } from '../authors/store';
 import LoadingSkeleton from '../LoadingSkeleton';
+import '@/app/page.css';
 
 import YouTubeEmbed from '@/components/mdx/YouTubeEmbed';
 
