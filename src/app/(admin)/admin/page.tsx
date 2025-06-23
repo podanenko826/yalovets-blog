@@ -6,6 +6,7 @@ import Image from 'next/image';
 
 import postCardStyles from '@/components/PostCard/PostCard.module.css';
 import Link from 'next/link';
+import { UpdateEmailTemplate } from '@/services/updateEmailTemplate';
 
 const AdminPage = () => {
     const managementItems = [
@@ -60,7 +61,10 @@ const AdminPage = () => {
         <div>
             <div className="container-lg posts my-5" id="posts">
                 <div className="container-fluid">
-                    <button onClick={() => rebuildPagination()}>Rebuild Pagination</button>
+                    <div className='d-flex gap-3'>
+                        <button onClick={() => rebuildPagination()}>Rebuild Pagination</button>
+                        <button onClick={() => UpdateEmailTemplate()}>Update Email Template</button>
+                    </div>
                     <h1 className="heading-large mt-4">Quick actions</h1>
                     <div className="row post-list">
                         <div className="">
