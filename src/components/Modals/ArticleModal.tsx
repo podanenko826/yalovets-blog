@@ -270,7 +270,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                             <div className="container-fluid about-me py-5 mt-5">
                                 <div className="container row">
                                     <div className="col-3 col-lg-1 d-flex">
-                                        <Image className="img-fluid ivan-yalovets" src={author.profileImageUrl} alt="pfp" title={author.fullName.split(' ').at(0)} width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
+                                        <Image className="img-fluid about-me-image" src={author.profileImageUrl} alt="pfp" title={author.fullName.split(' ').at(0)} width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
                                     </div>
                                     <div className="col-8 mt-md-0 col-md-7">
                                         <div className='d-flex justify-content-between mb-1'>

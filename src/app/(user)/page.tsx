@@ -244,24 +244,22 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                 </div>
 
                 <div className="container-fluid about-me py-5 mt-5">
-                    <div className="container d-flex row align-items-center justify-content-center">
+                    <div className="container d-flex gap-4 row align-items-center justify-content-center">
                         <div className="col-7 col-md-4 col-lg-3">
+                            
+                            <Image className="img-fluid ivan-yalovets" src="/pfp/ivan-pfp.webp" alt="Ivan" title="Ivan Yalovets" width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
+                        </div>
+                        <div className="col-9 mt-3 mt-md-0 col-md-5 col-lg-5 offset-md-1">
+                            <p className="pt-2 subheading-small" id="col-heading-1">
                             <div className="pb-3">
                                 <h1 className="subheading" id="col-heading-1">
                                     Hi, I&rsquo;m Ivan Yalovets!
                                 </h1>
                             </div>
-                            <Image className="img-fluid ivan-yalovets" src="/pfp/ivan-pfp.webp" alt="Ivan" title="Ivan Yalovets" width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
-                        </div>
-                        <div className="col-10 mt-3 mt-md-0 col-md-5 col-lg-5 offset-md-1">
-                            <p className="pt-2 subheading-small" id="col-heading-1">
-                                I started Yalovets Blog in 2024 to share the latest tools and insights on web services. My goal is to provide valuable, up-to-date content for web professionals and enthusiasts alike.
+                                I started Yalovets Blog in 2025 to share the latest tools and insights on web services. My goal is to provide valuable, up-to-date content for web professionals and enthusiasts alike.
                             </p>
                             <p className="subheading-small">
-                                To support my work, please{' '}
-                                <a className="subheading-small" id="link-dark" href="#">
-                                    subscribe
-                                </a>{' '}
+                                To support my work, please subscribe
                                 to the newsletter and share it with your friends or colleagues.
                             </p>
                         </div>

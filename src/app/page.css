@@ -264,6 +264,10 @@
     font-weight: 600;
 }
 
+.ivan-yalovets {
+    border-radius: var(--radius-md);
+}
+
 .about-me {
     display: flex;
     width: 100% !important;
@@ -276,7 +280,7 @@
     gap: 8px;
 }
 
-.ivan-yalovets {
+.about-me-image {
     /* width: 290px; */
     min-width: 75px;
     min-height: 75px;
@@ -288,7 +292,7 @@
 }
 
 @media (min-width: 1200px) {
-    .ivan-yalovets {
+    .about-me-image {
         min-width: 80px;
         min-height: 80px;
     
