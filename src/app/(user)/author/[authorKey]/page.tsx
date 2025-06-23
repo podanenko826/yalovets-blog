@@ -37,10 +37,19 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     const [authorData, setAuthorData] = useState<AuthorItem | null>(null);
     const [authorPosts, setAuthorPosts] = useState<PostItem[]>([]);
 
-    const currentPath = usePathname() + '/';
-    const slug = currentPath.split('/').pop();
+    const pathParts = usePathname().split('/').filter(Boolean);
+    // If there's only one part (e.g., /some-slug), assume it's a modal
+    const slug = pathParts.length === 1 ? pathParts[0] : '';
 
     const POSTS_PER_PAGE = 28;
+
+    const [showModal, setShowModal] = useState(!!slug);
+
+    useEffect(() => {
+        if (!slug) {
+            setTimeout(() => setShowModal(true), 500);
+        }
+    }, [slug]);
 
     useEffect(() => {
         window.scrollTo(0, 0); // Scroll to top on route change
@@ -92,13 +101,13 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
         }
     }, [posts, authorData]);
 
+    if (posts.length === 0) return <LoadingBanner />
+
     return (
         <>
             <NavBar />
-            <Suspense fallback={<div></div>}>
-                <PostPreviewModal />
-                <ArticleModal slug={slug || ''} />
-            </Suspense>
+            {showModal && <PostPreviewModal />}
+            <ArticleModal slug={slug || ''} />
             {authorData ? (
                 <div className="container">
                     <div className="container mb-5">
