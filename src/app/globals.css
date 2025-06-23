@@ -614,6 +614,15 @@ blockquote > span,
     border-color: var(--col-outline-default);
 }
 
+.form-check-input:checked[type=radio] {
+    border-color: var(--col-secondary);
+}
+
+.dark .form-check-input:checked[type=radio] {
+    background-color: var(--col-background-elements);
+    border-color: var(--col-secondary);
+}
+
 .dark .popover {
     background: var(--col-background-modals) !important;
 }
