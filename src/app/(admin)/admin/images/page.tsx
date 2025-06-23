@@ -72,7 +72,7 @@ const PostsPage = () => {
                     <div className="row post-list">
 
                         {imagesPaths.slice(0, imagesDisplayed).map(pathName => {
-                            if (!pathName.includes('.png')) return;
+                            if (!pathName.includes('.webp')) return;
 
                             return (
                                 <div className='col-12 col-md-6 col-lg-4 my-3 px-3 mx-' style={{ border: '2px solid var(--col-secondary)'}}>
