@@ -139,7 +139,7 @@ const PostPreviewModal = () => {
 
             card.style.position = 'absolute';
             card.style.top = isMobile ? '25vh' : `${top}px`;
-            card.style.left = `${left}px`;
+            card.style.left = isMobile ? 'unset' : `${left}px`;
             card.style.width = `${width}px`;
             card.style.height = `${height}px`;
             card.style.padding = '';
