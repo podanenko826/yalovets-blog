@@ -276,8 +276,14 @@
 }
 
 .about-me > div {
-    justify-content: center;
+    justify-content: space-between;
     gap: 8px;
+}
+
+@media (min-width: 768px) {
+    .about-me > div {
+        justify-content: center;
+    }
 }
 
 .about-me-image {
@@ -293,13 +299,24 @@
 
 @media (min-width: 1200px) {
     .about-me-image {
-        min-width: 80px;
-        min-height: 80px;
+        min-width: 75px;
+        min-height: 75px;
     
-        max-width: 80px;
-        max-height: 80px;
+        max-width: 75px;
+        max-height: 75px;
+    }
+
+}
+
+@media (min-width: 992px) {
+    .about-me-image-container {
+        justify-content: center;
     }
 }
+
+/* .about-me-bio {
+    margin-right: 3rem;
+} */
 
 .read-further {
     display: flex;
