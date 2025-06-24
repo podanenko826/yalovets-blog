@@ -316,22 +316,24 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                         {selectedPost && popularPosts && (
                             <div className="container-fluid read-further mb-5 py-3">
                                 <div className="container d-flex row align-items-center justify-content-center p-0">
-                                    <div className="col-md-9 pt-2 pb-3">
+                                    <div className="col-md-8 pt-2 pb-3 px-2">
                                         <h2 className="heading" id="col-heading-2">
                                             Further Reading
                                         </h2>
                                     </div>
-                                    {popularPosts
-                                        .filter(post => post.slug !== selectedPost.slug)
-                                        .sort(() => Math.random() - 0.5)
-                                        .slice(0, 3)
-                                        .map((post, index) => (
-                                            <Link href={`/${post.slug}`} className="col-md-9" key={index}>
-                                                <div className='read-further-button'>
-                                                    <h5 id="col-heading-1">{post.postType}: {post.title}</h5>
-                                                </div>
-                                            </Link>
+                                    <div className='col-md-8 p-0 m-0'>
+                                        {popularPosts
+                                            .filter(post => post.slug !== selectedPost.slug)
+                                            .sort(() => Math.random() - 0.5)
+                                            .slice(0, 3)
+                                            .map((post, index) => (
+                                                <Link href={`/${post.slug}`} className="col-md-9" key={index}>
+                                                    <div className='read-further-button'>
+                                                        <h5 id="col-heading-1">{post.postType}: {post.title}</h5>
+                                                    </div>
+                                                </Link>
                                         ))}
+                                    </div>
                                 </div>
                             </div>
                         )}
