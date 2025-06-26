@@ -54,12 +54,14 @@
     left: 0;
     right: 0;
     z-index: 1050;
+    transition-duration: 300ms;
 }
 
 .nav_menu_mobile > div {
     overflow-y: scroll;
     height: 70vh;
     width: 100%;
+    transition-duration: 300ms;
 }
 
 .mobileNavIcon {
