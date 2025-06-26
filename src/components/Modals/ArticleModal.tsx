@@ -267,13 +267,26 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                             </div>
                         </div>
                         {author && (
-                            <div className="container-fluid about-me py-5 mt-5">
+                            <div className="container-fluid about-me py-5 mt-5 px-0">
                                 <div className="container row">
-                                    <div className="col-2 col-md-2 col-lg-1 d-flex p-0 about-me-image-container">
+                                    <div id='mobileAboutMeTop'>
+                                            <div className="col-2 col-md-2 col-lg-1 about-me-image-container" id='mobileImageContainer'>
+                                                <Image className="img-fluid about-me-image" src={author.profileImageUrl} alt="pfp" title={author.fullName.split(' ').at(0)} width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
+                                            </div>
+
+                                            <div className=''>
+                                                <Link href={`/author/${author.authorKey}`}>
+                                                    <button className='btn-outlined py-1'>Visit</button>
+                                                </Link>
+                                            </div>
+                                    </div>
+
+                                    <div className="d-none d-md-flex col-2 col-md-2 col-lg-1 about-me-image-container">
                                         <Image className="img-fluid about-me-image" src={author.profileImageUrl} alt="pfp" title={author.fullName.split(' ').at(0)} width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
                                     </div>
-                                    <div className="col-9 mt-md-0 col-md-6 col-lg-7 p-0">
-                                        <div className='d-flex justify-content-between align-items-center mb-1'>
+                                    
+                                    <div className="col-9 col-md-6 col-lg-7 p-0 mt-md-0">
+                                        <div className='d-none d-md-flex' id='about-me-info'>
                                             <div>
                                                 <Link className='a-link a-button' href={`/author/${author.authorKey}`}>
                                                     <h1 className="subheading-smaller m-0">
@@ -288,9 +301,18 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                                 </Link>
                                             </div>
                                         </div>
-                                        <p className="col-10 subheading-xsmall about-me-bio p-0 m-0" id="col-heading-1">
-                                            {author.bio}
-                                        </p>
+                                        <div>
+                                            <div className='d-block d-md-none mt-2'>
+                                                    <Link className='a-link a-button' href={`/author/${author.authorKey}`}>
+                                                        <h1 className="subheading-smaller m-0">
+                                                            Written by {author.fullName}
+                                                        </h1>
+                                                    </Link>
+                                            </div>
+                                            <p className="col-10 subheading-xsmall about-me-bio pt-2 pt-md-0 p-md-0 m-0" id="col-heading-1">
+                                                {author.bio}
+                                            </p>
+                                        </div>
                                         {/* <p className="subheading-small pt-4" id="col-heading-1">
                                             You can find me on these social media:
                                         </p>
@@ -314,7 +336,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                             </div>
                         )}
                         {selectedPost && popularPosts && (
-                            <div className="container-fluid read-further mb-5 py-3">
+                            <div className="container-fluid read-further mb-5 py-3 px-0">
                                 <div className="container d-flex row align-items-center justify-content-center p-0">
                                     <div className="col-md-8 pt-2 pb-3 px-2">
                                         <h2 className="heading" id="col-heading-2">

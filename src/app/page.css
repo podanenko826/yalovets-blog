@@ -308,11 +308,47 @@
 
 }
 
+.about-me-image-container {
+    display: flex;
+    justify-content: start;
+    padding: 0;
+}
+
 @media (min-width: 992px) {
     .about-me-image-container {
         justify-content: center;
     }
 }
+
+#mobileAboutMeTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+    padding: 0;
+}
+
+#about-me-info {
+    display: none;
+    margin-bottom: 4px;
+}
+
+@media (min-width: 768px) {
+    #mobileAboutMeTop {
+        display: none;
+    }
+
+    #about-me-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    #mobileImageContainer {
+        display: none;
+    }
+}
+
 
 /* .about-me-bio {
     margin-right: 3rem;
