@@ -18,5 +18,8 @@ module.exports = withMDX({
     },
     eslint: {
         ignoreDuringBuilds: true,
-    }
+    },
+    experimental: {
+        missingSuspenseWithCSRBailout: false,
+    },
 });
