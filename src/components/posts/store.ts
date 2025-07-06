@@ -26,7 +26,7 @@ export const usePostStore = create<PostStore>((set, get) => {
 
     const setPosts = (posts: PostItem[]) => {
         set({ posts });
-        savePostsToLocalStorage(posts);
+        // savePostsToLocalStorage(posts);
     };
 
     const selectedPost: PostItem | null = null;
@@ -103,7 +103,7 @@ export const usePostStore = create<PostStore>((set, get) => {
         }
     };
 
-    loadPostsFromStorage();
+    // loadPostsFromStorage();
 
 
     const fetchPosts = async (limit: number, lastKey?: string): Promise<{ posts: PostItem[], lastKey: string }> => {
@@ -128,7 +128,7 @@ export const usePostStore = create<PostStore>((set, get) => {
             const combinedPosts = [...posts, ...newUniquePosts];
             const sortedCombinedPosts = sortPosts([...combinedPosts]);
             
-            savePostsToLocalStorage([...sortedCombinedPosts]);
+            // savePostsToLocalStorage([...sortedCombinedPosts]);
             setPosts([...sortedCombinedPosts]);
 
             // Update lastKey for pagination (only if it changes)
@@ -178,7 +178,7 @@ export const usePostStore = create<PostStore>((set, get) => {
                 const sortedCombinedPosts = sortPosts(combinedPosts);
 
                 setPosts([...sortedCombinedPosts]);
-                savePostsToLocalStorage([...sortedCombinedPosts]);
+                // savePostsToLocalStorage([...sortedCombinedPosts]);
 
                 return sortedCombinedPosts;
             }
@@ -203,7 +203,7 @@ export const usePostStore = create<PostStore>((set, get) => {
                 const combinedPosts = [...posts, ...newUniquePosts];
                 const sortedCombinedPosts = sortPosts(combinedPosts);
                 setPosts([...sortedCombinedPosts]);
-                savePostsToLocalStorage([...sortedCombinedPosts]);
+                // savePostsToLocalStorage([...sortedCombinedPosts]);
 
                 // Update lastKey for pagination (only if it changes)
                 if (postsData.lastKey && postsData.lastKey !== lastKey) {

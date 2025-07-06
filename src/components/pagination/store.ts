@@ -56,7 +56,7 @@ export const usePaginationStore = create<PaginationStore>((set) => {
         }
     };
 
-    loadPaginationFromStorage();
+    // loadPaginationFromStorage();
 
     const setPagination = (pagination: PaginationState) => {
         set({ pagination });
@@ -64,7 +64,7 @@ export const usePaginationStore = create<PaginationStore>((set) => {
     
     const setOriginalPagination = (pagination: PaginationState | null) => {
         set({ originalPagination: pagination });
-        if (pagination) savePaginationToLocalStorage(pagination);
+        // if (pagination) savePaginationToLocalStorage(pagination);
     };
 
     const postCount = 0;
@@ -75,12 +75,12 @@ export const usePaginationStore = create<PaginationStore>((set) => {
 
     const fetchPagination = async (): Promise<PaginationState> => {
         if (!originalPagination) {
-            const cachedPagination = loadPaginationFromStorage();
+            // const cachedPagination = loadPaginationFromStorage();
             
-            if (cachedPagination) {
-                setOriginalPagination(cachedPagination);
-                return cachedPagination;
-            }
+            // if (cachedPagination) {
+            //     setOriginalPagination(cachedPagination);
+            //     return cachedPagination;
+            // }
 
             const paginationData = await getPaginationData();
             const totalPages = Object.keys(paginationData).length;
@@ -93,10 +93,10 @@ export const usePaginationStore = create<PaginationStore>((set) => {
                 totalPages,
                 paginationData,
             });
-            savePaginationToLocalStorage({
-                totalPages,
-                paginationData,
-            });
+            // savePaginationToLocalStorage({
+            //     totalPages,
+            //     paginationData,
+            // });
 
             return {
                 totalPages,
