@@ -130,14 +130,15 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
                 <div className="container welcome-xs d-block d-lg-none">
                     <div className="row">
                         <div className="col-12 container p-3">
-                            <h2 className="welcome-text" id="col-heading-2">
-                                Welcome to Yalovets Blog
-                            </h2>
-                            <h1 className="welcome-heading heading heading-large" id="col-heading-1">
+                            <div className="d-flex gap-2">
+                                <h2 className="welcome-text-cursor">&gt;</h2>
+                                <h2 className="welcome-text" id="col-heading-2">
+                                    Welcome to Yalovets Blog
+                                </h2>
+                            </div>
+                            <h1 className="welcome-heading" id="col-heading-1">
                                 AWS Unveiled: Your Gateway to Cloud Knowledge
                             </h1>
-                            <p className="welcome-paragraph">By Ivan Yalovets. Since 2024, I published 0 articles.</p>
-                            <StartReadingButton />
                         </div>
                     </div>
                 </div>
