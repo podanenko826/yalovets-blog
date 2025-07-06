@@ -18,6 +18,7 @@ import { uploadImage } from '@/lib/images';
 import { sendEmailsOnPost } from '@/services/sendEmailsOnPost';
 import { getSubscriberByEmail, getSubscribers, getSubscribersByStatus } from '@/lib/subscribers';
 import { UpdateEmailTemplate } from '@/services/updateEmailTemplate';
+import { getPost } from '@/lib/posts';
 
 const NavBar = lazy(() => import('@/components/NavBar'));
 const Footer = lazy(() => import('@/components/Footer'));
@@ -26,30 +27,35 @@ const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal
 const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
 
 interface HomeProps {
-    slug?: string; // Optional slug prop
+    params: { slug: string | undefined }; // Optional slug prop
 }
 
-async function generateMetadata(post: PostItem): Promise<Metadata> {
-    return {
-        title: post?.title || 'Yalovets Blog',
-        description: post?.description || 'AWS Unveiled: Your Gateway to Cloud Knowledge',
-        openGraph: {
-            title: post?.title || 'Yalovets Blog',
-            description: post?.description || 'AWS Unveiled: Your Gateway to Cloud Knowledge',
-            images: post?.imageUrl ? [{ url: post.imageUrl }] : [],
-            url: `https://yalovets.blog/${post?.slug}`,
-            type: 'article',
-        },
-        twitter: {
-            card: 'summary_large_image',
-            title: post?.title || 'Yalovets Blog',
-            description: post?.description || 'AWS Unveiled: Your Gateway to Cloud Knowledge',
-            images: post?.imageUrl ? [post.imageUrl] : [],
-        },
-    };
-}
+// async function generateMetadata(
+//     { params, searchParams }: { params: { slug: string }, searchParams?: Record<string, string> }
+//   ): Promise<Metadata> {
 
-const Home: React.FC<HomeProps> = ({ slug }) => {
+//     const post = await getPost(params.slug);
+
+//     return {
+//         title: post?.title || 'Yalovets Blog',
+//         description: post?.description || 'AWS Unveiled: Your Gateway to Cloud Knowledge',
+//         openGraph: {
+//             title: post?.title || 'Yalovets Blog',
+//             description: post?.description || 'AWS Unveiled: Your Gateway to Cloud Knowledge',
+//             images: post?.imageUrl ? [{ url: post.imageUrl }] : [],
+//             url: `https://yalovets.blog/${post?.slug}`,
+//             type: 'article',
+//         },
+//         twitter: {
+//             card: 'summary_large_image',
+//             title: post?.title || 'Yalovets Blog',
+//             description: post?.description || 'AWS Unveiled: Your Gateway to Cloud Knowledge',
+//             images: post?.imageUrl ? [post.imageUrl] : [],
+//         },
+//     };
+// }
+
+export default function Home({ params }: HomeProps) {
     const { selectedPost } = usePostStore();
 
     const { posts, fetchPosts, lastKey, loadPostsFromStorage } = usePostStore()
@@ -57,7 +63,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
 
     const currentPath = usePathname();
 
-    slug = currentPath.split('/').pop();
+    params.slug = currentPath.split('/').pop();
 
     useEffect(() => {
         loadPostsFromStorage();
@@ -67,7 +73,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
         if (!selectedPost && typeof document !== 'undefined') {
             document.title = 'Home / Yalovets Blog';
         } else if (selectedPost) {
-            generateMetadata(selectedPost);
+            // generateMetadata({ params: { slug: selectedPost.slug }});
         }
     }, [selectedPost]);
 
@@ -99,13 +105,13 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
   # Connect to the instance using SSH
   ssh -i my-key.pem ec2-user@$EC2_IP
     `;
-    const [showModal, setShowModal] = useState(!!slug);
+    const [showModal, setShowModal] = useState(!!params.slug);
 
     useEffect(() => {
-        if (!slug) {
+        if (!params.slug) {
             setTimeout(() => setShowModal(true), 500);
         }
-    }, [slug]);
+    }, [params.slug]);
 
     useEffect(() => {
         fetchPosts(9);
@@ -124,7 +130,7 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
         <>
             <NavBar />
             {showModal && <PostPreviewModal />}
-            {showModal && <ArticleModal slug={slug || ''} />}
+            {showModal && <ArticleModal slug={params.slug || ''} />}
             <main id="body">
                 {/* Welcome section (Mobile) */}
                 <div className="container welcome-xs d-block d-lg-none">
@@ -271,5 +277,3 @@ const Home: React.FC<HomeProps> = ({ slug }) => {
         </>
     );
 };
-
-export default Home;

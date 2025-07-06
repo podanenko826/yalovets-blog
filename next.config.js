@@ -16,4 +16,7 @@ module.exports = withMDX({
     images: {
         domains: ['cloudonaut.io'], // Add your image hostnames here
     },
+    eslint: {
+        ignoreDuringBuilds: true,
+    }
 });

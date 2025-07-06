@@ -10,7 +10,7 @@ interface PostPageProps {
 const PostPage: FC<PostPageProps> = ({ params }: PostPageProps) => {
     const { slug } = params;
 
-    return <Home slug={slug} />;
+    return <Home params={{ slug: slug }} />;
 };
 
 export default PostPage;
