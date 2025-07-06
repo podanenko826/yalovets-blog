@@ -265,9 +265,6 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
 
     return (
         <div>
-            <script type="module">
-                import remarkDirective from 'https://esm.sh/remark-directive@3?bundle'
-            </script>
             {loadingMessage !== null && <LoadingSpinnerModal message={loadingMessage} />}
             <div className="container col-md-9 mt-5">
                 {!legalMdx ? (
@@ -305,7 +302,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
                     </div>
                 ) : (
                     <>
-                        <p className='text-center' style={{ color: 'red' }}>DON'T FORGET TO CHANGE THE "LAST UPDATED" DATE</p>
+                        <p className='text-center' style={{ color: 'red' }}>DON&apos;T FORGET TO CHANGE THE &quot;LAST UPDATED&quot; DATE</p>
                         <h1 className='py-4 heading-xlarge w-100 col-md-11 col-lg-12 text-center align-content-center'>{legalMdx === 'privacy-policy' ? 'Privacy Policy' : 'Imprint'}</h1>
                     </>
                 )}
@@ -434,7 +431,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
                                         <input type="text" placeholder='Coffeeman Corporation' value={sponsoredBy} onChange={e => setSponsoredBy(e.target.value)} />
                                     </div>
                                     <div className='mt-3'>
-                                        <label htmlFor="" className='mx-3'>Enter company's website URL (optional)</label>
+                                        <label htmlFor="" className='mx-3'>Enter company&apos;s website URL (optional)</label>
                                         <input type="text" placeholder='www.yalovets.blog/' value={sponsorUrl} onChange={e => setSponsorUrl(e.target.value)} />
                                     </div>
                                 </>
