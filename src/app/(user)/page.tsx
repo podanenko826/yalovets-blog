@@ -124,7 +124,7 @@ export default function Home({ params }: HomeProps) {
         }
     }, [fetchAuthors]);
 
-    if (posts.length === 0) return <LoadingBanner />
+    if (posts.length === 0 || authors.length === 0) return <LoadingBanner />
 
     return (
         <>
