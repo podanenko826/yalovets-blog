@@ -38,6 +38,18 @@
 
 .subscribeModal {
     max-width: 520px;
+    align-self: start;
+    margin-top: 1.75rem !important;
+    border-radius: var(--radius-lg) !important;
+
+    padding: 40px !important;
+    padding-top: 1.5rem;
+}
+
+@media (min-width: 767px) {
+    .subscribeModal {
+        align-self: unset ;
+    }
 }
 
 .previewModalClose {

@@ -131,7 +131,7 @@ const SubscribeModal = ({ setModalOpen }: SubscribeModalProps) => {
                         </div>
                     )}
 
-                    <div className={`${styles.postDataContainer} ${styles.subscribeModal} p-5`} onClick={e => e.stopPropagation()}>
+                    <div className={`${styles.postDataContainer} ${styles.subscribeModal}`} onClick={e => e.stopPropagation()}>
                         <button className={`${styles.expandedPostCloseBtn} btn-pill`} onClick={() => handleClose()}>
                             <IoMdClose className={styles.icon} />
                         </button>
