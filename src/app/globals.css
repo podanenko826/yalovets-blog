@@ -23,6 +23,7 @@
     --col-footer: rgb(31, 90, 139);
 
     --default-backdrop: blur(4px);
+    --box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 
     --radius-md: 14px;
     --radius-tiny: calc(var(--radius-md) * 0.25);
