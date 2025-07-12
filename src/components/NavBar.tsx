@@ -143,9 +143,9 @@ const NavBar = () => {
                         )}
                     </div>
                     <div className="d-flex col-9 justify-content-end p-0 m-0">
-                        <Link className={styles.btn_subscribe_mobile} id='col-heading-1' href="#" onClick={() => setSubscribeModalOpen(prev => !prev)}>
+                        <a className={styles.btn_subscribe_mobile} id='col-heading-1' role='button' onClick={() => setSubscribeModalOpen(prev => !prev)}>
                             Subscribe
-                        </Link>
+                        </a>
                     </div>
                 </div>
                 <div className={`${mobileMenuOpened ? 'd-flex d-lg-none' : 'd-none'} ${styles.nav_menu_mobile}`}>
