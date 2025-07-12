@@ -74,13 +74,8 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
         }, 1500)
     };
 
-    console.log('posts: ', posts);
-    console.log('authos: ', authors);
-    
-
     if (posts.length === 0 || authors.length === 0) return;
     
-
     return (
         <>
             {/* Render dynamically fetched posts */}
