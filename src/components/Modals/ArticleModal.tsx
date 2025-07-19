@@ -9,7 +9,7 @@ import { FaFacebookF, FaLinkedin, FaRedditAlien } from 'react-icons/fa';
 
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { PostItem } from '@/types';
-import { getMDXContent, getPost, trackView } from '@/lib/posts';
+import { getMDXContent, getPopularPosts, getPost, trackView } from '@/lib/posts';
 import { MDXProvider } from '@mdx-js/react';
 import { mdSerialize } from '../../services/mdSerializer';
 import { useMDXComponents } from '../../../mdx-components';
@@ -20,9 +20,10 @@ import LoadingSkeleton from '../LoadingSkeleton';
 import '@/app/page.css';
 
 import YouTubeEmbed from '@/components/mdx/YouTubeEmbed';
+import dynamic from 'next/dynamic';
 
-const NavBar = lazy(() => import('@/components/NavBar'));
-const Footer = lazy(() => import('@/components/Footer'));
+const NavBar = dynamic(() => import('@/components/NavBar'));
+const Footer = dynamic(() => import('@/components/Footer'));
 
 interface ArticleModalProps {
     slug: string;
@@ -37,9 +38,11 @@ interface ArticleModalProps {
  * Optional. Pass a useState setter to get the up-to-date selected post from the ArticleModal.
  */
 
+const POPULAR_POSTS_LIMIT = 3;
+
 const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
-    const { posts, selectedPost, setSelectedPost } = usePostStore();
-    const { authors } = useAuthorStore();
+    const { posts, fetchPosts, selectedPost, setSelectedPost } = usePostStore();
+    const { authors, fetchAuthors } = useAuthorStore();
 
     const [selectedMarkdown, setSelectedMarkdown] = useState<string | null>(null);
     const [serializedMarkdown, setSerializedMarkdown] = useState<MDXRemoteSerializeResult<Record<string, unknown>, Record<string, unknown>>>();
@@ -61,14 +64,22 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
     const components = useMDXComponents();
 
     useEffect(() => {
-        const sortedByViews = posts
-            .filter(post => post.viewsCount !== undefined) // Filter out posts with undefined viewsCount
-            .sort((a, b) => (b.viewsCount ?? 0) - (a.viewsCount ?? 0));
+        const fetchPopularPosts = async () => {
+            const mostPopular = await getPopularPosts(30);
 
-        const mostPopular = sortedByViews.slice(0, 30).filter(post => post.slug !== undefined);
+            if (mostPopular.length > 0) {
+                setPopularPosts(mostPopular);
+            }
+        }
 
-        setPopularPosts(mostPopular);
-    }, [posts]);
+        fetchPopularPosts();
+    }, [getPopularPosts, setPopularPosts]);
+
+    useEffect(() => {
+        if (authors.length === 0) {
+            fetchAuthors();
+        }
+    }, [fetchAuthors, authors.length]);
 
     useEffect(() => {
         // Automatically close modal if URL doesn't match the selected post
@@ -347,7 +358,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                         {popularPosts
                                             .filter(post => post.slug !== selectedPost.slug)
                                             .sort(() => Math.random() - 0.5)
-                                            .slice(0, 3)
+                                            .slice(0, POPULAR_POSTS_LIMIT)
                                             .map((post, index) => (
                                                 <Link href={`/${post.slug}`} className="col-md-9" key={index}>
                                                     <div className='read-further-button'>
