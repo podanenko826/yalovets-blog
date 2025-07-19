@@ -8,22 +8,24 @@ import { usePostStore } from '../posts/store';
 import { useAuthorStore } from '../authors/store';
 
 const useWindowSize = () => {
-    if (typeof window === 'undefined') return { width: 0, height: 0 };
-
-    const [size, setSize] = useState({ width: window.innerWidth, height: window.innerHeight });
+    const [size, setSize] = useState({ width: 0, height: 0 });
 
     useEffect(() => {
-        const handleResize = () => {
+        if (typeof window === 'undefined') return;
+
+        const updateSize = () => {
             setSize({ width: window.innerWidth, height: window.innerHeight });
         };
 
-        window.addEventListener('resize', handleResize);
+        updateSize(); // set initial size on mount
 
-        return () => window.removeEventListener('resize', handleResize);
+        window.addEventListener('resize', updateSize);
+        return () => window.removeEventListener('resize', updateSize);
     }, []);
 
     return size;
 };
+
 
 const PostPreviewModal = () => {
 
@@ -39,7 +41,7 @@ const PostPreviewModal = () => {
         if (selectedPost && expandedPost) {
             setExpandedPost(null);
         }
-    }, [selectedPost]);
+    }, [selectedPost, expandedPost, setExpandedPost]);
 
     const handleClose = () => {
         if (!window) return;

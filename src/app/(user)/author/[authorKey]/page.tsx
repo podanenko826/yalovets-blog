@@ -54,7 +54,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     useEffect(() => {
         window.scrollTo(0, 0); // Scroll to top on route change
 
-        loadPostsFromStorage();
+        // loadPostsFromStorage();
     }, []);
 
     useEffect(() => {
@@ -66,7 +66,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
         };
 
         fetchAuthorsData();
-    }, [fetchAuthors]);
+    }, [fetchAuthors, authorKey]);
 
 
     useEffect(() => {
@@ -87,7 +87,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
         };
 
         fetchAuthorPosts();
-    }, [authorData?.email]);
+    }, [authorData?.email, fetchPostsByAuthor, pagination]);
 
     useEffect(() => {
         if (posts.length > 0 && authorData) {

@@ -60,7 +60,7 @@ const AuthorsPage = () => {
                 modalRef.current = null;
             }
         };
-    }, [authorData]);
+    }, [authorData, currentModal]);
 
     const handleCreateClick = (): void => {
         setNewAuthor(emptyAuthorObject);

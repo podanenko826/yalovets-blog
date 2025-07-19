@@ -77,7 +77,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
             setSelectedMarkdown(null);
             setSerializedMarkdown(undefined);
         }
-    }, [pathname, selectedPost]);
+    }, [pathname, selectedPost, setSelectedPost]);
 
     useEffect(() => {
         if (slug) {
@@ -123,7 +123,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
         };
 
         returnToPost();
-    }, [slug, selectedPost]);
+    }, [slug, selectedPost, setSelectedPost, posts]);
 
     useEffect(() => {
         const processMarkdown = async () => {
@@ -150,7 +150,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
             //? Fake loading time, adjust the time if needed
             setTimeout(() => setLoading(false), 300);
         }
-    }, [serializedMarkdown]);
+    }, [serializedMarkdown, selectedMarkdown]);
 
     const author = authors.find(author => author.email === selectedPost?.email);
 

@@ -31,7 +31,7 @@ const Footer = () => {
         if (!navButtons && navigation) {
             setNavButtons([...navigation]);
         }
-    }, [navigation]);
+    }, [navButtons]);
 
     const footerLinks = [
         {

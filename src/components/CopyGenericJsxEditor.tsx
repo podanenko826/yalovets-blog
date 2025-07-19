@@ -51,49 +51,42 @@ const useMemoProperties = ({mdastNode, descriptor}: JsxEditorProps) => {
     )
 }
 
-const genJsxEditorOnChange = (
-    {mdastNode, descriptor}: JsxEditorProps
-) => {
-    const updateMdastNode = useMdastNodeUpdater()
+const useJsxEditorOnChange = ({ mdastNode, descriptor }: JsxEditorProps) => {
+    const updateMdastNode = useMdastNodeUpdater();
+
     return React.useCallback(
         (values: Record<string, string>) => {
             const updatedAttributes = Object.entries(values).reduce<typeof mdastNode.attributes>((acc, [name, value]) => {
-                if (value === '') {
-                    return acc
-                }
+                if (value === '') return acc;
 
-                const property = descriptor.props.find((prop) => prop.name === name)
+                const property = descriptor.props.find((prop) => prop.name === name);
 
                 if (property?.type === 'expression') {
                     acc.push({
                         type: 'mdxJsxAttribute',
                         name,
-                        value: {type: 'mdxJsxAttributeValueExpression', value}
-                    })
-                    return acc
+                        value: { type: 'mdxJsxAttributeValueExpression', value }
+                    });
+                    return acc;
                 }
 
-                acc.push({
-                    type: 'mdxJsxAttribute',
-                    name,
-                    value
-                })
+                acc.push({ type: 'mdxJsxAttribute', name, value });
+                return acc;
+            }, []);
 
-                return acc
-            }, [])
-
-            updateMdastNode({attributes: updatedAttributes})
+            updateMdastNode({ attributes: updatedAttributes });
         },
         [mdastNode, updateMdastNode, descriptor]
-    )
-}
+    );
+};
+
 
 
 export const CopyGenericJsxEditor = ({mdastNode, descriptor, TargetNode}: {
     TargetNode: React.ComponentType<any>;
 } & JsxEditorProps) => {
     const properties = useMemoProperties({mdastNode, descriptor});
-    const onChange = genJsxEditorOnChange({mdastNode, descriptor});
+    const onChange = useJsxEditorOnChange({mdastNode, descriptor});
     const shouldRenderComponentName = descriptor.props.length == 0 && descriptor.hasChildren && descriptor.kind === 'flow'
 
     const element = (<TargetNode {...Object.fromEntries(

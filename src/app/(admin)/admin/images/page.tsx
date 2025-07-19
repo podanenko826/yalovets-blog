@@ -71,11 +71,11 @@ const PostsPage = () => {
                 <div className="container-lg mt-5">
                     <div className="row post-list">
 
-                        {imagesPaths.slice(0, imagesDisplayed).map(pathName => {
+                        {imagesPaths.slice(0, imagesDisplayed).map((pathName, index) => {
                             if (!pathName.includes('.webp')) return;
 
                             return (
-                                <div className='col-12 col-md-6 col-lg-4 my-3 px-3 mx-' style={{ border: '2px solid var(--col-secondary)'}}>
+                                <div key={index} className='col-12 col-md-6 col-lg-4 my-3 px-3 mx-' style={{ border: '2px solid var(--col-secondary)'}}>
                                     <Image src={`/images/` + pathName as string} width={354} height={354} alt={''} />
                                     <h3>{pathName.split('/').at(-1)}</h3>
                                     <h4>Date: {pathName.split('/').at(-3)}.{pathName.split('/').at(-2)}</h4>

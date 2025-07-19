@@ -28,7 +28,7 @@ const UnsubscribePage = () => {
         }
 
         getSubscriberData();
-    }, [setSubscriberData])
+    }, [setSubscriberData, email, subscriberData])
 
     const handleClose = () => {
         if (!window) return;

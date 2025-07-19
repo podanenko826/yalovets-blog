@@ -117,7 +117,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
         }
 
         uploadBannerImage();
-    }, [imageFile]);
+    }, [imageFile, postData, postData?.date]);
 
     async function imageUploadHandler(image: File) {
         const newName = image.name.replace(/\s+/g, '');

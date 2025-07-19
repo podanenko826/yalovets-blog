@@ -48,7 +48,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
         }
 
         fetchPopularPosts();
-    }, [displayMode])
+    }, [displayMode, mostViewed.length])
 
     // Scroll-based pagination or load more trigger
     const loadMorePosts = async () => {
@@ -115,7 +115,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
                 ))
             ) : displayMode === 'admin' ? (
                 posts.map((post, index) => (
-                    <div className="col-md-6 col-lg-4">
+                    <div key={`${post.slug}-${index}`} className="col-md-6 col-lg-4">
                         <LazyPostCard 
                             post={post} 
                             authorData={memoizedAuthors.get(post.email) as AuthorItem} 

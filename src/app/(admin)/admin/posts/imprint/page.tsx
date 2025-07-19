@@ -4,9 +4,7 @@ import React from 'react';
 
 import { getAuthors } from '@/lib/authors';
 
-const PostEditor = dynamic(() => import('@/components/EditorComponent'), {
-    ssr: false,
-});
+const PostEditor = dynamic(() => import('@/components/EditorComponent'));
 
 const EditImprintPage = async () => {
     const authorData = await getAuthors();

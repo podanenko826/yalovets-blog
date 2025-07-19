@@ -65,9 +65,9 @@ export default function Home({ params }: HomeProps) {
 
     params.slug = currentPath.split('/').pop();
 
-    useEffect(() => {
-        loadPostsFromStorage();
-    }, []);
+    // useEffect(() => {
+    //     loadPostsFromStorage();
+    // }, []);
 
     useEffect(() => {
         if (!selectedPost && typeof document !== 'undefined') {
@@ -122,7 +122,7 @@ export default function Home({ params }: HomeProps) {
             fetchAuthors();
 
         }
-    }, [fetchAuthors]);
+    }, [fetchAuthors, authors.length]);
 
     if (posts.length === 0 || authors.length === 0) return <LoadingBanner />
 

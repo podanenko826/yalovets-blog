@@ -4,9 +4,7 @@ import { Suspense } from 'react';
 import React from 'react';
 import { getAuthors } from '@/lib/authors';
 
-const PostEditor = dynamic(() => import('@/components/EditorComponent'), {
-    ssr: false,
-});
+const PostEditor = dynamic(() => import('@/components/EditorComponent'));
 
 const AddPage = async () => {
     const authorData = await getAuthors();

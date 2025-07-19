@@ -29,7 +29,7 @@ const PostsPage = () => {
         }
 
         fetchAuthorData();
-    }, [fetchAuthors]);
+    }, [fetchAuthors, setAuthors]);
 
     const refreshPosts = async () => {
         setLastKey(null);

@@ -18,6 +18,8 @@ type PostCardProps = {
 
 const LazyPostCard = React.memo(
     ({ post, previewData, authorData, style, index, isLoading, setLoading }: PostCardProps) => {
+        LazyPostCard.displayName = "LazyPostCard";
+
         const [isVisible, setIsVisible] = useState(false);
 
         const ref = useRef(null);
@@ -36,7 +38,7 @@ const LazyPostCard = React.memo(
             if (ref.current) observer.observe(ref.current);
     
             return () => observer.disconnect();
-        }, []);
+        }, [setLoading]);
 
         return (
             <>

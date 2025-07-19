@@ -27,7 +27,7 @@ type PostCardProps = {
     onVisible?: () => void;
 };
 
-const PostCard = ({ post, previewData, authorData, style, index, setValue, setPostType, setImageFile, onVisible }: PostCardProps) => {
+const PostCard = ({ post, previewData, authorData, style, index, setValue, setPostType, setImageFile, onVisible }: PostCardProps) => {        
     const cardRef = useRef<HTMLDivElement>(null);
 
     const [imagePreview, setImagePreview] = useState<string | null>(null); // Store the image preview
@@ -75,6 +75,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
 
     const PostInfoSection = React.memo(
         (props: { descLength: number; noLimit?: boolean }) => {
+            PostInfoSection.displayName = 'PostInfoSection';
+            
             return (
                 <div className={styles.postInfo}>
                     <div className="d-flex align-content-center m-0">
@@ -276,7 +278,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                 popoverContent.addEventListener('mouseleave', handleMouseLeave);
             }
         }
-    }, [popoverVisible, handleMouseEnter, handleMouseLeave]);
+    }, [popoverVisible]);
 
     let postImageUrl = post.imageUrl?.replace(/\.[^/.]+$/, "");
 
@@ -656,8 +658,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                                             <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
                                             <select onChange={handlePostTypeChange} value={selectedPostType} className={`d-inline-block ${styles.articleLabelSelect} ${previewData.postType === 'Guide' ? styles.articleLabel_Guide : previewData.postType === 'Review' ? styles.articleLabel_Review : previewData.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
                                                 {previewData.postType || 'Article'} {/* Display the post type */}
-                                                {postTypes.map(type => (
-                                                    <option>{type}</option>
+                                                {postTypes.map((type, index) => (
+                                                    <option key={index}>{type}</option>
                                                 ))}
                                             </select>
                                         </span>
@@ -771,5 +773,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
         </div>
     );
 };
+
+PostCard.displayName = 'PostCard';
 
 export default PostCard;

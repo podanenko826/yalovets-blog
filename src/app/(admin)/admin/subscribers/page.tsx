@@ -58,7 +58,7 @@ const SubscribersPage = () => {
                 modalRef.current = null;
             }
         };
-    }, [subscriberData]);
+    }, [subscriberData, currentModal]);
 
     const handleEditClick = (subscriber: SubscriberItem): void => {
         setSelectedSubscriber(subscriber);

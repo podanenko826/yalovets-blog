@@ -44,21 +44,23 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     const currentPath = usePathname();
     const slug = !currentPath.split('/').includes('page') ? currentPath.split('/').pop() : '';
 
-    useEffect(() => {
-        loadPostsFromStorage();
-    }, []);
+    // useEffect(() => {
+    //     loadPostsFromStorage();
+    // }, []);
 
     useEffect(() => {
         window.scrollTo(0, 0); // Scroll to top on route change
+    }, [])
 
+    useEffect(() => {
         loadUserConfigFromStorage();
-    }, []);
+    }, [loadUserConfigFromStorage]);
 
     useEffect(() => {
         if (!selectedPost && typeof document !== 'undefined') {
             document.title = `Page ${currentPage || 1} / Yalovets Blog`;
         }
-    }, [selectedPost]);
+    }, [selectedPost, currentPage]);
 
     useEffect(() => {
         const fetchPaginationData = async () => {
@@ -69,7 +71,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
             }
         }
         fetchPaginationData();
-    }, [fetchPagination]);
+    }, [fetchPagination, pagination.paginationData, setPagination]);
 
     useEffect(() => {
         if (!originalPagination || !postsPerPage) return;
@@ -100,7 +102,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
             totalPages: Object.keys(modifiedPagination).length,
             paginationData: modifiedPagination,
         })
-    }, [postsPerPage, originalPagination]);
+    }, [postsPerPage, originalPagination, setPagination]);
 
     // Redirect user to the latest page if accessed the page that doesn't exist yet
     useEffect(() => {
@@ -148,14 +150,14 @@ export default function BlogPage({ params }: { params: { page: string } }) {
         }
 
         fetchPostsData();
-    }, [params.page, paginationData.paginationData]);
+    }, [params.page, paginationData.paginationData, ARTICLES_PER_PAGE, fetchPostsByPage, paginationData]);
 
     useEffect(() => {
         if (authors.length === 0) {
             fetchAuthors();
 
         }
-    }, [fetchAuthors]);
+    }, [fetchAuthors, authors.length]);
 
     // Pagination logic
     const rangeStart = Math.max(currentPage - 2, 1); // At least 2 pages to the left
