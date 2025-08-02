@@ -1,6 +1,6 @@
 'use client';
 import '@/app/page.css';
-import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, lazy, use, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 
 import { getPostsCount, sortPosts } from '@/lib/posts';
@@ -26,10 +26,12 @@ import { useUserConfigStore } from '@/components/userConfig/store';
 import LoadingBanner from '@/components/Modals/LoadingBanner';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
 
-export default function BlogPage({ params }: { params: { page: string } }) {
+export default function BlogPage({ params }: { params: Promise<{ page: string }> }) {
     const router = useRouter();
 
-    const currentPage = parseInt(params.page, 10) || 1;
+    const { page } = use(params);
+
+    const currentPage = parseInt(page, 10) || 1;
     const { posts, selectedPost, fetchPostsByPage, loadPostsFromStorage } = usePostStore();
     const { postsPerPage, loadUserConfigFromStorage } = useUserConfigStore();
     const { authors, fetchAuthors } = useAuthorStore();
@@ -106,10 +108,10 @@ export default function BlogPage({ params }: { params: { page: string } }) {
 
     // Redirect user to the latest page if accessed the page that doesn't exist yet
     useEffect(() => {
-        if (Object.keys(pagination.paginationData).length > 0 && parseInt(params.page) > pagination.totalPages) {
+        if (Object.keys(pagination.paginationData).length > 0 && currentPage > pagination.totalPages) {
             // router.push(`/page/${Object.keys(pagination.paginationData).length}`);
         }
-    }, [pagination.paginationData, params.page, pagination.totalPages, router]);
+    }, [pagination.paginationData, currentPage, pagination.totalPages, router]);
 
     useEffect(() => {
         const getPostsLength = async () => {
@@ -128,7 +130,7 @@ export default function BlogPage({ params }: { params: { page: string } }) {
     }, [pagination]);
 
     // Getting the exact starting key for the particular page
-    const startingKey: PaginationEntry | undefined = Object.entries(pagination.paginationData).find(([key, value]) => key.toString() === params.page)?.[1];
+    const startingKey: PaginationEntry | undefined = Object.entries(pagination.paginationData).find(([key, value]) => key.toString() === currentPage.toString())?.[1];
 
     const ARTICLES_PER_PAGE = postsPerPage; // Define the number of posts per page //? (should be 14 by design and adjustable to 30 or 44)
     const pageCount = pagination.totalPages;
@@ -140,17 +142,17 @@ export default function BlogPage({ params }: { params: { page: string } }) {
         const fetchPostsData = async () => {
             if (Object.keys(paginationData.paginationData).length === 0) return;
 
-            if (params.page) {
+            if (currentPage) {
                 setLoading(true);
 
-                const postsData = await fetchPostsByPage(Number(params.page), ARTICLES_PER_PAGE, paginationData);
+                const postsData = await fetchPostsByPage(currentPage, ARTICLES_PER_PAGE, paginationData);
 
                 if (postsData.length > 0) setLoading(false);
             }
         }
 
         fetchPostsData();
-    }, [params.page, paginationData.paginationData, ARTICLES_PER_PAGE, fetchPostsByPage, paginationData]);
+    }, [currentPage, paginationData.paginationData, ARTICLES_PER_PAGE, fetchPostsByPage, paginationData]);
 
     useEffect(() => {
         if (authors.length === 0) {
