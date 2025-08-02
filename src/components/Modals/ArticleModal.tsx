@@ -110,6 +110,10 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
     useEffect(() => {
         const returnToPost = async () => {
             if (typeof window === 'undefined') return;
+            if (loading) return;
+
+            console.log('returning');
+            
 
             if (selectedPost === null && slug) {
                 const postFromCache = posts.find(post => post.slug === slug) as PostItem;
@@ -134,7 +138,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
         };
 
         returnToPost();
-    }, [slug, selectedPost, setSelectedPost, posts]);
+    }, [slug, selectedPost, setSelectedPost, posts, loading]);
 
     useEffect(() => {
         const processMarkdown = async () => {
@@ -151,17 +155,16 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
     const closeModal = () => {
         setSelectedPost(null);
         setSelectedMarkdown(null);
+        setSerializedMarkdown(undefined);
         setLoading(true);
-
+        
         router.back();
     };
 
     useEffect(() => {
-        if (selectedMarkdown) {
-            //? Fake loading time, adjust the time if needed
-            setTimeout(() => setLoading(false), 300);
-        }
-    }, [serializedMarkdown, selectedMarkdown]);
+        //? Fake loading time, adjust the time if needed
+        setTimeout(() => setLoading(false), 300);
+    }, [slug]);
 
     const author = authors.find(author => author.email === selectedPost?.email);
 
