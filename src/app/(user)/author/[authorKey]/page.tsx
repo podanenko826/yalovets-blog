@@ -2,7 +2,7 @@
 import { getAuthorByKey, getAuthors } from '@/lib/authors';
 import { AuthorItem, PostItem } from '@/types';
 // import { notFound } from 'next/navigation';
-import React, { FC, Suspense, lazy, useEffect, useMemo, useState } from 'react';
+import React, { FC, Suspense, lazy, use, useEffect, useMemo, useState } from 'react';
 
 import Image from 'next/image';
 
@@ -23,12 +23,12 @@ import NavBar from '@/components/NavBar';
 const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
 const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
 interface AuthorPageProps {
-    params: { authorKey: string };
+    params: Promise<{ authorKey: string }>;
     // mdxSource: MDXRemoteProps | MDXRemoteSerializeResult | null;
 }
 
 const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
-    const { authorKey } = params;
+    const { authorKey } = use(params);
 
     const { posts, selectedPost, fetchPostsByAuthor, loadPostsFromStorage } = usePostStore();
     const { fetchAuthors } = useAuthorStore();
