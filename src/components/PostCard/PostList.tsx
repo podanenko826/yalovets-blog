@@ -29,7 +29,10 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
 
     const POSTS_PER_PAGE = 28;
 
-    const memoizedPosts = useMemo(() => posts.slice(), [posts]);
+    const memoizedPosts = postsData && postsData.length > 0 ? 
+        useMemo(() => postsData.slice(), [postsData]) : 
+        useMemo(() => posts.slice(), [posts]);
+
     const memoizedAuthors = useMemo(() => new Map(authors.map((author) => [author.email, author])), [authors]);
 
     const recent = useMemo(() => memoizedPosts.slice(0, 9), [memoizedPosts]);
@@ -74,23 +77,36 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit, indexInc
         }, 1500)
     };
 
-    if (posts.length === 0 || authors.length === 0) return;
+    if (!postsData && posts.length === 0 || authors.length === 0) return;
+    if (postsData && postsData.length === 0) return;
     
     return (
         <>
             {/* Render dynamically fetched posts */}
             {displayMode === 'linear' ? (
-                posts.map((post, index) => (
-                    <LazyPostCard 
-                        post={post} 
-                        authorData={memoizedAuthors.get(post.email) as AuthorItem} 
-                        key={post.slug}
-                        index={index + indexIncrement} 
-                        style={style} 
-                        isLoading={loading}
-                        setLoading={setLoading}
-                    />
-                ))
+                postsData && postsData.length > 0 ?
+                    postsData.map((post, index) => (
+                        <LazyPostCard 
+                            post={post} 
+                            authorData={memoizedAuthors.get(post.email) as AuthorItem} 
+                            key={post.slug}
+                            index={index + indexIncrement} 
+                            style={style} 
+                            isLoading={loading}
+                            setLoading={setLoading}
+                        />
+                    )) :
+                    posts.map((post, index) => (
+                        <LazyPostCard 
+                            post={post} 
+                            authorData={memoizedAuthors.get(post.email) as AuthorItem} 
+                            key={post.slug}
+                            index={index + indexIncrement} 
+                            style={style} 
+                            isLoading={loading}
+                            setLoading={setLoading}
+                        />
+                    ))
             ) : displayMode === 'latest' ? (
                     <LazyPostCard 
                         post={latest} 

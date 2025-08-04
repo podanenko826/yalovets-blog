@@ -15,7 +15,7 @@ interface PostStore {
     setLastKey: (lastKey: string | null) => void;
     fetchPosts: (limit: number) => Promise<{ posts: PostItem[], lastKey: string }>;
     fetchPostsByPage: (page: number, postsPerPage: number, pagination: PaginationState) => Promise<PostItem[]>;
-    fetchPostsByAuthor: (authorEmail: string, postsPerPage: number, pagination: PaginationState, lastKey?: string) => Promise<{ posts: PostItem[], lastKey: string }>;
+    fetchPostsByAuthor: (authorEmail: string, postsPerPage: number, pagination?: PaginationState) => Promise<{ posts: PostItem[], lastKey: string }>;
 }
 
 export const usePostStore = create<PostStore>((set, get) => {
@@ -190,7 +190,7 @@ export const usePostStore = create<PostStore>((set, get) => {
         }
     };
 
-    const fetchPostsByAuthor = async (authorEmail: string, postsPerPage: number, pagination: PaginationState): Promise<{ posts: PostItem[], lastKey: string}> => {
+    const fetchPostsByAuthor = async (authorEmail: string, postsPerPage: number, pagination?: PaginationState): Promise<{ posts: PostItem[], lastKey: string}> => {
         if (!authorEmail || !postsPerPage) return { posts: [], lastKey: "" };
         
         try {
@@ -202,7 +202,6 @@ export const usePostStore = create<PostStore>((set, get) => {
             
                 const combinedPosts = [...posts, ...newUniquePosts];
                 const sortedCombinedPosts = sortPosts(combinedPosts);
-                setPosts([...sortedCombinedPosts]);
                 // savePostsToLocalStorage([...sortedCombinedPosts]);
 
                 // Update lastKey for pagination (only if it changes)

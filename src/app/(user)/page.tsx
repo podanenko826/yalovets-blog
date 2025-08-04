@@ -58,7 +58,7 @@ interface HomeProps {
 export default function Home({ params }: HomeProps) {
     const { selectedPost } = usePostStore();
 
-    const { posts, fetchPosts, lastKey, loadPostsFromStorage } = usePostStore()
+    const { posts, setPosts, fetchPosts, lastKey, loadPostsFromStorage } = usePostStore()
     const { authors, fetchAuthors } = useAuthorStore();
 
     const currentPath = usePathname();
@@ -115,7 +115,7 @@ export default function Home({ params }: HomeProps) {
 
     useEffect(() => {
         fetchPosts(9);
-    }, [fetchPosts]);
+    }, [fetchPosts, params.slug]);
 
     useEffect(() => {
         if (authors.length === 0) {
@@ -131,6 +131,9 @@ export default function Home({ params }: HomeProps) {
             <NavBar />
             {showModal && <PostPreviewModal />}
             {showModal && <ArticleModal slug={params.slug || ''} />}
+
+            <button onClick={() => console.log(posts)}>Print posts</button>
+
             <main id="body">
                 {/* Welcome section (Mobile) */}
                 <div className="container welcome-xs d-block d-lg-none">

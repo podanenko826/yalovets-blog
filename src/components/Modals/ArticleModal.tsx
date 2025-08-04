@@ -112,9 +112,6 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
             if (typeof window === 'undefined') return;
             if (loading) return;
 
-            console.log('returning');
-            
-
             if (selectedPost === null && slug) {
                 const postFromCache = posts.find(post => post.slug === slug) as PostItem;
                 let post: PostItem;

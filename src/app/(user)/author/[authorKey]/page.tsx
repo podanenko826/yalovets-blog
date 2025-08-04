@@ -30,9 +30,8 @@ interface AuthorPageProps {
 const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     const { authorKey } = use(params);
 
-    const { posts, selectedPost, fetchPostsByAuthor, loadPostsFromStorage } = usePostStore();
+    const { selectedPost, fetchPostsByAuthor, loadPostsFromStorage } = usePostStore();
     const { fetchAuthors } = useAuthorStore();
-    const { pagination } = usePaginationStore();
 
     const [authorData, setAuthorData] = useState<AuthorItem | null>(null);
     const [authorPosts, setAuthorPosts] = useState<PostItem[]>([]);
@@ -78,7 +77,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     useEffect(() => {
         const fetchAuthorPosts = async () => {
             if (authorData?.email) {
-                const authorPosts = await fetchPostsByAuthor(authorData.email, POSTS_PER_PAGE, pagination);
+                const authorPosts = await fetchPostsByAuthor(authorData.email, POSTS_PER_PAGE);
 
                 if (authorPosts.posts.length > 0) {
                     setAuthorPosts(authorPosts.posts);
@@ -87,21 +86,21 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
         };
 
         fetchAuthorPosts();
-    }, [authorData?.email, fetchPostsByAuthor, pagination]);
+    }, [authorData?.email, fetchPostsByAuthor]);
 
-    useEffect(() => {
-        if (posts.length > 0 && authorData) {
-            const authorPosts = posts
-                .map(post => {
-                    if (post.email === authorData?.email) return post;
-                })
-                .filter(Boolean);
+    // useEffect(() => {
+    //     if (posts.length > 0 && authorData) {
+    //         const authorPosts = posts
+    //             .map(post => {
+    //                 if (post.email === authorData?.email) return post;
+    //             })
+    //             .filter(Boolean);
 
-            setAuthorPosts(authorPosts as PostItem[]);
-        }
-    }, [posts, authorData]);
+    //         setAuthorPosts(authorPosts as PostItem[]);
+    //     }
+    // }, [posts, authorData]);
 
-    if (posts.length === 0) return <LoadingBanner />
+    if (authorPosts.length === 0) return <LoadingBanner />
 
     return (
         <>
