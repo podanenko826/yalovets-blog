@@ -278,7 +278,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                 popoverContent.addEventListener('mouseleave', handleMouseLeave);
             }
         }
-    }, [popoverVisible]);
+    }, [popoverVisible, handleMouseEnter, handleMouseLeave]);
 
     let postImageUrl = post.imageUrl?.replace(/\.[^/.]+$/, "");
 

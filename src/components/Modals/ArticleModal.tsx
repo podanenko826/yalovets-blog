@@ -73,7 +73,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
         }
 
         fetchPopularPosts();
-    }, [getPopularPosts, setPopularPosts]);
+    }, [setPopularPosts]);
 
     useEffect(() => {
         if (authors.length === 0) {

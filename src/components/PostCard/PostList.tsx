@@ -30,9 +30,12 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, ind
 
     const POSTS_PER_PAGE = limit;
 
-    const memoizedPosts = postsData && postsData.length > 0 ? 
-        useMemo(() => postsData.slice(), [postsData]) : 
-        useMemo(() => posts.slice(), [posts]);
+    const memoizedPosts = useMemo(() => {
+        if (postsData && postsData.length > 0) {
+            return postsData.slice();
+        }
+        return posts.slice();
+    }, [postsData, posts]);      
 
     const memoizedAuthors = useMemo(() => new Map(authors.map((author) => [author.email, author])), [authors]);
 
