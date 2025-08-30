@@ -126,13 +126,14 @@ export const getPaginatedPosts = async (page: number, limit: number, paginationD
     }
 };
 
-export const getSortedPosts = async (limit: number): Promise<{ posts: PostItem[]; lastKey: string }> => {
+export const getSortedPosts = async (limit: number, lastKey?: string): Promise<{ posts: PostItem[]; lastKey: string }> => {
     if (!limit || limit > 50) return { posts: [], lastKey: '' };
 
     try {
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
-        const response = await fetch(`${baseUrl}/api/posts?limit=${limit}`, { cache: "force-cache" });
+        const response = lastKey ? await fetch(`${baseUrl}/api/posts?limit=${limit}&lastKey=${lastKey}`, { cache: "force-cache" })
+            : await fetch(`${baseUrl}/api/posts?limit=${limit}`, { cache: "force-cache" });
 
         if (!response.ok) {
             console.error('API returned an error:', response.status, await response.text());

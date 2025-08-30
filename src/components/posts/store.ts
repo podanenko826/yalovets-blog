@@ -13,9 +13,9 @@ interface PostStore {
     setExpandedPost: (post: { post: PostItem; boundingBox: DOMRect } | null) => void;
     lastKey: string | null;
     setLastKey: (lastKey: string | null) => void;
-    fetchPosts: (limit: number) => Promise<{ posts: PostItem[], lastKey: string }>;
+    fetchPosts: (limit: number, _lastKey?: string) => Promise<{ posts: PostItem[], lastKey: string }>;
     fetchPostsByPage: (page: number, postsPerPage: number, pagination: PaginationState) => Promise<PostItem[]>;
-    fetchPostsByAuthor: (authorEmail: string, postsPerPage: number, pagination?: PaginationState) => Promise<{ posts: PostItem[], lastKey: string }>;
+    fetchPostsByAuthor: (authorEmail: string, postsPerPage: number, pagination?: PaginationState, _lastKey?: string) => Promise<{ posts: PostItem[], lastKey: string }>;
 }
 
 export const usePostStore = create<PostStore>((set, get) => {
@@ -106,7 +106,7 @@ export const usePostStore = create<PostStore>((set, get) => {
     // loadPostsFromStorage();
 
 
-    const fetchPosts = async (limit: number): Promise<{ posts: PostItem[], lastKey: string }> => {
+    const fetchPosts = async (limit: number, _lastKey?: string): Promise<{ posts: PostItem[], lastKey: string }> => {
         if (!limit || limit > 50) return { posts: [], lastKey: "" };
         
         try {
@@ -114,8 +114,8 @@ export const usePostStore = create<PostStore>((set, get) => {
 
             let postsData;
 
-            if (lastKey) {
-                postsData = await getSortedPosts(limit);
+            if (_lastKey) {
+                postsData = await getSortedPosts(limit, _lastKey);
             } else {
                 postsData = await getSortedPosts(limit);
             }
@@ -190,11 +190,11 @@ export const usePostStore = create<PostStore>((set, get) => {
         }
     };
 
-    const fetchPostsByAuthor = async (authorEmail: string, postsPerPage: number, pagination?: PaginationState): Promise<{ posts: PostItem[], lastKey: string}> => {
+    const fetchPostsByAuthor = async (authorEmail: string, postsPerPage: number, pagination?: PaginationState, _lastKey?: string): Promise<{ posts: PostItem[], lastKey: string}> => {
         if (!authorEmail || !postsPerPage) return { posts: [], lastKey: "" };
         
         try {
-            const postsData = await getAuthorPosts(authorEmail, postsPerPage, lastKey || undefined);
+            const postsData = await getAuthorPosts(authorEmail, postsPerPage, lastKey || _lastKey || undefined);
 
             if (postsData.posts.length > 0) {
                 const existingSlugs = new Set(posts.map(post => post.slug));

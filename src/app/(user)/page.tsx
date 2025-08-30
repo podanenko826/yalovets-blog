@@ -2,23 +2,16 @@
 import * as React from 'react';
 import '@/app/page.css';
 
-import type { PostItem } from '@/types';
-
 import StartReadingButton from '@/components/Button/StartReadingButton';
 
 import Image from 'next/image';
 import PostList from '@/components/PostCard/PostList';
-import { Suspense, lazy, useEffect, useRef, useState } from 'react';
-import { Metadata } from 'next';
-import { notFound, usePathname } from 'next/navigation';
+import { Suspense, lazy, useEffect, useState } from 'react';
+// import { Metadata } from 'next';
+import { usePathname } from 'next/navigation';
 import { usePostStore } from '@/components/posts/store';
 import { useAuthorStore } from '@/components/authors/store';
 import LoadingBanner from '@/components/Modals/LoadingBanner';
-import { uploadImage } from '@/lib/images';
-import { sendEmailsOnPost } from '@/services/sendEmailsOnPost';
-import { getSubscriberByEmail, getSubscribers, getSubscribersByStatus } from '@/lib/subscribers';
-import { UpdateEmailTemplate } from '@/services/updateEmailTemplate';
-import { getPost } from '@/lib/posts';
 
 const NavBar = lazy(() => import('@/components/NavBar'));
 const Footer = lazy(() => import('@/components/Footer'));
@@ -58,12 +51,14 @@ interface HomeProps {
 export default function Home({ params }: HomeProps) {
     const { selectedPost } = usePostStore();
 
-    const { posts, setPosts, fetchPosts, lastKey, loadPostsFromStorage } = usePostStore()
+    const { posts, fetchPosts } = usePostStore()
     const { authors, fetchAuthors } = useAuthorStore();
 
     const currentPath = usePathname();
 
     params.slug = currentPath.split('/').pop();
+
+    const POSTS_PER_PAGE = 9;
 
     // useEffect(() => {
     //     loadPostsFromStorage();
@@ -114,7 +109,7 @@ export default function Home({ params }: HomeProps) {
     }, [params.slug]);
 
     useEffect(() => {
-        fetchPosts(9);
+        fetchPosts(POSTS_PER_PAGE);
     }, [fetchPosts, params.slug]);
 
     useEffect(() => {
@@ -228,7 +223,7 @@ export default function Home({ params }: HomeProps) {
 
                     <div className="row post-list">
                         <Suspense fallback={<div></div>}>
-                            <PostList displayMode="recent" style="standard" indexIncrement={2} limit={9} />
+                            <PostList displayMode="recent" style="standard" indexIncrement={2} limit={POSTS_PER_PAGE} />
                         </Suspense>
                     </div>
                 </div>

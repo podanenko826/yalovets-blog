@@ -1,40 +1,33 @@
 'use client';
-import { getAuthorByKey, getAuthors } from '@/lib/authors';
-import { AuthorItem, PostItem } from '@/types';
-// import { notFound } from 'next/navigation';
-import React, { FC, Suspense, lazy, use, useEffect, useMemo, useState } from 'react';
+import { AuthorItem } from '@/types';
+import React, { FC, lazy, use, useEffect, useState } from 'react';
 
 import Image from 'next/image';
 
 import postCardStyles from '@/components/PostCard/PostCard.module.css';
-import { getPost, getSortedPosts } from '@/lib/posts';
-import dynamic from 'next/dynamic';
-import PostList from '@/components/PostCard/PostList';
 
 import { usePathname } from 'next/navigation';
 import { usePostStore } from '@/components/posts/store';
 import { useAuthorStore } from '@/components/authors/store';
-import { usePaginationStore } from '@/components/pagination/store';
-import LoadingBanner from '@/components/Modals/LoadingBanner';
+
 import LoadingSkeleton from '@/components/LoadingSkeleton';
 import Footer from '@/components/Footer';
 import NavBar from '@/components/NavBar';
+import PostList from '@/components/PostCard/PostList';
 
 const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
 const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
 interface AuthorPageProps {
     params: Promise<{ authorKey: string }>;
-    // mdxSource: MDXRemoteProps | MDXRemoteSerializeResult | null;
 }
 
 const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
     const { authorKey } = use(params);
 
-    const { selectedPost, fetchPostsByAuthor, loadPostsFromStorage } = usePostStore();
+    const { selectedPost } = usePostStore();
     const { fetchAuthors } = useAuthorStore();
 
     const [authorData, setAuthorData] = useState<AuthorItem | null>(null);
-    const [authorPosts, setAuthorPosts] = useState<PostItem[]>([]);
 
     const pathParts = usePathname().split('/').filter(Boolean);
     // If there's only one part (e.g., /some-slug), assume it's a modal
@@ -74,34 +67,6 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
         }
     }, [authorData, selectedPost]);
 
-    useEffect(() => {
-        const fetchAuthorPosts = async () => {
-            if (authorData?.email) {
-                const authorPosts = await fetchPostsByAuthor(authorData.email, POSTS_PER_PAGE);
-
-                if (authorPosts.posts.length > 0) {
-                    setAuthorPosts(authorPosts.posts);
-                }
-            }
-        };
-
-        fetchAuthorPosts();
-    }, [authorData?.email, fetchPostsByAuthor]);
-
-    // useEffect(() => {
-    //     if (posts.length > 0 && authorData) {
-    //         const authorPosts = posts
-    //             .map(post => {
-    //                 if (post.email === authorData?.email) return post;
-    //             })
-    //             .filter(Boolean);
-
-    //         setAuthorPosts(authorPosts as PostItem[]);
-    //     }
-    // }, [posts, authorData]);
-
-    if (authorPosts.length === 0) return <LoadingBanner />
-
     return (
         <>
             <NavBar />
@@ -131,7 +96,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
                                     {authorData.fullName.at(-1)?.toLowerCase() === 's' ? "'" : "'s"} posts
                                 </h3>
                             </div>
-                            <PostList displayMode="linear" limit={28} style="full" postsData={authorPosts} infiniteScroll authorEmail={authorData.email} />
+                            <PostList displayMode="author" limit={POSTS_PER_PAGE} style="full" infiniteScroll authorEmail={authorData.email} />
                         </div>
                     </div>
                 </div>
