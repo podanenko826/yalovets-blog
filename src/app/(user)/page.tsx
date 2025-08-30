@@ -20,7 +20,7 @@ const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal
 const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
 
 interface HomeProps {
-    params: { slug: string | undefined }; // Optional slug prop
+    params: Promise<{ slug: string | undefined }>; // Optional slug prop
 }
 
 // async function generateMetadata(
@@ -49,6 +49,8 @@ interface HomeProps {
 // }
 
 export default function Home({ params }: HomeProps) {
+    let { slug } = React.use(params);
+
     const { selectedPost } = usePostStore();
 
     const { posts, fetchPosts } = usePostStore()
@@ -56,7 +58,7 @@ export default function Home({ params }: HomeProps) {
 
     const currentPath = usePathname();
 
-    params.slug = currentPath.split('/').pop();
+    slug = currentPath.split('/').pop();
 
     const POSTS_PER_PAGE = 9;
 
@@ -100,17 +102,17 @@ export default function Home({ params }: HomeProps) {
   # Connect to the instance using SSH
   ssh -i my-key.pem ec2-user@$EC2_IP
     `;
-    const [showModal, setShowModal] = useState(!!params.slug);
+    const [showModal, setShowModal] = useState(!!slug);
 
     useEffect(() => {
-        if (!params.slug) {
+        if (!slug) {
             setTimeout(() => setShowModal(true), 500);
         }
-    }, [params.slug]);
+    }, [slug]);
 
     useEffect(() => {
         fetchPosts(POSTS_PER_PAGE);
-    }, [fetchPosts, params.slug]);
+    }, [fetchPosts, slug]);
 
     useEffect(() => {
         if (authors.length === 0) {
@@ -125,7 +127,7 @@ export default function Home({ params }: HomeProps) {
         <>
             <NavBar />
             {showModal && <PostPreviewModal />}
-            {showModal && <ArticleModal slug={params.slug || ''} />}
+            {showModal && <ArticleModal slug={slug || ''} />}
 
             <button onClick={() => console.log(posts)}>Print posts</button>
 

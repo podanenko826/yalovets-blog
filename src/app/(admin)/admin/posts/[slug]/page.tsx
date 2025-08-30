@@ -10,10 +10,11 @@ import { getAuthors } from '@/lib/authors';
 const PostEditor = dynamic(() => import('@/components/EditorComponent'));
 
 interface EditPageProps {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }
 
-const EditPage: FC<EditPageProps> = async ({ params }: EditPageProps) => {
+const EditPage: FC<EditPageProps> = async (props: EditPageProps) => {
+    const params = await props.params;
     const { slug } = params;
 
     const postData = await getPost(slug);
