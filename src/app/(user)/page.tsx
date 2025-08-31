@@ -129,8 +129,6 @@ export default function Home({ params }: HomeProps) {
             {showModal && <PostPreviewModal />}
             {showModal && <ArticleModal slug={slug || ''} />}
 
-            <button onClick={() => console.log(posts)}>Print posts</button>
-
             <main id="body">
                 {/* Welcome section (Mobile) */}
                 <div className="container welcome-xs d-block d-lg-none">

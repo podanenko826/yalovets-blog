@@ -142,9 +142,6 @@ export const getSortedPosts = async (limit: number, lastKey?: string): Promise<{
 
         const data: FetchPostsResponse = await response.json();
 
-        console.log(data.posts);
-        
-
         const transformedPostData = transformPostData(data.posts);
 
         const sortedPostsData = sortPosts(transformedPostData);
