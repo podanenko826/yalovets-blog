@@ -1,10 +1,11 @@
-import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 import React from 'react';
 
 import { getAuthors } from '@/lib/authors';
 
-const PostEditor = dynamic(() => import('@/components/EditorComponent'));
+import PostEditor from '@/components/EditorComponent';
+
+export const dynamic = "force-dynamic"; // disables prerender
 
 const EditPrivacyPolicyPage = async () => {
     const authorData = await getAuthors();

@@ -1,13 +1,12 @@
-import Image from 'next/image';
-import dynamic from 'next/dynamic';
 import { FC, Suspense } from 'react';
 import React from 'react';
 
-import { getMDXContent, getPost, getSortedPosts } from '@/lib/posts';
-import { notFound } from 'next/navigation';
+import { getMDXContent, getPost } from '@/lib/posts';
 import { getAuthors } from '@/lib/authors';
 
-const PostEditor = dynamic(() => import('@/components/EditorComponent'));
+import PostEditor from '@/components/EditorComponent';
+
+export const dynamic = "force-dynamic"; // disables prerender
 
 interface EditPageProps {
     params: Promise<{ slug: string }>;
