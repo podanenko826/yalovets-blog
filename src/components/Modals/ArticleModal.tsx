@@ -159,9 +159,12 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
     };
 
     useEffect(() => {
-        //? Fake loading time, adjust the time if needed
-        setTimeout(() => setLoading(false), 300);
-    }, [slug]);
+        if (slug && loading) {
+            //? Fake loading time, adjust the time if needed
+            const timer = setTimeout(() => setLoading(false), 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [slug, loading]);
 
     const author = authors.find(author => author.email === selectedPost?.email);
 
