@@ -161,7 +161,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
     useEffect(() => {
         if (slug && loading) {
             //? Fake loading time, adjust the time if needed
-            const timer = setTimeout(() => setLoading(false), 1000);
+            const timer = setTimeout(() => setLoading(false), 750);
             return () => clearTimeout(timer);
         }
     }, [slug, loading]);
