@@ -376,7 +376,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
             <div className={`${styles.profile_info} d-flex`}>
                 {authorData && (
                     <div className={styles.profile_info__details}>
-                        <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
+                        <span id={`popover-trigger-${index}`} className="d-inline-block" role="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
                             <div className={`${styles.profile_info} d-flex`}>
                                 <div className="align-content-center">
                                     <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
@@ -435,7 +435,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
             <div className={`${styles.profile_info} d-flex`}>
                 {authorData && (
                     <div className={styles.profile_info__details}>
-                        <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
+                        <span id={`popover-trigger-${index}`} className="d-inline-block" role="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
                             <div className={`${styles.profile_info} d-flex`}>
                                 <div className="align-content-center">
                                     <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
@@ -554,7 +554,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
             <div className={`${styles.profile_info} d-flex`}>
                 {authorData && (
                     <div className={styles.profile_info__details}>
-                        <span id={`popover-trigger-${index}`} className="d-inline-block" typeof="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
+                        <span id={`popover-trigger-${index}`} className="d-inline-block" role="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
                             <div className={`${styles.profile_info} d-flex`}>
                                 <div className="align-content-center">
                                     <LazyImage onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.pfp} img-fluid`} src={authorData.profileImageUrl || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
