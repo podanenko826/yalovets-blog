@@ -186,15 +186,18 @@ export default function BlogPage({ params }: { params: Promise<{ page: string }>
         }
     }, [slug]);
 
-    if (posts.length === 0) return <LoadingBanner />
+    if (posts.length === 0 && paginatedArticles.length === 0) return <LoadingBanner />
     if (!loadUserConfigFromStorage) return <LoadingBanner />
+
+    console.log(pagination);
+    
 
     return (
         <>
             <NavBar />
             {showModal && <PostPreviewModal />}
             <ArticleModal slug={slug || ''} />
-            {!loading && paginatedArticles.length > 0 ? (
+            {!loading ? (
                 <main id="body">
                     <div className="container posts" id="posts">
                         <div className="container p-0">
