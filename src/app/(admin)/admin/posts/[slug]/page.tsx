@@ -19,9 +19,23 @@ const EditPage: FC<EditPageProps> = async (props: EditPageProps) => {
     const postData = await getPost(slug);
     const authorData = await getAuthors();
 
-    const data = await getMDXContent(slug, postData.date as string);
+    let data: {
+        slug: string;
+        markdown: string;
+    } = {
+        slug: '',
+        markdown: ''
+    }
 
-    if (!postData || !authorData) {
+    if (postData && postData.date) {
+        data = await getMDXContent(slug, postData.date);
+    } else {
+        console.log('invalid date');
+        
+        return <p>Loading...</p>;
+    }
+
+    if (!postData || !authorData || !data.slug || !data.markdown) {
         return <p>Loading...</p>;
     }
 

@@ -207,15 +207,26 @@ export const getPopularPosts = async (limit: number): Promise<PostItem[]> => {
 
 export const getPost = async (slug: string): Promise<PostItem> => {
     const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+    console.log('baseUrl', baseUrl);
+    
     const response = await fetch(`${baseUrl}/api/post-by-slug?slug=${slug}`, { method: 'GET', next: { revalidate: 3600 }, cache: "force-cache" });
+    console.log('response', response);
+
     const data: PostItem[] = await response.json();
+    console.log('data', data);
+    
 
     let post: any[] = [];
 
     if (data.length > 0) {
         post = [...data];
     }
+    console.log('post', post);
+
     const transformedPostData = transformPostData(post);
+
+    console.log('transformedPostData', transformedPostData);
+
 
     return transformedPostData[0];
 };
