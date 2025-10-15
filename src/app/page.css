@@ -23,11 +23,48 @@
     }
 }
 
+.welcome-heading {
+    font-size: 2.75rem !important;
+    font-weight: 750;
+    margin-top: 8px;
+
+    font-stretch: wider;
+}
+
+.welcome {
+    margin-top: 60px;
+    padding: 0 0 30px 0 !important;
+    position: relative;
+    overflow: visible;
+    height: auto !important;
+}
+
+.welcome .row:first-of-type {
+    position: relative;
+    z-index: 0;
+  }
+.welcome > div:nth-of-type(2) {
+    position: relative;
+    z-index: 1;
+    margin-top: 4rem; /* ensure spacing between image and mac-window */
+}
+  
+
+.welcome-xs {
+    margin-bottom: 30px;
+}
+
+.welcome > .row {
+    /* height: auto !important;
+    overflow: visible; */
+    position: absolute !important;
+}
+
 .mac-window {
     width: 550px;
     height: 300px;
     background: rgb(246, 246, 246);
-    border-radius: 10px;
+    border-radius: 16px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     overflow: hidden;
     display: flex;
@@ -48,8 +85,8 @@
     background: linear-gradient(to bottom, rgb(252, 252, 252), rgb(253, 253, 253));
     display: flex;
     align-items: center;
-    padding: 0 10px;
-    border-bottom: 1px solid rgb(221, 221, 221);
+    padding: 0 9px;
+    /* border-bottom: 1px solid rgb(221, 221, 221); */
     position: relative;
 }
 
@@ -61,12 +98,13 @@
 /* Window Buttons */
 .mac-buttons {
     display: flex;
-    gap: 8px;
+    gap: 10px;
+    padding: 10px 0;
 }
 
 .mac-button {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     display: inline-block;
     /* cursor: pointer; */
@@ -85,11 +123,11 @@
 /* Title Text */
 .mac-title {
     flex-grow: 1;
-    text-align: center;
     font-size: 14px;
     font-weight: 650;
     color: rgb(75, 75, 75);
     pointer-events: none; /* Prevent selection */
+    margin-left: 1.2rem;
     margin-right: 2.5rem;
 }
 
@@ -100,7 +138,7 @@
 /* Window Content */
 .mac-content {
     flex-grow: 1;
-    padding: 15px;
+    padding: 8px;
     font-size: 20px;
     color: #333;
 }
@@ -116,26 +154,6 @@
 
 .dark .mac-content > pre > code {
     color: rgb(218, 218, 218);
-}
-
-.welcome-heading {
-    font-size: 2.75rem !important;
-    font-weight: 750;
-    margin-top: 8px;
-
-    font-stretch: wider;
-}
-
-.welcome {
-    margin-top: 60px;
-    padding: 0 0 30px 0 !important;
-    position: relative;
-    overflow: hidden;
-    height: max-content;
-}
-
-.welcome-xs {
-    margin-bottom: 30px;
 }
 
 .arrow-container {
@@ -190,6 +208,8 @@
     overflow: hidden;
     max-width: 100%;
     height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
 #recentPosts {

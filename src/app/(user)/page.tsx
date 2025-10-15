@@ -163,8 +163,8 @@ export default function Home({ params }: HomeProps) {
 
                 {/* Welcome section (Desktop) */}
 
-                <div className="welcome container-fluid d-none d-lg-block overflow-hidden">
-                    <div className="row">
+                <div className="welcome container-fluid d-none d-lg-block">
+                    <div className="row container-fluid gx-0 px-0">
                         <div className="col-lg-6 offset-lg-7">
                             <picture className="img-fluid teaser-img">
                                 <Image className="img-fluid teaser-img" src={'/ui/coffeman.jpg'} style={{ width: '50vw', maxHeight: '70vh' }} alt="Teaser" width={1080} height={1350} loading="lazy" sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
@@ -189,7 +189,7 @@ export default function Home({ params }: HomeProps) {
                                 </div>
                             </div>
                         </div>
-                        <div className="container-lg col-12">
+                        <div className="container-lg">
                             <div className="mac-window">
                                 <div className="mac-title-bar">
                                     <div className="mac-buttons">
