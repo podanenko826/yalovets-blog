@@ -448,7 +448,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                                     </Link>
 
                                     <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                        {moment(post.date).format('D MMM')} • {post.readTime?.toString()} min read
+                                        {moment(post.date).format('D MMM')} • {post.readTime?.toString()} min read • {post.viewsCount} views
                                     </p>
                                 </div>
                             </div>
