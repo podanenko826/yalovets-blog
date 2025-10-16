@@ -131,7 +131,7 @@ export default function Home({ params }: HomeProps) {
 
             <main id="body">
                 {/* Welcome section (Mobile) */}
-                <div className="container welcome-xs d-block d-lg-none">
+                {/* <div className="container welcome-xs d-block d-lg-none">
                     <div className="row">
                         <div className="col-12 container p-3">
                             <div className="d-flex gap-2">
@@ -149,13 +149,13 @@ export default function Home({ params }: HomeProps) {
 
                 <div className="container-fluid welcome-xs d-block d-lg-none p-0 overflow-hidden">
                     <div className="row">
-                        <div className="col-11 offset-1 col-sm-10 offset-sm-2 col-md-7 offset-md-5">
+                        <div className="col-11 offset-1 col-sm-10 offset-sm-2 col-md-12 offset-md-6">
                             <picture className="img-fluid teaser-img">
                                 <Image className="img-fluid teaser-img" src={'/ui/coffeman.jpg'} style={{ width: 'auto' }} alt="Teaser" title="Teaser" width={635} height={476} priority={true} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
                             </picture>
                         </div>
                     </div>
-                </div>
+                </div> */}
 
                 {/* <div className="arrow-container">
                     <div className="arrow-down"></div>
@@ -163,9 +163,9 @@ export default function Home({ params }: HomeProps) {
 
                 {/* Welcome section (Desktop) */}
 
-                <div className="welcome container-fluid d-none d-lg-block">
+                <div className="welcome container-fluid d-block">
                     <div className="row container-fluid gx-0 px-0">
-                        <div className="col-lg-6 offset-lg-7">
+                        <div className="offset-8 offset-sm-7 col-6 col-sm-5 col-md-4 col-lg-6 offset-lg-7">
                             <picture className="img-fluid teaser-img">
                                 <Image className="img-fluid teaser-img" src={'/ui/coffeman.jpg'} style={{ width: '50vw', maxHeight: '70vh' }} alt="Teaser" width={1080} height={1350} loading="lazy" sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
                             </picture>
@@ -174,7 +174,7 @@ export default function Home({ params }: HomeProps) {
                     <div>
                         <div className="container">
                             <div className="row">
-                                <div className="col-5">
+                                <div className="col-8 col-sm-7 col-lg-5">
                                     <div className="d-flex gap-3">
                                         <h2 className="welcome-text-cursor">&gt;</h2>
                                         <h2 className="welcome-text" id="col-heading-2">
@@ -189,7 +189,30 @@ export default function Home({ params }: HomeProps) {
                                 </div>
                             </div>
                         </div>
-                        <div className="container-lg">
+
+                        {/* Mobile Mac window */}
+
+                        <div className="d-none d-md-block d-lg-none container">
+                            <div className="mac-window">
+                                <div className="mac-title-bar">
+                                    <div className="mac-buttons">
+                                        <div className="mac-button close"></div>
+                                        <div className="mac-button minimize"></div>
+                                        <div className="mac-button maximize"></div>
+                                    </div>
+                                    <div className="mac-title">ReadMe.txt</div>
+                                </div>
+                                <div className="mac-content">
+                                    <pre>
+                                        <code>{codeBlock}</code>
+                                    </pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Desktop Mac window */}
+
+                        <div className="d-none d-lg-block container-lg">
                             <div className="mac-window">
                                 <div className="mac-title-bar">
                                     <div className="mac-buttons">
