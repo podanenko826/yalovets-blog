@@ -77,13 +77,16 @@ export default function BlogPage({ params }: { params: Promise<{ page: string }>
 
     useEffect(() => {
         if (!originalPagination || !postsPerPage) return;
+
+        console.log(postsPerPage);
+        
     
         if (postsPerPage === 14) {
             // Restore original pagination
             setPagination(originalPagination);
             return;
         }
-    
+        
         let modifiedPagination: Record<number, PaginationEntry> = {};
         if (originalPagination?.paginationData) {
             Object.entries(originalPagination.paginationData).forEach(([key, value], index) => {
@@ -109,7 +112,7 @@ export default function BlogPage({ params }: { params: Promise<{ page: string }>
     // Redirect user to the latest page if accessed the page that doesn't exist yet
     useEffect(() => {
         if (Object.keys(pagination.paginationData).length > 0 && currentPage > pagination.totalPages) {
-            // router.push(`/page/${Object.keys(pagination.paginationData).length}`);
+            router.push(`/page/${Object.keys(pagination.paginationData).length}`);
         }
     }, [pagination.paginationData, currentPage, pagination.totalPages, router]);
 
@@ -130,7 +133,9 @@ export default function BlogPage({ params }: { params: Promise<{ page: string }>
     }, [pagination]);
 
     // Getting the exact starting key for the particular page
-    const startingKey: PaginationEntry | undefined = Object.entries(pagination.paginationData).find(([key, value]) => key.toString() === currentPage.toString())?.[1];
+    const startingKey: PaginationEntry | undefined = Object.entries(pagination.paginationData).find(
+        ([key, value]) => key.toString() === currentPage.toString()
+        )?.[1];
 
     const ARTICLES_PER_PAGE = postsPerPage; // Define the number of posts per page //? (should be 14 by design and adjustable to 30 or 44)
     const pageCount = pagination.totalPages;
@@ -152,7 +157,7 @@ export default function BlogPage({ params }: { params: Promise<{ page: string }>
         }
 
         fetchPostsData();
-    }, [currentPage, paginationData.paginationData, ARTICLES_PER_PAGE, fetchPostsByPage, paginationData]);
+    }, [currentPage, paginationData.paginationData, ARTICLES_PER_PAGE, fetchPostsByPage, paginationData, paginationData.totalPages]);
 
     useEffect(() => {
         if (authors.length === 0) {
