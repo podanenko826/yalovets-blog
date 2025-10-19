@@ -11,8 +11,6 @@ import { usePostStore } from '@/components/posts/store';
 import { useAuthorStore } from '@/components/authors/store';
 
 import LoadingSkeleton from '@/components/LoadingSkeleton';
-import Footer from '@/components/Footer';
-import NavBar from '@/components/NavBar';
 import PostList from '@/components/PostCard/PostList';
 
 const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
@@ -69,7 +67,6 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
 
     return (
         <>
-            <NavBar />
             {showModal && <PostPreviewModal />}
             <ArticleModal slug={slug || ''} />
             {authorData ? (
@@ -103,7 +100,6 @@ const AuthorPage: FC<AuthorPageProps> = ({ params }: AuthorPageProps) => {
             ) : (
                 <LoadingSkeleton />
             )}
-            <Footer />
         </>
     );
 };

@@ -13,9 +13,6 @@ import { usePostStore } from '@/components/posts/store';
 import { useAuthorStore } from '@/components/authors/store';
 import LoadingBanner from '@/components/Modals/LoadingBanner';
 
-const NavBar = lazy(() => import('@/components/NavBar'));
-const Footer = lazy(() => import('@/components/Footer'));
-
 const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
 const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
 
@@ -125,7 +122,6 @@ export default function Home({ params }: HomeProps) {
 
     return (
         <>
-            <NavBar />
             {showModal && <PostPreviewModal />}
             {showModal && <ArticleModal slug={slug || ''} />}
 
@@ -291,7 +287,6 @@ export default function Home({ params }: HomeProps) {
                     </div>
                 </div>
             </main>
-            <Footer />
         </>
     );
 };

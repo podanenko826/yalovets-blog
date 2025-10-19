@@ -3,6 +3,9 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import '@/app/css/custom.css';
 import '@/app/globals.css';
 
+import NavBar from '@/components/NavBar';
+import Footer from '@/components/Footer';
+
 export const metadata: Metadata = {
     title: 'Yalovets Blog',
     description: 'Ivan Yalovets Blog Website',
@@ -33,7 +36,9 @@ export default function RootLayout({
                     }} />
                 </head>
                 <body>
+                    <NavBar />
                     {children}
+                    <Footer />
                 </body>
             </html>
         </AppRouterCacheProvider>

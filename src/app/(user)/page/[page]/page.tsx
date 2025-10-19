@@ -9,9 +9,6 @@ import { AuthorItem, PaginationEntry, PaginationState, PostItem } from '@/types'
 import PostList from '@/components/PostCard/PostList';
 import PaginationPreferences from '@/components/Modals/PaginationPreferences';
 
-const NavBar = lazy(() => import('@/components/NavBar'));
-const Footer = lazy(() => import('@/components/Footer'));
-
 const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
 const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
 
@@ -199,7 +196,6 @@ export default function BlogPage({ params }: { params: Promise<{ page: string }>
 
     return (
         <>
-            <NavBar />
             {showModal && <PostPreviewModal />}
             <ArticleModal slug={slug || ''} />
             {!loading ? (
@@ -289,7 +285,6 @@ export default function BlogPage({ params }: { params: Promise<{ page: string }>
                     </main>
                 </>
             )}
-            <Footer />
         </>
     );
 }
