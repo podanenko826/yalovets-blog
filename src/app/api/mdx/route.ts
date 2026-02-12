@@ -16,6 +16,7 @@ export async function GET(request: Request) {
     const month = (moment.utc(date).month() + 1).toString().padStart(2, '0');
 
     const filePath = path.join(process.cwd(), 'src/articles', year, month, `${slug}.mdx`);
+
     if (!fs.existsSync(filePath)) {
         return new Response('File not found', { status: 404 });
     }
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
     if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath);
     }
-    
+
     const filePath = path.join(dirPath, `${fileName}.mdx`);
 
     // Write the file to the filesystem

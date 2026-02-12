@@ -31,10 +31,10 @@ interface ArticleModalProps {
 
 /**
  * ArticleModal displays a post based on the provided slug.
- * 
+ *
  * @param {Object} props - The props for ArticleModal.
  * @param {string} props.slug - A slug needed to fetch the post from the API.
- * @param {React.Dispatch<React.SetStateAction<PostItem | null>>} [props.setValue] - 
+ * @param {React.Dispatch<React.SetStateAction<PostItem | null>>} [props.setValue] -
  * Optional. Pass a useState setter to get the up-to-date selected post from the ArticleModal.
  */
 
@@ -58,7 +58,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
     const postText = encodeURIComponent(selectedPost?.title as string);
 
     const pathname = usePathname();
-    
+
     const router = useRouter();
 
     const components = useMDXComponents();
@@ -70,7 +70,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
             if (mostPopular.length > 0) {
                 setPopularPosts(mostPopular);
             }
-        }
+        };
 
         fetchPopularPosts();
     }, [setPopularPosts]);
@@ -154,7 +154,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
         setSelectedMarkdown(null);
         setSerializedMarkdown(undefined);
         setLoading(true);
-        
+
         router.back();
     };
 
@@ -189,22 +189,22 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                             </button>
                                         </div>
                                     </div>
-                                    <div className="col-md-8 text-center">
+                                    <div className="col-md-8 text-left">
                                         {!loading && selectedPost && (
                                             <>
-                                                <h1 className="d-none d-lg-block px-2 heading-xlarge w-100 col-md-11 col-lg-12 text-center" id="col-heading-1">
+                                                <h1 className="d-none d-lg-block heading-xlarge w-100 col-md-11 col-lg-12" id="col-heading-1">
                                                     {selectedPost.title}
                                                 </h1>
-                                                <h1 className="d-none d-md-block d-lg-none px-2 heading-large w-100 col-md-11 col-lg-12 text-center" id="col-heading-1">
+                                                <h1 className="d-none d-md-block d-lg-none px-2 heading-large w-100 col-md-11 col-lg-12" id="col-heading-1">
                                                     {selectedPost.title}
                                                 </h1>
-                                                <h1 className="d-block d-md-none px-2 heading-larger w-100 col-md-11 col-lg-12 text-center" id="col-heading-1">
+                                                <h1 className="d-block d-md-none px-2 heading-larger w-100 col-md-11 col-lg-12" id="col-heading-1">
                                                     {selectedPost.title}
                                                 </h1>
                                             </>
                                         )}
                                         {!loading && selectedPost && author && (
-                                            <div className="d-flex justify-content-center mb-1 gap-2">
+                                            <div className="d-flex justify-content-left mb-1 gap-2">
                                                 <Link href={`/author/${author.authorKey}`} className="d-flex align-items-center gap-1 a-link h-min">
                                                     {author.fullName}
                                                 </Link>
@@ -269,7 +269,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                             {!loading && serializedMarkdown ? (
                                                 <Suspense fallback={<LoadingSkeleton />}>
                                                     <MDXProvider components={components}>
-                                                        <MDXRemote compiledSource={serializedMarkdown?.compiledSource as string} scope={serializedMarkdown?.scope} frontmatter={serializedMarkdown?.frontmatter} components={{YouTubeEmbed}} />
+                                                        <MDXRemote compiledSource={serializedMarkdown?.compiledSource as string} scope={serializedMarkdown?.scope} frontmatter={serializedMarkdown?.frontmatter} components={{ YouTubeEmbed }} />
                                                     </MDXProvider>
                                                 </Suspense>
                                             ) : (
@@ -283,45 +283,41 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                         {author && (
                             <div className="container-fluid about-me py-5 mt-5 px-0">
                                 <div className="container row">
-                                    <div id='mobileAboutMeTop'>
-                                            <div className="col-2 col-md-2 col-lg-1 about-me-image-container" id='mobileImageContainer'>
-                                                <Image className="img-fluid about-me-image" src={author.profileImageUrl} alt="pfp" title={author.fullName.split(' ').at(0)} width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
-                                            </div>
+                                    <div id="mobileAboutMeTop">
+                                        <div className="col-2 col-md-2 col-lg-1 about-me-image-container" id="mobileImageContainer">
+                                            <Image className="img-fluid about-me-image" src={author.profileImageUrl} alt="pfp" title={author.fullName.split(' ').at(0)} width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
+                                        </div>
 
-                                            <div className=''>
-                                                <Link href={`/author/${author.authorKey}`}>
-                                                    <button className='btn-outlined py-1'>Visit</button>
-                                                </Link>
-                                            </div>
+                                        <div className="">
+                                            <Link href={`/author/${author.authorKey}`}>
+                                                <button className="btn-outlined py-1">Visit</button>
+                                            </Link>
+                                        </div>
                                     </div>
 
                                     <div className="d-none d-md-flex col-2 col-md-2 col-lg-1 about-me-image-container">
                                         <Image className="img-fluid about-me-image" src={author.profileImageUrl} alt="pfp" title={author.fullName.split(' ').at(0)} width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
                                     </div>
-                                    
+
                                     <div className="col-9 col-md-6 col-lg-7 p-0 mt-md-0">
-                                        <div className='d-none d-md-flex' id='about-me-info'>
+                                        <div className="d-none d-md-flex" id="about-me-info">
                                             <div>
-                                                <Link className='a-link a-button' href={`/author/${author.authorKey}`}>
-                                                    <h1 className="subheading-smaller m-0">
-                                                        Written by {author.fullName}
-                                                    </h1>
+                                                <Link className="a-link a-button" href={`/author/${author.authorKey}`}>
+                                                    <h1 className="subheading-smaller m-0">Written by {author.fullName}</h1>
                                                 </Link>
                                             </div>
-                                            
-                                            <div className='d-none d-sm-block'>
+
+                                            <div className="d-none d-sm-block">
                                                 <Link href={`/author/${author.authorKey}`}>
-                                                    <button className='btn-outlined py-1'>Visit</button>
+                                                    <button className="btn-outlined py-1">Visit</button>
                                                 </Link>
                                             </div>
                                         </div>
                                         <div>
-                                            <div className='d-block d-md-none mt-2'>
-                                                    <Link className='a-link a-button' href={`/author/${author.authorKey}`}>
-                                                        <h1 className="subheading-smaller m-0">
-                                                            Written by {author.fullName}
-                                                        </h1>
-                                                    </Link>
+                                            <div className="d-block d-md-none mt-2">
+                                                <Link className="a-link a-button" href={`/author/${author.authorKey}`}>
+                                                    <h1 className="subheading-smaller m-0">Written by {author.fullName}</h1>
+                                                </Link>
                                             </div>
                                             <p className="col-10 subheading-xsmall about-me-bio pt-2 pt-md-0 p-md-0 m-0" id="col-heading-1">
                                                 {author.bio}
@@ -345,7 +341,6 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                             })}
                                         </ul> */}
                                     </div>
-                                    
                                 </div>
                             </div>
                         )}
@@ -357,18 +352,20 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                             Further Reading
                                         </h2>
                                     </div>
-                                    <div className='col-md-8 p-0 m-0'>
+                                    <div className="col-md-8 p-0 m-0">
                                         {popularPosts
                                             .filter(post => post.slug !== selectedPost.slug)
                                             .sort(() => Math.random() - 0.5)
                                             .slice(0, POPULAR_POSTS_LIMIT)
                                             .map((post, index) => (
                                                 <Link href={`/${post.slug}`} className="col-md-9" key={index}>
-                                                    <div className='read-further-button'>
-                                                        <h5 id="col-heading-1">{post.postType}: {post.title}</h5>
+                                                    <div className="read-further-button">
+                                                        <h5 id="col-heading-1">
+                                                            {post.postType}: {post.title}
+                                                        </h5>
                                                     </div>
                                                 </Link>
-                                        ))}
+                                            ))}
                                     </div>
                                 </div>
                             </div>
