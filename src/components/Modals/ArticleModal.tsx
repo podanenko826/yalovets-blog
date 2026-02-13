@@ -201,11 +201,22 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                                 <h1 className="d-block d-md-none px-2 heading-larger w-100 col-md-11 col-lg-12" id="col-heading-1">
                                                     {selectedPost.title}
                                                 </h1>
+
+                                                {/* <div className="article">
+                                                    <p className="d-none d-lg-block py-1 col-md-11 col-lg-12">{selectedPost.description}</p>
+                                                </div> */}
                                             </>
                                         )}
                                         {!loading && selectedPost && author && (
                                             <div className="d-flex justify-content-left mb-1 gap-2">
-                                                <Link href={`/author/${author.authorKey}`} className="d-flex align-items-center gap-1 a-link h-min">
+                                                <p className="m-0 subheading-xsmall">{moment.utc(selectedPost.date).format('D MMM YYYY')} </p>
+                                                {/* <p className="m-0">•</p> */}
+                                                <p className="m-0 subheading-xsmall">•</p>
+                                                <p className="m-0 subheading-xsmall">{selectedPost.readTime} min</p>
+                                                <p className="m-0 subheading-xsmall">•</p>
+                                                <p className="m-0 subheading-xsmall">{selectedPost.viewsCount} views</p>
+                                                <p className="m-0 subheading-xsmall">•</p>
+                                                <Link href={`/author/${author.authorKey}`} className="d-flex align-items-center gap-1 a-link h-min subheading-xsmall">
                                                     {author.fullName}
                                                 </Link>
                                                 {author.isGuest && (
@@ -213,8 +224,6 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                                         <span className="badge badge-guest">Guest</span>
                                                     </p>
                                                 )}
-                                                <p className="m-0">•</p>
-                                                <p className="m-0">{moment.utc(selectedPost.date).format('D MMM YYYY')} </p>
                                                 {moment.utc(selectedPost.modifyDate).isAfter(moment.utc(selectedPost.date)) && !selectedPost.sponsoredBy && (
                                                     <>
                                                         <p className="d-none d-md-block m-0">•</p>
