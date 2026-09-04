@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import React, { lazy } from 'react';
 
 export const metadata = {
-    title: 'Books / Yalovets Blog',
+    title: 'Books / Code & Coffee',
     description: 'Recomendation of books by Ivan Yalovets',
 };
 

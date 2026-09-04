@@ -3,8 +3,8 @@ import React, { Suspense, lazy } from 'react';
 const SubscribePageInner = lazy(() => import('./SubscribePageInner'));
 
 export const metadata = {
-    title: 'Subscribe | Yalovets Blog',
-    description: 'Manage your email preferences for Yalovets Blog.',
+    title: 'Subscribe | Code & Coffee',
+    description: 'Manage your email preferences for Code & Coffee.',
 };
 
 const SubscribePage = () => {

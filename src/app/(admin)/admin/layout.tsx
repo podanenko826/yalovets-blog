@@ -10,8 +10,8 @@ import Footer from '@/components/Footer';
 const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
 
 export const metadata: Metadata = {
-    title: 'Yalovets Blog Admin',
-    description: 'Ivan Yalovets Blog Website',
+    title: 'Code & Coffee Admin',
+    description: 'Ivan Code & Coffee Website',
 };
 
 export default function RootLayout({

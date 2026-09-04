@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const authorData = author;
 
     return {
-        title: `${authorData.full_name} / Yalovets Blog`,
+        title: `${authorData.full_name} / Code & Coffee`,
         description: authorData.bio || `Posts by ${authorData.full_name}`,
     };
 }

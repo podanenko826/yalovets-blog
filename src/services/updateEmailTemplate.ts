@@ -50,7 +50,7 @@ export const UpdateEmailTemplate = async () => {
                   </div>
     
                   <div style="display: flex; justify-content: center; padding: 3px 0;">
-                    <p style="text-align: center;">Yalovets Blog, Kulparkivska 226, Lviv, Ukraine</p>
+                    <p style="text-align: center;">Code & Coffee, Kulparkivska 226, Lviv, Ukraine</p>
                   </div>
                 </div>
               </body>

@@ -17,10 +17,10 @@ import SubscribeButton from '@/components/SubscribeButton';
 //     const post = await getPost(params.slug);
 
 //     return {
-//         title: post?.title || 'Yalovets Blog',
+//         title: post?.title || 'Code & Coffee',
 //         description: post?.description || 'AWS Unveiled: Your Gateway to Cloud Knowledge',
 //         openGraph: {
-//             title: post?.title || 'Yalovets Blog',
+//             title: post?.title || 'Code & Coffee',
 //             description: post?.description || 'AWS Unveiled: Your Gateway to Cloud Knowledge',
 //             images: post?.image_url ? [{ url: post.image_url }] : [],
 //             url: `https://yalovets.blog/${post?.slug}`,
@@ -28,7 +28,7 @@ import SubscribeButton from '@/components/SubscribeButton';
 //         },
 //         twitter: {
 //             card: 'summary_large_image',
-//             title: post?.title || 'Yalovets Blog',
+//             title: post?.title || 'Code & Coffee',
 //             description: post?.description || 'AWS Unveiled: Your Gateway to Cloud Knowledge',
 //             images: post?.image_url ? [post.image_url] : [],
 //         },
@@ -72,7 +72,7 @@ export default async function Home() {
                             <div className="d-flex gap-2">
                                 <h2 className="welcome-text-cursor">&gt;</h2>
                                 <h2 className="welcome-text" id="col-heading-2">
-                                    Welcome to Yalovets Blog
+                                    Welcome to Code & Coffee
                                 </h2>
                             </div>
                             <h1 className="welcome-heading" id="col-heading-1">
@@ -120,7 +120,7 @@ export default async function Home() {
                                     <div className="d-flex gap-3">
                                         <h2 className="welcome-text-cursor">&gt;</h2>
                                         <h2 className="welcome-text" id="col-heading-2">
-                                            Welcome to Yalovets Blog
+                                            Welcome to Code & Coffee
                                         </h2>
                                     </div>
                                     <h1 className="welcome-heading" id="col-heading-1">
@@ -234,9 +234,9 @@ export default async function Home() {
                         <div className="col-9 mt-3 mt-md-0 col-md-5 col-lg-5 offset-md-1">
                             <p className="pt-2 subheading-small" id="col-heading-1">
                                 <span className="subheading" id="col-heading-1">
-                                    Hi, I&rsquo;m Ivan Yalovets! <br /><br />
+                                    Hi, I&rsquo;m Denis Podanenko! <br /><br />
                                 </span>
-                                I started Yalovets Blog in 2025 to share the latest tools and insights on web services. My goal is to provide valuable, up-to-date content for web professionals and enthusiasts alike.
+                                I started Code & Coffee in 2026 to share the latest tools and insights on web services. My goal is to provide valuable, up-to-date content for web professionals and enthusiasts alike.
                             </p>
                             <div className="mt-4">
                                 <p className="subheading-small mb-3">

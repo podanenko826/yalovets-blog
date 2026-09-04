@@ -11,8 +11,8 @@ import PostPreviewModal from '@/components/Modals/PostPreviewModal';
 import LoadingBanner from '@/components/Modals/LoadingBanner';
 
 export const metadata: Metadata = {
-    title: 'Yalovets Blog',
-    description: 'Ivan Yalovets Blog Website',
+    title: 'Code & Coffee',
+    description: 'Ivan Code & Coffee Website',
 };
 
 export default function RootLayout({

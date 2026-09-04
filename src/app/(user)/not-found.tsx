@@ -8,7 +8,7 @@ import Link from 'next/link';
 export const dynamic = "force-static";
 
 export const metadata: Metadata = {
-    title: "404 Not Found / Yalovets Blog",
+    title: "404 Not Found / Code & Coffee",
     description: "The page you are looking for does not exist.",
 };
 

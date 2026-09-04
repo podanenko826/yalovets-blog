@@ -87,9 +87,9 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
 
     useEffect(() => {
         if (slug && selectedPost) {
-            document.title = `${selectedPost?.title} / Yalovets Blog`;
+            document.title = `${selectedPost?.title} / Code & Coffee`;
         } else {
-            document.title = "Yalovets Blog";
+            document.title = "Code & Coffee";
         }
     }, [slug, selectedPost]);
 

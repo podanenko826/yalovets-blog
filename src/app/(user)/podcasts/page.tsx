@@ -1,8 +1,8 @@
 import React from 'react';
 
 export const metadata = {
-    title: 'Podcasts / Yalovets Blog',
-    description: 'Listen to podcasts on Yalovets Blog',
+    title: 'Podcasts / Code & Coffee',
+    description: 'Listen to podcasts on Code & Coffee',
 };
 
 const PodcastsPage = () => {

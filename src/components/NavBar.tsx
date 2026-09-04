@@ -97,7 +97,10 @@ const NavBar = () => {
                     <div className="container-sm col-3 py-0">
                         <Link href="/">
                             <h4 className={`${styles.navbar_brand} col-primary`}>
-                                Yalovets Blog
+                                {/* Code & Coffee */}
+                                Code & Coffee
+                                {/* The Java Script */}
+                                {/* AWS By Denis */}
                                 <FaCoffee className={styles.navLogo_icon} />
                             </h4>
                         </Link>
