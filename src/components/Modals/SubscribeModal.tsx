@@ -9,7 +9,7 @@ import moment from 'moment';
 import { createSubscriber } from '@/lib/subscribers';
 
 type SubscribeModalProps = {
-    setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    setModalOpen: (isOpen: boolean) => void;
 };
 
 const emptySubscriberObject: SubscriberItem = {

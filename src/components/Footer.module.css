@@ -1,61 +1,49 @@
 .footer {
-    min-width: screen;
-
-    padding: 16px 0;
-
+    width: 100%;
     background-color: var(--col-footer);
-}
-
-.footer > div > div {
-    row-gap: 1.5rem;
-}
-
-#subscribeForm {
-    padding: 12px;
-}
-
-#subscribeText {
     color: whitesmoke;
-    font-size: 32px;
 }
 
-#inputBox {
-    margin-bottom: 10px;
-}
-
-#agreementCheckbox {
-    height: max-content;
-    margin-right: 10px;
-    margin-top: 10px;
-}
-
-.navText {
+.brandText {
     color: whitesmoke;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.descriptionText {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.navHeading {
+    color: whitesmoke;
+    font-weight: 600;
+    font-size: 1.1rem;
 }
 
 .linkContainer {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 .navLink {
-    color: rgb(239, 239, 239);
-    text-decoration: underline;
-    width: max-content;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
 }
 
 .navLink:hover {
     color: var(--col-primary);
+    text-decoration: none;
 }
 
-.btn_subscribe {
-    padding: 16px 0;
-    background: transparent;
-    border: 2px solid var(--col-outline-default);
-    color: var(--col-outline-default);
+.copyrightContainer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.btn_subscribe:hover {
-    background: var(--col-secondary);
-    color: whitesmoke;
+.copyrightText {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
 }

@@ -51,9 +51,7 @@ const NavBar = () => {
     const currentPath = usePathname();
     const [mobileMenuOpened, setMobileMenuOpened] = useState<boolean>(false);
 
-    const [subscribeModalOpen, setSubscribeModalOpen] = useState<boolean>(false);
-
-    const { theme, setTheme } = useUserConfigStore();
+    const { theme, setTheme, isSubscribeModalOpen, setSubscribeModalOpen } = useUserConfigStore();
     const [isDarkTheme, setIsDarkTheme] = useState<boolean>(false);
 
     useEffect(() => {
@@ -116,7 +114,7 @@ const NavBar = () => {
                             );
                         })}
 
-                        <button className={`btn-outlined ${styles.btn_subscribe}`} onClick={() => setSubscribeModalOpen(prev => !prev)}>Subscribe</button>
+                        <button className={`btn-outlined ${styles.btn_subscribe}`} onClick={() => setSubscribeModalOpen(!isSubscribeModalOpen)}>Subscribe</button>
 
                         <button className='btn-pill' onClick={() => handleThemeChange()}>
                             {isDarkTheme ? (
@@ -143,7 +141,7 @@ const NavBar = () => {
                         )}
                     </div>
                     <div className="d-flex col-9 justify-content-end p-0 m-0">
-                        <a className={styles.btn_subscribe_mobile} id='col-heading-1' role='button' onClick={() => setSubscribeModalOpen(prev => !prev)}>
+                        <a className={styles.btn_subscribe_mobile} id='col-heading-1' role='button' onClick={() => setSubscribeModalOpen(!isSubscribeModalOpen)}>
                             Subscribe
                         </a>
                     </div>
@@ -164,7 +162,7 @@ const NavBar = () => {
                 </div>
             </header>
 
-            {subscribeModalOpen && <SubscribeModal setModalOpen={setSubscribeModalOpen} />}
+            {isSubscribeModalOpen && <SubscribeModal setModalOpen={setSubscribeModalOpen} />}
         </>
     );
 };

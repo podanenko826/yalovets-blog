@@ -5,6 +5,8 @@ interface UserConfigStore {
     setTheme: (theme: 'light' | 'dark') => void;
     postsPerPage: number;
     setPostsPerPage: (postsPerPage: number) => void;
+    isSubscribeModalOpen: boolean;
+    setSubscribeModalOpen: (isOpen: boolean) => void;
     loadUserConfigFromStorage: () => Promise<{ theme: 'light' | 'dark', postsPerPage: number }>
 }
 
@@ -72,6 +74,8 @@ export const useUserConfigStore = create<UserConfigStore>((set, get) => {
         setTheme,
         postsPerPage,
         setPostsPerPage,
+        isSubscribeModalOpen: false,
+        setSubscribeModalOpen: (isOpen: boolean) => set({ isSubscribeModalOpen: isOpen }),
         loadUserConfigFromStorage
     }
 

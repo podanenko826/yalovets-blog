@@ -2,11 +2,13 @@ import * as React from 'react';
 import '@/app/page.css';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import PostList from '@/components/PostCard/PostList';
 import { Suspense } from 'react';
 import { getPopularPosts, getSortedPosts } from '@/lib/posts';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
 import PostCardSkeleton from '@/components/PostCard/PostCardSkeleton';
+import SubscribeButton from '@/components/SubscribeButton';
 
 // async function generateMetadata(
 //     { params, searchParams }: { params: { slug: string }, searchParams?: Record<string, string> }
@@ -218,12 +220,12 @@ export default async function Home() {
                 </div>
 
                 <div className="container-fluid about-me py-5 mt-5">
-                    <div className="container d-flex gap-4 row align-items-center justify-content-center">
+                    <div className="container d-flex gap-4 row align-items-center justify-content-center mx-auto">
                         <div className="col-7 col-md-4 col-lg-3">
                             <Image className="img-fluid ivan-yalovets"
-                                src="/pfp/ivan-pfp.webp"
-                                alt="Ivan"
-                                title="Ivan Yalovets"
+                                src="/ui/denis.jpg"
+                                alt="Denis"
+                                title="Denis Podanenko"
                                 width={290}
                                 height={290}
                                 sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
@@ -236,10 +238,12 @@ export default async function Home() {
                                 </span>
                                 I started Yalovets Blog in 2025 to share the latest tools and insights on web services. My goal is to provide valuable, up-to-date content for web professionals and enthusiasts alike.
                             </p>
-                            <p className="subheading-small">
-                                To support my work, please subscribe
-                                to the newsletter and share it with your friends or colleagues.
-                            </p>
+                            <div className="mt-4">
+                                <p className="subheading-small mb-3">
+                                    To support my work, please subscribe to the newsletter and share it with your friends or colleagues.
+                                </p>
+                                <SubscribeButton />
+                            </div>
                         </div>
                     </div>
                 </div>
