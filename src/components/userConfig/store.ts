@@ -15,9 +15,21 @@ export const useUserConfigStore = create<UserConfigStore>((set, get) => {
         localStorage.setItem('userConfig', JSON.stringify(userConfig));
     }
 
-    const theme = typeof window !== "undefined" 
-        ? JSON.parse(localStorage.getItem("userConfig") || `{"theme": "light"}`).theme 
-        : "light";
+    let initialTheme: 'light' | 'dark' = 'light';
+    if (typeof window !== "undefined") {
+        try {
+            const stored = localStorage.getItem("userConfig");
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (parsed.theme === 'dark' || parsed.theme === 'light') {
+                    initialTheme = parsed.theme;
+                }
+            }
+        } catch (e) {
+            console.error("Failed to parse userConfig from localStorage:", e);
+        }
+    }
+    const theme = initialTheme;
 
     const setTheme = (theme: 'light' | 'dark') => {
         set({ theme });
@@ -43,11 +55,13 @@ export const useUserConfigStore = create<UserConfigStore>((set, get) => {
         const savedUserConfig = localStorage.getItem('userConfig');
 
         if (savedUserConfig) {
-            const { theme, postsPerPage } = JSON.parse(savedUserConfig);
-            
-            set({ theme, postsPerPage });
-
-            return { theme, postsPerPage };
+            try {
+                const { theme, postsPerPage } = JSON.parse(savedUserConfig);
+                set({ theme, postsPerPage });
+                return { theme, postsPerPage };
+            } catch (e) {
+                console.error("Failed to parse userConfig from localStorage:", e);
+            }
         }
 
         return { theme: 'light', postsPerPage: 14 };

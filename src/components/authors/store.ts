@@ -9,9 +9,7 @@ interface AuthorStore {
     fetchAuthors: () => Promise<AuthorItem[]>;
 }
 
-export const useAuthorStore = create<AuthorStore>((set) => {
-    const authors: AuthorItem[] = [];
-
+export const useAuthorStore = create<AuthorStore>((set, get) => {
     const AUTHORS_STORAGE_KEY = "cachedAuthors";
     const AUTHORS_EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 24 hours
 
@@ -64,6 +62,11 @@ export const useAuthorStore = create<AuthorStore>((set) => {
             }
     
             if (Array.isArray(parsedAuthors) && parsedAuthors.length > 0) {
+                // If the cached authors are from DynamoDB, they will have object fields like { S: "full_name" }
+                if (parsedAuthors[0] && typeof parsedAuthors[0].full_name === 'object') {
+                    localStorage.removeItem(AUTHORS_STORAGE_KEY);
+                    return;
+                }
                 set({ authors: parsedAuthors });
             }
         } catch (err) {
@@ -80,19 +83,20 @@ export const useAuthorStore = create<AuthorStore>((set) => {
     };
 
     const fetchAuthors = async (): Promise<AuthorItem[]> => {
-        if (authors.length === 0) {
-            const authors = await getAuthors();
-            setAuthors(authors);
-            saveAuthorsToLocalStorage(authors);
+        if (get().authors.length === 0) {
+            const fetchedAuthors = await getAuthors();
+            console.log("Fetched authors in store:", fetchedAuthors);
+            setAuthors(fetchedAuthors);
+            saveAuthorsToLocalStorage(fetchedAuthors);
 
-            return authors;
+            return fetchedAuthors;
         }
 
-        return [];
+        return get().authors;
     };
 
     return {
-        authors,
+        authors: [],
         setAuthors,
         fetchAuthors
     }

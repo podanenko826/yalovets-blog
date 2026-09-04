@@ -1,4 +1,4 @@
-export const uploadImage = async (imageFile: File, year: string, month: string): Promise<{
+export const uploadImage = async (imageFile: File, year: string, month: string, width?: number): Promise<{
     originalName: string,
     extension: string,
     filePath: string,
@@ -14,7 +14,10 @@ export const uploadImage = async (imageFile: File, year: string, month: string):
             return { originalName: '', extension: '', filePath: '', size: 0, mimetype: '' };
         }
         
-        const response = await fetch(`/api/image?year=${year}&month=${month}`, {
+        let url = `/api/image?year=${year}&month=${month}`;
+        if (width) url += `&width=${width}`;
+
+        const response = await fetch(url, {
             method: 'POST',
             body: formData,
         });

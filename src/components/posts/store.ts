@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { PaginationState, PostItem } from "@/types";
+import { PostItem } from "@/types";
 import { getAuthorPosts, getPaginatedPosts, getSortedPosts, sortPosts } from "@/lib/posts";
 
 interface PostStore {
@@ -14,8 +14,8 @@ interface PostStore {
     lastKey: string | null;
     setLastKey: (lastKey: string | null) => void;
     fetchPosts: (limit: number, _lastKey?: string) => Promise<{ posts: PostItem[], lastKey: string }>;
-    fetchPostsByPage: (page: number, postsPerPage: number, pagination: PaginationState) => Promise<PostItem[]>;
-    fetchPostsByAuthor: (authorEmail: string, postsPerPage: number, pagination?: PaginationState, _lastKey?: string) => Promise<{ posts: PostItem[], lastKey: string }>;
+    fetchPostsByPage: (page: number, postsPerPage: number) => Promise<PostItem[]>;
+
 }
 
 export const usePostStore = create<PostStore>((set, get) => {
@@ -93,7 +93,12 @@ export const usePostStore = create<PostStore>((set, get) => {
             }
 
             if (Array.isArray(parsedPosts) && parsedPosts.length > 0) {
-                const lastKeyFromStorage = parsedPosts.at(-1)?.date ?? null;
+                // If the cached posts are from DynamoDB, they will have object fields like { S: "title" }
+                if (parsedPosts[0] && typeof parsedPosts[0].title === 'object') {
+                    localStorage.removeItem(POSTS_STORAGE_KEY);
+                    return;
+                }
+                const lastKeyFromStorage = parsedPosts.at(-1)?.created_at ?? null;
                 setPosts(parsedPosts);
                 setLastKey(lastKeyFromStorage);
             }
@@ -144,31 +149,16 @@ export const usePostStore = create<PostStore>((set, get) => {
     };
 
     const findStartPostIndexByDate = (date: string, posts: PostItem[]): number => {
-        return posts.findIndex(post => post.date === date);
+        return posts.findIndex(post => post.created_at === date);
     };
 
-    const fetchPostsByPage = async (page: number, postsPerPage: number, pagination: PaginationState): Promise<PostItem[]> => {
+    const fetchPostsByPage = async (page: number, postsPerPage: number): Promise<PostItem[]> => {
         if (!page || !postsPerPage) return [];
-        if (Object.keys(pagination.paginationData).length === 0) return [];
         
         try {
             let postsData: { posts: PostItem[]; lastKey: string; } = { posts: [], lastKey: ''};
 
-            const currentPageStartingDate = pagination.paginationData[page]?.date;
-            const currentPageStartPostIndex = findStartPostIndexByDate(currentPageStartingDate, posts);
-
-            if (currentPageStartPostIndex >= 0) {
-                const pagePosts = posts.slice(currentPageStartPostIndex, currentPageStartPostIndex + postsPerPage);
-                
-                if (pagePosts.length > 0) postsData = {
-                    lastKey: pagePosts.at(-1)?.date || '',
-                    posts: pagePosts
-                };
-            }
-
-            if (postsData.posts.length === 0) {
-                postsData = await getPaginatedPosts(page, postsPerPage, pagination);
-            }
+            postsData = await getPaginatedPosts(page, postsPerPage);
 
             if (postsData.posts.length > 0) {
                 const existingSlugs = new Set(posts.map(post => post.slug));
@@ -190,34 +180,6 @@ export const usePostStore = create<PostStore>((set, get) => {
         }
     };
 
-    const fetchPostsByAuthor = async (authorEmail: string, postsPerPage: number, pagination?: PaginationState, _lastKey?: string): Promise<{ posts: PostItem[], lastKey: string}> => {
-        if (!authorEmail || !postsPerPage) return { posts: [], lastKey: "" };
-        
-        try {
-            const postsData = await getAuthorPosts(authorEmail, postsPerPage, lastKey || _lastKey || undefined);
-
-            if (postsData.posts.length > 0) {
-                const existingSlugs = new Set(posts.map(post => post.slug));
-                const newUniquePosts = postsData.posts.filter(post => !existingSlugs.has(post.slug));
-            
-                const combinedPosts = [...posts, ...newUniquePosts];
-                const sortedCombinedPosts = sortPosts(combinedPosts);
-                // savePostsToLocalStorage([...sortedCombinedPosts]);
-
-                // Update lastKey for pagination (only if it changes)
-                if (postsData.lastKey && postsData.lastKey !== lastKey) {
-                    setLastKey(postsData.lastKey);
-                }
-
-                return { posts: [...sortedCombinedPosts], lastKey: postsData.lastKey };
-            }
-
-            return { posts: [], lastKey: "" };
-        } catch (error) {
-            console.error("Error fetching posts:", error);
-            return { posts: [], lastKey: "" };
-        }
-    };
 
     return {
         posts,
@@ -231,6 +193,6 @@ export const usePostStore = create<PostStore>((set, get) => {
         setLastKey,
         fetchPosts,
         fetchPostsByPage,
-        fetchPostsByAuthor
+
     }
 });

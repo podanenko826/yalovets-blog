@@ -1,5 +1,6 @@
 
 import BookCard from '@/components/PostCard/BookCard';
+import { notFound } from 'next/navigation';
 import React, { lazy } from 'react';
 
 export const metadata = {
@@ -11,6 +12,8 @@ const NavBar = lazy(() => import('@/components/NavBar'));
 const Footer = lazy(() => import('@/components/Footer'));
 
 const BooksRecomendationPage = () => {
+    return notFound();
+
     return (
         <>
             <NavBar />

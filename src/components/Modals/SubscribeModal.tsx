@@ -13,11 +13,11 @@ type SubscribeModalProps = {
 };
 
 const emptySubscriberObject: SubscriberItem = {
+    id: '',
     email: '',
-    slug: 'subscriber',
     name: '',
-    subscribedAt: moment.utc().toISOString(),
-    status: 'subscribed',
+    subscribed_at: moment.utc().toISOString(),
+    is_active: true,
 };
 
 const SubscribeModal = ({ setModalOpen }: SubscribeModalProps) => {
@@ -71,7 +71,7 @@ const SubscribeModal = ({ setModalOpen }: SubscribeModalProps) => {
     };
 
     const handleSubscribeClick = async () => {
-        const createdSubscriber = await createSubscriber(newSubscriber.email, newSubscriber.name);
+        const createdSubscriber = await createSubscriber(newSubscriber.email, newSubscriber.name || '');
 
         if (!Object.values(createdSubscriber).every(value => value !== undefined && value !== '')) {
             setSubscribeStatus(false);
@@ -108,7 +108,7 @@ const SubscribeModal = ({ setModalOpen }: SubscribeModalProps) => {
     }, []);
 
     return (
-        <div className={`${styles.articlePage} ${styles.previewModal}`} onClick={() => handleClose()}>
+        <div className={`${styles.fullScreenModal} ${styles.previewModal}`} onClick={() => handleClose()}>
             <div className="container">
                 {subscribeStatus !== null && (
                     <div

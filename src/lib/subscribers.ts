@@ -1,22 +1,15 @@
 import type { SubscriberItem } from '@/types';
 import moment from 'moment';
 
-function transformSubscriberData(data: any[]): SubscriberItem[] {
-    return data.map(subscriber => ({
-        email: subscriber.email?.S,
-        slug: subscriber.slug?.S,
-        name: subscriber.name?.S,
-        subscribedAt: subscriber.subscribedAt?.S,
-        status: subscriber.status?.S,
-    }));
-}
-
 export const emptySubscriberObject: SubscriberItem = {
+    id: '',
     email: '',
-    slug: '',
     name: '',
-    subscribedAt: '',
-    status: ''
+    subscribed_at: '',
+    is_active: true,
+    is_article_updates_on: true,
+    is_product_updates_on: true,
+    is_service_updates_on: true
 };
 
 export const getSubscribers = async () => {
@@ -31,8 +24,7 @@ export const getSubscribers = async () => {
             subscribers = [...subscribers, ...data];
         }
 
-        const transformedAuthorData = transformSubscriberData(subscribers);
-        const subscriberData = transformedAuthorData.reverse();
+        const subscriberData = subscribers.reverse();
         
         return subscriberData;
     } catch (err) {
@@ -60,35 +52,36 @@ export const getSubscriberByEmail = async (email: string): Promise<SubscriberIte
     }
 };
 
-export const getSubscribersByStatus = async (status: string): Promise<SubscriberItem[]> => {
+export const getSubscribersByStatus = async (is_active: boolean): Promise<SubscriberItem[]> => {
     const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
     try {
         const response = await fetch(`${baseUrl}/api/subscriber`);
         const data: any[] = await response.json();
 
-        const statusSubscriber = data.filter(subscriber => subscriber.status?.S === status);
+        const statusSubscriber = data.filter(subscriber => subscriber.is_active === is_active);
 
-        const transformedSubscribers = transformSubscriberData(statusSubscriber);
-
-        return transformedSubscribers;
+        return statusSubscriber;
     } catch (err) {
         console.error('Failed to fetch subscribers from the database: ', err);
         return [];
     }
 };
 
-export const createSubscriber = async (email: string, name: string) => {
-    if (!email || !name) {
+export const createSubscriber = async (email: string, name: string, preferences?: { articles: boolean, productUpdates: boolean, serviceUpdates: boolean }) => {
+    if (!email) {
         return emptySubscriberObject;
     }
 
     const newSubscriber: SubscriberItem = {
+        id: '', // Will be assigned by DB
         email,
-        slug: 'subscriber',
         name,
-        subscribedAt: moment.utc().toISOString(),
-        status: 'subscribed',
+        subscribed_at: moment.utc().toISOString(),
+        is_active: true,
+        is_article_updates_on: preferences?.articles ?? true,
+        is_product_updates_on: preferences?.productUpdates ?? true,
+        is_service_updates_on: preferences?.serviceUpdates ?? true,
     };
 
     const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
@@ -108,11 +101,14 @@ export const createSubscriber = async (email: string, name: string) => {
 
 export const updateSubscriber = async (subscriber: SubscriberItem) => {
     const updatedSubscriber: SubscriberItem = {
+        id: subscriber.id,
         email: subscriber.email,
-        slug: 'subscriber',
         name: subscriber.name,
-        subscribedAt: subscriber.subscribedAt,
-        status: subscriber.status
+        subscribed_at: subscriber.subscribed_at,
+        is_active: subscriber.is_active,
+        is_article_updates_on: subscriber.is_article_updates_on,
+        is_product_updates_on: subscriber.is_product_updates_on,
+        is_service_updates_on: subscriber.is_service_updates_on
     };
 
     const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
@@ -146,13 +142,16 @@ export const deleteSubscriber = async (email: string) => {
     return success;
 }
 
-export const updateSubscriberStatus = async (subscriber: SubscriberItem, status: string) => {
+export const updateSubscriberStatus = async (subscriber: SubscriberItem, is_active: boolean) => {
     const updatedSubscriber: SubscriberItem = {
+        id: subscriber.id,
         email: subscriber.email,
-        slug: 'subscriber',
         name: subscriber.name,
-        subscribedAt: subscriber.subscribedAt,
-        status,
+        subscribed_at: subscriber.subscribed_at,
+        is_active,
+        is_article_updates_on: subscriber.is_article_updates_on,
+        is_product_updates_on: subscriber.is_product_updates_on,
+        is_service_updates_on: subscriber.is_service_updates_on
     };
 
     const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';

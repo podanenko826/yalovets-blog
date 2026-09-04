@@ -62,9 +62,9 @@ const NavBar = () => {
 
     const handleMobileNavigation = () => {
         setMobileMenuOpened(!mobileMenuOpened);
-    
+
         const navbarElement = document.getElementById('mobileNavBar');
-    
+
         if (navbarElement) {
             // Delay scroll to allow state/UI changes to apply
             const rect = navbarElement.getBoundingClientRect();
@@ -76,7 +76,7 @@ const NavBar = () => {
                 behavior: 'instant',
             });
         }
-    
+
         // Toggle body scroll lock
         if (mobileMenuOpened) {
             document.body.classList.remove('overflow-hidden');
@@ -91,7 +91,7 @@ const NavBar = () => {
     const handleThemeChange = () => {
         setTheme(isDarkTheme ? 'light' : 'dark');
     }
-    
+
     return (
         <>
             <header className="container navbar-container">
@@ -106,9 +106,9 @@ const NavBar = () => {
                     </div>
                     <div className={`${styles.navbar_nav} navbar navbar-collapse container-lg col-9 py-0`}>
                         {navigation.map(item => {
-                            const isActive = 
+                            const isActive =
                                 item.href === '/' ? currentPath === '/' : currentPath.startsWith(item.href + '/');
-                    
+
                             return (
                                 <Link key={item.id} href={item.href !== '/page' ? item.href : '/page/1'} className={styles.nav_link} id={`${isActive ? styles.active : ''}`}>
                                     {item.label}
@@ -151,8 +151,8 @@ const NavBar = () => {
                 <div className={`${mobileMenuOpened ? 'd-flex d-lg-none' : 'd-none'} ${styles.nav_menu_mobile}`}>
                     <div className="pt-3 d-flex flex-column">
                         {navigation.map(item => {
-                            const isActive = 
-                            item.href === '/' ? currentPath === '/' : currentPath.startsWith(item.href + '/');
+                            const isActive =
+                                item.href === '/' ? currentPath === '/' : currentPath.startsWith(item.href + '/');
 
                             return (
                                 <Link key={item.id} href={item.href !== '/page' ? item.href : '/page/1'} onClick={() => handleMobileNavigation()} className={`${styles.nav_link_mobile}`} id={isActive ? 'col-secondary' : 'col-primary'}>

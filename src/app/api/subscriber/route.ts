@@ -1,103 +1,72 @@
-import { SubscriberItem, PostItem } from '@/types';
-import { DynamoDBClient, ScanCommand } from '@aws-sdk/client-dynamodb';
-import { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import moment from 'moment';
+import { supabase } from '@/lib/supabase';
 import { NextResponse } from 'next/server';
 
-const dbClient = new DynamoDBClient({
-    credentials: {
-        accessKeyId: process.env.NEXT_PUBLIC_ACCESS_KEY_ID as string,
-        secretAccessKey: process.env.NEXT_PUBLIC_SECRET_ACCESS_KEY as string,
-    },
-});
-const docClient = DynamoDBDocumentClient.from(dbClient);
-
 export async function GET(request: Request) {
-    const TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
-
     const { searchParams } = new URL(request.url);
     const subscriberEmail = searchParams.get('email')?.split('/').at(-1);
 
-    if (!TABLE_NAME) {
-        return NextResponse.json({ error: 'Table name is not defined in environment variables' }, { status: 500 });
-    }
-
     if (subscriberEmail) {
-        const command = new GetCommand({
-            TableName: TABLE_NAME,
-            Key: {
-                email: subscriberEmail,
-                slug: 'subscriber',
-            },
-        });
-
         try {
-            const response = await docClient.send(command);
-            const item = response.Item;       
+            const { data: subscriber, error } = await supabase
+                .from('subscribers')
+                .select('*')
+                .eq('email', subscriberEmail)
+                .single();
 
-            if (item === undefined) {
+            if (error || !subscriber) {
                 return NextResponse.json([], { status: 404 });
-            } else {
-                return NextResponse.json(item, { status: 201 });
             }
+
+            return NextResponse.json(subscriber, { status: 200 });
         } catch (err) {
             console.error('Failed to fetch data from the database: ', err);
             return NextResponse.json(err, { status: 500 });
         }
     } else {
         try {
-            const params = {
-                TableName: TABLE_NAME,
-                FilterExpression: 'slug = :slugValue',
-                ExpressionAttributeValues: {
-                    ':slugValue': { S: 'subscriber' }, // Wrap the value in `{ S: ... }` to indicate it's a string type in DynamoDB
-                },
-            };
-            const command = new ScanCommand(params);
-            const result = await dbClient.send(command);
-            const data = result.Items;
+            const { data: subscribers, error } = await supabase
+                .from('subscribers')
+                .select('*');
 
-            return NextResponse.json(data, { status: 201 });
+            if (error) {
+                throw error;
+            }
+
+            return NextResponse.json(subscribers, { status: 200 });
         } catch (err) {
             console.error('Failed to fetch data from the database: ', err);
-            return NextResponse.json(err, {
-                status: 500,
-            });
+            return NextResponse.json(err, { status: 500 });
         }
     }
 }
 
 export async function POST(request: Request) {
     try {
-        const TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
+        const { email, name, subscribed_at, is_active, is_article_updates_on, is_product_updates_on, is_service_updates_on } = await request.json();
 
-        const { email, name, subscribedAt, status } = await request.json();
-
-        if (email && name) {
-            const newDate = subscribedAt || moment.utc().toISOString();
-            const newStatus = status || 'subscribed';
+        if (email) {
+            const newDate = subscribed_at || new Date().toISOString();
+            const newStatus = is_active || true;
 
             const newSubscriber = {
                 email,
-                slug: 'subscriber',
                 name,
-                subscribedAt: newDate,
-                status: newStatus,
+                subscribed_at: newDate,
+                is_active: newStatus,
+                is_article_updates_on: is_article_updates_on ?? true,
+                is_product_updates_on: is_product_updates_on ?? true,
+                is_service_updates_on: is_service_updates_on ?? true,
             };
 
-            try {
-                const command = new PutCommand({
-                    TableName: TABLE_NAME,
-                    Item: newSubscriber,
-                });
+            const { data, error } = await supabase.from('subscribers').insert([newSubscriber]).select();
 
-                const response = await docClient.send(command);
-                console.log('Subscriber successfully created:', newSubscriber);
-                return new Response(JSON.stringify(response), { status: 200 });
-            } catch (error) {
+            if (error) {
                 console.error('Failed to create a subscriber', error);
                 return new Response('Failed to create a subscriber', { status: 400 });
             }
+            
+            console.log('Subscriber successfully created:', data);
+            return new Response(JSON.stringify(data), { status: 201 });
         } else {
             return new Response('Missing required fields', { status: 400 });
         }
@@ -109,46 +78,32 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     try {
-        const TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
+        const { id, email, name, subscribed_at, is_active, is_article_updates_on, is_product_updates_on, is_service_updates_on } = await request.json();
 
-        const { email, name, subscribedAt, status } = await request.json();
-
-        if (email && name && subscribedAt && status) {
+        if (id && email && subscribed_at && is_active !== undefined) {
             const updatedSubscriber = {
                 email,
-                slug: 'subscriber',
                 name,
-                subscribedAt,
-                status,
+                subscribed_at: subscribed_at,
+                is_active,
+                is_article_updates_on,
+                is_product_updates_on,
+                is_service_updates_on
             };
 
-            const command = new UpdateCommand({
-                TableName: TABLE_NAME,
-                Key: {
-                    email,
-                    slug: 'subscriber',
-                },
-                UpdateExpression: 'SET #n = :name, #s = :status, subscribedAt = :subscribedAt',
-                ExpressionAttributeNames: {
-                    '#n': 'name', // alias 'name' to avoid reserved word issue
-                    '#s': 'status', // alias 'status' to avoid reserved word issue
-                },
-                ExpressionAttributeValues: {
-                    ':name': name,
-                    ':status': status,
-                    ':subscribedAt': subscribedAt,
-                },
-                ReturnValues: 'UPDATED_NEW',
-            });
+            const { data, error } = await supabase
+                .from('subscribers')
+                .update(updatedSubscriber)
+                .eq('id', id)
+                .select();
 
-            try {
-                const response = await docClient.send(command);
-                console.log('Subscriber successfully updated:', updatedSubscriber);
-                return new Response(JSON.stringify(response), { status: 200 });
-            } catch (error) {
+            if (error) {
                 console.error('Failed to update a subscriber', error);
                 return new Response('Failed to update a subscriber', { status: 400 });
             }
+
+            console.log('Subscriber successfully updated:', data);
+            return new Response(JSON.stringify(data), { status: 200 });
         } else {
             return new Response('Missing required fields', { status: 400 });
         }
@@ -159,28 +114,21 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-    const TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME;
-
     try {
         const { email } = await request.json();
 
-        const slug = 'subscriber';
-
-        // Check that the required slug is provided
         if (!email) {
-            return NextResponse.json({ error: 'Missing required identifier: email.' }, { status: 500 })
+            return NextResponse.json({ error: 'Missing required identifier: email.' }, { status: 400 })
         }
 
-        // Create the delete command with the specified TableName and Key (slug in this case)
-        const command = new DeleteCommand({
-            TableName: TABLE_NAME,
-            Key: {
-                email,
-                slug
-            },
-        });
-        
-        await dbClient.send(command);
+        const { error } = await supabase
+            .from('subscribers')
+            .delete()
+            .eq('email', email);
+            
+        if (error) {
+            throw error;
+        }
         
         return NextResponse.json({ message: 'Successfully deleted subscriber' }, { status: 200 });
     } catch (err) {

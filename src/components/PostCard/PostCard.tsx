@@ -9,11 +9,12 @@ import styles from './PostCard.module.css';
 import { Popover, Offcanvas, Modal } from 'bootstrap';
 
 import type { AuthorItem, PostItem, PostPreviewItem } from '@/types';
-import { deletePost, getMDXContent, postTypes } from '@/lib/posts';
+import { deletePost, postTypes } from '@/lib/posts';
 import LazyImage from '../LazyImage';
 
 import { FaCoffee } from 'react-icons/fa';
 import { usePostStore } from '../posts/store';
+import Home from '@/app/(user)/page';
 
 type PostCardProps = {
     post: PostItem;
@@ -27,7 +28,7 @@ type PostCardProps = {
     onVisible?: () => void;
 };
 
-const PostCard = ({ post, previewData, authorData, style, index, setValue, setPostType, setImageFile, onVisible }: PostCardProps) => {        
+const PostCard = ({ post, previewData, authorData, style, index, setValue, setPostType, setImageFile, onVisible }: PostCardProps) => {
     const cardRef = useRef<HTMLDivElement>(null);
 
     const [imagePreview, setImagePreview] = useState<string | null>(null); // Store the image preview
@@ -36,26 +37,26 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
 
     // Handle file selection
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            const file = e.target.files?.[0]; // Get the first selected file
-            if (file) {
-                const newName = file.name.replace(/\s+/g, '');
-                // Create a new File object with the modified name
-                const newFile = new File([file], newName, { type: file.type, lastModified: file.lastModified });
+        const file = e.target.files?.[0]; // Get the first selected file
+        if (file) {
+            const newName = file.name.replace(/\s+/g, '');
+            // Create a new File object with the modified name
+            const newFile = new File([file], newName, { type: file.type, lastModified: file.lastModified });
 
-                // Pass the uploaded image file back to EditorComponent
-                if (setImageFile) setImageFile(newFile);
+            // Pass the uploaded image file back to EditorComponent
+            if (setImageFile) setImageFile(newFile);
 
-                const reader = new FileReader(); // Create a new FileReader
+            const reader = new FileReader(); // Create a new FileReader
 
-                // Once the file is loaded, set the image preview
-                reader.onloadend = () => {
-                    if (reader.result) {
-                        setImagePreview(reader.result as string); // Store the image data URL in state
-                    }
-                };
+            // Once the file is loaded, set the image preview
+            reader.onloadend = () => {
+                if (reader.result) {
+                    setImagePreview(reader.result as string); // Store the image data URL in state
+                }
+            };
 
-                reader.readAsDataURL(file); // Read the file as a data URL (image)
-            }
+            reader.readAsDataURL(file); // Read the file as a data URL (image)
+        }
     };
 
     // Trigger file input click when the image div is clicked
@@ -76,20 +77,20 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
     const PostInfoSection = React.memo(
         (props: { descLength: number; noLimit?: boolean }) => {
             PostInfoSection.displayName = 'PostInfoSection';
-            
+
             return (
                 <div className={styles.postInfo}>
                     <div className="d-flex align-content-center m-0">
                         <a role="button" onClick={handlePostOpen}>
                             {props.noLimit ? (
                                 <h2 className={`${styles.heading} subheading d-flex flex-wrap align-items-center gap-1`} id="col-heading-1">
-                                    {post.title} {moment.utc(post.modifyDate).isAfter(moment.utc(post.date)) && moment.utc(post.modifyDate).diff(Date.now(), 'days') >= -30 && !post.sponsoredBy && <span className="badge text-wrap">{'Updated ' + moment.utc(post.modifyDate).fromNow()}</span>}
-                                    {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
+                                    {post.title} {moment.utc(post.updated_at).isAfter(moment.utc(post.created_at)) && moment.utc(post.updated_at).diff(Date.now(), 'days') >= -30 && !post.sponsored_by && <span className="badge text-wrap">{'Updated ' + moment.utc(post.updated_at).fromNow()}</span>}
+                                    {post.sponsored_by && <span className="badge badge-sponsored">Sponsored</span>}
                                 </h2>
                             ) : (
                                 <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                                    {post.title && post.title.length > 90 ? <>{post.title.slice(0, 90) + '... '}</> : post.title} {moment.utc(post.modifyDate).isAfter(moment.utc(post.date)) && moment.utc(post.modifyDate).diff(Date.now(), 'days') >= -30 && !post.sponsoredBy && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
-                                    {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
+                                    {post.title && post.title.length > 90 ? <>{post.title.slice(0, 90) + '... '}</> : post.title} {moment.utc(post.updated_at).isAfter(moment.utc(post.created_at)) && moment.utc(post.updated_at).diff(Date.now(), 'days') >= -30 && !post.sponsored_by && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
+                                    {post.sponsored_by && <span className="badge badge-sponsored">Sponsored</span>}
                                 </h2>
                             )}
                         </a>
@@ -123,17 +124,20 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
     );
 
     const handlePostOpen = () => {
-        window.history.pushState(null, "", `/${post.slug}`);
+        console.log('handlePostOpen called for slug:', post.slug);
+        router.push(`/${post.slug}`, { scroll: true });
     };
 
-    const handlePostDeletion = async (email: string, slug: string, date: string) => {
-        const deletedPostSlug = await deletePost({ email, slug, date });
+    const handlePostDeletion = async (id: string, slug: string, created_at: string) => {
+        const deletedPostSlug = await deletePost({ id, slug, created_at });
         if (deletedPostSlug) {
             router.refresh();
         }
     };
 
     const handlePostExpansion = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+        console.log('handlePostExpansion called for post:', post.title);
+        console.log('cardRef.current:', cardRef.current);
         if (cardRef.current) {
             // Get the bounding rectangle of the card
             const rect = cardRef.current!.getBoundingClientRect();
@@ -204,19 +208,19 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                     content: `
                         <div class="row mx-3 mt-2">
                             <div class="col-12 col-md-9 p-0">
-                                <a role="button" href="/author/${authorData.authorKey}" class="subheading-smaller a-link m-0" id="author-link-${index}">${authorData.fullName}</a>
+                                <a role="button" href="/author/${authorData.handle}" class="subheading-smaller a-link m-0" id="author-link-${index}">${authorData.full_name}</a>
                                 <h6 class="subheading-xsmall text-thinner py-2" id="col-heading-1">${authorData.bio}</h6>
                             </div>
             
                             <div class="col-md-3 p-0 mr-2">
-                                <Image class="${styles.popoverPfp}" src="${authorData.profileImageUrl}" width={50} height={50} />
+                                <Image class="${styles.popoverPfp}" src="${authorData.avatar_url || '/ui/placeholder-pfp.png'}" width={50} height={50} />
                             </div>
             
                             <div class="col-md-12 horisontal-line horisontal-line-thin"></div>
             
                             <div class="col-12 d-flex justify-content-between p-0 align-content-center">
                                 <p class="p-0 m-0">Visit my profile</p>
-                                <a role="button" href="/author/${authorData.authorKey}" class="a-btn btn-outlined px-2 py-0" id="visit-button-${index}">
+                                <a role="button" href="/author/${authorData.handle}" class="a-btn btn-outlined px-2 py-0" id="visit-button-${index}">
                                     Visit
                                 </a>
                             </div>
@@ -280,13 +284,13 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
         }
     }, [popoverVisible, handleMouseEnter, handleMouseLeave]);
 
-    let postImageUrl = post.imageUrl?.replace(/\.[^/.]+$/, "");
+    let postImageUrl = typeof post?.image_url === 'string' ? post.image_url.replace(/\.[^/.]+$/, "") : "";
 
     return style === 'massive' ? (
         <div className={styles.latest_post}>
             <div className="container">
                 <div className="row align-items-center justify-content-center">
-                    {post.imageUrl && (
+                    {post.image_url && (
                         <a role="button" className="col-lg-6" onClick={handlePostOpen}>
                             <div className={styles.image}>
                                 <picture className={`img-fluid ${styles.imageWrapper}`}>
@@ -312,8 +316,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                     <div ref={cardRef} className="col-lg-5 offset-lg-1 py-3" id="latest-post">
                         <a role="button" onClick={handlePostOpen}>
                             <h1 className={`${styles.heading} heading`} id="col-heading-1">
-                                {post.title && post.title.length > 85 ? <>{post.title.slice(0, 85) + '... '}</> : post.title} {moment.utc(post.modifyDate).isAfter(moment.utc(post.date)) && moment.utc(post.modifyDate).diff(Date.now(), 'days') >= -30 && !post.sponsoredBy && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
-                                {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
+                                {post.title && post.title.length > 85 ? <>{post.title.slice(0, 85) + '... '}</> : post.title} {moment.utc(post.updated_at).isAfter(moment.utc(post.created_at)) && moment.utc(post.updated_at).diff(Date.now(), 'days') >= -30 && !post.sponsored_by && <span className="badge">Updated</span>} {/* Add a badge if the post was updated within the last 30 days */}
+                                {post.sponsored_by && <span className="badge badge-sponsored">Sponsored</span>}
                             </h1>
                         </a>
                         <p className={`${styles.description} pb-2`}>
@@ -341,7 +345,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
         </div>
     ) : style === 'full' ? (
         <div ref={cardRef} className="col-12 col-md-6" key={index}>
-            {post.imageUrl && (
+            {post.image_url && (
                 <a role="button" onClick={handlePostOpen}>
                     <div className={styles.image}>
                         <picture className={`img-fluid ${styles.imageWrapper}`}>
@@ -360,10 +364,10 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                                 height={182}
                                 loading="lazy"
                             />
-                            {post.postType && (
-                                <span className={`d-inline-block ${styles.articleLabel} ${post.postType === 'Guide' ? styles.articleLabel_Guide : post.postType === 'Review' ? styles.articleLabel_Review : post.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
+                            {post.post_type && (
+                                <span className={`d-inline-block ${styles.articleLabel} ${post.post_type === 'Guide' ? styles.articleLabel_Guide : post.post_type === 'Review' ? styles.articleLabel_Review : post.post_type === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
                                     <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
-                                    {post.postType} {/* Display the post type */}
+                                    {post.post_type} {/* Display the post type */}
                                 </span>
                             )}
                         </picture>
@@ -379,17 +383,17 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                         <span id={`popover-trigger-${index}`} className="d-inline-block" role="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
                             <div className={`${styles.profile_info} d-flex`}>
                                 <div className="align-content-center">
-                                    <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
-                                        <LazyImage className={`${styles.pfp} img-fluid`} src={authorData.profileImageUrl || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                    <Link href={`/author/${authorData.handle}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
+                                        <LazyImage className={`${styles.pfp} img-fluid`} src={authorData.avatar_url || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
                                     </Link>
                                 </div>
                                 <div className={styles.profile_info__details}>
-                                    <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
-                                        {authorData.fullName}
+                                    <Link href={`/author/${authorData.handle}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
+                                        {authorData.full_name}
                                     </Link>
 
                                     <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                        {moment(post.date).format('D MMM')} • {post.readTime?.toString()} min read • {post.viewsCount} views
+                                        {moment(post.created_at).format('D MMM')} • {post.read_time?.toString()} min read • {post.views_count} views
                                     </p>
                                 </div>
                             </div>
@@ -400,7 +404,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
         </div>
     ) : style === 'expanded' ? (
         <div className={`col-12 ${styles.expandedContainer}`} key={index}>
-            {post.imageUrl && (
+            {post.image_url && (
                 <a role="button" onClick={handlePostOpen}>
                     <div className={styles.image}>
                         <picture className={`img-fluid ${styles.imageWrapper}`}>
@@ -419,10 +423,10 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                                 height={182}
                                 loading="lazy"
                             />
-                            {post.postType && (
-                                <span className={`d-inline-block ${styles.articleLabel} ${post.postType === 'Guide' ? styles.articleLabel_Guide : post.postType === 'Review' ? styles.articleLabel_Review : post.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
+                            {post.post_type && (
+                                <span className={`d-inline-block ${styles.articleLabel} ${post.post_type === 'Guide' ? styles.articleLabel_Guide : post.post_type === 'Review' ? styles.articleLabel_Review : post.post_type === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
                                     <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
-                                    {post.postType} {/* Display the post type */}
+                                    {post.post_type} {/* Display the post type */}
                                 </span>
                             )}
                         </picture>
@@ -438,17 +442,17 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                         <span id={`popover-trigger-${index}`} className="d-inline-block" role="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
                             <div className={`${styles.profile_info} d-flex`}>
                                 <div className="align-content-center">
-                                    <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
-                                        <LazyImage className={`${styles.pfp} img-fluid`} src={authorData.profileImageUrl || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                    <Link href={`/author/${authorData.handle}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
+                                        <LazyImage className={`${styles.pfp} img-fluid`} src={authorData.avatar_url || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
                                     </Link>
                                 </div>
                                 <div className={styles.profile_info__details}>
-                                    <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
-                                        {authorData.fullName}
+                                    <Link href={`/author/${authorData.handle}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
+                                        {authorData.full_name}
                                     </Link>
 
                                     <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                        {moment(post.date).format('D MMM')} • {post.readTime?.toString()} min read • {post.viewsCount} views
+                                        {moment(post.created_at).format('D MMM')} • {post.read_time?.toString()} min read • {post.views_count} views
                                     </p>
                                 </div>
                             </div>
@@ -459,15 +463,15 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
         </div>
     ) : style === 'admin' ? (
         <div className="col-12" key={index}>
-            {post.imageUrl && (
-                <div className={`${styles.image} position-relative`} key={post.imageUrl}>
+            {post.image_url && (
+                <div className={`${styles.image} position-relative`} key={post.image_url}>
                     <button className="btn-filled position-absolute mt-4 px-2 py-1 top-0 end-0 translate-middle" type="button" data-bs-toggle="offcanvas" onClick={e => e.preventDefault()} data-bs-target={`#postDetails-${post.slug}`} aria-controls={`postDetails-${post.slug}`}>
                         ...
                     </button>
                     <a role="button" data-bs-toggle="modal" data-bs-target={`#leavingModal-${post.slug}`}>
                         <Image
                             className="img-fluid full-image admin-image"
-                            src={post.imageUrl || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
+                            src={post.image_url || '/ui/not-found.png'} // Using the image URL, including the placeholder logic if needed
                             alt={post.title}
                             title={post.title}
                             loading="lazy"
@@ -481,8 +485,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
             <a role="button" data-bs-toggle="modal" data-bs-target={`#leavingModal-${post.slug}`}>
                 <div className={styles.postInfo}>
                     <h2 className={`${styles.heading} subheading d-flex flex-wrap align-content-center gap-1`} id="col-heading-1">
-                        {post.title} {moment.utc(post.modifyDate).isAfter(moment.utc(post.date)) && <span className="px-2 py-1 text-wrap badge">{'Updated ' + moment.utc(post.modifyDate).fromNow()}</span>}
-                        {post.sponsoredBy && <span className="badge badge-sponsored">Sponsored</span>}
+                        {post.title} {moment.utc(post.updated_at).isAfter(moment.utc(post.created_at)) && <span className="px-2 py-1 text-wrap badge">{'Updated ' + moment.utc(post.updated_at).fromNow()}</span>}
+                        {post.sponsored_by && <span className="badge badge-sponsored">Sponsored</span>}
                     </h2>
                     <p className={styles.description}>{post.description}</p>
                 </div>
@@ -534,8 +538,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
 
                                 // Determine the class name based on the key
                                 let rowClass = '';
-                                if (key === 'email') {
-                                    rowClass = 'table-primary'; // Add table-primary class for email
+                                if (key === 'id') {
+                                    rowClass = 'table-primary'; // Add table-primary class for id
                                 } else if (key === 'slug') {
                                     rowClass = 'table-secondary'; // Add table-secondary class for slug
                                 }
@@ -557,14 +561,14 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                         <span id={`popover-trigger-${index}`} className="d-inline-block" role="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
                             <div className={`${styles.profile_info} d-flex`}>
                                 <div className="align-content-center">
-                                    <LazyImage onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.pfp} img-fluid`} src={authorData.profileImageUrl || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                    <LazyImage onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.pfp} img-fluid`} src={authorData.avatar_url || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
                                 </div>
                                 <div className={styles.profile_info__details}>
                                     <Link href={''} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
-                                        {authorData.fullName}
+                                        {authorData.full_name}
                                     </Link>
                                     <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                        {moment.utc(post.date).format('D MMM')} • {post.readTime?.toString()} min read • {post.viewsCount} views
+                                        {moment.utc(post.created_at).format('D MMM')} • {post.read_time?.toString()} min read • {post.views_count} views
                                     </p>
                                 </div>
                             </div>
@@ -600,7 +604,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                                 <button type="button" className="btn-filled py-2 px-5" data-bs-dismiss="modal">
                                     Close
                                 </button>
-                                <button type="button" className="btn-filled btn-danger py-2 px-3" data-bs-dismiss="modal" onClick={() => handlePostDeletion(post.email, post.slug, post.date as string)}>
+                                <button type="button" className="btn-filled btn-danger py-2 px-3" data-bs-dismiss="modal" onClick={() => handlePostDeletion(post.id, post.slug, post.created_at as string)}>
                                     Delete post
                                 </button>
                             </div>
@@ -614,7 +618,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
             {previewData ? (
                 <div className="container">
                     <div className="row align-items-center justify-content-center">
-                        {previewData.imageUrl && (
+                        {previewData.image_url && (
                             <div className="col-lg-8">
                                 <input
                                     type="file"
@@ -644,8 +648,8 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
 
                                         <Image
                                             className="img-fluid admin-image"
-                                            style={{cursor: 'pointer'}}
-                                            src={imagePreview || previewData.imageUrl || '/ui/addpost.png'} // Using the image URL, including the placeholder logic if needed
+                                            style={{ cursor: 'pointer' }}
+                                            src={imagePreview || previewData.image_url || '/ui/addpost.png'} // Using the image URL, including the placeholder logic if needed
                                             alt={post.title}
                                             title={post.title}
                                             loading="lazy"
@@ -654,10 +658,10 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                                             onClick={handleImageClick}
                                             sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
                                         />
-                                        <span className={`d-inline-block ${styles.articleLabel} ${previewData.postType === 'Guide' ? styles.articleLabel_Guide : previewData.postType === 'Review' ? styles.articleLabel_Review : previewData.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
+                                        <span className={`d-inline-block ${styles.articleLabel} ${previewData.post_type === 'Guide' ? styles.articleLabel_Guide : previewData.post_type === 'Review' ? styles.articleLabel_Review : previewData.post_type === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
                                             <FaCoffee className="m-1 subheading-xxsmall" id={styles.labelIcon} />
-                                            <select onChange={handlePostTypeChange} value={selectedPostType} className={`d-inline-block ${styles.articleLabelSelect} ${previewData.postType === 'Guide' ? styles.articleLabel_Guide : previewData.postType === 'Review' ? styles.articleLabel_Review : previewData.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
-                                                {previewData.postType || 'Article'} {/* Display the post type */}
+                                            <select onChange={handlePostTypeChange} value={selectedPostType} className={`d-inline-block ${styles.articleLabelSelect} ${previewData.post_type === 'Guide' ? styles.articleLabel_Guide : previewData.post_type === 'Review' ? styles.articleLabel_Review : previewData.post_type === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
+                                                {previewData.post_type || 'Article'} {/* Display the post type */}
                                                 {postTypes.map((type, index) => (
                                                     <option key={index}>{type}</option>
                                                 ))}
@@ -672,7 +676,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                             <div className={styles.postInfo}>
                                 <div className="d-flex align-content-center m-0">
                                     <h2 className={`${styles.heading} subheading`} id="col-heading-1">
-                                        {previewData.title || 'Enter the post title'} {moment.utc(post.modifyDate).isAfter(moment.utc(post.date)) && !previewData.isSponsored && <span className="badge">Updated</span>}
+                                        {previewData.title || 'Enter the post title'} {moment.utc(post.updated_at).isAfter(moment.utc(post.created_at)) && !previewData.isSponsored && <span className="badge">Updated</span>}
                                         {previewData.isSponsored && <span className="badge badge-sponsored">Sponsored</span>}
                                     </h2>
                                 </div>
@@ -683,7 +687,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                                         onChange={e => setValue(e.target.value)}
                                         className="w-100 subheading-small mb-2 col-heading-2"
                                         value={previewData.description}
-                                        // rows={2}
+                                    // rows={2}
                                     />
                                 ) : (
                                     <p className={styles.description}>{previewData.description}</p>
@@ -694,12 +698,12 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                             <span className="d-inline-block">
                                 <div className={`${styles.profile_info} d-flex`}>
                                     <div className="align-content-center">
-                                        <LazyImage className={`${styles.pfp} img-fluid`} src={authorData.profileImageUrl || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                        <LazyImage className={`${styles.pfp} img-fluid`} src={authorData.avatar_url || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
                                     </div>
                                     <div className={styles.profile_info__details}>
-                                        <p className={`${styles.profile_info__text} m-0 p-0`}>{authorData.fullName}</p>
+                                        <p className={`${styles.profile_info__text} m-0 p-0`}>{authorData.full_name}</p>
                                         <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                            {moment.utc(post.date).format('D MMM')} • {post.readTime?.toString()} min read
+                                            {moment.utc(post.created_at).format('D MMM')} • {post.read_time?.toString()} min read
                                         </p>
                                     </div>
                                 </div>
@@ -714,7 +718,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
     ) : (
         <div ref={cardRef} className={`${styles.card} col-12 col-md-4`} key={index}>
             {postImageUrl && (
-                    <a role="button" onClick={handlePostOpen}>
+                <a role="button" onClick={handlePostOpen}>
                     <div className={styles.image}>
                         <picture className={`img-fluid ${styles.imageWrapper}`}>
                             <Image
@@ -732,16 +736,16 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                                 height={180}
                                 loading="lazy"
                             />
-                            {post.postType && (
-                                <span className={`d-inline-block ${styles.articleLabel} ${post.postType === 'Guide' ? styles.articleLabel_Guide : post.postType === 'Review' ? styles.articleLabel_Review : post.postType === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
+                            {post.post_type && (
+                                <span className={`d-inline-block ${styles.articleLabel} ${post.post_type === 'Guide' ? styles.articleLabel_Guide : post.post_type === 'Review' ? styles.articleLabel_Review : post.post_type === 'Article' ? '' : styles.articleLabel_News} subheading-xxsmall`}>
                                     <FaCoffee className="mx-1 subheading-xxsmall" id={styles.labelIcon} />
-                                    {post.postType} {/* Display the post type */}
+                                    {post.post_type} {/* Display the post type */}
                                 </span>
                             )}
                         </picture>
                     </div>
                 </a>
-            
+
             )}
 
             <PostInfoSection descLength={140} />
@@ -752,17 +756,17 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                         <span id={`popover-trigger-${index}`} className="d-inline-block" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
                             <div className={`${styles.profile_info} d-flex`}>
                                 <div className="align-content-center">
-                                    <Link href={`/author/${authorData.authorKey}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
-                                        <LazyImage className={`${styles.pfp} img-fluid`} src={authorData.profileImageUrl} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                    <Link href={`/author/${authorData.handle}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
+                                        <LazyImage className={`${styles.pfp} img-fluid`} src={authorData.avatar_url || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
                                     </Link>
                                 </div>
                                 <div className={styles.profile_info__details}>
-                                    <Link href={`/author/${authorData.authorKey}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
-                                        {authorData.fullName}
+                                    <Link href={`/author/${authorData.handle}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
+                                        {authorData.full_name}
                                     </Link>
 
                                     <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                        {moment(post.date).format('D MMM')} • {post.readTime?.toString()} min read
+                                        {moment(post.created_at).format('D MMM')} • {post.read_time?.toString()} min read
                                     </p>
                                 </div>
                             </div>

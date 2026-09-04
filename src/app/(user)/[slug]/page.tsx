@@ -1,18 +1,17 @@
-'use client';
-
-import { use } from 'react';
-import Home from '../page';
 import ArticleModal from '@/components/Modals/ArticleModal';
-import LoadingBanner from '@/components/Modals/LoadingBanner';
+import { getPost } from '@/lib/posts';
+import { notFound } from 'next/navigation';
 
-const PostPage = ({ params }: { params: Promise<{ slug: string }> }) => {
-    const { slug } = use(params);
+const PostPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
+    const { slug } = await params;
 
-    if (slug) {
-        return <ArticleModal slug={slug} />
+    const post = await getPost(slug);
+
+    if (!post || !post.slug) {
+        notFound();
     }
 
-    return <LoadingBanner />
+    return <ArticleModal slug={slug} />
 };
 
 export default PostPage;

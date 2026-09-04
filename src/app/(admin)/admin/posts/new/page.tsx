@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import React from 'react';
 import { getAuthors } from '@/lib/authors';
 
-import PostEditor from '@/components/EditorComponent';
+import PostEditor from '@/components/DynamicEditor';
 
 export const dynamic = "force-dynamic"; // disables prerender
 

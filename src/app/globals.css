@@ -107,10 +107,16 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+body.overflow-hidden {
+    overflow: hidden !important;
+    padding-right: var(--scrollbar-width, 0px) !important;
+}
+
 main {
     display: flex;
     flex-direction: column;
     color: var(--col-text);
+    min-height: 100vh;
 }
 
 button {

@@ -72,7 +72,7 @@ const SubscribersPage = () => {
         }
     };
 
-    const handleEditInputChange = (field: keyof SubscriberItem, value: string): void => {
+    const handleEditInputChange = (field: keyof SubscriberItem, value: string | boolean): void => {
         if (selectedSubscriber) {
             setSelectedSubscriber({ ...selectedSubscriber, [field]: value }); // Update the selected tag's data
         }
@@ -82,11 +82,11 @@ const SubscribersPage = () => {
         setSelectedSubscriber(subscriber);
     };
 
-    const handleDelete = (): void => {
+    const handleDelete = async (): Promise<void> => {
         if (selectedSubscriber) {
-            deleteSubscriber(selectedSubscriber.email);
+            await deleteSubscriber(selectedSubscriber.email);
 
-            // window.location.reload();
+            window.location.reload();
         }
     }
 
@@ -113,6 +113,9 @@ const SubscribersPage = () => {
                                             <th scope="col">Email</th>
                                             <th scope="col">Subscribed at</th>
                                             <th scope="col">Status</th>
+                                            <th scope="col">Articles</th>
+                                            <th scope="col">Products</th>
+                                            <th scope="col">Services</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -120,8 +123,11 @@ const SubscribersPage = () => {
                                             <tr key={subscriber.email}>
                                                 <td>{subscriber.name}</td>
                                                 <td>{subscriber.email}</td>
-                                                <td>{subscriber.subscribedAt}</td>
-                                                <td>{subscriber.status}</td>
+                                                <td>{subscriber.subscribed_at}</td>
+                                                <td>{subscriber.is_active ? 'Active' : 'Inactive'}</td>
+                                                <td>{subscriber.is_article_updates_on ? 'Yes' : 'No'}</td>
+                                                <td>{subscriber.is_product_updates_on ? 'Yes' : 'No'}</td>
+                                                <td>{subscriber.is_service_updates_on ? 'Yes' : 'No'}</td>
                                                 <div className="d-flex gap-4">
                                                     <button
                                                         type="button"
@@ -175,16 +181,34 @@ const SubscribersPage = () => {
                                         <input type="text" className="form-control" value={selectedSubscriber?.name || ''} onChange={e => handleEditInputChange('name', e.target.value)} />
                                     </div>
                                     <div className="mb-3">
-                                        <label htmlFor="subscribedAt" className="col-form-label">
+                                        <label htmlFor="subscribed_at" className="col-form-label">
                                             <strong>Subscribed at:</strong>
                                         </label>
-                                        <textarea className="form-control" value={selectedSubscriber?.subscribedAt || ''} onChange={e => handleEditInputChange('subscribedAt', e.target.value)}></textarea>
+                                        <textarea className="form-control" value={selectedSubscriber?.subscribed_at || ''} onChange={e => handleEditInputChange('subscribed_at', e.target.value)}></textarea>
                                     </div>
                                     <div className='mb-3'>
-                                        <label htmlFor="status" className="col-form-label">
+                                        <label htmlFor="is_active" className="col-form-label">
                                             <strong>Is Subscribed?</strong>
                                         </label>
-                                        <input type="checkbox" className='mx-3' checked={selectedSubscriber?.status === 'subscribed' || false} onChange={e => handleEditInputChange('status', e.target.checked ? 'subscribed' : 'unsubscribed')} />
+                                        <input type="checkbox" className='mx-3' checked={selectedSubscriber?.is_active || false} onChange={e => handleEditInputChange('is_active', e.target.checked)} />
+                                    </div>
+                                    <div className='mb-3'>
+                                        <label htmlFor="is_article_updates_on" className="col-form-label">
+                                            <strong>Article Updates?</strong>
+                                        </label>
+                                        <input type="checkbox" className='mx-3' checked={selectedSubscriber?.is_article_updates_on || false} onChange={e => handleEditInputChange('is_article_updates_on', e.target.checked)} />
+                                    </div>
+                                    <div className='mb-3'>
+                                        <label htmlFor="is_product_updates_on" className="col-form-label">
+                                            <strong>Product Updates?</strong>
+                                        </label>
+                                        <input type="checkbox" className='mx-3' checked={selectedSubscriber?.is_product_updates_on || false} onChange={e => handleEditInputChange('is_product_updates_on', e.target.checked)} />
+                                    </div>
+                                    <div className='mb-3'>
+                                        <label htmlFor="is_service_updates_on" className="col-form-label">
+                                            <strong>Service Updates?</strong>
+                                        </label>
+                                        <input type="checkbox" className='mx-3' checked={selectedSubscriber?.is_service_updates_on || false} onChange={e => handleEditInputChange('is_service_updates_on', e.target.checked)} />
                                     </div>
                                 </form>
                             </div>

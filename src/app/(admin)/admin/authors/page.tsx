@@ -86,14 +86,14 @@ const AuthorsPage = () => {
         setNewAuthor({ ...(newAuthor as AuthorItem), [field]: value }); // Update the selected tag's data
     };
 
-    const handleCreateSocialChange = (field: keyof AuthorItem['socialLinks'], value: string): void => {
+    const handleCreateSocialChange = (field: keyof AuthorItem['social_links'], value: string): void => {
         setNewAuthor(prevAuthor => {
             if (!prevAuthor) return emptyAuthorObject;
 
             return {
                 ...prevAuthor,
-                socialLinks: {
-                    ...prevAuthor.socialLinks,
+                social_links: {
+                    ...prevAuthor.social_links,
                     [field]: value || '',
                 },
             };
@@ -114,7 +114,7 @@ const AuthorsPage = () => {
         }
     };
 
-    const handleEditSocialChange = (field: keyof AuthorItem['socialLinks'], value: string): void => {
+    const handleEditSocialChange = (field: keyof AuthorItem['social_links'], value: string): void => {
         setSelectedAuthor(prevAuthor => {
             if (!prevAuthor) return null;
 
@@ -123,8 +123,8 @@ const AuthorsPage = () => {
 
             return {
                 ...prevAuthor,
-                socialLinks: {
-                    ...prevAuthor.socialLinks,
+                social_links: {
+                    ...prevAuthor.social_links,
                     [field]: value || '',
                 },
             };
@@ -141,7 +141,7 @@ const AuthorsPage = () => {
 
             const { filePath } = await uploadProfilePicture(newFile);
 
-            handleCreateInputChange('profileImageUrl', filePath);
+            handleCreateInputChange('avatar_url', filePath);
 
             const reader = new FileReader(); // Create a new FileReader
 
@@ -165,7 +165,7 @@ const AuthorsPage = () => {
 
             const { filePath } = await uploadProfilePicture(newFile);
 
-            handleEditInputChange('profileImageUrl', filePath);
+            handleEditInputChange('avatar_url', filePath);
 
             const reader = new FileReader(); // Create a new FileReader
 
@@ -206,18 +206,18 @@ const AuthorsPage = () => {
                                             <th scope="col">Full Name</th>
                                             <th scope="col">Email</th>
                                             <th scope="col">Biography</th>
-                                            <th scope="col">Author Key</th>
-                                            <th scope="col">Is Guest</th>
+                                            <th scope="col">Handle</th>
+                                            <th scope="col">Role</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {authorData.map(author => (
                                             <tr key={author.email}>
-                                                <td>{author.fullName}</td>
+                                                <td>{author.full_name}</td>
                                                 <td>{author.email}</td>
                                                 <td>{author.bio}</td>
-                                                <td>{author.authorKey}</td>
-                                                <td>{String(author.isGuest)}</td>
+                                                <td>{author.handle}</td>
+                                                <td>{author.role}</td>
                                                 <div className="d-flex gap-4">
                                                     <button
                                                         type="button"
@@ -265,10 +265,10 @@ const AuthorsPage = () => {
                                         <input type="text" className="form-control" value={newAuthor?.email || ''} onChange={e => handleCreateInputChange('email', e.target.value)} />
                                     </div>
                                     <div className="mb-3">
-                                        <label htmlFor="fullName" className="col-form-label">
+                                        <label htmlFor="full_name" className="col-form-label">
                                             <strong>Full Name:</strong>
                                         </label>
-                                        <input type="text" className="form-control" value={newAuthor?.fullName || ''} onChange={e => handleCreateInputChange('fullName', e.target.value)} />
+                                        <input type="text" className="form-control" value={newAuthor?.full_name || ''} onChange={e => handleCreateInputChange('full_name', e.target.value)} />
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="bio" className="col-form-label">
@@ -277,7 +277,7 @@ const AuthorsPage = () => {
                                         <textarea className="form-control" value={newAuthor?.bio || ''} onChange={e => handleCreateInputChange('bio', e.target.value)}></textarea>
                                     </div>
                                     <div className="mb-3">
-                                        <label htmlFor="profileImageUrl" className="col-form-label">
+                                        <label htmlFor="avatar_url" className="col-form-label">
                                             <strong>Profile Image URL:</strong>
                                         </label>
                                         <input
@@ -289,7 +289,7 @@ const AuthorsPage = () => {
                                         <div className='d-flex'>
                                             <Image
                                                 className="admin-image"
-                                                src={imagePreview || newAuthor?.profileImageUrl || '/ui/placeholder-pfp.png'} // Using the image URL, including the placeholder logic if needed
+                                                src={imagePreview || newAuthor?.avatar_url || '/ui/placeholder-pfp.png'} // Using the image URL, including the placeholder logic if needed
                                                 alt={'Profile Picture Preview'}
                                                 title={'Profile Picture Preview'}
                                                 loading="lazy"
@@ -297,73 +297,77 @@ const AuthorsPage = () => {
                                                 width={100}
                                                 height={100}
                                             />
-                                            <p className='m-2 align-middle'>URL: {newAuthor?.profileImageUrl}</p>
+                                            <p className='m-2 align-middle'>URL: {newAuthor?.avatar_url}</p>
                                         </div>
                                     </div>
                                     <div className='mb-3'>
-                                        <label htmlFor="isGuest" className="col-form-label">
-                                            <strong>Is a guest author?</strong>
+                                        <label htmlFor="role" className="col-form-label">
+                                            <strong>Role:</strong>
                                         </label>
-                                        <input type="checkbox" className='mx-3' checked={newAuthor?.isGuest || false} onChange={e => handleCreateInputChange('isGuest', e.target.checked)} />
+                                        <select className="form-select mx-3" value={newAuthor?.role || 'guest'} onChange={e => handleCreateInputChange('role', e.target.value)}>
+                                            <option value="admin">Admin</option>
+                                            <option value="author">Author</option>
+                                            <option value="guest">Guest</option>
+                                        </select>
                                     </div>
                                     <p className="pt-3">
                                         <strong>Social Links:</strong>
                                     </p>
                                     <div className="d-flex mb-3">
-                                        <label htmlFor="socialLinks" className="col-form-label mx-2">
+                                        <label htmlFor="social_links" className="col-form-label mx-2">
                                             <strong>
                                                 <MdEmail className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your Email address for contact (optional)" value={newAuthor?.socialLinks?.Email || ''} onChange={e => handleCreateSocialChange('Email', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your Email address for contact (optional)" value={newAuthor?.social_links?.email || ''} onChange={e => handleCreateSocialChange('email', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
-                                        <label htmlFor="socialLinks" className="col-form-label mx-2">
+                                        <label htmlFor="social_links" className="col-form-label mx-2">
                                             <strong>
                                                 <FaGithub className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your GitHub profile URL (optional)" value={newAuthor?.socialLinks?.GitHub || ''} onChange={e => handleCreateSocialChange('GitHub', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your GitHub profile URL (optional)" value={newAuthor?.social_links?.github || ''} onChange={e => handleCreateSocialChange('github', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
-                                        <label htmlFor="socialLinks" className="col-form-label mx-2">
+                                        <label htmlFor="social_links" className="col-form-label mx-2">
                                             <strong>
                                                 <FaInstagram className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your Instagram profile URL (optional)" value={newAuthor?.socialLinks?.Instagram || ''} onChange={e => handleCreateSocialChange('Instagram', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your Instagram profile URL (optional)" value={newAuthor?.social_links?.instagram || ''} onChange={e => handleCreateSocialChange('instagram', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
-                                        <label htmlFor="socialLinks" className="col-form-label mx-2">
+                                        <label htmlFor="social_links" className="col-form-label mx-2">
                                             <strong>
                                                 <FaLinkedin className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your LinkedIn profile URL (optional)" value={newAuthor?.socialLinks?.LinkedIn || ''} onChange={e => handleCreateSocialChange('LinkedIn', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your LinkedIn profile URL (optional)" value={newAuthor?.social_links?.linkedin || ''} onChange={e => handleCreateSocialChange('linkedin', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
-                                        <label htmlFor="socialLinks" className="col-form-label mx-2">
+                                        <label htmlFor="social_links" className="col-form-label mx-2">
                                             <strong>
                                                 <FaXTwitter className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your X profile URL (optional)" value={newAuthor?.socialLinks?.X || ''} onChange={e => handleCreateSocialChange('X', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your Twitter profile URL (optional)" value={newAuthor?.social_links?.twitter || ''} onChange={e => handleCreateSocialChange('twitter', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
-                                        <label htmlFor="socialLinks" className="col-form-label mx-2">
+                                        <label htmlFor="social_links" className="col-form-label mx-2">
                                             <strong>
                                                 <FaFacebookF className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your Facebook profile URL (optional)" value={newAuthor?.socialLinks?.Facebook || ''} onChange={e => handleCreateSocialChange('Facebook', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your Facebook profile URL (optional)" value={newAuthor?.social_links?.facebook || ''} onChange={e => handleCreateSocialChange('facebook', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
-                                        <label htmlFor="socialLinks" className="col-form-label mx-2">
+                                        <label htmlFor="social_links" className="col-form-label mx-2">
                                             <strong>
                                                 <FaRedditAlien className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your Reddit profile URL (optional)" value={newAuthor?.socialLinks?.Reddit || ''} onChange={e => handleCreateSocialChange('Reddit', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your Reddit profile URL (optional)" value={newAuthor?.social_links?.reddit || ''} onChange={e => handleCreateSocialChange('reddit', e.target.value)}></input>
                                     </div>
                                 </form>
                             </div>
@@ -399,10 +403,10 @@ const AuthorsPage = () => {
                                         <input type="text" className="form-control" disabled value={selectedAuthor?.email || ''} onChange={e => handleEditInputChange('email', e.target.value)} />
                                     </div>
                                     <div className="mb-3">
-                                        <label htmlFor="fullName" className="col-form-label">
+                                        <label htmlFor="full_name" className="col-form-label">
                                             <strong>Full Name:</strong>
                                         </label>
-                                        <input type="text" className="form-control" value={selectedAuthor?.fullName || ''} onChange={e => handleEditInputChange('fullName', e.target.value)} />
+                                        <input type="text" className="form-control" value={selectedAuthor?.full_name || ''} onChange={e => handleEditInputChange('full_name', e.target.value)} />
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="bio" className="col-form-label">
@@ -411,7 +415,7 @@ const AuthorsPage = () => {
                                         <textarea className="form-control" value={selectedAuthor?.bio || ''} onChange={e => handleEditInputChange('bio', e.target.value)}></textarea>
                                     </div>
                                     <div className="mb-3">
-                                        <label htmlFor="profileImageUrl" className="col-form-label">
+                                        <label htmlFor="avatar_url" className="col-form-label">
                                             <strong>Profile Image:</strong>
                                         </label>
                                         <input
@@ -423,7 +427,7 @@ const AuthorsPage = () => {
                                         <div className='d-flex'>
                                             <Image
                                                 className="admin-image"
-                                                src={imagePreview || selectedAuthor?.profileImageUrl || '/ui/placeholder-pfp.png'} // Using the image URL, including the placeholder logic if needed
+                                                src={imagePreview || selectedAuthor?.avatar_url || '/ui/placeholder-pfp.png'} // Using the image URL, including the placeholder logic if needed
                                                 alt={'Profile Picture Preview'}
                                                 title={'Profile Picture Preview'}
                                                 loading="lazy"
@@ -431,74 +435,78 @@ const AuthorsPage = () => {
                                                 width={100}
                                                 height={100}
                                             />
-                                            <p className='m-2 align-middle'>URL: {selectedAuthor?.profileImageUrl}</p>
+                                            <p className='m-2 align-middle'>URL: {selectedAuthor?.avatar_url}</p>
                                         </div>
-                                        {/* <textarea className="form-control" value={selectedAuthor?.profileImageUrl || ''} onChange={e => handleEditInputChange('profileImageUrl', e.target.value)}></textarea> */}
+                                        {/* <textarea className="form-control" value={selectedAuthor?.avatar_url || ''} onChange={e => handleEditInputChange('avatar_url', e.target.value)}></textarea> */}
                                     </div>
                                     <div className='mb-3'>
-                                        <label htmlFor="isGuest" className="col-form-label">
-                                            <strong>Is a guest author?</strong>
+                                        <label htmlFor="role" className="col-form-label">
+                                            <strong>Role:</strong>
                                         </label>
-                                        <input type="checkbox" className='mx-3' checked={selectedAuthor?.isGuest || false} onChange={e => handleEditInputChange('isGuest', e.target.checked)} />
+                                        <select className="form-select mx-3" value={selectedAuthor?.role || 'guest'} onChange={e => handleEditInputChange('role', e.target.value)}>
+                                            <option value="admin">Admin</option>
+                                            <option value="author">Author</option>
+                                            <option value="guest">Guest</option>
+                                        </select>
                                     </div>
                                     <p className="pt-3">
                                         <strong>Social Links:</strong>
                                     </p>
                                     <div className="d-flex mb-3">
-                                        <label htmlFor="socialLinks" className="col-form-label mx-2">
+                                        <label htmlFor="social_links" className="col-form-label mx-2">
                                             <strong>
                                                 <MdEmail className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your Email address for contact (optional)" value={selectedAuthor?.socialLinks?.Email || ''} onChange={e => handleEditSocialChange('Email', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your Email address for contact (optional)" value={selectedAuthor?.social_links?.email || ''} onChange={e => handleEditSocialChange('email', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
-                                        <label htmlFor="socialLinks" className="col-form-label mx-2">
+                                        <label htmlFor="social_links" className="col-form-label mx-2">
                                             <strong>
                                                 <FaGithub className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your GitHub profile URL (optional)" value={selectedAuthor?.socialLinks?.GitHub || ''} onChange={e => handleEditSocialChange('GitHub', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your GitHub profile URL (optional)" value={selectedAuthor?.social_links?.github || ''} onChange={e => handleEditSocialChange('github', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
-                                        <label htmlFor="socialLinks" className="col-form-label mx-2">
+                                        <label htmlFor="social_links" className="col-form-label mx-2">
                                             <strong>
                                                 <FaInstagram className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your Instagram profile URL (optional)" value={selectedAuthor?.socialLinks?.Instagram || ''} onChange={e => handleEditSocialChange('Instagram', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your Instagram profile URL (optional)" value={selectedAuthor?.social_links?.instagram || ''} onChange={e => handleEditSocialChange('instagram', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
-                                        <label htmlFor="socialLinks" className="col-form-label mx-2">
+                                        <label htmlFor="social_links" className="col-form-label mx-2">
                                             <strong>
                                                 <FaLinkedin className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your LinkedIn profile URL (optional)" value={selectedAuthor?.socialLinks?.LinkedIn || ''} onChange={e => handleEditSocialChange('LinkedIn', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your LinkedIn profile URL (optional)" value={selectedAuthor?.social_links?.linkedin || ''} onChange={e => handleEditSocialChange('linkedin', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
-                                        <label htmlFor="socialLinks" className="col-form-label mx-2">
+                                        <label htmlFor="social_links" className="col-form-label mx-2">
                                             <strong>
                                                 <FaXTwitter className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your X profile URL (optional)" value={selectedAuthor?.socialLinks?.X || ''} onChange={e => handleEditSocialChange('X', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your Twitter profile URL (optional)" value={selectedAuthor?.social_links?.twitter || ''} onChange={e => handleEditSocialChange('twitter', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
-                                        <label htmlFor="socialLinks" className="col-form-label mx-2">
+                                        <label htmlFor="social_links" className="col-form-label mx-2">
                                             <strong>
                                                 <FaFacebookF className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your Facebook profile URL (optional)" value={selectedAuthor?.socialLinks?.Facebook || ''} onChange={e => handleEditSocialChange('Facebook', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your Facebook profile URL (optional)" value={selectedAuthor?.social_links?.facebook || ''} onChange={e => handleEditSocialChange('facebook', e.target.value)}></input>
                                     </div>
                                     <div className="d-flex mb-3">
-                                        <label htmlFor="socialLinks" className="col-form-label mx-2">
+                                        <label htmlFor="social_links" className="col-form-label mx-2">
                                             <strong>
                                                 <FaRedditAlien className="subheading" />
                                             </strong>
                                         </label>
-                                        <input className="form-control" placeholder="Enter your Reddit profile URL (optional)" value={selectedAuthor?.socialLinks?.Reddit || ''} onChange={e => handleEditSocialChange('Reddit', e.target.value)}></input>
+                                        <input className="form-control" placeholder="Enter your Reddit profile URL (optional)" value={selectedAuthor?.social_links?.reddit || ''} onChange={e => handleEditSocialChange('reddit', e.target.value)}></input>
                                     </div>
                                 </form>
                             </div>
@@ -529,7 +537,7 @@ const AuthorsPage = () => {
                                 <form>
                                     <div className="mb-3">
                                         Are you <strong>ACTUALLY</strong> sure you want to disable an author with this name: <br />
-                                        <h5 className="py-4 heading">{selectedAuthor?.fullName}</h5>
+                                        <h5 className="py-4 heading">{selectedAuthor?.full_name}</h5>
                                     </div>
 
                                     <div className="alert alert-danger" role="alert">
@@ -541,7 +549,7 @@ const AuthorsPage = () => {
                                     </div>
 
                                     <p className="subheading-smaller pt-3">
-                                        Write down the Full Name of this Author to proceed with disabling <strong>({selectedAuthor?.fullName})</strong>:
+                                        Write down the Full Name of this Author to proceed with disabling <strong>({selectedAuthor?.full_name})</strong>:
                                     </p>
                                     <input type="text" name="" id="" />
                                 </form>
