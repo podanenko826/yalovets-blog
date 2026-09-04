@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Modals.module.css';
 import { IoMdClose } from 'react-icons/io';
-import { useUserConfigStore } from '../userConfig/store';
+import { useRouter } from 'next/navigation';
 
 type PaginationPreferencesProps = {
     postsPerPage: number;
@@ -10,7 +10,7 @@ type PaginationPreferencesProps = {
 };
 
 const PaginationPreferences = ({ postsPerPage, setModalOpen }: PaginationPreferencesProps) => {
-    const { setPostsPerPage } = useUserConfigStore();
+    const router = useRouter();
     const [currentPostsPerPage, setCurrentPostsPerPage] = useState<number>(postsPerPage || 14);
 
     const handlePostsPerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,8 +18,11 @@ const PaginationPreferences = ({ postsPerPage, setModalOpen }: PaginationPrefere
     }
 
     const handlePostsPerPageSave = () => {
-        setPostsPerPage(currentPostsPerPage);
-
+        // Save user preference to a cookie so the Server Component can read it
+        document.cookie = `postsPerPage=${currentPostsPerPage}; path=/; max-age=31536000`;
+        
+        // Refresh the route so the server refetches with the new page size
+        router.refresh();
         handleClose();
     }
 
@@ -44,17 +47,17 @@ const PaginationPreferences = ({ postsPerPage, setModalOpen }: PaginationPrefere
             }, 50);
 
             modal.classList.add(`${styles.previewModalClose}`);
-            
+
             const onTransitionEnd = (e: TransitionEvent) => {
                 if (['padding', 'opacity'].includes(e.propertyName)) {
                     setModalOpen(false);
-                    
+
                     card.removeEventListener('transitionend', onTransitionEnd);
                 }
             };
-            
+
             card.addEventListener('transitionend', onTransitionEnd);
-            
+
             return () => {
                 if (card) {
                     card.removeEventListener('transitionend', onTransitionEnd);
@@ -89,49 +92,49 @@ const PaginationPreferences = ({ postsPerPage, setModalOpen }: PaginationPrefere
             document.body.classList.remove('overflow-hidden');
         }
     }, []);
-    
-    
+
+
     return (
-        <div className={`${styles.articlePage} ${styles.previewModal}`} onClick={() => handleClose()}>
+        <div className={`${styles.fullScreenModal} ${styles.previewModal}`} onClick={() => handleClose()}>
 
-                <div className="container">
-                    <div className={`${styles.postDataContainer} ${styles.paginationPreferences}`} onClick={e => e.stopPropagation()}>
-                        <button className={`${styles.expandedPostCloseBtn} btn-pill`} onClick={() => handleClose()}>
-                            <IoMdClose className={styles.icon} />
-                        </button>
+            <div className="container">
+                <div className={`${styles.postDataContainer} ${styles.paginationPreferences}`} onClick={e => e.stopPropagation()}>
+                    <button className={`${styles.expandedPostCloseBtn} btn-pill`} onClick={() => handleClose()}>
+                        <IoMdClose className={styles.icon} />
+                    </button>
 
-                        <h3 className='subheading mt-2' id='col-heading-1'>Preferences</h3>
-                        <h5 className='subheading-small'><strong>Page size</strong></h5>
+                    <h3 className='subheading mt-2' id='col-heading-1'>Preferences</h3>
+                    <h5 className='subheading-small'><strong>Page size</strong></h5>
 
-                        <ul className="list-group list-group-dark my-4">
-                            {[14, 28, 42].map((value) => (
-                                <li key={value} className="list-group-item py-2 py-lg-1">
-                                    <input
-                                        className="form-check-input me-2"
-                                        type="radio"
-                                        name="listGroupRadio"
-                                        value={value}
-                                        id={`${value}posts`}
-                                        checked={currentPostsPerPage === value}
-                                        onChange={handlePostsPerPageChange}
-                                    />
-                                    <label className="form-check-label" htmlFor={`${value}posts`}>
-                                        {value === 42 ? (value + 3)
-                                            : value === 28 ? (value + 2)
+                    <ul className="list-group list-group-dark my-4">
+                        {[14, 28, 42].map((value) => (
+                            <li key={value} className="list-group-item py-2 py-lg-1">
+                                <input
+                                    className="form-check-input me-2"
+                                    type="radio"
+                                    name="listGroupRadio"
+                                    value={value}
+                                    id={`${value}posts`}
+                                    checked={currentPostsPerPage === value}
+                                    onChange={handlePostsPerPageChange}
+                                />
+                                <label className="form-check-label" htmlFor={`${value}posts`}>
+                                    {value === 42 ? (value + 3)
+                                        : value === 28 ? (value + 2)
                                             : (value + 1)} posts
-                                    </label>
-                                </li>
-                            ))}
-                        </ul>
+                                </label>
+                            </li>
+                        ))}
+                    </ul>
 
-                        <div className='horisontal-line mb-3'></div>
+                    <div className='horisontal-line mb-3'></div>
 
-                        <div className='d-flex justify-content-end gap-3'>
-                            <button className='btn-outlined py-1' onClick={() => handleClose()}>Close</button>
-                            <button className='btn-filled py-1 px-4' onClick={() => handlePostsPerPageSave()}>Comfirm</button>
-                        </div>
+                    <div className='d-flex justify-content-end gap-3'>
+                        <button className='btn-outlined py-1' onClick={() => handleClose()}>Close</button>
+                        <button className='btn-filled py-1 px-4' onClick={() => handlePostsPerPageSave()}>Comfirm</button>
                     </div>
                 </div>
+            </div>
         </div>
     );
 };

@@ -1,10 +1,11 @@
 import { FC, Suspense } from 'react';
 import React from 'react';
+import { notFound } from 'next/navigation';
 
-import { getMDXContent, getPost } from '@/lib/posts';
+import { getPost } from '@/lib/posts';
 import { getAuthors } from '@/lib/authors';
 
-import PostEditor from '@/components/EditorComponent';
+import PostEditor from '@/components/DynamicEditor';
 
 export const dynamic = "force-dynamic"; // disables prerender
 
@@ -27,12 +28,10 @@ const EditPage: FC<EditPageProps> = async (props: EditPageProps) => {
         markdown: ''
     }
 
-    if (postData && postData.date) {
-        data = await getMDXContent(slug, postData.date);
+    if (postData && postData.created_at) {
+        data = { slug, markdown: postData.content || '' };
     } else {
-        console.log('invalid date');
-        
-        return <p>Loading...</p>;
+        notFound();
     }
 
     if (!postData || !authorData || !data.slug || !data.markdown) {

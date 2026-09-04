@@ -1,46 +1,33 @@
-'use client';
+import React from 'react';
+import markdownToHtml from '@/services/markdownToHtml';
+import { supabase } from '@/lib/supabase';
 
-import LoadingSkeleton from '@/components/LoadingSkeleton';
-import ArticleModal from '@/components/Modals/ArticleModal';
-import { mdSerialize } from '@/services/mdSerializer';
-import { MDXProvider } from '@mdx-js/react';
-import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
-import React, { Suspense, useEffect, useState } from 'react';
+export const revalidate = 0; // Disable static rendering for this page so it updates when DB changes
 
-const ImprintPage = () => {
-    const [serializedMarkdown, setSerializedMarkdown] = useState<MDXRemoteSerializeResult>();
+export default async function PrivacyPolicyPage() {
+    let content = 'Privacy policy not found.';
 
-    useEffect(() => {
-        const fetchMarkdown = async () => {
-            const response = await fetch('/api/privacy-policy'); // Fetching from an API route
-            const data = await response.json();
+    try {
+        const { data, error } = await supabase
+            .from('pages')
+            .select('content')
+            .eq('slug', 'privacy-policy')
+            .single();
 
-            const result = await mdSerialize(data.content);
+        if (data && !error) {
+            content = data.content;
+        }
+    } catch (e) {
+        console.error("Error fetching privacy policy:", e);
+    }
 
-            setSerializedMarkdown(result);
-        };
-
-        fetchMarkdown();
-    }, []);
+    const htmlContent = await markdownToHtml(content);
 
     return (
-        <>
-            <ArticleModal slug='' />
+        <main id="body">
             <div className='container py-5'>
-                <article className="article">
-                    {serializedMarkdown ? (
-                        <Suspense fallback={<LoadingSkeleton />}>
-                            <MDXProvider>
-                                <MDXRemote compiledSource={serializedMarkdown?.compiledSource as string} scope={serializedMarkdown?.scope} frontmatter={serializedMarkdown?.frontmatter} />
-                            </MDXProvider>
-                        </Suspense>
-                    ) : (
-                        <LoadingSkeleton />
-                    )}
-                </article>
+                <article className="article" dangerouslySetInnerHTML={{ __html: htmlContent }} />
             </div>
-        </>
+        </main>
     );
-};
-
-export default ImprintPage;
+}

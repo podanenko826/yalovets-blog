@@ -19,7 +19,8 @@ export const sendEmailsOnPost = async (postData: PostItem): Promise<boolean> => 
         throw new Error("SES template 'ArticleBroadcast' does not exist.");
     }
 
-    const subscribedUsers: SubscriberItem[] = await getSubscribersByStatus("subscribed");
+    const _subscribedUsers: SubscriberItem[] = await getSubscribersByStatus(true);
+    const subscribedUsers = _subscribedUsers.filter((user) => user.is_article_updates_on !== false);
 
     if (!postData.slug) {
       postData.slug = `${postData.title

@@ -2,62 +2,68 @@ import { NextResponse } from 'next/server';
 
 import type { AuthorItem } from '@/types';
 
-function transformAuthorData(data: any[]): AuthorItem[] {
-    return data.map(author => ({
-        email: author.email?.S,
-        slug: author.slug?.S,
-        bio: author.bio?.S,
-        fullName: author.fullName?.S,
-        profileImageUrl: author.profileImageUrl?.S,
-        isGuest: author.isGuest?.BOOL,
-        socialLinks: {
-            Email: author.socialLinks?.M.Email?.S,
-            GitHub: author.socialLinks?.M.GitHub?.S,
-            Instagram: author.socialLinks?.M.Instagram?.S,
-            LinkedIn: author.socialLinks?.M.LinkedIn?.S,
-            X: author.socialLinks?.M.X?.S,
-            Facebook: author.socialLinks?.M.Facebook?.S,
-            Reddit: author.socialLinks?.M.Reddit?.S,
-        },
-        authorKey: author.authorKey?.S,
-    }));
-}
-
 export const emptyAuthorObject: AuthorItem = {
+    id: '',
     email: '',
-    slug: '',
+    handle: '',
     bio: '',
-    fullName: '',
-    profileImageUrl: '',
-    isGuest: false,
-    socialLinks: {
-        Email: '',
-        GitHub: '',
-        Instagram: '',
-        LinkedIn: '',
-        X: '',
-        Facebook: '',
-        Reddit: '',
+    full_name: '',
+    avatar_url: '',
+    role: 'guest',
+    social_links: {
+        email: '',
+        github: '',
+        instagram: '',
+        linkedin: '',
+        twitter: '',
+        facebook: '',
+        reddit: '',
     },
-    authorKey: '',
 };
 
-export const getAuthors = async () => {
-    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+const transformAuthor = (author: any): AuthorItem => ({
+    id: String(author.id),
+    email: author.email,
+    handle: author.handle,
+    bio: author.bio,
+    full_name: author.full_name,
+    avatar_url: author.avatar_url,
+    role: author.role,
+    social_links: {
+        email: author.social_links?.email || '',
+        github: author.social_links?.github || '',
+        instagram: author.social_links?.instagram || '',
+        linkedin: author.social_links?.linkedin || '',
+        twitter: author.social_links?.twitter || '',
+        facebook: author.social_links?.facebook || '',
+        reddit: author.social_links?.reddit || '',
+    },
+});
 
+export const getAuthors = async (): Promise<AuthorItem[]> => {
     try {
-        const response = await fetch(`${baseUrl}/api/author`);
-        const data = await response.json();
-        let authors: any[] = [];
-
-        if (data) {
-            authors = [...authors, ...data];
+        if (typeof window === 'undefined') {
+            const { createClient } = await import('@supabase/supabase-js');
+            const supabaseAdmin = createClient(
+                process.env.NEXT_PUBLIC_SUPABASE_URL!,
+                process.env.SUPABASE_SERVICE_ROLE_KEY!
+            );
+            const { data, error } = await supabaseAdmin.from('authors').select('*');
+            if (error) throw error;
+            if (Array.isArray(data)) {
+                return data.map(transformAuthor).reverse();
+            }
+            return [];
+        } else {
+            const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+            const response = await fetch(`${baseUrl}/api/author`, { cache: 'no-store' });
+            const data = await response.json();
+            
+            if (Array.isArray(data)) {
+                return data.map(transformAuthor).reverse();
+            }
+            return [];
         }
-
-        const transformedAuthorData = transformAuthorData(authors);
-        const authorData = transformedAuthorData.reverse();
-        
-        return authorData;
     } catch (err) {
         console.error('Failed to fetch authors from the database: ', err);
         return [];
@@ -68,37 +74,30 @@ export const getAuthorByEmail = async (email: string): Promise<AuthorItem> => {
     const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
     try {
-        const response = await fetch(`${baseUrl}/api/author?email=${email}`);
+        const response = await fetch(`${baseUrl}/api/author?email=${email}`, { cache: 'no-store' });
+        if (!response.ok) return emptyAuthorObject;
+        
         const data = await response.json();
-        let author: any = {};
-
-        if (data) {
-            author = data;
-        }
-
-        return author;
+        return data ? transformAuthor(data) : emptyAuthorObject;
     } catch (err) {
         console.error('Failed to fetch author from the database: ', err);
         return emptyAuthorObject;
     }
 };
 
-export const getAuthorByKey = async (authorKey: string): Promise<AuthorItem> => {
+export const getAuthorByKey = async (handle: string): Promise<AuthorItem> => {
     const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
     try {
-        const response = await fetch(`${baseUrl}/api/author`);
+        const response = await fetch(`${baseUrl}/api/author`, { cache: 'no-store' });
+        if (!response.ok) return emptyAuthorObject;
+        
         const data = await response.json();
-        let authors: any = {};
-
-        if (data) {
-            authors = data;
+        if (Array.isArray(data)) {
+            const author = data.find((author: any) => author.handle === handle);
+            return author ? transformAuthor(author) : emptyAuthorObject;
         }
-        const author = authors.find((author: any) => author.authorKey.S === authorKey);
-
-        const transformedAuthor = transformAuthorData([author]);
-
-        return transformedAuthor[0];
+        return emptyAuthorObject;
     } catch (err) {
         console.error('Failed to fetch author from the database: ', err);
         return emptyAuthorObject;
@@ -109,37 +108,34 @@ export const getAuthorEmails = async (): Promise<string[]> => {
     const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
     try {
-        const response = await fetch(`${baseUrl}/api/author-list`);
+        const response = await fetch(`${baseUrl}/api/author-list`, { cache: 'no-store' });
         const data = await response.json();
-
-        return data;
+        return data || [];
     } catch (err) {
         console.error('Failed to fetch author emails from the database.');
         return [];
     }
 };
 
-export const createAuthor = async (author: AuthorItem) => {
+export const createAuthor = async (author: any) => {
+    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
     const newAuthor = {
         email: author.email,
-        slug: 'author-account',
-        authorKey: '',
         bio: author.bio,
-        fullName: author.fullName,
-        profileImageUrl: author.profileImageUrl,
-        isGuest: author.isGuest || false,
-        socialLinks: {
-            Email: author.socialLinks.Email || '',
-            GitHub: author.socialLinks.GitHub,
-            Instagram: author.socialLinks.Instagram || '',
-            LinkedIn: author.socialLinks.LinkedIn || '',
-            X: author.socialLinks.X || '',
-            Facebook: author.socialLinks.Facebook || '',
-            Reddit: author.socialLinks.Reddit || '',
+        full_name: author.full_name || author.full_name,
+        avatar_url: author.avatar_url || author.avatar_url,
+        role: author.role || 'guest',
+        social_links: {
+            Email: author.social_links?.email || author.social_links?.Email || '',
+            GitHub: author.social_links?.github || author.social_links?.GitHub || '',
+            Instagram: author.social_links?.instagram || author.social_links?.Instagram || '',
+            LinkedIn: author.social_links?.linkedin || author.social_links?.LinkedIn || '',
+            Twitter: author.social_links?.twitter || author.social_links?.Twitter || '',
+            Facebook: author.social_links?.facebook || author.social_links?.Facebook || '',
+            Reddit: author.social_links?.reddit || author.social_links?.Reddit || '',
         },
     };
-
-    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
     const response = await fetch(`${baseUrl}/api/author`, {
         method: 'POST',
@@ -149,32 +145,29 @@ export const createAuthor = async (author: AuthorItem) => {
         body: JSON.stringify(newAuthor),
     });
 
-    const content = await response.json();
-
-    return content;
+    return await response.json();
 };
 
-export const updateAuthor = async (author: AuthorItem) => {
+export const updateAuthor = async (author: any) => {
+    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
     const updatedAuthor = {
+        id: author.id,
         email: author.email,
-        slug: 'author-account',
-        authorKey: '',
         bio: author.bio,
-        fullName: author.fullName,
-        profileImageUrl: author.profileImageUrl,
-        isGuest: author.isGuest,
-        socialLinks: {
-            Email: author.socialLinks.Email || '',
-            GitHub: author.socialLinks.GitHub || '',
-            Instagram: author.socialLinks.Instagram || '',
-            LinkedIn: author.socialLinks.LinkedIn || '',
-            X: author.socialLinks.X || '',
-            Facebook: author.socialLinks.Facebook || '',
-            Reddit: author.socialLinks.Reddit || '',
+        full_name: author.full_name || author.full_name,
+        avatar_url: author.avatar_url || author.avatar_url,
+        role: author.role || 'guest',
+        social_links: {
+            Email: author.social_links?.email || author.social_links?.Email || '',
+            GitHub: author.social_links?.github || author.social_links?.GitHub || '',
+            Instagram: author.social_links?.instagram || author.social_links?.Instagram || '',
+            LinkedIn: author.social_links?.linkedin || author.social_links?.LinkedIn || '',
+            Twitter: author.social_links?.twitter || author.social_links?.Twitter || '',
+            Facebook: author.social_links?.facebook || author.social_links?.Facebook || '',
+            Reddit: author.social_links?.reddit || author.social_links?.Reddit || '',
         },
     };
-
-    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
     const response = await fetch(`${baseUrl}/api/author`, {
         method: 'PUT',
@@ -184,7 +177,5 @@ export const updateAuthor = async (author: AuthorItem) => {
         body: JSON.stringify(updatedAuthor),
     });
 
-    const content = await response.json();
-
-    return content;
+    return await response.json();
 };

@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
 
-import { rebuildPagination } from '@/lib/posts';
 import Image from 'next/image';
 
 import postCardStyles from '@/components/PostCard/PostCard.module.css';
@@ -14,21 +13,21 @@ const AdminPage = () => {
             id: 1,
             title: 'Manage posts',
             description: 'Create, update and remove posts from your blog in one place.',
-            imageUrl: '/ui/postmanage.png',
+            image_url: '/ui/postmanage.png',
             url: '/admin/posts',
         },
         {
             id: 2,
             title: 'Manage authors',
             description: 'Create, update and remove authors that can write posts on your blog in one place.',
-            imageUrl: '/ui/authormanage.png',
+            image_url: '/ui/authormanage.png',
             url: '/admin/authors',
         },
         {
             id: 3,
             title: 'Manage subscribers',
             description: 'View whoever is subscribed to your blog and remove their subscribtions in one place.',
-            imageUrl: '/ui/subscribermanage.png',
+            image_url: '/ui/subscribermanage.png',
             url: '/admin/subscribers',
         },
     ];
@@ -38,21 +37,21 @@ const AdminPage = () => {
             id: 1,
             title: 'Browse images',
             description: 'See what images are uploaded to the server and delete unused ones.',
-            imageUrl: '/ui/imagemanage.png',
+            image_url: '/ui/imagemanage.png',
             url: '/admin/images',
         },
         {
             id: 2,
             title: 'Edit Privacy Policy',
             description: 'Update the Privacy Policy if some legal changes are needed.',
-            imageUrl: '/ui/editprivacypolicy.png',
+            image_url: '/ui/editprivacypolicy.png',
             url: '/admin/posts/privacy-policy',
         },
         {
             id: 3,
             title: 'Edit Imprint',
             description: 'Update the Imprint in case the contact info changes.',
-            imageUrl: '/ui/editimprint.png',
+            image_url: '/ui/editimprint.png',
             url: '/admin/posts/imprint',
         },
     ];
@@ -62,7 +61,6 @@ const AdminPage = () => {
             <div className="container-lg posts my-5" id="posts">
                 <div className="container-fluid">
                     <div className='d-flex gap-3'>
-                        <button onClick={() => rebuildPagination()}>Rebuild Pagination</button>
                         <button onClick={() => UpdateEmailTemplate()}>Update Email Template</button>
                     </div>
                     <h1 className="heading-large mt-4">Quick actions</h1>
@@ -136,7 +134,7 @@ const AdminPage = () => {
                                             <div className={postCardStyles.image}>
                                                 <Image
                                                     className={`img-fluid full-image admin-image ${postCardStyles.newPostImage}`}
-                                                    src={item.imageUrl} // Using the image URL, including the placeholder logic if needed
+                                                    src={item.image_url} // Using the image URL, including the placeholder logic if needed
                                                     alt={item.title}
                                                     title={item.title}
                                                     priority={true} // Ensuring the image is preloaded and prioritized
@@ -171,7 +169,7 @@ const AdminPage = () => {
                                             <div className={postCardStyles.image}>
                                                 <Image
                                                     className={`img-fluid full-image admin-image ${postCardStyles.newPostImage}`}
-                                                    src={item.imageUrl} // Using the image URL, including the placeholder logic if needed
+                                                    src={item.image_url} // Using the image URL, including the placeholder logic if needed
                                                     alt={item.title}
                                                     title={item.title}
                                                     priority={true} // Ensuring the image is preloaded and prioritized

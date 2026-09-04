@@ -312,7 +312,9 @@
     .expandedContainer {
         border-radius: var(--radius-md);
         padding: 0.3rem 0.3rem;
-        overflow-y: scroll;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        -webkit-overflow-scrolling: touch;
     }
 }
 

@@ -74,13 +74,19 @@ const PostsPage = () => {
                         {imagesPaths.slice(0, imagesDisplayed).map((pathName, index) => {
                             if (!pathName.includes('.webp')) return;
 
+                            const parts = pathName.split('/');
+                            const filename = parts.at(-1);
+                            const date = parts.length >= 3 ? `${parts.at(-3)}.${parts.at(-2)}` : 'N/A';
+                            const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://qarqpcollwcvirrnostl.supabase.co';
+                            const imageUrl = `${supabaseUrl}/storage/v1/object/public/images/${pathName}`;
+
                             return (
                                 <div key={index} className='col-12 col-md-6 col-lg-4 my-3 px-3 mx-' style={{ border: '2px solid var(--col-secondary)'}}>
-                                    <Image src={`/images/` + pathName as string} width={354} height={354} alt={''} />
-                                    <h3>{pathName.split('/').at(-1)}</h3>
-                                    <h4>Date: {pathName.split('/').at(-3)}.{pathName.split('/').at(-2)}</h4>
-                                    <h5>Path: public/images/{pathName}</h5>
-                                    <button onClick={() => deleteImage(path.join('public/images', pathName))} className='btn-filled btn-danger my-3'>Delete</button>
+                                    <Image src={imageUrl} width={354} height={354} alt={filename || ''} style={{ objectFit: 'cover' }} />
+                                    <h3>{filename}</h3>
+                                    <h4>Date: {date}</h4>
+                                    <h5>Path: Supabase: images/{pathName}</h5>
+                                    <button onClick={() => deleteImage(pathName)} className='btn-filled btn-danger my-3'>Delete</button>
                                 </div>
                             );
                         })}

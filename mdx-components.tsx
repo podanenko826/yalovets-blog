@@ -34,7 +34,7 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
         ),
         table: (props: React.JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableElement> & React.TableHTMLAttributes<HTMLTableElement>) => (
             <div className="container">
-                <div className="row overflow-scroll">
+                <div className="row overflow-auto">
                     <div className="col-12 p-0">
                         <table className="table" {...props} />
                     </div>
@@ -50,7 +50,7 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
             const href = props.href;
 
             if (!href) {
-                return <p>{props.children}</p>; // Return paragraph if no href is provided
+                return <span>{props.children}</span>; // Return span if no href is provided
             }
 
             // Ensure the URL starts with `http` or `https`
@@ -62,7 +62,7 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
 
             // Detect "example" or "localhost" in the URL
             if (splitUrl.some(part => part.includes('example') || part.includes('local') || part.includes('127.0') || part.includes('0.0.0.0') || part.includes('192.168') || part.includes('10.0'))) {
-                return <p>{props.children}</p>;
+                return <span>{props.children}</span>;
             }
 
             // Return the anchor with processed URL
@@ -182,7 +182,7 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
                 <div className="codeblock">
                     <div className="row m-0">
                         <div className="codeblock__head">
-                            <div>{language !== '' && <p style={{ userSelect: 'none' }}>{language}</p>}</div>
+                            <div style={{ minHeight: '20px' }}>{language !== '' && <p style={{ userSelect: 'none' }}>{language}</p>}</div>
                             <div className="copyCode">
                                 <a
                                     role="button"

@@ -1,78 +1,50 @@
-import { getAuthorEmails } from '@/lib/authors';
-import { DynamoDBClient, QueryCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
-import moment from 'moment';
+import { supabase } from '@/lib/supabase';
 import { NextResponse } from 'next/server';
-
-const dbClient = new DynamoDBClient({
-    credentials: {
-        accessKeyId: process.env.NEXT_PUBLIC_ACCESS_KEY_ID as string,
-        secretAccessKey: process.env.NEXT_PUBLIC_SECRET_ACCESS_KEY as string,
-    },
-});
-
-const TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME || '';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
-
     const authorEmail: string | undefined = searchParams.get('email') || undefined;
     const limit: number | undefined = Number(searchParams.get('limit')) || undefined;
-    let lastKey = searchParams.get('lastKey') || moment.utc().toISOString();
+    const offset: number = Number(searchParams.get('offset')) || 0;
 
-    if (!TABLE_NAME || !authorEmail) {
+    if (!authorEmail) {
         return NextResponse.json({
-            posts: [],
-            lastKey: '',
-        }, { status: 500 });
+            posts: []
+        }, { status: 400 });
     }
 
     try {
-        const params = {
-            TableName: TABLE_NAME,
-            IndexName: 'GSI_PostsByAuthorAndDate',
-            KeyConditionExpression: 'email = :email',
-            ExpressionAttributeValues: {
-                ':email': { S: authorEmail },
-            },
-            ExclusiveStartKey: {
-                //? The primary value that defines the start key of a Query (others don't matter)
-                email: { S: authorEmail },
-                date: { S: moment(lastKey).add(1, 'second').toISOString() || moment.utc().toISOString() },
-                slug: { S: 'ANY_SLUG' },
-            },
-            ScanIndexForward: false, // Descending order
-            Limit: limit,
-        };
+        // First get the author ID based on the email
+        const { data: author, error: authorError } = await supabase
+            .from('authors')
+            .select('id')
+            .eq('email', authorEmail)
+            .single();
 
-        const command = new QueryCommand(params);
-        const result = await dbClient.send(command);
-        const postsData = result.Items;       
-        
-        if (postsData && postsData?.length >= 1) {
-            const sortedPosts = postsData.sort((a, b) => {
-                const dateOne = moment(a.date.S);
-                const dateTwo = moment(b.date.S);
-    
-                return dateTwo.diff(dateOne); // Descending order
-            });  
-            
-            const lastEvaluatedKey = sortedPosts.at(-1);
-            if (lastEvaluatedKey) {
-                lastKey = lastEvaluatedKey.date.S || '';
-            }
+        if (authorError || !author) {
+            return NextResponse.json({ posts: [] }, { status: 404 });
         }
 
-        if (!postsData || postsData.length === 0) {
-            return NextResponse.json({
-                posts: [],
-                lastKey: ''
-            }, { status: 201 });
+        // Now query posts by author_id
+        let query = supabase
+            .from('posts')
+            .select('*')
+            .eq('author_id', author.id)
+            .order('created_at', { ascending: false });
+
+        if (limit) {
+            query = query.range(offset, offset + limit - 1);
+        }
+
+        const { data: postsData, error: postsError } = await query;
+
+        if (postsError) {
+            throw postsError;
         }
 
         return NextResponse.json({
-            posts: postsData,
-            lastKey: lastKey,
-        }, { status: 201 });
+            posts: (postsData || [])
+        }, { status: 200 });
     } catch (err) {
         console.error('Failed to fetch data from the database: ', err);
         return NextResponse.json(err, { status: 500 });

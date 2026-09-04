@@ -1,13 +1,16 @@
 import type { Metadata } from 'next';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
+import { lazy } from 'react';
 import '@/app/css/custom.css';
 import '@/app/globals.css';
 
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 
+const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
+
 export const metadata: Metadata = {
-    title: 'Yalovets Blog',
+    title: 'Yalovets Blog Admin',
     description: 'Ivan Yalovets Blog Website',
 };
 
@@ -36,9 +39,7 @@ export default function RootLayout({
                     }} />
                 </head>
                 <body>
-                    <NavBar />
                     {children}
-                    <Footer />
                 </body>
             </html>
         </AppRouterCacheProvider>

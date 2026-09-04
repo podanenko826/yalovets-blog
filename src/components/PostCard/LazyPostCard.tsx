@@ -30,13 +30,13 @@ const LazyPostCard = React.memo(
                     setIsVisible(true);
                     if (setLoading) setLoading(false);
                 };
-            }, { 
+            }, {
                 rootMargin: "800px", // start loading 200px before entering viewport
-                threshold: 0.01 
+                threshold: 0.01
             });
-    
+
             if (ref.current) observer.observe(ref.current);
-    
+
             return () => observer.disconnect();
         }, [setLoading]);
 
@@ -272,7 +272,9 @@ const LazyPostCard = React.memo(
             </>
         );
     },
-    (prevProps, nextProps) => prevProps.post.imageUrl === nextProps.post.imageUrl
+    (prevProps, nextProps) =>
+        prevProps.post.image_url === nextProps.post.image_url &&
+        prevProps.authorData === nextProps.authorData
 );
 
 export default LazyPostCard;

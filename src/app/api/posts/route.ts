@@ -1,100 +1,46 @@
 import { PostItem } from '@/types';
-import { DynamoDBClient, QueryCommand } from '@aws-sdk/client-dynamodb';
-import { DeleteCommand, PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import moment from 'moment';
+import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import { NextResponse } from 'next/server';
-
-const dbClient = new DynamoDBClient({
-    credentials: {
-        accessKeyId: process.env.NEXT_PUBLIC_ACCESS_KEY_ID as string,
-        secretAccessKey: process.env.NEXT_PUBLIC_SECRET_ACCESS_KEY as string,
-    },
-});
-
-const TABLE_NAME = process.env.NEXT_PUBLIC_TABLE_NAME || '';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
 
     const limit: number | undefined = Number(searchParams.get('limit')) || undefined;
-    let lastKey = searchParams.get('lastKey') || moment.utc().toISOString();
-
-    if (!TABLE_NAME) {
-        return NextResponse.json({
-            posts: [],
-            lastKey: '',
-        }, { status: 500 });
-    }
+    const offset: number = Number(searchParams.get('offset')) || 0;
 
     try {
-        const params = {
-            TableName: TABLE_NAME,
-            IndexName: 'GSI_PostsByDate',
-            KeyConditionExpression: 'postGroup = :postGroup',
-            ExpressionAttributeValues: {
-                ':postGroup': { S: 'ALL_POSTS' },
-            },
-            ExclusiveStartKey: {
-                //? The primary value that defines the start key of a Query (others don't matter)
-                date: { S: moment(lastKey).add(1, 'second').toISOString() },
-                postGroup: { S: 'ALL_POSTS' },
-                email: { S: 'ANY_EMAIL' },
-                slug: { S: 'ANY_SLUG' },
-            },
-            ScanIndexForward: false, // Descending order
-            Limit: limit,
-        };
+        let query = supabase.from('posts').select('*').order('created_at', { ascending: false });
 
-        const command = new QueryCommand(params);
-        const result = await dbClient.send(command);
-        const postsData = result.Items;       
-        
-        if (postsData && postsData?.length >= 1) {
-            const sortedPosts = postsData.sort((a, b) => {
-                const dateOne = moment(a.date.S);
-                const dateTwo = moment(b.date.S);
-    
-                return dateTwo.diff(dateOne); // Descending order
-            });  
-            
-            const lastEvaluatedKey = sortedPosts.at(-1);
-            if (lastEvaluatedKey) {
-                lastKey = lastEvaluatedKey.date.S || '';
-            }
+        if (limit) {
+            query = query.range(offset, offset + limit - 1);
         }
 
-        if (!postsData || postsData.length === 0) {
-            return NextResponse.json({
-                posts: [],
-                lastKey: ''
-            }, { status: 201 });
+        const { data: postsData, error } = await query;
+
+        if (error) {
+            throw error;
         }
 
         return NextResponse.json({
-            posts: postsData,
-            lastKey: lastKey,
-        }, { status: 201 });
+            posts: (postsData || []),
+        }, { status: 200 });
     } catch (err) {
         console.error('Failed to fetch data from the database: ', err);
         return NextResponse.json(err, { status: 500 });
     }
 }
 
-
 export async function POST(request: Request) {
     const { searchParams } = new URL(request.url);
     const postSlug = searchParams.get('slug')?.split('/').at(-1);
 
     const postData = await request.json();
-    const { email, description, imageUrl, date, modifyDate, postType, readTime, viewsCount, sponsoredBy } = postData;
-    let {slug, title, sponsorUrl} = postData;
+    const { author_id, description, image_url, post_type, read_time, views_count, sponsored_by, content } = postData;
+    let { slug, title, sponsor_url, created_at, updated_at } = postData;
 
-    if (!TABLE_NAME) {
-        return NextResponse.json({ error: 'Table name is not defined in environment variables' }, { status: 500 });
-    }
-
-    if (!email || !title || !description || !date || !imageUrl || !readTime || !postType) {
-        return NextResponse.json({ error: 'Recieved invalid or incomplete post data' }, { status: 500 });
+    if (!author_id || !title || !description || !image_url || !read_time || !post_type || !content) {
+        return NextResponse.json({ error: 'Received invalid or incomplete post data' }, { status: 400 });
     }
 
     if (!slug && postSlug) {
@@ -109,45 +55,43 @@ export async function POST(request: Request) {
     }
 
     let modifiedSponsorUrl: string | undefined = undefined;
-    if (sponsorUrl && !sponsorUrl.startsWith('http://') && !sponsorUrl.startsWith('https://')) {
-        modifiedSponsorUrl = `https://${sponsorUrl}`;
+    if (sponsor_url && !sponsor_url.startsWith('http://') && !sponsor_url.startsWith('https://')) {
+        modifiedSponsorUrl = `https://${sponsor_url}`;
     }
 
-    // Ensure the fileName does not exceed 255 characters, including the '.mdx' extension
+    // Ensure the slug does not exceed 255 characters
     const MAX_FILENAME_LENGTH = 150;
-    const fileExtension = '.mdx';
-
-    // Truncate the slug if the full fileName would exceed the limit
-    if (slug.length + fileExtension.length > MAX_FILENAME_LENGTH) {
-        slug = slug.slice(0, MAX_FILENAME_LENGTH - fileExtension.length);
-
-        title = title.slice(0, MAX_FILENAME_LENGTH - fileExtension.length);
+    if (slug.length > MAX_FILENAME_LENGTH) {
+        slug = slug.slice(0, MAX_FILENAME_LENGTH);
+    }
+    if (title.length > MAX_FILENAME_LENGTH) {
+        title = title.slice(0, MAX_FILENAME_LENGTH);
     }
 
-    const newPost: PostItem = {
-        email,
+    const newPost = {
+        author_id,
         slug,
         title,
         description,
-        imageUrl,
-        date,
-        modifyDate: modifyDate || date, // Automatically generated modifyDate
-        postType,
-        readTime: readTime,
-        viewsCount: viewsCount || 0,
-        postGroup: 'ALL_POSTS',
-        sponsoredBy: sponsoredBy || '',
-        sponsorUrl: modifiedSponsorUrl || ''
+        content,
+        image_url: image_url || null,
+        created_at: created_at || new Date().toISOString(),
+        updated_at: created_at || new Date().toISOString(),
+        post_type: post_type || 'article',
+        read_time: read_time || 0,
+        views_count: views_count || 0,
+        sponsored_by: sponsored_by || null,
+        sponsor_url: modifiedSponsorUrl || null
     };
     
     try {
-        const command = new PutCommand({
-            TableName: TABLE_NAME,
-            Item: newPost,
-        });
+        const { error } = await supabase.from('posts').insert([newPost]);
 
-        await dbClient.send(command);
-        return NextResponse.json({ message: 'Successfully uploaded post' }, { status: 200 });
+        if (error) {
+            throw error;
+        }
+
+        return NextResponse.json({ message: 'Successfully uploaded post' }, { status: 201 });
     } catch (err) {
         console.error('Failed to upload post:', err);
         return NextResponse.json({ error: 'Failed to upload post' }, { status: 500 });
@@ -156,61 +100,49 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     const postData = await request.json();
-    const { email, slug, description, imageUrl, date, postType, readTime, sponsoredBy } = postData;
-    let { title, modifyDate, sponsorUrl } = postData;
+    const { id, title, description, content, image_url, post_type, read_time, sponsored_by, sponsor_url } = postData;
+    let { updated_at } = postData;
 
-    if (!TABLE_NAME) {
-        return NextResponse.json({ error: 'Table name is not defined in environment variables' }, { status: 500 });
-    }
-
-    if (!email || !slug || !title || !description || !date || !imageUrl || !readTime || !postType) {
-        return NextResponse.json({ error: 'Recieved invalid or incomplete post data' }, { status: 500 });
+    if (!id) {
+        return NextResponse.json({ error: 'Missing required identifier: id.' }, { status: 400 });
     }
 
     let modifiedSponsorUrl: string | undefined = undefined;
-    if (sponsorUrl && !sponsorUrl.startsWith('http://') && !sponsorUrl.startsWith('https://')) {
-        modifiedSponsorUrl = `https://${sponsorUrl}`;
+    if (sponsor_url && !sponsor_url.startsWith('http://') && !sponsor_url.startsWith('https://')) {
+        modifiedSponsorUrl = `https://${sponsor_url}`;
     }
 
-    // Ensure the fileName does not exceed 255 characters, including the '.mdx' extension
-    const MAX_FILENAME_LENGTH = 150;
-    const fileExtension = '.mdx';
+    updated_at = updated_at || new Date().toISOString();
 
-    // Truncate the slug if the full fileName would exceed the limit
-    if (title.length > MAX_FILENAME_LENGTH) {
-        title = title.slice(0, MAX_FILENAME_LENGTH - fileExtension.length);
-    }
+    const updatedPost = {
+        title,
+        description,
+        content,
+        image_url: image_url || null,
+        updated_at,
+        post_type: post_type,
+        read_time: read_time,
+        sponsored_by: sponsored_by || null,
+        sponsor_url: modifiedSponsorUrl || null
+    };
 
-    modifyDate = modifyDate || moment.utc().toISOString();
+    // Remove undefined values
+    Object.keys(updatedPost).forEach(key => {
+        if (updatedPost[key as keyof typeof updatedPost] === undefined) {
+            delete updatedPost[key as keyof typeof updatedPost];
+        }
+    });
 
     try {
-        const command = new UpdateCommand({
-            TableName: TABLE_NAME,
-            Key: { email, slug },
-            UpdateExpression: `
-                SET title = :title,
-                    description = :description,
-                    imageUrl = :imageUrl,
-                    modifyDate = :modifyDate,
-                    postType = :postType,
-                    readTime = :readTime,
-                    sponsoredBy = :sponsoredBy,
-                    sponsorUrl = :sponsorUrl
-            `,
-            ExpressionAttributeValues: {
-                ":title": title,
-                ":description": description,
-                ":imageUrl": imageUrl,
-                ":modifyDate": modifyDate,
-                ":postType": postType,
-                ":readTime": readTime,
-                ":sponsoredBy": sponsoredBy || '',
-                ":sponsorUrl": modifiedSponsorUrl || ''
-            },
-            ReturnValues: "UPDATED_NEW",
-        });
+        const { error } = await supabase
+            .from('posts')
+            .update(updatedPost)
+            .eq('id', id);
 
-        await dbClient.send(command);
+        if (error) {
+            throw error;
+        }
+
         return NextResponse.json({ message: 'Successfully updated post' }, { status: 200 });
     } catch (err) {
         console.error('Failed to update post:', err);
@@ -220,30 +152,24 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
     try {
-        const { email, slug } = await request.json();
+        const { id } = await request.json();
 
-        // Check that the required slug is provided
-        if (!email) {
-            return NextResponse.json({ error: 'Missing required identifier: email.' }, { status: 500 })
+        if (!id) {
+            return NextResponse.json({ error: 'Missing required identifier: id.' }, { status: 400 })
         }
-        if (!slug) {
-            return NextResponse.json({ error: 'Missing required identifier: slug.' }, { status: 500 })
-        }
-
-        // Create the delete command with the specified TableName and Key (slug in this case)
-        const command = new DeleteCommand({
-            TableName: TABLE_NAME,
-            Key: {
-                email,
-                slug,
-            },
-        });
         
-        await dbClient.send(command);
+        const { error } = await supabase
+            .from('posts')
+            .delete()
+            .eq('id', id);
+            
+        if (error) {
+            throw error;
+        }
         
         return NextResponse.json({ message: 'Successfully deleted post' }, { status: 200 });
     } catch (err) {
         console.error('Failed to delete post:', err);
-        return NextResponse.json({ error: 'Failed to upload post' }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to delete post' }, { status: 500 });
     }
 }

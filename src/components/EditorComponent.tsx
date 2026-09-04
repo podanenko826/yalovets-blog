@@ -24,7 +24,7 @@ import { sendEmailsOnPost } from '@/services/sendEmailsOnPost';
 
 const PostCard = dynamic(() => import('@/components/PostCard/PostCard'), { ssr: false });
 
-interface EditorProps {
+export interface EditorProps {
     markdown: string;
     slug?: string;
     postData?: PostItem;
@@ -38,27 +38,27 @@ const jsxComponentDescriptors: JsxComponentDescriptor[] = [
         name: 'YouTubeEmbed',
         kind: 'flow',
         props: [
-            {name: 'id', type: 'string', required: true},
+            { name: 'id', type: 'string', required: true },
         ],
         hasChildren: true,
-        Editor: (props) => CopyGenericJsxEditor({...props, TargetNode: YouTubeEmbed}),
+        Editor: (props) => CopyGenericJsxEditor({ ...props, TargetNode: YouTubeEmbed }),
     },
-  ]
+]
 
 const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorRef, legalMdx }) => {
     const [currentMarkdown, setCurrentMarkdown] = useState(markdown); // Track current markdown
-    const [selectedAuthor, setSelectedAuthor] = useState(postData ? authorData.find(author => author.email === postData.email) : authorData.find(author => author.authorKey === 'ivanyalovets') || authorData[0]);
+    const [selectedAuthor, setSelectedAuthor] = useState(postData ? authorData.find(author => author.id === postData.author_id) : authorData.find(author => author.handle === 'ivanyalovets') || authorData?.[0] || null);
     const [postTitle, setPostTitle] = useState(postData ? postData.title : '');
     const [description, setDescription] = useState(postData ? postData.description : '');
-    const [postType, setPostType] = useState<string>('Article');
-    const [readTime, setReadTime] = useState<number>(0);
+    const [post_type, setPostType] = useState<string>('Article');
+    const [read_time, setReadTime] = useState<number>(0);
     const [imageFile, setImageFile] = useState<File | null>(null);
 
     const [isSponsored, setIsSponsored] = useState<boolean>(false);
-    const [sponsoredBy, setSponsoredBy] = useState<string | undefined>(undefined);
-    const [sponsorUrl, setSponsorUrl] = useState<string | undefined>(undefined);
+    const [sponsored_by, setSponsoredBy] = useState<string | undefined>(undefined);
+    const [sponsor_url, setSponsorUrl] = useState<string | undefined>(undefined);
 
-    const [imageUrl, setImageUrl] = useState(postData ? postData.imageUrl : '');
+    const [image_url, setImageUrl] = useState(postData ? postData.image_url : '');
 
     const [loadingMessage, setLoadingMessage] = useState<string | null>(null);
 
@@ -70,25 +70,25 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
             if (postData) {
                 setPostTitle(postData.title);
                 setDescription(postData.description);
-                setImageUrl(postData.imageUrl || '/ui/addpost.png');
-                setSelectedAuthor(authorData.find(author => author.email === postData.email) || authorData[0]);
+                setImageUrl(postData.image_url || '/ui/addpost.png');
+                setSelectedAuthor(authorData.find(author => author.id === postData.author_id) || authorData?.[0] || null);
 
-                if (postData.postType) {
-                    setPostType(postData.postType);
+                if (postData.post_type) {
+                    setPostType(postData.post_type);
                 }
 
-                if (postData.readTime && postData.readTime > 0) {
-                    setReadTime(postData.readTime);
+                if (postData.read_time && postData.read_time > 0) {
+                    setReadTime(postData.read_time);
                 }
 
-                if (postData.sponsoredBy) {
+                if (postData.sponsored_by) {
                     setIsSponsored(true);
-                    setSponsoredBy(postData.sponsoredBy)
+                    setSponsoredBy(postData.sponsored_by)
                 }
 
-                if (postData.sponsorUrl) {
+                if (postData.sponsor_url) {
                     setIsSponsored(true);
-                    setSponsorUrl(postData.sponsorUrl)
+                    setSponsorUrl(postData.sponsor_url)
                 }
             }
         }
@@ -98,26 +98,24 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
         const uploadBannerImage = async () => {
             if (imageFile) {
                 let date = moment.utc().toDate();
-    
-                if (postData?.date) {
-                    date = moment(postData.date).toDate();
+
+                if (postData?.created_at) {
+                    date = moment(postData.created_at).toDate();
                 }
-    
+
                 const year: string = date.getFullYear().toString();
                 const month: string = String(date.getMonth() + 1).padStart(2, '0');
 
-                const filename = imageFile.name.replace(/\.[^/.]+$/, ""); // Remove extension
+                const { filePath } = await uploadImage(imageFile, year, month, 540);
 
-                const newImageUrl: string = `/images/${year}/${month}/${filename}.webp`;
-    
-                await uploadImage(imageFile, year, month);
-    
-                setImageUrl(newImageUrl);
+                if (filePath) {
+                    setImageUrl(filePath);
+                }
             }
         }
 
         uploadBannerImage();
-    }, [imageFile, postData, postData?.date]);
+    }, [imageFile, postData, postData?.created_at]);
 
     async function imageUploadHandler(image: File) {
         const newName = image.name.replace(/\s+/g, '');
@@ -125,49 +123,49 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
         const newImage = new File([image], newName, { type: image.type, lastModified: image.lastModified });
 
         let date = moment.utc().toDate();
-    
-        if (postData?.date) {
-            date = moment(postData.date).toDate();
+
+        if (postData?.created_at) {
+            date = moment(postData.created_at).toDate();
         }
 
         const year: string = date.getFullYear().toString();
         const month: string = String(date.getMonth() + 1).padStart(2, '0');
         // send the file to your server and return
         // the URL of the uploaded image in the response
-        const { filePath } = await uploadImage(newImage, year, month);
+        const { filePath } = await uploadImage(newImage, year, month, 730);
 
         return filePath;
     }
 
-    if (postData?.date === 'Invalid date') {
-        postData.date = moment.utc().toISOString();
+    if (postData?.created_at === 'Invalid date') {
+        postData.created_at = moment.utc().toISOString();
     }
 
-    const Post: PostItem = {
-        email: selectedAuthor?.email || authorData[0].email,
+    const Post: Partial<PostItem> = {
+        id: postData?.id,
+        author_id: selectedAuthor?.id || authorData?.[0]?.id || '',
         slug: slug ? slug : '',
         title: postTitle,
         description,
-        date: postData?.date || moment.utc().toISOString(),
-        modifyDate: moment.utc().toISOString(),
-        imageUrl,
-        postType,
-        readTime,
-        viewsCount: postData?.viewsCount || 0,
-        postGroup: 'ALL_POSTS',
-        sponsoredBy,
-        sponsorUrl,
+        created_at: postData?.created_at || moment.utc().toISOString(),
+        updated_at: moment.utc().toISOString(),
+        image_url,
+        post_type,
+        read_time,
+        views_count: postData?.views_count || 0,
+        sponsored_by,
+        sponsor_url,
     };
 
-    const PostPreview: PostPreviewItem = {
+    const PostPreview: Partial<PostPreviewItem> = {
         title: postTitle,
         description,
-        imageUrl: imageUrl || '/ui/addpost.png',
-        date: postData?.date || moment(Date.now()).format(format),
-        modifyDate: moment(formatPostDate(moment(postData?.modifyDate).toDate()), format).format(format) || moment(Date.now()).format(format),
-        postType: postType || 'Article',
-        readTime,
-        authorData: (selectedAuthor as AuthorItem) || authorData[0],
+        image_url: image_url || '/ui/addpost.png',
+        created_at: postData?.created_at || moment(Date.now()).format(format),
+        updated_at: moment(formatPostDate(moment(postData?.updated_at).toDate()), format).format(format) || moment(Date.now()).format(format),
+        post_type: post_type || 'Article',
+        read_time,
+        authorData: (selectedAuthor as AuthorItem) || authorData?.[0] || null,
         isSponsored,
     };
 
@@ -189,8 +187,8 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
     }
 
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedAuthorEmail = event.target.value;
-        const author = authorData.find(a => a.email === selectedAuthorEmail) as AuthorItem;
+        const selectedAuthorId = event.target.value;
+        const author = authorData.find(a => a.id === selectedAuthorId) as AuthorItem;
         setSelectedAuthor(author); // Update the state with the selected author
     };
 
@@ -201,9 +199,9 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
     const handleSave = async () => {
         if (!legalMdx && slug) {
             console.log(Post);
-            
+
             const { markdown, slug } = await updatePost(Post, currentMarkdown);
-    
+
             if (markdown && slug) {
                 window.open(`/${slug}`, '_blank', 'noopener,noreferrer');
                 setTimeout(() => {
@@ -229,12 +227,12 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
             }
         } else {
             console.log(Post);
-            
-            const { markdown, slug } = await createPost(Post, currentMarkdown);
+
+            const { markdown, slug } = await createPost(Post, currentMarkdown, selectedAuthor?.email || '');
 
             setLoadingMessage('Sending emails on newsletter');
 
-            const isSuccessfullySent = await sendEmailsOnPost(Post);
+            const isSuccessfullySent = await sendEmailsOnPost(Post as PostItem);
 
             if (!isSuccessfullySent) {
                 setLoadingMessage('Failed to send emails');
@@ -243,7 +241,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
             setTimeout(() => {
                 setLoadingMessage(null);
             }, 1500)
-            
+
             if (markdown && slug) {
                 window.open(`/${slug}`, '_blank', 'noopener,noreferrer');
                 setTimeout(() => {
@@ -261,7 +259,21 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
         }
     };
 
-    if (!selectedAuthor) return null;
+    if (!selectedAuthor) {
+        if (!authorData || authorData.length === 0) {
+            return (
+                <div className="container mt-5 text-center">
+                    <h3>No authors found</h3>
+                    <p>Please create an author before creating a post.</p>
+                </div>
+            );
+        }
+        return (
+            <div className="container mt-5 text-center">
+                <h3>Loading editor...</h3>
+            </div>
+        );
+    }
 
     return (
         <div>
@@ -272,30 +284,30 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
                     <div className="text-center pt-4">
                         <textarea className="heading-xlarge w-100 col-md-11 col-lg-12 text-center align-content-center" id="col-heading-1" disabled={slug ? true : false} placeholder={slug ? slug : 'Enter the post title'} onChange={e => handlePostTitleChange(e.target.value)} value={postTitle} />
                         <div className="d-flex justify-content-center gap-1">
-                            <select className="form-select preview-author-select p-0 px-2" aria-label="Select author" value={selectedAuthor?.email} disabled={slug ? true : false} onChange={handleChange}>
+                            <select className="form-select preview-author-select p-0 px-2" aria-label="Select author" value={selectedAuthor?.id || ''} disabled={slug ? true : false} onChange={handleChange}>
                                 {authorData.map(author => (
-                                    <option key={author.email} value={author.email} className="w-auto p-0 m-0 text-center">
-                                        {author.fullName}
+                                    <option key={author.id} value={author.id} className="w-auto p-0 m-0 text-center">
+                                        {author.full_name}
                                     </option>
                                 ))}
                             </select>
                             <p className="m-0">•</p>
 
                             <div className="d-flex justify-content-center gap-2">
-                                <p className="m-0">{postData ? moment(postData.date, format).format('D MMM YYYY') : moment(Date.now()).format('DD MMM YYYY')}</p>
+                                <p className="m-0">{postData ? moment(postData.created_at, format).format('D MMM YYYY') : moment(Date.now()).format('DD MMM YYYY')}</p>
 
-                                {moment(postData?.modifyDate, format).isAfter(moment(postData?.date, format)) && (
+                                {moment(postData?.updated_at, format).isAfter(moment(postData?.created_at, format)) && (
                                     <>
                                         <p className="d-none d-md-block m-0">•</p>
-                                        <span className="d-none d-md-block px-2 m-0 rounded-pill text-bg-secondary">{'Updated ' + moment(postData?.modifyDate, format).fromNow()}</span>
+                                        <span className="d-none d-md-block px-2 m-0 rounded-pill text-bg-secondary">{'Updated ' + moment(postData?.updated_at, format).fromNow()}</span>
                                     </>
                                 )}
                             </div>
                         </div>
-                        {moment(postData?.modifyDate, format).isAfter(moment(postData?.date, format)) && (
+                        {moment(postData?.updated_at, format).isAfter(moment(postData?.created_at, format)) && (
                             <>
                                 <span className="d-md-none px-2 m-0 rounded-pill text-bg-secondary" id="mobileUpdatedBadge">
-                                    {'Updated ' + moment(postData?.modifyDate, format).fromNow()}
+                                    {'Updated ' + moment(postData?.updated_at, format).fromNow()}
                                 </span>
                             </>
                         )}
@@ -312,8 +324,10 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
                     <MDXEditor
                         contentEditableClassName="article"
                         onChange={e => {
-                            setCurrentMarkdown(e); // Update current markdown when the editor content changes
-                            calculateReadingTime(e); // Update read time in real time when the editor content changes
+                            setTimeout(() => {
+                                setCurrentMarkdown(e); // Update current markdown when the editor content changes
+                                calculateReadingTime(e); // Update read time in real time when the editor content changes
+                            }, 0);
                         }}
                         ref={editorRef}
                         markdown={currentMarkdown}
@@ -330,6 +344,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
                             codeMirrorPlugin({
                                 codeBlockLanguages: {
                                     '': 'None',
+                                    dart: 'Dart',
                                     js: 'JavaScript',
                                     ts: 'TypeScript',
                                     jsx: 'JSX',
@@ -411,7 +426,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
                     <div className="row">
                         <div className="container">
                             <h1 className="text-center py-3">Preview</h1>
-                            <PostCard post={Post} previewData={PostPreview} authorData={selectedAuthor || authorData[0]} style="preview" setValue={setDescription} setPostType={setPostType} setImageFile={setImageFile} />
+                            <PostCard post={Post as PostItem} previewData={PostPreview as PostPreviewItem} authorData={selectedAuthor || authorData?.[0] || ({} as AuthorItem)} style="preview" setValue={setDescription} setPostType={setPostType} setImageFile={setImageFile} />
                             <li className="list-group-item py-2 py-lg-1">
                                 <input
                                     className="form-check-input me-2"
@@ -428,11 +443,11 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
                                 <>
                                     <div>
                                         <label htmlFor="" className='mx-3'>Enter sponsor company name</label>
-                                        <input type="text" placeholder='Coffeeman Corporation' value={sponsoredBy} onChange={e => setSponsoredBy(e.target.value)} />
+                                        <input type="text" placeholder='Coffeeman Corporation' value={sponsored_by} onChange={e => setSponsoredBy(e.target.value)} />
                                     </div>
                                     <div className='mt-3'>
                                         <label htmlFor="" className='mx-3'>Enter company&apos;s website URL (optional)</label>
-                                        <input type="text" placeholder='www.yalovets.blog/' value={sponsorUrl} onChange={e => setSponsorUrl(e.target.value)} />
+                                        <input type="text" placeholder='www.yalovets.blog/' value={sponsor_url} onChange={e => setSponsorUrl(e.target.value)} />
                                     </div>
                                 </>
                             )}

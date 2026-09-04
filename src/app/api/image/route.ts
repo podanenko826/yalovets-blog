@@ -1,24 +1,31 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
 import sharp from 'sharp';
+import { supabase } from '@/lib/supabase';
 
-const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'];
+async function listAllFiles(bucket: string, currentPath: string = ''): Promise<string[]> {
+    const { data, error } = await supabase.storage.from(bucket).list(currentPath);
+    if (error || !data) return [];
+    
+    let files: string[] = [];
+    for (const item of data) {
+        if (!item.id) {
+            // It's a folder, recursively list
+            const subPath = currentPath ? `${currentPath}/${item.name}` : item.name;
+            const subFiles = await listAllFiles(bucket, subPath);
+            files.push(...subFiles);
+        } else {
+            // It's a file
+            if (item.name !== '.emptyFolderPlaceholder') {
+                files.push(currentPath ? `${currentPath}/${item.name}` : item.name);
+            }
+        }
+    }
+    return files;
+}
 
 export async function GET() {
     try {
-        const imagesDir = path.join(process.cwd(), 'public/images');
-        const imageFiles = fs.readdirSync(imagesDir, { recursive: true });
-
-        let imagesPaths: string[] = [];
-        for (const file of imageFiles) {
-            for (const extension of IMAGE_EXTENSIONS) {
-                if (file.includes(extension)) {
-                    imagesPaths.push(file as string);
-                }
-            }
-        }
-
+        const imagesPaths = await listAllFiles('images');
         return NextResponse.json(imagesPaths);
     } catch (err) {
         console.error('Failed to get images paths:', err);
@@ -36,7 +43,9 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Either year or month is not passed to search parameters' }, { status: 400 });
         }
 
-        // Get the form data from the request
+        const widthParam = searchParams.get('width');
+        const width = widthParam ? parseInt(widthParam, 10) : null;
+
         const formData = await request.formData();
         const file = formData.get('image') as File;
 
@@ -44,30 +53,43 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
         }
 
-        // Get file metadata
         const originalName = file.name.replace(/\s+/g, ''); // Remove spaces
         const filename = originalName.replace(/\.[^/.]+$/, ''); // Remove extension
         const size = file.size;
         const mimetype = file.type;
 
-        // Set the upload directory
-        const uploadDir = path.join(process.cwd(), `public/images/${year}/${month}`);
-        fs.mkdirSync(uploadDir, { recursive: true });
-
-        // Convert the file to a buffer
         const buffer = Buffer.from(await file.arrayBuffer());
 
-        // Process & save the image (WebP conversion)
-        await sharp(buffer)
-            .toFormat('webp')
-            .toFile(path.join(uploadDir, `${filename}.webp`));
+        let finalFilename = filename;
+        let sharpInstance = sharp(buffer);
 
-        // Return the response with file metadata
+        if (width && !isNaN(width)) {
+            finalFilename = `${filename}@${width}w2x`;
+            sharpInstance = sharpInstance.resize({ width: width * 2 });
+        }
+
+        const webpBuffer = await sharpInstance.toFormat('webp').toBuffer();
+        const uploadPath = `${year}/${month}/${finalFilename}.webp`;
+
+        const { data, error } = await supabase.storage
+            .from('images')
+            .upload(uploadPath, webpBuffer, {
+                contentType: 'image/webp',
+                upsert: true
+            });
+
+        if (error) {
+            console.error('Supabase upload error:', error);
+            throw error;
+        }
+
+        const { data: urlData } = supabase.storage.from('images').getPublicUrl(uploadPath);
+
         return NextResponse.json({
             originalName,
             size,
             mimetype,
-            filePath: `/images/${year}/${month}/${filename}.webp`,
+            filePath: urlData.publicUrl,
         });
     } catch (error) {
         console.error('Error during file upload:', error);
@@ -80,13 +102,25 @@ export async function DELETE(request: Request) {
         const { searchParams } = new URL(request.url);
         const imagePath = searchParams.get('imagePath');
 
-        if (imagePath && fs.existsSync(path.join(process.cwd(), imagePath))) {
-            fs.rmSync(imagePath);
-
-            return NextResponse.json({ message: 'Deleted the image successfully' }, { status: 201 });
+        if (!imagePath) {
+            return NextResponse.json({ error: 'No imagePath provided' }, { status: 400 });
         }
 
-        return NextResponse.json({ message: 'The image in given path does not exist' }, { status: 404 });
+        // Extract the relative path from the full public URL if necessary
+        let relativePath = imagePath;
+        if (imagePath.includes('/storage/v1/object/public/images/')) {
+            relativePath = imagePath.split('/storage/v1/object/public/images/')[1];
+        } else if (imagePath.startsWith('/images/')) {
+            relativePath = imagePath.replace('/images/', '');
+        }
+
+        const { data, error } = await supabase.storage.from('images').remove([relativePath]);
+
+        if (error) {
+            throw error;
+        }
+
+        return NextResponse.json({ message: 'Deleted the image successfully' }, { status: 201 });
     } catch (err) {
         console.error('Error during file deletion:', err);
         return NextResponse.json({ error: 'Failed to delete image' }, { status: 500 });

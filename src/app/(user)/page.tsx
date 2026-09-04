@@ -1,24 +1,12 @@
-'use client';
 import * as React from 'react';
 import '@/app/page.css';
 
-import StartReadingButton from '@/components/Button/StartReadingButton';
-
 import Image from 'next/image';
 import PostList from '@/components/PostCard/PostList';
-import { Suspense, lazy, useEffect, useState } from 'react';
-// import { Metadata } from 'next';
-import { usePathname } from 'next/navigation';
-import { usePostStore } from '@/components/posts/store';
-import { useAuthorStore } from '@/components/authors/store';
-import LoadingBanner from '@/components/Modals/LoadingBanner';
-
-const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal'));
-const ArticleModal = lazy(() => import('@/components/Modals/ArticleModal'));
-
-interface HomeProps {
-    params: Promise<{ slug: string | undefined }>; // Optional slug prop
-}
+import { Suspense } from 'react';
+import { getPopularPosts, getSortedPosts } from '@/lib/posts';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
+import PostCardSkeleton from '@/components/PostCard/PostCardSkeleton';
 
 // async function generateMetadata(
 //     { params, searchParams }: { params: { slug: string }, searchParams?: Record<string, string> }
@@ -32,7 +20,7 @@ interface HomeProps {
 //         openGraph: {
 //             title: post?.title || 'Yalovets Blog',
 //             description: post?.description || 'AWS Unveiled: Your Gateway to Cloud Knowledge',
-//             images: post?.imageUrl ? [{ url: post.imageUrl }] : [],
+//             images: post?.image_url ? [{ url: post.image_url }] : [],
 //             url: `https://yalovets.blog/${post?.slug}`,
 //             type: 'article',
 //         },
@@ -40,54 +28,26 @@ interface HomeProps {
 //             card: 'summary_large_image',
 //             title: post?.title || 'Yalovets Blog',
 //             description: post?.description || 'AWS Unveiled: Your Gateway to Cloud Knowledge',
-//             images: post?.imageUrl ? [post.imageUrl] : [],
+//             images: post?.image_url ? [post.image_url] : [],
 //         },
 //     };
 // }
 
-export default function Home({ params }: HomeProps) {
-    let { slug } = React.use(params);
+async function RecentPostsList({ limit }: { limit: number }) {
+    const recentPosts = await getSortedPosts(limit);
 
-    const { selectedPost } = usePostStore();
+    return <PostList displayMode="recent" style="standard" indexIncrement={2} limit={limit} postsData={recentPosts.posts} />
+}
 
-    const { posts, fetchPosts } = usePostStore()
-    const { authors, fetchAuthors } = useAuthorStore();
+async function PopularPostsList({ limit }: { limit: number }) {
+    const popularPosts = await getPopularPosts(limit);
 
-    const currentPath = usePathname();
+    return <PostList displayMode="popular" style="standard" indexIncrement={15} limit={limit} postsData={popularPosts} />
+}
 
-    slug = currentPath.split('/').pop();
+export default async function Home() {
 
     const POSTS_PER_PAGE = 9;
-
-    // useEffect(() => {
-    //     loadPostsFromStorage();
-    // }, []);
-
-    useEffect(() => {
-        if (!selectedPost && typeof document !== 'undefined') {
-            document.title = 'Home / Yalovets Blog';
-        } else if (selectedPost) {
-            // generateMetadata({ params: { slug: selectedPost.slug }});
-        }
-    }, [selectedPost]);
-
-
-    // const [isVisible, setIsVisible] = useState<boolean>(false);
-
-    // useEffect(() => {
-    //     const targetElement = document.querySelector(`arrow-container`);
-    //     if (!targetElement) return;
-
-    //     const observer = new IntersectionObserver(
-    //         ([entry]) => {
-    //             setIsVisible(entry.isIntersecting);
-    //         },
-    //         { threshold: 0.5 }
-    //     );
-
-    //     observer.observe(targetElement);
-    //     return () => observer.disconnect();
-    // }, []);
 
     const codeBlock = `
   # Ensure you have AWS CLI configured
@@ -99,32 +59,9 @@ export default function Home({ params }: HomeProps) {
   # Connect to the instance using SSH
   ssh -i my-key.pem ec2-user@$EC2_IP
     `;
-    const [showModal, setShowModal] = useState(!!slug);
-
-    useEffect(() => {
-        if (!slug) {
-            setTimeout(() => setShowModal(true), 500);
-        }
-    }, [slug]);
-
-    useEffect(() => {
-        fetchPosts(POSTS_PER_PAGE);
-    }, [fetchPosts, slug]);
-
-    useEffect(() => {
-        if (authors.length === 0) {
-            fetchAuthors();
-
-        }
-    }, [fetchAuthors, authors.length]);
-
-    if (posts.length === 0 || authors.length === 0) return <LoadingBanner />
 
     return (
         <>
-            {showModal && <PostPreviewModal />}
-            {showModal && <ArticleModal slug={slug || ''} />}
-
             <main id="body">
                 {/* Welcome section (Mobile) */}
                 {/* <div className="container welcome-xs d-block d-lg-none">
@@ -163,7 +100,14 @@ export default function Home({ params }: HomeProps) {
                     <div className="row container-fluid gx-0 px-0">
                         <div className="offset-8 offset-sm-7 col-6 col-sm-5 col-md-4 col-lg-6 offset-lg-7">
                             <picture className="img-fluid teaser-img">
-                                <Image className="img-fluid teaser-img" src={'/ui/coffeman.jpg'} style={{ width: '50vw', maxHeight: '70vh' }} alt="Teaser" width={1080} height={1350} loading="lazy" sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
+                                <Image className="img-fluid teaser-img"
+                                    src={'/ui/coffeman.jpg'}
+                                    style={{ width: '50vw', maxHeight: '70vh' }}
+                                    alt="Teaser"
+                                    width={1080}
+                                    height={1350}
+                                    priority={true}
+                                    sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
                             </picture>
                         </div>
                     </div>
@@ -241,8 +185,10 @@ export default function Home({ params }: HomeProps) {
                     </div>
 
                     <div className="row post-list">
-                        <Suspense fallback={<div></div>}>
-                            <PostList displayMode="recent" style="standard" indexIncrement={2} limit={POSTS_PER_PAGE} />
+                        <Suspense fallback={Array.from({ length: POSTS_PER_PAGE }).map((_, index) => (
+                            <PostCardSkeleton key={index} />
+                        ))}>
+                            <RecentPostsList limit={POSTS_PER_PAGE} />
                         </Suspense>
                     </div>
                 </div>
@@ -263,14 +209,25 @@ export default function Home({ params }: HomeProps) {
                     </div>
 
                     <div className="row post-list">
-                        <PostList displayMode="popular" style="standard" indexIncrement={15} limit={3} />
+                        <Suspense fallback={Array.from({ length: 3 }).map((_, index) => (
+                            <PostCardSkeleton key={index} />
+                        ))}>
+                            <PopularPostsList limit={3} />
+                        </Suspense>
                     </div>
                 </div>
 
                 <div className="container-fluid about-me py-5 mt-5">
                     <div className="container d-flex gap-4 row align-items-center justify-content-center">
                         <div className="col-7 col-md-4 col-lg-3">
-                            <Image className="img-fluid ivan-yalovets" src="/pfp/ivan-pfp.webp" alt="Ivan" title="Ivan Yalovets" width={290} height={290} sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" loading="lazy" />
+                            <Image className="img-fluid ivan-yalovets"
+                                src="/pfp/ivan-pfp.webp"
+                                alt="Ivan"
+                                title="Ivan Yalovets"
+                                width={290}
+                                height={290}
+                                sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px"
+                                loading="lazy" />
                         </div>
                         <div className="col-9 mt-3 mt-md-0 col-md-5 col-lg-5 offset-md-1">
                             <p className="pt-2 subheading-small" id="col-heading-1">

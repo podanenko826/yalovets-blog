@@ -20,9 +20,13 @@ const UnsubscribePage = () => {
         const getSubscriberData = async () => {
             if (subscriberData === null && email) {
                 const subscriber = await getSubscriberByEmail(email);
-    
+
                 if (subscriber) {
                     setSubscriberData(subscriber);
+                    
+                    if (subscriber.is_active === false) {
+                        setUnubscribeStatus(true);
+                    }
                 }
             }
         }
@@ -37,20 +41,20 @@ const UnsubscribePage = () => {
     };
 
     const handleUnsubscribeClick = async () => {
-        if (subscriberData && Object.values(subscriberData).every(value => value !== undefined && value !== '')) {
-            const updatedSubscriber = await updateSubscriberStatus(subscriberData, 'unsubscribed');
+        if (subscriberData && subscriberData.id) {
+            const updatedSubscriber = await updateSubscriberStatus(subscriberData, false);
 
-            if (Object.values(updatedSubscriber).every(value => value !== undefined && value !== '')) {
+            if (updatedSubscriber && updatedSubscriber[0] && updatedSubscriber[0].id) {
                 setUnubscribeStatus(true);
             }
         }
     }
 
     const handleResubscribeClick = async () => {
-        if (subscriberData && Object.values(subscriberData).every(value => value !== undefined && value !== '')) {
-            const updatedSubscriber = await updateSubscriberStatus(subscriberData, 'subscribed');
+        if (subscriberData && subscriberData.id) {
+            const updatedSubscriber = await updateSubscriberStatus(subscriberData, true);
 
-            if (Object.values(updatedSubscriber).every(value => value !== undefined && value !== '')) {
+            if (updatedSubscriber && updatedSubscriber[0] && updatedSubscriber[0].id) {
                 setUnubscribeStatus(false);
             }
         }
@@ -84,40 +88,40 @@ const UnsubscribePage = () => {
     }, []);
 
     if (subscriberData === null) return;
-    
-  return (
-    <>
-        <div className={`${styles.articlePage} ${styles.previewModal}`}>
-            <div className="container">
-                {unsubscribeStatus && (
-                    <div className={`${styles.dialogBox} ${styles.subscribeModal} ${unsubscribeStatus ? styles.dialogBox_green : styles.dialogBox_red} p-5`}>
-                        <div>
-                            <h3 className='heading text-white'>Success!</h3>
-                            <p className='subheading-small text-light'>You have successfully unsubscribed!</p>
 
-                            <button className={`btn-outlined btn-full mt-3 ${!unsubscribeStatus ? 'btn-disabled' : ''}`} onClick={handleResubscribeClick}>Resubscribe</button>
+    return (
+        <>
+            <div className={`${styles.fullScreenModal} ${styles.previewModal}`}>
+                <div className="container">
+                    {unsubscribeStatus && (
+                        <div className={`${styles.dialogBox} ${styles.subscribeModal} ${unsubscribeStatus ? styles.dialogBox_green : styles.dialogBox_red} p-5`}>
+                            <div>
+                                <h3 className='heading text-white'>Success!</h3>
+                                <p className='subheading-small text-light'>You have successfully unsubscribed!</p>
+
+                                <button className={`btn-outlined btn-full mt-3 ${!unsubscribeStatus ? 'btn-disabled' : ''}`} onClick={handleResubscribeClick}>Resubscribe</button>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {!unsubscribeStatus && (
-                    <div className={`${styles.postDataContainer} ${styles.unsubscribeBox} ${styles.subscribeModal} p-5`}>
-                        <button className={`${styles.expandedPostCloseBtn} btn-pill`} onClick={() => handleClose()}>
-                            <IoMdClose className={styles.icon} />
-                        </button>
+                    {!unsubscribeStatus && (
+                        <div className={`${styles.postDataContainer} ${styles.unsubscribeBox} ${styles.subscribeModal} p-5`}>
+                            <button className={`${styles.expandedPostCloseBtn} btn-pill`} onClick={() => handleClose()}>
+                                <IoMdClose className={styles.icon} />
+                            </button>
 
-                        <div className='my-5'>
-                            <h1 className='heading' id='col-heading-1'>{subscriberData?.name},</h1>
-                            <p className='subheading-smaller' id='col-heading-1'>By clicking Unsubscribe, you’ll no longer receive emails regarding post annoucements and product updates.</p>
+                            <div className='my-5'>
+                                <h1 className='heading' id='col-heading-1'>{subscriberData?.name},</h1>
+                                <p className='subheading-smaller' id='col-heading-1'>By clicking Unsubscribe, you’ll no longer receive emails regarding post annoucements and product updates.</p>
 
-                            <button className={`btn-filled btn-full mt-3 ${unsubscribeStatus ? 'btn-disabled' : ''}`} onClick={handleUnsubscribeClick}>Unsubscribe</button>
+                                <button className={`btn-filled btn-full mt-3 ${unsubscribeStatus ? 'btn-disabled' : ''}`} onClick={handleUnsubscribeClick}>Unsubscribe</button>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
-        </div>
-    </>
-  )
+        </>
+    )
 }
 
 export default UnsubscribePage

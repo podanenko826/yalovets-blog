@@ -179,22 +179,22 @@ const PostPreviewModal = () => {
         handleClose();
     }, [width]);
 
-    const selectedAuthor = authors.find((author) => author.email === expandedPost?.post.email);
+    const selectedAuthor = authors.find((author) => author.id == expandedPost?.post.author_id) || authors[0];
 
     if (!selectedAuthor || !expandedPost) return null;
 
     return (
-        <div className={`${styles.articlePage} ${styles.previewModal}`} onClick={() => handleClose()} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
-                <div className="container" onScrollCapture={handleScrollCapture} onScroll={handleScroll} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
-                    <div className={`${styles.postDataContainer}`} onClick={e => e.stopPropagation()}>
-                        {expanded && (
-                            <button className={`${styles.expandedPostCloseBtn} btn-pill`} onClick={() => handleClose()}>
-                                <IoMdClose className={styles.icon} />
-                            </button>
-                        )}
-                        <LazyPostCard post={expandedPost.post} authorData={selectedAuthor} style="expanded" index={1000} isLoading={loading} setLoading={setLoading} />
-                    </div>
+        <div className={`${styles.fullScreenModal} ${styles.previewModal}`} onClick={() => handleClose()} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+            <div className="container" onScrollCapture={handleScrollCapture} onScroll={handleScroll} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+                <div className={`${styles.postDataContainer}`} onClick={e => e.stopPropagation()}>
+                    {expanded && (
+                        <button className={`${styles.expandedPostCloseBtn} btn-pill`} onClick={() => handleClose()}>
+                            <IoMdClose className={styles.icon} />
+                        </button>
+                    )}
+                    <LazyPostCard post={expandedPost.post} authorData={selectedAuthor} style="expanded" index={1000} isLoading={loading} setLoading={setLoading} />
                 </div>
+            </div>
         </div>
     );
 };
