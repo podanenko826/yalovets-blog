@@ -136,7 +136,7 @@ const SubscribePageInner = () => {
                         <div className="mb-5">
                             <h1 className="heading-large mb-3">Email Preferences</h1>
                             <p className="subheading-small" style={{ color: 'var(--col-text)' }}>
-                                Customize what you want to hear about from Code & Coffee.
+                                Customize what you want to hear about from AWS By Denis.
                             </p>
                         </div>
 

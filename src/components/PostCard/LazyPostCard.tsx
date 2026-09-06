@@ -20,7 +20,7 @@ const LazyPostCard = React.memo(
     ({ post, previewData, authorData, style, index, isLoading, setLoading }: PostCardProps) => {
         LazyPostCard.displayName = "LazyPostCard";
 
-        const [isVisible, setIsVisible] = useState(false);
+        const [isVisible, setIsVisible] = useState(index !== undefined && index < 6);
 
         const ref = useRef(null);
 
@@ -28,7 +28,7 @@ const LazyPostCard = React.memo(
             const observer = new IntersectionObserver(([entry]) => {
                 if (entry.isIntersecting) {
                     setIsVisible(true);
-                    if (setLoading) setLoading(false);
+                    if (setLoading && !isVisible) setLoading(false);
                 };
             }, {
                 rootMargin: "800px", // start loading 200px before entering viewport

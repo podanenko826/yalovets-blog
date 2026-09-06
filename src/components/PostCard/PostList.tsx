@@ -25,7 +25,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, ind
     const { authors, fetchAuthors } = useAuthorStore();
 
 
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(!postsData);
     const [isAllFetched, setAllFetched] = useState<boolean>(false);
 
     const POSTS_PER_PAGE = limit;
@@ -127,8 +127,18 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, ind
     
     // If we have posts but no authors yet, don't render posts.
     // If we have no posts and aren't loading, there's nothing to show.
-    if (!loading && (displayMode !== 'author' && !postsData && posts.length === 0 || authors.length === 0)) return null;
-    if (!loading && displayMode === 'author' && authorPosts.length === 0) return null;
+    if (!loading && authors.length > 0 && displayMode !== 'author' && !postsData && posts.length === 0) return null;
+    if (!loading && authors.length > 0 && displayMode === 'author' && authorPosts.length === 0) return null;
+
+    if (authors.length === 0) {
+        return (
+            <>
+                {Array.from({ length: limit }).map((_, index) => (
+                    <PostCardSkeleton key={index} style={style === 'full' ? 'full' : 'standard'} />
+                ))}
+            </>
+        );
+    }
 
     return (
         <>

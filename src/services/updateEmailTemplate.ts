@@ -46,11 +46,15 @@ export const UpdateEmailTemplate = async () => {
                   </div>
     
                   <div style="display: flex; justify-content: center; padding: 6px 0;">
-                    <a style="color: black; text-size: 16px;" href="http://localhost:3000/preferences?email={{email}}"><strong>Unsubscribe</strong></a>
+                    <a style="color: black; text-size: 16px;" href="http://localhost:3000/preferences?email={{email}}"><strong>Manage Your Email Preferences</strong></a>
+                  </div>
+
+                  <div style="display: flex; justify-content: center; padding: 6px 0;">
+                    <a style="color: black; text-size: 16px;" href="http://localhost:3000/unsubscribe?email={{email}}"><strong>Unsubscribe</strong></a>
                   </div>
     
                   <div style="display: flex; justify-content: center; padding: 3px 0;">
-                    <p style="text-align: center;">Code & Coffee, Kulparkivska 226, Lviv, Ukraine</p>
+                    <p style="text-align: center;">AWS By Denis, Kulparkivska 226, Lviv, Ukraine</p>
                   </div>
                 </div>
               </body>

@@ -26,7 +26,7 @@ const Footer = () => {
                 <div className="row gy-4 justify-content-between">
                     <div className="col-12 col-md-5">
                         <h4 className={`${navBarStyles.navbar_brand} text-white`}>
-                            Code & Coffee
+                            AWS By Denis
                             <FaCoffee className={navBarStyles.navLogo_icon} />
                         </h4>
                         <p className={styles.descriptionText}>
@@ -67,7 +67,7 @@ const Footer = () => {
 
                 <div className={`${styles.copyrightContainer} mt-5 pt-4`}>
                     <p className={`${styles.copyrightText} text-center mb-0`}>
-                        &copy; {new Date().getFullYear()} Code & Coffee. All rights reserved.
+                        &copy; {new Date().getFullYear()} AWS By Denis. All rights reserved.
                     </p>
                 </div>
             </div>

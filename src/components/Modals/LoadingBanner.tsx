@@ -25,7 +25,7 @@ const LoadingBanner = () => {
         }}>
             <div className="container-sm pb-5 d-flex justify-content-center">
             <h4 className="col-primary" style={{ fontFamily: "'Rubik', sans-serif", fontWeight: 500, fontSize: "1.85rem", color: "var(--col-primary)" }}>
-                    Code & Coffee
+                    AWS By Denis
                     <FaCoffee style={{ alignSelf: 'center', fontSize: '32px' }} />
                 </h4>
             </div>

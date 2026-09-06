@@ -141,12 +141,12 @@ const SubscribeModal = ({ setModalOpen }: SubscribeModalProps) => {
                             Stay informed.
                         </h1>
                         <h1 className="heading text-left" id="col-heading-1">
-                            Subscribe to Code & Coffee!
+                            Subscribe to AWS By Denis!
                         </h1>
                     </div>
 
                     {/* <p className='subheading-small my-4 pt-4' id='col-heading-2'>
-                            I launched Code & Coffee in 2025.
+                            I launched AWS By Denis in 2025.
                             Since then, I have published COUNT articles.
                             Stay notified about new posts releases and product updates. <strong>Subscribe now!</strong>
                         </p> */}
