@@ -78,8 +78,10 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
         (props: { descLength: number; noLimit?: boolean }) => {
             PostInfoSection.displayName = 'PostInfoSection';
 
+            const dynamicDescLength = props.descLength + Math.max(0, 90 - ((post.title?.length + 10) || 0));
+
             return (
-                <div className={styles.postInfo}>
+                <div className={`${styles.postInfo} d-flex flex-column flex-grow-1`}>
                     <div className="d-flex align-content-center m-0">
                         <a role="button" onClick={handlePostOpen}>
                             {props.noLimit ? (
@@ -101,10 +103,10 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                         </a>
                     ) : (
                         <p className={styles.description}>
-                            {post.description && post.description.length > props.descLength ? (
+                            {post.description && post.description.length > dynamicDescLength ? (
                                 <>
                                     <a role="button" onClick={handlePostOpen}>
-                                        {post.description.slice(0, props.descLength) + '... '}
+                                        {post.description.slice(0, dynamicDescLength) + '... '}
                                     </a>
                                     <a role="button" onClick={handlePostExpansion} className="a-link a-button" id="col-secondary">
                                         Read more
@@ -716,7 +718,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
             )}
         </div>
     ) : (
-        <div ref={cardRef} className={`${styles.card} col-12 col-md-4`} key={index}>
+        <div ref={cardRef} className={`${styles.card} col-12 col-md-4 d-flex flex-column`} key={index}>
             {postImageUrl && (
                 <a role="button" onClick={handlePostOpen}>
                     <div className={styles.image}>
@@ -748,9 +750,9 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
 
             )}
 
-            <PostInfoSection descLength={140} />
+            <PostInfoSection descLength={100} />
 
-            <div className={`${styles.profile_info} d-flex`}>
+            <div className={`${styles.profile_info} d-flex mt-auto`}>
                 {authorData && (
                     <div className={styles.profile_info__details}>
                         <span id={`popover-trigger-${index}`} className="d-inline-block" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
