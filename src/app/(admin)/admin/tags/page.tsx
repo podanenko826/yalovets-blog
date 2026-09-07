@@ -155,7 +155,7 @@ const TagsPage = () => {
                                                 <td className="d-flex w-100 gap-4">
                                                     <button
                                                         type="button"
-                                                        className="py-2 px-5 btn-filled btn-filled my-3"
+                                                        className="py-2 px-5 btn-filled my-3"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#editModal"
                                                         onClick={() => handleEditClick(tag)}

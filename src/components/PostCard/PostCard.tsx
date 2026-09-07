@@ -78,7 +78,16 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
         (props: { descLength: number; noLimit?: boolean }) => {
             PostInfoSection.displayName = 'PostInfoSection';
 
-            const dynamicDescLength = props.descLength + Math.max(0, 90 - ((post.title?.length + 10) || 0));
+            let titleLength = post.title?.length || 0;
+            const hasBadge = moment.utc(post.updated_at).isAfter(moment.utc(post.created_at)) && moment.utc(post.updated_at).diff(Date.now(), 'days') >= -30 && !post.sponsored_by;
+            if (hasBadge) titleLength += 15;
+            if (post.sponsored_by) titleLength += 15;
+
+            let titleLines = 1;
+            if (titleLength >= 60) titleLines = 3;
+            else if (titleLength >= 30) titleLines = 2;
+
+            const dynamicDescLength = props.noLimit ? 500 : (props.descLength + ((3 - titleLines) * 45));
 
             return (
                 <div className={`${styles.postInfo} d-flex flex-column flex-grow-1`}>
@@ -346,7 +355,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
             </div>
         </div>
     ) : style === 'full' ? (
-        <div ref={cardRef} className="col-12 col-md-6" key={index}>
+        <div ref={cardRef} className="col-12 col-md-6 d-flex flex-column" key={index}>
             {post.image_url && (
                 <a role="button" onClick={handlePostOpen}>
                     <div className={styles.image}>
@@ -379,10 +388,10 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
 
             <PostInfoSection descLength={160} />
 
-            <div className={`${styles.profile_info} d-flex`}>
+            <div className={`${styles.profile_info} d-flex mt-auto`}>
                 {authorData && (
                     <div className={styles.profile_info__details}>
-                        <span id={`popover-trigger-${index}`} className="d-inline-block" role="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
+                        <span id={`popover-trigger-${index}`} className="d-inline-block" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
                             <div className={`${styles.profile_info} d-flex`}>
                                 <div className="align-content-center">
                                     <Link href={`/author/${authorData.handle}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
@@ -395,7 +404,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                                     </Link>
 
                                     <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                        {moment(post.created_at).format('D MMM')} • {post.read_time?.toString()} min read • {post.views_count} views
+                                        {moment.utc(post.created_at).format('D MMM')} • {post.read_time?.toString()} min read
                                     </p>
                                 </div>
                             </div>
@@ -405,7 +414,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
             </div>
         </div>
     ) : style === 'expanded' ? (
-        <div className={`col-12 ${styles.expandedContainer}`} key={index}>
+        <div className={`col-12 ${styles.expandedContainer} d-flex flex-column`} key={index}>
             {post.image_url && (
                 <a role="button" onClick={handlePostOpen}>
                     <div className={styles.image}>
@@ -438,10 +447,10 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
 
             <PostInfoSection descLength={300} noLimit />
 
-            <div className={`${styles.profile_info} d-flex`}>
+            <div className={`${styles.profile_info} d-flex mt-auto`}>
                 {authorData && (
                     <div className={styles.profile_info__details}>
-                        <span id={`popover-trigger-${index}`} className="d-inline-block" role="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
+                        <span id={`popover-trigger-${index}`} className="d-inline-block" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
                             <div className={`${styles.profile_info} d-flex`}>
                                 <div className="align-content-center">
                                     <Link href={`/author/${authorData.handle}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
@@ -454,7 +463,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                                     </Link>
 
                                     <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                        {moment(post.created_at).format('D MMM')} • {post.read_time?.toString()} min read • {post.views_count} views
+                                        {moment.utc(post.created_at).format('D MMM')} • {post.read_time?.toString()} min read
                                     </p>
                                 </div>
                             </div>
@@ -557,20 +566,23 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                     </table>
                 </div>
             </div>
-            <div className={`${styles.profile_info} d-flex`}>
+            <div className={`${styles.profile_info} d-flex mt-auto`}>
                 {authorData && (
                     <div className={styles.profile_info__details}>
-                        <span id={`popover-trigger-${index}`} className="d-inline-block" role="button" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
+                        <span id={`popover-trigger-${index}`} className="d-inline-block" tabIndex={0} data-bs-toggle="popover" data-bs-trigger="manual" data-bs-container="body" data-bs-custom-class="default-author-popover">
                             <div className={`${styles.profile_info} d-flex`}>
                                 <div className="align-content-center">
-                                    <LazyImage onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.pfp} img-fluid`} src={authorData.avatar_url || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                    <Link href={`/author/${authorData.handle}`} role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`m-0 p-0`}>
+                                        <LazyImage className={`${styles.pfp} img-fluid`} src={authorData.avatar_url || '/ui/placeholder-pfp.png'} placeholderUrl="/ui/placeholder-pfp.png" alt="pfp" width={42.5} height={42.5} />
+                                    </Link>
                                 </div>
                                 <div className={styles.profile_info__details}>
-                                    <Link href={''} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
+                                    <Link href={`/author/${authorData.handle}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-bs-toggle="popover" className={`${styles.profile_info__text} m-0`}>
                                         {authorData.full_name}
                                     </Link>
+
                                     <p className={`${styles.profile_info__text} align-content-center m-0`} id="col-heading-1">
-                                        {moment.utc(post.created_at).format('D MMM')} • {post.read_time?.toString()} min read • {post.views_count} views
+                                        {moment.utc(post.created_at).format('D MMM')} • {post.read_time?.toString()} min read
                                     </p>
                                 </div>
                             </div>

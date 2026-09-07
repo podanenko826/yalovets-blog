@@ -112,7 +112,7 @@ export const getAuthorPosts = async (email: string, limit: number, offset: numbe
     try {
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
-        const response = await fetch(`${baseUrl}/api/posts-by-author?email=${email}&limit=${limit}&offset=${offset}`, { next: { revalidate: 0 } });
+        const response = await fetch(`${baseUrl}/api/posts-by-author?email=${encodeURIComponent(email)}&limit=${limit}&offset=${offset}`, { next: { revalidate: 0 } });
 
         if (!response.ok) {
             console.error('API returned an error:', response.status, await response.text());
@@ -185,6 +185,23 @@ export const getPost = async (slug: string): Promise<PostItem> => {
     
     const unwrappedData = Array.isArray(data) ? data : [data];
     return unwrappedData[0] || {} as PostItem;
+};
+
+export const getAdjacentPosts = async (createdAt: string): Promise<{ prevPost: PostItem | null; nextPost: PostItem | null }> => {
+    try {
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+        const response = await fetch(`${baseUrl}/api/posts/adjacent?created_at=${encodeURIComponent(createdAt)}`, { next: { revalidate: 0 } });
+        if (!response.ok) {
+            console.error('API returned an error:', response.status, await response.text());
+            return { prevPost: null, nextPost: null };
+        }
+        
+        return await response.json();
+    } catch (err) {
+        console.error('Failed to fetch adjacent posts: ', err);
+        return { prevPost: null, nextPost: null };
+    }
 };
 
 export const getPostsCount = async (): Promise<number> => {

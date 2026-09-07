@@ -9,7 +9,7 @@ import { FaFacebookF, FaLinkedin, FaRedditAlien } from 'react-icons/fa';
 
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { PostItem } from '@/types';
-import { getPopularPosts, getPost, trackView } from '@/lib/posts';
+import { getPopularPosts, getPost, trackView, getAdjacentPosts } from '@/lib/posts';
 import { MDXProvider } from '@mdx-js/react';
 import { mdSerialize } from '../../services/mdSerializer';
 import { useMDXComponents } from '../../../mdx-components';
@@ -44,6 +44,9 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
     const [serializedMarkdown, setSerializedMarkdown] = useState<MDXRemoteSerializeResult<Record<string, unknown>, Record<string, unknown>>>();
 
     const [popularPosts, setPopularPosts] = useState<PostItem[]>([]);
+    
+    const [prevPost, setPrevPost] = useState<PostItem | null>(null);
+    const [nextPost, setNextPost] = useState<PostItem | null>(null);
 
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -144,6 +147,19 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
         };
 
         processMarkdown();
+    }, [selectedPost]);
+
+    useEffect(() => {
+        const fetchAdjacentPosts = async () => {
+            if (!selectedPost) return;
+            
+            const { prevPost, nextPost } = await getAdjacentPosts(selectedPost.created_at);
+
+            setPrevPost(prevPost);
+            setNextPost(nextPost);
+        };
+
+        fetchAdjacentPosts();
     }, [selectedPost]);
 
     const closeModal = () => {
@@ -287,12 +303,32 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                                     <Link 
                                                         key={index} 
                                                         href={`/tag/${tag.tag}`} 
-                                                        className="badge text-bg-light border px-3 py-2 text-decoration-none text-dark"
-                                                        style={{ borderRadius: '8px', fontSize: '0.95rem', fontWeight: 500 }}
+                                                        className="badge border px-3 py-2 text-decoration-none interactive-pill"
+                                                        style={{ borderRadius: '8px', fontSize: '0.95rem', fontWeight: 500, backgroundColor: 'var(--col-background-elements)', color: 'var(--col-link)', borderColor: 'var(--col-outline-default)' }}
                                                     >
                                                         {tag.title}
                                                     </Link>
                                                 ))}
+                                            </div>
+                                        )}
+                                        {!loading && selectedPost && (prevPost || nextPost) && (
+                                            <div className="d-flex justify-content-between border mt-5 mb-4 overflow-hidden" style={{ borderRadius: '8px', backgroundColor: 'var(--col-background-elements)', borderColor: 'var(--col-outline-default)' }}>
+                                                <div className="w-50 text-start">
+                                                    {prevPost && (
+                                                        <Link href={`/${prevPost.slug}`} className="d-block w-100 h-100 text-decoration-none p-4 interactive-pill">
+                                                            <div className="small mb-2 fw-semibold" id="col-heading-2" style={{ letterSpacing: '1px' }}>« PREV</div>
+                                                            <div style={{ fontSize: '1.15rem', color: 'var(--col-link)' }}>{prevPost.title}</div>
+                                                        </Link>
+                                                    )}
+                                                </div>
+                                                <div className="w-50 text-end">
+                                                    {nextPost && (
+                                                        <Link href={`/${nextPost.slug}`} className="d-block w-100 h-100 text-decoration-none p-4 interactive-pill">
+                                                            <div className="small mb-2 fw-semibold" id="col-heading-2" style={{ letterSpacing: '1px' }}>NEXT »</div>
+                                                            <div style={{ fontSize: '1.15rem', color: 'var(--col-link)' }}>{nextPost.title}</div>
+                                                        </Link>
+                                                    )}
+                                                </div>
                                             </div>
                                         )}
                                     </div>
@@ -377,7 +413,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                             .sort(() => Math.random() - 0.5)
                                             .slice(0, POPULAR_POSTS_LIMIT)
                                             .map((post, index) => (
-                                                <Link href={`/${post.slug}`} className="col-md-9" key={index}>
+                                                <Link href={`/${post.slug}`} className="col-md-9 text-decoration-none" key={index}>
                                                     <div className="read-further-button">
                                                         <h5 id="col-heading-1">
                                                             {post.post_type}: {post.title}

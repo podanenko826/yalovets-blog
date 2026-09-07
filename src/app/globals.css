@@ -272,6 +272,7 @@ button {
     box-sizing: border-box;
     font-size: 23px;
     backdrop-filter: var(--default-backdrop);
+    white-space: nowrap;
 }
 
 .btn-pill > .btn-pill-svg {
@@ -287,15 +288,26 @@ button {
 }
 
 .btn-outlined {
-    padding: 12px 10px;
-    background: transparent;
+    padding: 8px 16px;
+    background: var(--col-background-elements);
+    border: 1px solid var(--col-outline-default);
+    border-radius: 8px;
     font-weight: 500;
     box-sizing: border-box;
+    transition: background-color 150ms ease-in-out;
+    color: var(--col-link);
+    text-decoration: none;
+    white-space: nowrap;
 }
 
 .btn-outlined:hover {
-    text-decoration: underline;
-    background: rgba(0, 0, 0, 0.2) !important;
+    background: var(--col-button-hover) !important;
+    text-decoration: none;
+    color: var(--col-link);
+}
+
+.btn-outlined:active {
+    background: var(--col-button-active) !important;
 }
 
 .btn-outlined > svg {
@@ -303,25 +315,38 @@ button {
 }
 
 .btn-filled {
-    padding: 20px 36px;
+    padding: 8px 16px;
     background: var(--col-secondary) !important;
+    border: 1px solid var(--col-secondary);
+    border-radius: 8px;
+    font-weight: 500;
+    box-sizing: border-box;
+    transition: background-color 150ms ease-in-out;
     color: white;
-    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
 }
 
 .btn-purchase {
-    padding: 20px 36px;
+    padding: 8px 16px;
     background: rgb(139, 104, 16) !important;
+    border: 1px solid rgb(139, 104, 16);
+    border-radius: 8px;
+    font-weight: 500;
+    box-sizing: border-box;
+    transition: background-color 150ms ease-in-out;
     color: white;
-    font-weight: 600;
+    text-decoration: none;
 }
 
 .btn-purchase:hover {
     background: rgb(116, 88, 17) !important;
+    border-color: rgb(116, 88, 17);
 }
 
 .btn-purchase:active {
     background: rgb(94, 72, 15) !important;
+    border-color: rgb(94, 72, 15);
 }
 
 .btn-filled-svg {
@@ -330,31 +355,43 @@ button {
 }
 
 .btn-filled:hover {
-    /* background: rgb(220, 0, 0); */
     background: var(--col-highlight) !important;
+    border-color: var(--col-highlight);
+    text-decoration: none;
+    color: white;
 }
 
 .btn-filled:active {
-    outline: slategrey auto 10px;
     background: var(--col-primary) !important;
+    border-color: var(--col-primary);
 }
 
 .dark .btn-filled:active {
     background: var(--col-button-active) !important;
+    border-color: var(--col-button-active);
 }
 
 .btn-danger {
-    color: white !important;
+    padding: 8px 16px;
     background: rgb(140, 36, 36) !important;
+    border: 1px solid rgb(140, 36, 36);
+    border-radius: 8px;
+    font-weight: 500;
+    box-sizing: border-box;
+    transition: background-color 150ms ease-in-out;
+    color: white !important;
+    text-decoration: none;
 }
 
 .btn-danger:hover {
     background: rgb(110, 21, 21) !important;
+    border-color: rgb(110, 21, 21);
+    color: white !important;
 }
 
 .btn-danger:active {
-    outline: slategrey auto 10px;
     background: var(--col-primary) !important;
+    border-color: var(--col-primary);
 }
 
 .btn-filled.btn-disabled {
@@ -721,21 +758,6 @@ blockquote > span,
 
     button:active {
         background: var(--col-button-active);
-    }
-
-    .btn-outlined {
-        border: var(--col-text) solid 1px;
-        padding: 12px 20px;
-    }
-
-    .btn-outlined:hover {
-        background: var(--col-button-hover);
-        color: white;
-    }
-
-    .btn-outlined:active {
-        background: var(--col-button-active);
-        color: white;
     }
 }
 

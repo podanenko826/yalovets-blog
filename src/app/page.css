@@ -381,23 +381,23 @@
 }
 
 .read-further-button {
-    background: rgba(128, 128, 128, 0.2);
-    backdrop-filter: var(--default-dackdrop);
+    background: var(--col-background-elements);
+    border: 1px solid var(--col-outline-default);
     padding: 1rem;
-    margin: 8px;
+    margin-bottom: 12px;
     vertical-align: middle;
     align-items: center;
     transition-duration: 150ms;
-
-    border-radius: var(--radius-sm);
+    border-radius: 8px;
+    color: var(--col-link);
 }
 
 .read-further-button:hover {
-    background: rgba(150, 150, 150, 0.2);
+    background: var(--col-button-hover);
 }
 
 .read-further-button:active {
-    background: rgba(122, 122, 122, 0.2);
+    background: var(--col-button-active);
 }
 
 .read-further-button > h5 {
@@ -406,4 +406,14 @@
 
 .read-further > div > div {
     padding: 0 18px;
+}
+
+.interactive-pill {
+    transition: background-color 150ms ease-in-out;
+}
+.interactive-pill:hover {
+    background-color: var(--col-button-hover) !important;
+}
+.interactive-pill:active {
+    background-color: var(--col-button-active) !important;
 }
