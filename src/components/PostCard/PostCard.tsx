@@ -547,7 +547,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                                 return (
                                     <tr key={key} className={rowClass}>
                                         <td>{key}</td>
-                                        <td>{post[typedKey]}</td>
+                                        <td>{Array.isArray(post[typedKey]) ? JSON.stringify(post[typedKey]) : post[typedKey] as React.ReactNode}</td>
                                     </tr>
                                 );
                             })}

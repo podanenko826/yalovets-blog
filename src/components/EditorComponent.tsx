@@ -9,7 +9,7 @@ import '@mdxeditor/editor/style.css';
 
 import { FC, useEffect, useState } from 'react';
 
-import { AuthorItem, PostItem, PostPreviewItem } from '@/types';
+import { AuthorItem, PostItem, PostPreviewItem, TagItem } from '@/types';
 
 import { createPost, formatPostDate, updatePost } from '@/lib/posts';
 import React from 'react';
@@ -21,6 +21,8 @@ import { CopyGenericJsxEditor } from './CopyGenericJsxEditor';
 import { uploadImage } from '@/lib/images';
 import LoadingSpinnerModal from './Modals/LoadingSpinnerModal';
 import { sendEmailsOnPost } from '@/services/sendEmailsOnPost';
+import { IoMdRefresh } from 'react-icons/io';
+import { getTags } from '@/lib/tags';
 
 const PostCard = dynamic(() => import('@/components/PostCard/PostCard'), { ssr: false });
 
@@ -29,6 +31,7 @@ export interface EditorProps {
     slug?: string;
     postData?: PostItem;
     authorData: AuthorItem[];
+    tagsData?: TagItem[];
     editorRef?: React.MutableRefObject<MDXEditorMethods | null>;
     legalMdx?: 'privacy-policy' | 'imprint';
 }
@@ -45,7 +48,7 @@ const jsxComponentDescriptors: JsxComponentDescriptor[] = [
     },
 ]
 
-const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorRef, legalMdx }) => {
+const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, tagsData, editorRef, legalMdx }) => {
     const [currentMarkdown, setCurrentMarkdown] = useState(markdown); // Track current markdown
     const [selectedAuthor, setSelectedAuthor] = useState(postData ? authorData.find(author => author.id === postData.author_id) : authorData.find(author => author.handle === 'ivanyalovets') || authorData?.[0] || null);
     const [postTitle, setPostTitle] = useState(postData ? postData.title : '');
@@ -61,6 +64,13 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
     const [image_url, setImageUrl] = useState(postData ? postData.image_url : '');
 
     const [loadingMessage, setLoadingMessage] = useState<string | null>(null);
+    const [selectedTags, setSelectedTags] = useState<TagItem[]>(postData?.tags || []);
+    const [localTagsData, setLocalTagsData] = useState<TagItem[]>(tagsData || []);
+
+    const handleRefreshTags = async () => {
+        const newTags = await getTags();
+        setLocalTagsData(newTags);
+    };
 
     const format = 'YYYY-MM-DD';
 
@@ -89,6 +99,10 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
                 if (postData.sponsor_url) {
                     setIsSponsored(true);
                     setSponsorUrl(postData.sponsor_url)
+                }
+
+                if (postData.tags) {
+                    setSelectedTags(postData.tags as TagItem[]);
                 }
             }
         }
@@ -155,6 +169,7 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
         views_count: postData?.views_count || 0,
         sponsored_by,
         sponsor_url,
+        tags: selectedTags,
     };
 
     const PostPreview: Partial<PostPreviewItem> = {
@@ -424,6 +439,40 @@ const Editor: FC<EditorProps> = ({ markdown, slug, postData, authorData, editorR
             {!legalMdx && (
                 <div className="container d-flex justify-content-center col-md-9" style={{ marginTop: '40rem' }}>
                     <div className="row">
+                        <div className="container">
+                            <div className="d-flex align-items-center mb-3">
+                                <h2 className="mb-0 me-3">Tags</h2>
+                                <button type="button" className="btn btn-outlined btn-sm me-2" onClick={handleRefreshTags}>
+                                    <IoMdRefresh /> Refresh
+                                </button>
+                                <button type="button" className="btn btn-outlined btn-sm" onClick={() => window.open('/admin/tags', '_blank')}>
+                                    + Add Tag
+                                </button>
+                            </div>
+                            <div className="row">
+                                {localTagsData.map((tag, index) => (
+                                    <div className="col-md-3" key={index}>
+                                        <div className="form-check form-switch">
+                                            <input 
+                                                className="form-check-input" 
+                                                type="checkbox" 
+                                                role="switch" 
+                                                id={`flexSwitchCheckDefault-${tag.id}`} 
+                                                checked={selectedTags.some((t: any) => (t.id || t) === tag.id)}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setSelectedTags([...selectedTags, tag]);
+                                                    } else {
+                                                        setSelectedTags(selectedTags.filter((t: any) => (t.id || t) !== tag.id));
+                                                    }
+                                                }}
+                                            />
+                                            <label className="form-check-label" htmlFor={`flexSwitchCheckDefault-${tag.id}`}>{tag.tag}</label>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                         <div className="container">
                             <h1 className="text-center py-3">Preview</h1>
                             <PostCard post={Post as PostItem} previewData={PostPreview as PostPreviewItem} authorData={selectedAuthor || authorData?.[0] || ({} as AuthorItem)} style="preview" setValue={setDescription} setPostType={setPostType} setImageFile={setImageFile} />

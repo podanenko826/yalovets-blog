@@ -30,6 +30,13 @@ const AdminPage = () => {
             image_url: '/ui/subscribermanage.png',
             url: '/admin/subscribers',
         },
+        {
+            id: 4,
+            title: 'Manage tags',
+            description: 'View all tags used on your blog and create new ones.',
+            image_url: '/ui/tagmanage.png',
+            url: '/admin/tags',
+        }
     ];
 
     const otherItems = [

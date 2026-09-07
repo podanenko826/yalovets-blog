@@ -52,7 +52,7 @@ export default async function AuthorDashboard({ params }: Props) {
         <main id="body">
             <div className="container">
                 <div className="container mb-5">
-                    <div className={`${postCardStyles.profile_info} d-flex justify-content-center mt-4`}>
+                    <div className={`${postCardStyles.profile_info} d-flex justify-content-center align-items-center mt-4`}>
                         <Image className={`${postCardStyles.pfp}`} src={authorData.avatar_url || '/ui/placeholder-pfp.png'} alt="pfp" width={42.5} height={42.5} />
                         <h2 className="p-2 m-0" id="col-heading-1">
                             {authorData.full_name} {authorData.role === 'guest' && <span className="badge badge-guest">Guest</span>}

@@ -1,6 +1,6 @@
 'use client';
 import { deleteSubscriber, emptySubscriberObject, getSubscribers, updateSubscriber } from '@/lib/subscribers';
-import { SubscriberItem } from '@/types';
+import { SubscriberItem, TagItem } from '@/types';
 import { Modal } from 'bootstrap';
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
@@ -12,31 +12,40 @@ import { FaFacebookF, FaLinkedin, FaRedditAlien, FaInstagram, FaGithub } from 'r
 import { MdEmail } from 'react-icons/md';
 import { uploadProfilePicture } from '@/lib/images';
 import { subscribe } from 'diagnostics_channel';
+import { createTag, deleteTag, getTags, updateTag } from '@/lib/tags';
 
-const SubscribersPage = () => {
-    const [subscriberData, setSubscriberData] = useState<SubscriberItem[]>([]);
-    const [refreshSubscribers, setRefreshSubscribers] = useState<boolean>(true);
+const emptyTagObject: TagItem = {
+    id: '',
+    created_at: '',
+    tag: '',
+    title: '',
+    description: '',
+};
 
-    const [selectedSubscriber, setSelectedSubscriber] = useState<SubscriberItem | null>(null);
-    const [newSubscriber, setNewSubscriber] = useState<SubscriberItem>(emptySubscriberObject);
+const TagsPage = () => {
+    const [tagData, setTagData] = useState<TagItem[]>([]);
+    const [refreshTags, setRefreshTags] = useState<boolean>(true);
+
+    const [selectedTag, setSelectedTag] = useState<TagItem | null>(null);
+    const [newTag, setNewTag] = useState<TagItem>(emptyTagObject);
 
     const [currentModal, setCurrentModal] = useState<bootstrap.Modal | null>(null);
     const modalRef = useRef<Modal | null>(null);
 
     useEffect(() => {
-        const getSubscriberData = async () => {
-            if (refreshSubscribers) {
-                setSubscriberData([]);
+        const getTagData = async () => {
+            if (refreshTags) {
+                setTagData([]);
 
-                const subscribers = await getSubscribers();
-                if (subscribers.length > 0) setSubscriberData(subscribers);
+                const tags = await getTags();
+                if (tags.length > 0) setTagData(tags);
 
-                setRefreshSubscribers(false);
+                setRefreshTags(false);
             }
         };
 
-        getSubscriberData();
-    }, [refreshSubscribers]);
+        getTagData();
+    }, [refreshTags]);
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
@@ -44,7 +53,7 @@ const SubscribersPage = () => {
         const Modal = require('bootstrap/js/dist/modal');
         const modalTrigger = document.querySelector('.modal');
 
-        if (subscriberData.length === 0) return;
+        if (tagData.length === 0) return;
 
         if (modalTrigger && !currentModal) {
             const newModal = new Modal(modalTrigger);
@@ -58,33 +67,49 @@ const SubscribersPage = () => {
                 modalRef.current = null;
             }
         };
-    }, [subscriberData, currentModal]);
+    }, [tagData, currentModal]);
 
-    const handleEditClick = (subscriber: SubscriberItem): void => {
-        setSelectedSubscriber(subscriber);
+    const handleCreateClick = (): void => {
+        setNewTag(emptyTagObject);
     };
 
-    const handleEdit = (): void => {
-        if (selectedSubscriber) {
-            updateSubscriber(selectedSubscriber);
+    const handleCreate = (): void => {
+        if (newTag) {
+            createTag(newTag);
 
             window.location.reload();
         }
     };
 
-    const handleEditInputChange = (field: keyof SubscriberItem, value: string | boolean): void => {
-        if (selectedSubscriber) {
-            setSelectedSubscriber({ ...selectedSubscriber, [field]: value }); // Update the selected tag's data
+    const handleCreateInputChange = (field: keyof TagItem, value: string | boolean): void => {
+        setNewTag({ ...(newTag as TagItem), [field]: value });
+    };
+
+    const handleEditClick = (tag: TagItem): void => {
+        setSelectedTag(tag);
+    };
+
+    const handleEdit = (): void => {
+        if (selectedTag) {
+            updateTag(selectedTag);
+
+            window.location.reload();
         }
     };
 
-    const handleDeleteClick = (subscriber: SubscriberItem): void => {
-        setSelectedSubscriber(subscriber);
+    const handleEditInputChange = (field: keyof TagItem, value: string | boolean): void => {
+        if (selectedTag) {
+            setSelectedTag({ ...selectedTag, [field]: value }); // Update the selected tag's data
+        }
+    };
+
+    const handleDeleteClick = (tag: TagItem): void => {
+        setSelectedTag(tag);
     };
 
     const handleDelete = async (): Promise<void> => {
-        if (selectedSubscriber) {
-            await deleteSubscriber(selectedSubscriber.email);
+        if (selectedTag) {
+            await deleteTag(selectedTag);
 
             window.location.reload();
         }
@@ -98,47 +123,46 @@ const SubscribersPage = () => {
                         <Link href={'/admin'}>
                             <button className="btn-filled px-3 py-3 mt-4">←Back to console</button>
                         </Link>
-                        <button className="btn-outlined px-3 py-2 mt-4" onClick={() => setRefreshSubscribers(true)}>
+                        <button className="btn-outlined px-3 py-2 mt-4" onClick={() => setRefreshTags(true)}>
                             <IoMdRefresh /> Refresh
                         </button>
                     </div>
                     <div className="container">
                         <div className="row post-list col-12 overflow-scroll">
-                            {subscriberData.length > 0 ? (
+                            <button className="btn-outlined px-3 py-3 my-4" type="button" data-bs-toggle="modal" data-bs-target="#createTagModal" onClick={() => handleCreateClick()}>
+                                Create a new Tag
+                            </button>
+
+                            {tagData.length > 0 ? (
                                 <table className="table table-hover align-middle">
                                     <thead>
                                         <tr>
-                                            {/* <th scope="col">id</th> */}
-                                            <th scope="col">Name</th>
-                                            <th scope="col">Email</th>
-                                            <th scope="col">Subscribed at</th>
-                                            <th scope="col">Status</th>
-                                            <th scope="col">Articles</th>
-                                            <th scope="col">Products</th>
-                                            <th scope="col">Services</th>
+                                            <th scope="col">id</th>
+                                            <th scope="col">created_at</th>
+                                            <th scope="col">tag</th>
+                                            <th scope="col">title</th>
+                                            <th scope="col">description</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {subscriberData.map(subscriber => (
-                                            <tr key={subscriber.email}>
-                                                <td>{subscriber.name}</td>
-                                                <td>{subscriber.email}</td>
-                                                <td>{subscriber.subscribed_at}</td>
-                                                <td>{subscriber.is_active ? 'Active' : 'Inactive'}</td>
-                                                <td>{subscriber.is_article_updates_on ? 'Yes' : 'No'}</td>
-                                                <td>{subscriber.is_product_updates_on ? 'Yes' : 'No'}</td>
-                                                <td>{subscriber.is_service_updates_on ? 'Yes' : 'No'}</td>
+                                        {tagData.map(tag => (
+                                            <tr key={tag.tag}>
+                                                <td>{tag.id}</td>
+                                                <td>{tag.created_at}</td>
+                                                <td>{tag.tag}</td>
+                                                <td>{tag.title}</td>
+                                                <td>{tag.description}</td>
                                                 <td className="d-flex w-100 gap-4">
                                                     <button
                                                         type="button"
                                                         className="py-2 px-5 btn-filled btn-filled my-3"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#editModal"
-                                                        onClick={() => handleEditClick(subscriber)} // Pass the author to the modal
+                                                        onClick={() => handleEditClick(tag)}
                                                     >
                                                         Edit
                                                     </button>
-                                                    <button type="button" className="py-2 btn-danger btn-filled my-3" data-bs-toggle="modal" data-bs-target="#deleteModal" onClick={() => handleDeleteClick(subscriber)}>
+                                                    <button type="button" className="py-2 btn-danger btn-filled my-3" data-bs-toggle="modal" data-bs-target="#deleteModal" onClick={() => handleDeleteClick(tag)}>
                                                         Delete
                                                     </button>
                                                 </td>
@@ -155,6 +179,51 @@ const SubscribersPage = () => {
                     </div>
                 </div>
 
+                {/* Creation modal */}
+
+                <div className="modal fade" id="createTagModal" tabIndex={-1} aria-labelledby="createTagModalLabel" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h1 className="modal-title fs-5" id="createTagModalLabel">
+                                    Create Tag
+                                </h1>
+                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div className="modal-body">
+                                <form>
+                                    <div className="mb-3">
+                                        <label htmlFor="tag" className="col-form-label">
+                                            <strong>Tag (slug):</strong>
+                                        </label>
+                                        <input type="text" className="form-control" value={newTag?.tag || ''} onChange={e => handleCreateInputChange('tag', e.target.value)} />
+                                    </div>
+                                    <div className="mb-3">
+                                        <label htmlFor="title" className="col-form-label">
+                                            <strong>Title:</strong>
+                                        </label>
+                                        <input type="text" className="form-control" value={newTag?.title || ''} onChange={e => handleCreateInputChange('title', e.target.value)} />
+                                    </div>
+                                    <div className="mb-3">
+                                        <label htmlFor="description" className="col-form-label">
+                                            <strong>Description:</strong>
+                                        </label>
+                                        <textarea className="form-control" value={newTag?.description || ''} onChange={e => handleCreateInputChange('description', e.target.value)}></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
+                                    Close
+                                </button>
+                                <button type="button" className="btn btn-primary" onClick={handleCreate}>
+                                    Create tag
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Editing modal */}
 
                 <div className="modal fade" id="editModal" tabIndex={-1} aria-labelledby="editModalLabel" aria-hidden="true">
@@ -162,7 +231,7 @@ const SubscribersPage = () => {
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h1 className="modal-title fs-5" id="editModalLabel">
-                                    Edit Subscriber
+                                    Edit Tag
                                 </h1>
                                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
@@ -170,45 +239,27 @@ const SubscribersPage = () => {
                                 <form>
                                     <div className="mb-3">
                                         <label htmlFor="email" className="col-form-label">
-                                            <strong>Email:</strong>
+                                            <strong>ID</strong>
                                         </label>
-                                        <input type="text" className="form-control" disabled value={selectedSubscriber?.email || ''} onChange={e => handleEditInputChange('email', e.target.value)} />
+                                        <input type="text" className="form-control" disabled value={selectedTag?.id || ''} />
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="name" className="col-form-label">
-                                            <strong>Name:</strong>
+                                            <strong>Tag:</strong>
                                         </label>
-                                        <input type="text" className="form-control" value={selectedSubscriber?.name || ''} onChange={e => handleEditInputChange('name', e.target.value)} />
+                                        <input type="text" className="form-control" value={selectedTag?.tag || ''} onChange={e => handleEditInputChange('tag', e.target.value)} />
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="subscribed_at" className="col-form-label">
-                                            <strong>Subscribed at:</strong>
+                                            <strong>Title:</strong>
                                         </label>
-                                        <textarea className="form-control" value={selectedSubscriber?.subscribed_at || ''} onChange={e => handleEditInputChange('subscribed_at', e.target.value)}></textarea>
+                                        <textarea className="form-control" value={selectedTag?.title || ''} onChange={e => handleEditInputChange('title', e.target.value)}></textarea>
                                     </div>
                                     <div className='mb-3'>
                                         <label htmlFor="is_active" className="col-form-label">
-                                            <strong>Is Subscribed?</strong>
+                                            <strong>Description:</strong>
                                         </label>
-                                        <input type="checkbox" className='mx-3' checked={selectedSubscriber?.is_active || false} onChange={e => handleEditInputChange('is_active', e.target.checked)} />
-                                    </div>
-                                    <div className='mb-3'>
-                                        <label htmlFor="is_article_updates_on" className="col-form-label">
-                                            <strong>Article Updates?</strong>
-                                        </label>
-                                        <input type="checkbox" className='mx-3' checked={selectedSubscriber?.is_article_updates_on || false} onChange={e => handleEditInputChange('is_article_updates_on', e.target.checked)} />
-                                    </div>
-                                    <div className='mb-3'>
-                                        <label htmlFor="is_product_updates_on" className="col-form-label">
-                                            <strong>Product Updates?</strong>
-                                        </label>
-                                        <input type="checkbox" className='mx-3' checked={selectedSubscriber?.is_product_updates_on || false} onChange={e => handleEditInputChange('is_product_updates_on', e.target.checked)} />
-                                    </div>
-                                    <div className='mb-3'>
-                                        <label htmlFor="is_service_updates_on" className="col-form-label">
-                                            <strong>Service Updates?</strong>
-                                        </label>
-                                        <input type="checkbox" className='mx-3' checked={selectedSubscriber?.is_service_updates_on || false} onChange={e => handleEditInputChange('is_service_updates_on', e.target.checked)} />
+                                        <textarea className="form-control" value={selectedTag?.description || ''} onChange={e => handleEditInputChange('description', e.target.value)}></textarea>
                                     </div>
                                 </form>
                             </div>
@@ -217,7 +268,7 @@ const SubscribersPage = () => {
                                     Close
                                 </button>
                                 <button type="button" className="btn btn-primary" onClick={handleEdit}>
-                                    Edit Subscriber
+                                    Edit Tag
                                 </button>
                             </div>
                         </div>
@@ -231,19 +282,19 @@ const SubscribersPage = () => {
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h1 className="modal-title fs-5" id="deleteModalLabel">
-                                    Delete Subscriber
+                                    Delete Tag
                                 </h1>
                                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div className="modal-body">
                                 <form>
                                     <div className="mb-3">
-                                        Are you sure you want to delete a subscriber with this email: <br />
-                                        <h5 className="py-4 heading">{selectedSubscriber?.email}</h5>
+                                        Are you sure you want to delete a tag with this name: <br />
+                                        <h5 className="py-4 heading">{selectedTag?.tag}</h5>
                                     </div>
 
                                     <div className="alert alert-danger" role="alert">
-                                        The data about this subscriber will be removed forever and they will stop receiving emails.
+                                        The data about this tag will be removed forever.
                                     </div>
                                 </form>
                             </div>
@@ -252,7 +303,7 @@ const SubscribersPage = () => {
                                     Close
                                 </button>
                                 <button type="button" className="btn btn-danger py-2 px-3" onClick={handleDelete}>
-                                    Delete Subscriber
+                                    Delete Tag
                                 </button>
                             </div>
                         </div>
@@ -263,4 +314,4 @@ const SubscribersPage = () => {
     );
 };
 
-export default SubscribersPage;
+export default TagsPage;

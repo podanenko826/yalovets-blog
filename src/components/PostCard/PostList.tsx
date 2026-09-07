@@ -7,20 +7,21 @@ import { usePostStore } from '../posts/store';
 import { useAuthorStore } from '../authors/store';
 
 import LoadingSkeleton from '../LoadingSkeleton';
-import { getAuthorPosts, getPopularPosts, sortPosts } from '@/lib/posts';
+import { getAuthorPosts, getPopularPosts, sortPosts, getPostsByTag } from '@/lib/posts';
 import PostCardSkeleton from './PostCardSkeleton';
 
 interface PostListProps {
-    displayMode: 'linear' | 'latest' | 'recent' | 'popular' | 'author' | 'admin';
+    displayMode: 'linear' | 'latest' | 'recent' | 'popular' | 'author' | 'admin' | 'tag';
     style: 'massive' | 'full' | 'expanded' | 'preview' | 'admin' | 'standard';
     limit: number;  // Add limit as a prop for pagination
     indexIncrement?: number;
     infiniteScroll?: boolean;
     postsData?: PostItem[];
     authorEmail?: string;
+    tag?: string;
 }
 
-const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, indexIncrement = 0, infiniteScroll = false, postsData, authorEmail }) => {
+const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, indexIncrement = 0, infiniteScroll = false, postsData, authorEmail, tag }) => {
     const { posts, setPosts, fetchPosts } = usePostStore();
     const { authors, fetchAuthors } = useAuthorStore();
 
@@ -46,6 +47,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, ind
     const [mostViewed, setMostViewed] = useState<PostItem[]>(displayMode === 'popular' && postsData ? postsData : []);
 
     const [authorPosts, setAuthorPosts] = useState<PostItem[]>([]);
+    const [tagPosts, setTagPosts] = useState<PostItem[]>([]);
 
     useEffect(() => {
         if (authors.length === 0) {
@@ -59,6 +61,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, ind
                 const popularPosts = await getPopularPosts(3);
 
                 if (popularPosts.length > 0) setMostViewed(popularPosts);
+                setLoading(false);
             }
         }
 
@@ -73,11 +76,27 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, ind
                 console.log(authorPosts);
 
                 if (authorPosts.posts.length > 0) setAuthorPosts(authorPosts.posts);
+                setLoading(false);
             }
         }
 
         fetchAuthorPosts();
     }, [displayMode, authorPosts.length, authorEmail, POSTS_PER_PAGE])
+
+    useEffect(() => {
+        const fetchTagPosts = async () => {
+            if (displayMode === 'tag' && tagPosts.length === 0 && tag && POSTS_PER_PAGE) {
+                const fetchedTagPosts = await getPostsByTag(tag, POSTS_PER_PAGE);
+
+                console.log(fetchedTagPosts);
+
+                if (fetchedTagPosts.posts.length > 0) setTagPosts(fetchedTagPosts.posts);
+                setLoading(false);
+            }
+        }
+
+        fetchTagPosts();
+    }, [displayMode, tagPosts.length, tag, POSTS_PER_PAGE])
 
     useEffect(() => {
         if (postsData) {
@@ -90,7 +109,19 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, ind
         if (loading) return;
         setLoading(true);
 
-        if (authorEmail) {
+        if (displayMode === 'tag' && tag) {
+            const existingSlugs = new Set(tagPosts.map(post => post.slug));
+
+            const _tagPosts = await getPostsByTag(tag, POSTS_PER_PAGE + 1, tagPosts.length);
+            const newUniquePosts = _tagPosts.posts.filter(post => !existingSlugs.has(post.slug));
+
+            const combinedPosts = [...tagPosts, ...newUniquePosts];
+            const sortedCombinedPosts = sortPosts(combinedPosts);
+
+            setTagPosts(sortedCombinedPosts);
+
+            if (newUniquePosts.length === 0 || newUniquePosts.length < limit) setAllFetched(true);
+        } else if (authorEmail) {
             const existingSlugs = new Set(authorPosts.map(post => post.slug));
 
             // We increment the POSTS_PER_PAGE by 1 to avoid the last post from not being downloaded, due to lastKey's nature to fetch the post equal to the lastKey
@@ -124,11 +155,13 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, ind
     };
 
     if (displayMode === 'author' && !authorEmail) return <div>Pass authorEmail to the PostList</div>;
+    if (displayMode === 'tag' && !tag) return <div>Pass tag to the PostList</div>;
     
     // If we have posts but no authors yet, don't render posts.
     // If we have no posts and aren't loading, there's nothing to show.
-    if (!loading && authors.length > 0 && displayMode !== 'author' && !postsData && posts.length === 0) return null;
+    if (!loading && authors.length > 0 && displayMode !== 'author' && displayMode !== 'tag' && !postsData && posts.length === 0) return null;
     if (!loading && authors.length > 0 && displayMode === 'author' && authorPosts.length === 0) return null;
+    if (!loading && authors.length > 0 && displayMode === 'tag' && tagPosts.length === 0) return null;
 
     if (authors.length === 0) {
         return (
@@ -217,8 +250,20 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, ind
                         setLoading={setLoading}
                     />
                 ))
-            ) : (
+            ) : displayMode === 'author' ? (
                 authorPosts.map((post, index) => (
+                    <LazyPostCard
+                        post={post}
+                        authorData={memoizedAuthors.get(String(post.author_id)) || authors[0] as AuthorItem}
+                        key={`${post.slug}-${index}`}
+                        index={index + indexIncrement}
+                        style={style}
+                        isLoading={loading}
+                        setLoading={setLoading}
+                    />
+                ))
+            ) : (
+                tagPosts.map((post, index) => (
                     <LazyPostCard
                         post={post}
                         authorData={memoizedAuthors.get(String(post.author_id)) || authors[0] as AuthorItem}

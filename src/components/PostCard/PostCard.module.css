@@ -95,7 +95,7 @@
 
 .profile_info {
     display: flex;
-    align-items: center; /* This ensures vertical alignment */
+    align-items: left; /* This ensures vertical alignment */
     padding: 0;
     gap: 10px !important;
 }

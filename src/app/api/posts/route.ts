@@ -10,7 +10,12 @@ export async function GET(request: Request) {
     const offset: number = Number(searchParams.get('offset')) || 0;
 
     try {
-        let query = supabase.from('posts').select('*').order('created_at', { ascending: false });
+        let query = supabase.from('posts').select(`
+            *,
+            post_tags (
+                tags (*)
+            )
+        `).order('created_at', { ascending: false });
 
         if (limit) {
             query = query.range(offset, offset + limit - 1);
@@ -22,8 +27,14 @@ export async function GET(request: Request) {
             throw error;
         }
 
+        const formattedPosts = (postsData || []).map((post: any) => {
+            const tags = post.post_tags?.map((postTag: any) => postTag.tags).filter(Boolean) || [];
+            delete post.post_tags;
+            return { ...post, tags };
+        });
+
         return NextResponse.json({
-            posts: (postsData || []),
+            posts: formattedPosts,
         }, { status: 200 });
     } catch (err) {
         console.error('Failed to fetch data from the database: ', err);
@@ -36,7 +47,7 @@ export async function POST(request: Request) {
     const postSlug = searchParams.get('slug')?.split('/').at(-1);
 
     const postData = await request.json();
-    const { author_id, description, image_url, post_type, read_time, views_count, sponsored_by, content } = postData;
+    const { author_id, description, image_url, post_type, read_time, views_count, sponsored_by, content, tags } = postData;
     let { slug, title, sponsor_url, created_at, updated_at } = postData;
 
     if (!author_id || !title || !description || !image_url || !read_time || !post_type || !content) {
@@ -85,13 +96,25 @@ export async function POST(request: Request) {
     };
     
     try {
-        const { error } = await supabase.from('posts').insert([newPost]);
+        const { data: insertedPost, error } = await supabase.from('posts').insert([newPost]).select('id').single();
 
         if (error) {
             throw error;
         }
 
-        return NextResponse.json({ message: 'Successfully uploaded post' }, { status: 201 });
+        if (tags && Array.isArray(tags) && tags.length > 0) {
+            const postTags = tags.map((tag: any) => ({
+                post_id: insertedPost.id,
+                tag_id: tag.id || tag
+            }));
+            
+            const { error: tagError } = await supabase.from('post_tags').insert(postTags);
+            if (tagError) {
+                console.error('Failed to insert post tags:', tagError);
+            }
+        }
+
+        return NextResponse.json({ message: 'Successfully uploaded post', id: insertedPost.id }, { status: 201 });
     } catch (err) {
         console.error('Failed to upload post:', err);
         return NextResponse.json({ error: 'Failed to upload post' }, { status: 500 });
@@ -100,7 +123,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     const postData = await request.json();
-    const { id, title, description, content, image_url, post_type, read_time, sponsored_by, sponsor_url } = postData;
+    const { id, title, description, content, image_url, post_type, read_time, sponsored_by, sponsor_url, tags } = postData;
     let { updated_at } = postData;
 
     if (!id) {
@@ -141,6 +164,22 @@ export async function PUT(request: Request) {
 
         if (error) {
             throw error;
+        }
+
+        if (tags && Array.isArray(tags)) {
+            // Delete existing relations
+            await supabase.from('post_tags').delete().eq('post_id', id);
+
+            if (tags.length > 0) {
+                const postTags = tags.map((tag: any) => ({
+                    post_id: id,
+                    tag_id: tag.id || tag
+                }));
+                const { error: tagError } = await supabase.from('post_tags').insert(postTags);
+                if (tagError) {
+                    console.error('Failed to update post tags:', tagError);
+                }
+            }
         }
 
         return NextResponse.json({ message: 'Successfully updated post' }, { status: 200 });

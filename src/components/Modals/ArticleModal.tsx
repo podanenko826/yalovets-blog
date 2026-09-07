@@ -281,6 +281,20 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                                 <LoadingSkeleton />
                                             )}
                                         </article>
+                                        {!loading && selectedPost?.tags && selectedPost.tags.length > 0 && (
+                                            <div className="mt-4 mb-2 d-flex flex-wrap gap-2">
+                                                {selectedPost.tags.map((tag, index) => (
+                                                    <Link 
+                                                        key={index} 
+                                                        href={`/tag/${tag.tag}`} 
+                                                        className="badge text-bg-light border px-3 py-2 text-decoration-none text-dark"
+                                                        style={{ borderRadius: '8px', fontSize: '0.95rem', fontWeight: 500 }}
+                                                    >
+                                                        {tag.title}
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

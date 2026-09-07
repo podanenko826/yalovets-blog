@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import React from 'react';
 import { getAuthors } from '@/lib/authors';
+import { getTags } from '@/lib/tags';
 
 import PostEditor from '@/components/DynamicEditor';
 
@@ -8,6 +9,7 @@ export const dynamic = "force-dynamic"; // disables prerender
 
 const AddPage = async () => {
     const authorData = await getAuthors();
+    const tagsData = await getTags();
 
     if (!authorData) return <p>Loading...</p>;
 
@@ -15,7 +17,7 @@ const AddPage = async () => {
         <div className="container-fluid mt-3">
             <div className="container">
                 <Suspense fallback={null}>
-                    <PostEditor markdown={''} authorData={authorData} />
+                    <PostEditor markdown={''} authorData={authorData} tagsData={tagsData} />
                 </Suspense>
             </div>
         </div>

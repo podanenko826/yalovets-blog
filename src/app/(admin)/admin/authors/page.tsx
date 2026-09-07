@@ -119,7 +119,7 @@ const AuthorsPage = () => {
             if (!prevAuthor) return null;
 
             console.log(field, value);
-            
+
 
             return {
                 ...prevAuthor,
@@ -218,7 +218,7 @@ const AuthorsPage = () => {
                                                 <td>{author.bio}</td>
                                                 <td>{author.handle}</td>
                                                 <td>{author.role}</td>
-                                                <div className="d-flex gap-4">
+                                                <td className="d-flex w-100 gap-4">
                                                     <button
                                                         type="button"
                                                         className="py-2 px-5 btn-filled btn-filled my-3"
@@ -231,7 +231,7 @@ const AuthorsPage = () => {
                                                     {/* <button type="button" className="py-2 btn-danger btn-filled my-3" data-bs-toggle="modal" data-bs-target="#deleteModal" onClick={() => handleDeleteClick(author)}>
                                                         Disable
                                                     </button> */}
-                                                </div>
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -293,7 +293,7 @@ const AuthorsPage = () => {
                                                 alt={'Profile Picture Preview'}
                                                 title={'Profile Picture Preview'}
                                                 loading="lazy"
-                                                style={{width: '100px'}}
+                                                style={{ width: '100px' }}
                                                 width={100}
                                                 height={100}
                                             />
@@ -431,7 +431,7 @@ const AuthorsPage = () => {
                                                 alt={'Profile Picture Preview'}
                                                 title={'Profile Picture Preview'}
                                                 loading="lazy"
-                                                style={{width: '100px'}}
+                                                style={{ width: '100px' }}
                                                 width={100}
                                                 height={100}
                                             />

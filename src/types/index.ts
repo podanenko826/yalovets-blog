@@ -24,6 +24,7 @@ export type PostItem = {
     title: string;
     description: string;
     content: string;
+    tags?: TagItem[];
     image_url?: string;
     created_at: string;
     updated_at?: string;
@@ -68,6 +69,14 @@ export type SubscriberItem = {
     is_product_updates_on?: boolean;
     is_service_updates_on?: boolean;
 };
+
+export type TagItem = {
+    id: string;
+    created_at: string;
+    tag: string;
+    title: string;
+    description: string;
+}
 
 export type PaginationEntry = {
     date: string;

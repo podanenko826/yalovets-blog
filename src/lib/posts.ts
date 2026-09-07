@@ -153,6 +153,30 @@ export const getPopularPosts = async (limit: number): Promise<PostItem[]> => {
     }
 };
 
+export const getPostsByTag = async (tag: string, limit: number, offset: number = 0): Promise<{ posts: PostItem[]; lastKey: string }> => {
+    if (!tag || !limit || limit > 50) return { posts: [], lastKey: '' };
+
+    try {
+        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+
+        const response = await fetch(`${baseUrl}/api/posts-by-tag?tag=${tag}&limit=${limit}&offset=${offset}`, { next: { revalidate: 0 } });
+
+        if (!response.ok) {
+            console.error('API returned an error:', response.status, await response.text());
+            return { posts: [], lastKey: '' };
+        }
+
+        const data = await response.json();
+        const posts = data.posts || [];
+        const sortedPostsData = sortPosts(posts);
+
+        return { posts: sortedPostsData, lastKey: '' };
+    } catch (err) {
+        console.error('Failed to fetch posts from the database: ', err);
+        return { posts: [], lastKey: '' };
+    }
+};
+
 export const getPost = async (slug: string): Promise<PostItem> => {
     const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
     
@@ -185,7 +209,7 @@ export const formatPostDate = (date: Date) => {
 
 
 export const createPost = async (postData: Partial<PostItem>, markdown: string, email: string): Promise<{ slug: string; markdown: string }> => {
-    const { title, description, created_at, image_url, read_time, post_type, sponsored_by, sponsor_url } = postData;
+    const { title, description, created_at, image_url, read_time, post_type, sponsored_by, sponsor_url, tags } = postData;
     let { slug } = postData;
 
     if (!title || !description || !created_at || !image_url || !read_time || !post_type) {
@@ -225,6 +249,7 @@ export const createPost = async (postData: Partial<PostItem>, markdown: string, 
             views_count: 0,
             sponsored_by,
             sponsor_url,
+            tags,
         };
 
         const response = await fetch(`${baseUrl}/api/posts`, {
@@ -248,7 +273,7 @@ export const createPost = async (postData: Partial<PostItem>, markdown: string, 
 };
 
 export const updatePost = async (postData: Partial<PostItem>, markdown: string): Promise<{ slug: string; markdown: string }> => {
-    const { id, slug, title, description, created_at, updated_at, image_url, read_time, post_type, views_count, sponsored_by, sponsor_url } = postData;
+    const { id, slug, title, description, created_at, updated_at, image_url, read_time, post_type, views_count, sponsored_by, sponsor_url, tags } = postData;
 
     if (!id || !slug || !title || !created_at || read_time === undefined || read_time === null || !post_type) {
         console.error('Recieved invalid or incomplete post data:', { id, slug, title, description, created_at, image_url, read_time, post_type });
@@ -274,6 +299,7 @@ export const updatePost = async (postData: Partial<PostItem>, markdown: string):
             views_count: views_count || 0,
             sponsored_by,
             sponsor_url,
+            tags,
         };
 
         const response = await fetch(`${baseUrl}/api/posts`, {
