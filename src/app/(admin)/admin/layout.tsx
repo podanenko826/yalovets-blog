@@ -11,7 +11,7 @@ const PostPreviewModal = lazy(() => import('@/components/Modals/PostPreviewModal
 
 export const metadata: Metadata = {
     title: 'AWS By Denis Admin',
-    description: 'Ivan AWS By Denis Website',
+    description: 'AWS By Denis Blog Admin',
 };
 
 export default function RootLayout({

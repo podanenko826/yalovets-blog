@@ -5,7 +5,7 @@ import React, { lazy } from 'react';
 
 export const metadata = {
     title: 'Books / AWS By Denis',
-    description: 'Recomendation of books by Ivan Yalovets',
+    description: 'Recomendation of books by Denis Podanenko',
 };
 
 const NavBar = lazy(() => import('@/components/NavBar'));

@@ -12,7 +12,7 @@ import LoadingBanner from '@/components/Modals/LoadingBanner';
 
 export const metadata: Metadata = {
     title: 'AWS By Denis',
-    description: 'Ivan AWS By Denis Website',
+    description: 'AWS By Denis',
 };
 
 export default function RootLayout({

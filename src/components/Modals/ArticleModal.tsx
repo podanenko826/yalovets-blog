@@ -20,7 +20,8 @@ import LoadingSkeleton from '../LoadingSkeleton';
 import '@/app/page.css';
 
 import YouTubeEmbed from '@/components/mdx/YouTubeEmbed';
-
+import Giscus from '@giscus/react';
+import { useUserConfigStore } from '../userConfig/store';
 interface ArticleModalProps {
     slug: string;
 }
@@ -39,12 +40,13 @@ const POPULAR_POSTS_LIMIT = 3;
 const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
     const { posts, fetchPosts, selectedPost, setSelectedPost } = usePostStore();
     const { authors, fetchAuthors } = useAuthorStore();
+    const { theme } = useUserConfigStore();
 
     const [selectedMarkdown, setSelectedMarkdown] = useState<string | null>(null);
     const [serializedMarkdown, setSerializedMarkdown] = useState<MDXRemoteSerializeResult<Record<string, unknown>, Record<string, unknown>>>();
 
     const [popularPosts, setPopularPosts] = useState<PostItem[]>([]);
-    
+
     const [prevPost, setPrevPost] = useState<PostItem | null>(null);
     const [nextPost, setNextPost] = useState<PostItem | null>(null);
 
@@ -107,7 +109,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
 
     useEffect(() => {
         let isMounted = true;
-        
+
         const returnToPost = async () => {
             if (typeof window === 'undefined') return;
             if (loading) return;
@@ -131,7 +133,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
         };
 
         returnToPost();
-        
+
         return () => {
             isMounted = false;
         };
@@ -152,7 +154,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
     useEffect(() => {
         const fetchAdjacentPosts = async () => {
             if (!selectedPost) return;
-            
+
             const { prevPost, nextPost } = await getAdjacentPosts(selectedPost.created_at);
 
             setPrevPost(prevPost);
@@ -300,9 +302,9 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                         {!loading && selectedPost?.tags && selectedPost.tags.length > 0 && (
                                             <div className="mt-4 mb-2 d-flex flex-wrap gap-2">
                                                 {selectedPost.tags.map((tag, index) => (
-                                                    <Link 
-                                                        key={index} 
-                                                        href={`/tag/${tag.tag}`} 
+                                                    <Link
+                                                        key={index}
+                                                        href={`/tag/${tag.tag}`}
                                                         className="badge border px-3 py-2 text-decoration-none interactive-pill"
                                                         style={{ borderRadius: '8px', fontSize: '0.95rem', fontWeight: 500, backgroundColor: 'var(--col-background-elements)', color: 'var(--col-link)', borderColor: 'var(--col-outline-default)' }}
                                                     >
@@ -399,7 +401,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                 </div>
                             </div>
                         )}
-                        {selectedPost && popularPosts && (
+                        {/* {selectedPost && popularPosts && (
                             <div className="container-fluid read-further mb-5 py-3 px-0">
                                 <div className="container d-flex row align-items-center justify-content-center p-0">
                                     <div className="col-md-8 pt-2 pb-3 px-2">
@@ -424,7 +426,25 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                                     </div>
                                 </div>
                             </div>
-                        )}
+                        )} */}
+                        <div className="container d-flex justify-content-center p-0 mt-4 mb-5">
+                            <div className="col-md-8 px-2">
+                                <Giscus
+                                    id="comments"
+                                    repo="podanenko826/aws-by-denis-comments"
+                                    repoId="R_kgDOUSjBVQ"
+                                    category="Announcements"
+                                    categoryId="DIC_kwDOUSjBVc4DFKFu"
+                                    mapping="pathname"
+                                    reactionsEnabled="1"
+                                    emitMetadata="0"
+                                    inputPosition="bottom"
+                                    theme={theme === 'dark' ? 'dark_dimmed' : 'light'}
+                                    lang="en"
+                                    loading="lazy"
+                                />
+                            </div>
+                        </div>
                     </section>
                 </>
             </div>
