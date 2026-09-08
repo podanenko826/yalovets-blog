@@ -1,7 +1,5 @@
 import * as React from 'react';
-import '@/app/page.css';
-
-import Image from 'next/image';
+import '@/app/page.css'; import Image from 'next/image';
 import Link from 'next/link';
 import PostList from '@/components/PostCard/PostList';
 import { Suspense } from 'react';
@@ -96,78 +94,39 @@ export default async function Home() {
                     <div className="arrow-down"></div>
                 </div> */}
 
-                {/* Welcome section (Desktop) */}
+                <div className="welcome container-fluid position-relative overflow-hidden" style={{ minHeight: '65vh', padding: 0 }}>
+                    <div className="container position-relative mt-4 pt-4 mt-lg-5 pt-lg-5" style={{ zIndex: 10 }}>
+                        <div className="row position-relative">
 
-                <div className="welcome container-fluid d-block">
-                    <div className="row container-fluid gx-0 px-0">
-                        <div className="offset-8 offset-sm-7 col-6 col-sm-5 col-md-4 col-lg-6 offset-lg-7">
-                            <picture className="img-fluid teaser-img">
-                                <Image className="img-fluid teaser-img"
-                                    src={'/ui/coffeman.jpg'}
-                                    style={{ width: '50vw', maxHeight: '70vh' }}
-                                    alt="Teaser"
-                                    width={1080}
-                                    height={1350}
-                                    priority={true}
-                                    sizes="(min-width: 1200px) 1140px, (min-width: 992px) 960px" />
-                            </picture>
-                        </div>
-                    </div>
-                    <div>
-                        <div className="container">
-                            <div className="row">
-                                <div className="col-8 col-sm-7 col-lg-5">
-                                    <div className="d-flex gap-3">
-                                        <h2 className="welcome-text-cursor">&gt;</h2>
-                                        <h2 className="welcome-text" id="col-heading-2">
-                                            Welcome to AWS By Denis
-                                        </h2>
-                                    </div>
-                                    <h1 className="welcome-heading" id="col-heading-1">
-                                        AWS Unveiled: Your Gateway to Cloud Knowledge
-                                    </h1>
-                                    {/* <p className="welcome-paragraph">By Ivan Yalovets. Since 2024, I published 0 articles.</p> */}
-                                    {/* <StartReadingButton /> */}
+                            {/* Text Container (Higher z-index so it sits on top) */}
+                            <div className="col-11 col-sm-10 col-lg-5 position-absolute" style={{ zIndex: 20 }}>
+                                <div className="d-flex gap-3">
+                                    <h2 className="welcome-text-cursor m-0">&gt;</h2>
+                                    <h2 className="welcome-text m-0" id="col-heading-2">
+                                        Welcome to AWS By Denis
+                                    </h2>
                                 </div>
+                                <h1 className="welcome-heading" id="col-heading-1">
+                                    AWS Unveiled: Your Gateway to Cloud Knowledge
+                                </h1>
                             </div>
-                        </div>
 
-                        {/* Mobile Mac window */}
-
-                        <div className="d-none d-md-block d-lg-none container">
-                            <div className="mac-window">
-                                <div className="mac-title-bar">
-                                    <div className="mac-buttons">
-                                        <div className="mac-button close"></div>
-                                        <div className="mac-button minimize"></div>
-                                        <div className="mac-button maximize"></div>
+                            {/* Mac Window Container (Shifted left to go behind the text) */}
+                            <div className="col-12 col-lg-7 position-relative mt-4 mt-lg-0 pb-5" style={{ zIndex: 10, marginLeft: '400px' }}>
+                                <div className="mac-window shadow-lg w-100 mx-auto mx-lg-0" style={{ maxWidth: '750px', height: 'auto', minHeight: '350px', marginTop: '130px' }}>
+                                    <div className="mac-title-bar">
+                                        <div className="mac-buttons">
+                                            <div className="mac-button close"></div>
+                                            <div className="mac-button minimize"></div>
+                                            <div className="mac-button maximize"></div>
+                                        </div>
+                                        <div className="mac-title">ReadMe.txt</div>
                                     </div>
-                                    <div className="mac-title">ReadMe.txt</div>
-                                </div>
-                                <div className="mac-content">
-                                    <pre>
-                                        <code>{codeBlock}</code>
-                                    </pre>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Desktop Mac window */}
-
-                        <div className="d-none d-lg-block container-lg">
-                            <div className="mac-window">
-                                <div className="mac-title-bar">
-                                    <div className="mac-buttons">
-                                        <div className="mac-button close"></div>
-                                        <div className="mac-button minimize"></div>
-                                        <div className="mac-button maximize"></div>
+                                    <div className="mac-content p-4 overflow-auto">
+                                        <pre className="m-0" style={{ fontSize: '1rem', whiteSpace: 'pre-wrap' }}>
+                                            <code>{codeBlock}</code>
+                                        </pre>
                                     </div>
-                                    <div className="mac-title">ReadMe.txt</div>
-                                </div>
-                                <div className="mac-content">
-                                    <pre>
-                                        <code>{codeBlock}</code>
-                                    </pre>
                                 </div>
                             </div>
                         </div>
