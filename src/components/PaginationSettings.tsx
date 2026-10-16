@@ -8,7 +8,7 @@ export default function PaginationSettings({ currentPostsPerPage }: { currentPos
 
     return (
         <>
-            <button onClick={() => setModalOpen(prev => !prev)} className="btn-pill py-2 px-2">
+            <button onClick={() => setModalOpen(prev => !prev)} className="btn-pill py-2 px-2" aria-label="Pagination settings">
                 <MdSettings className="btn-pill-svg" />
             </button>
             {modalOpen && <PaginationPreferences postsPerPage={currentPostsPerPage} setModalOpen={setModalOpen} />}

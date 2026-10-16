@@ -188,7 +188,7 @@ const PostPreviewModal = () => {
             <div className="container" onScrollCapture={handleScrollCapture} onScroll={handleScroll} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
                 <div className={`${styles.postDataContainer}`} onClick={e => e.stopPropagation()}>
                     {expanded && (
-                        <button className={`${styles.expandedPostCloseBtn} btn-pill`} onClick={() => handleClose()}>
+                        <button className={`${styles.expandedPostCloseBtn} btn-pill`} aria-label="Close preview" onClick={() => handleClose()}>
                             <IoMdClose className={styles.icon} />
                         </button>
                     )}

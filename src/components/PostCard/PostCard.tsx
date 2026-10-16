@@ -117,7 +117,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                                     <a role="button" onClick={handlePostOpen}>
                                         {post.description.slice(0, dynamicDescLength) + '... '}
                                     </a>
-                                    <a role="button" onClick={handlePostExpansion} className="a-link a-button" id="col-secondary">
+                                    <a role="button" onClick={handlePostExpansion} className="a-link a-button" id="col-secondary" aria-label={`Read more: ${post.title}`}>
                                         Read more
                                     </a>
                                 </>
@@ -337,7 +337,7 @@ const PostCard = ({ post, previewData, authorData, style, index, setValue, setPo
                                     <a role="button" onClick={handlePostOpen}>
                                         {post.description.slice(0, 140) + '... '}
                                     </a>
-                                    <a role="button" onClick={handlePostExpansion} className="a-link a-button" id="col-secondary">
+                                    <a role="button" onClick={handlePostExpansion} className="a-link a-button" id="col-secondary" aria-label={`Read more: ${post.title}`}>
                                         Read more
                                     </a>
                                 </>

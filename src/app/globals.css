@@ -5,9 +5,9 @@
 :root {
     /* --col-primary: rgb(245, 245, 245); */
     --col-primary: rgb(40, 40, 40);
-    --col-secondary: rgb(45, 110, 164);
+    --col-secondary: rgb(38, 102, 156);
     --col-highlight: rgb(31, 90, 139);
-    --col-text: dimgray;
+    --col-text: #505050;
     --col-outline-default: lightgrey;
 
     --col-background: rgb(255, 255, 255);
@@ -34,9 +34,9 @@
 .dark {
     /* --col-primary: rgb(245, 245, 245); */
     --col-primary: rgb(140, 140, 140);
-    --col-secondary: rgb(62, 132, 190);
+    --col-secondary: rgb(77, 149, 212);
     --col-highlight: rgb(31, 90, 139);
-    --col-text: rgb(180, 180, 180);
+    --col-text: rgb(195, 195, 195);
     --col-outline-default: rgb(105, 105, 105);
 
     --col-background: rgb(20, 20, 20);

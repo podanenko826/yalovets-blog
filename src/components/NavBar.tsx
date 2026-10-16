@@ -116,7 +116,7 @@ const NavBar = () => {
 
                         <button className={`btn-outlined ${styles.btn_subscribe}`} onClick={() => setSubscribeModalOpen(!isSubscribeModalOpen)}>Subscribe</button>
 
-                        <button className='btn-pill' onClick={() => handleThemeChange()}>
+                        <button className='btn-pill' aria-label={isDarkTheme ? 'Switch to light mode' : 'Switch to dark mode'} onClick={() => handleThemeChange()}>
                             {isDarkTheme ? (
                                 <IoSunnyOutline className='btn-pill-svg px-1' />
                             ) : (
@@ -131,7 +131,7 @@ const NavBar = () => {
                             {mobileMenuOpened ? <IoMdClose className={styles.mobileNavIcon} id={styles.menu_opened} /> : <IoMdMenu className={styles.mobileNavIcon} />}
                         </button>
                         {mobileMenuOpened && (
-                            <button className='btn-outlined h-min mx-3 px-2 p-0' onClick={() => handleThemeChange()}>
+                            <button className='btn-outlined h-min mx-3 px-2 p-0' aria-label={isDarkTheme ? 'Switch to light mode' : 'Switch to dark mode'} onClick={() => handleThemeChange()}>
                                 {isDarkTheme ? (
                                     <IoSunnyOutline />
                                 ) : (

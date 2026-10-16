@@ -11,7 +11,7 @@
 }
 
 .descriptionText {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.92);
     font-size: 0.95rem;
     line-height: 1.6;
 }
@@ -29,13 +29,13 @@
 }
 
 .navLink {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.92);
     text-decoration: none;
     transition: color 0.2s ease-in-out;
 }
 
 .navLink:hover {
-    color: var(--col-primary);
+    color: #ffffff;
     text-decoration: none;
 }
 
@@ -44,6 +44,6 @@
 }
 
 .copyrightText {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.82);
     font-size: 0.85rem;
 }

@@ -132,7 +132,7 @@ const SubscribeModal = ({ setModalOpen }: SubscribeModalProps) => {
                 )}
 
                 <div className={`${styles.postDataContainer} ${styles.subscribeModal}`} onClick={e => e.stopPropagation()}>
-                    <button className={`${styles.expandedPostCloseBtn} btn-pill`} onClick={() => handleClose()}>
+                    <button className={`${styles.expandedPostCloseBtn} btn-pill`} aria-label="Close modal" onClick={() => handleClose()}>
                         <IoMdClose className={styles.icon} />
                     </button>
 

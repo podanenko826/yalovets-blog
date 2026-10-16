@@ -101,10 +101,10 @@ export default async function Home() {
                             {/* Text Container (Higher z-index so it sits on top) */}
                             <div className="col-11 col-sm-10 col-lg-5 position-absolute" style={{ zIndex: 20 }}>
                                 <div className="d-flex gap-3">
-                                    <h2 className="welcome-text-cursor m-0">&gt;</h2>
-                                    <h2 className="welcome-text m-0" id="col-heading-2">
+                                    <span className="welcome-text-cursor m-0 h2" aria-hidden="true">&gt;</span>
+                                    <span className="welcome-text m-0 h2" id="col-heading-2">
                                         Welcome to AWS By Denis
-                                    </h2>
+                                    </span>
                                 </div>
                                 <h1 className="welcome-heading" id="col-heading-1">
                                     AWS Unveiled: Your Gateway to Cloud Knowledge
@@ -137,11 +137,11 @@ export default async function Home() {
                 <div className="container posts" id="recentPosts">
                     <div className="row">
                         <div className="col-12 category-heading">
-                            <h4 className="subheading-smaller">Recent posts</h4>
+                            <h2 className="subheading-smaller">Recent posts</h2>
                             <div className="horisontal-line" />
-                            <h6 className="subheading-small" id="col-heading-1">
+                            <h3 className="subheading-small" id="col-heading-1">
                                 Subscribe to keep in touch with latest information in tech industry
-                            </h6>
+                            </h3>
                         </div>
                     </div>
 
@@ -159,13 +159,13 @@ export default async function Home() {
                 <div className="container posts" id="popularPosts">
                     <div className="row pt-5">
                         <div className="col-12 category-link">
-                            <h4 className="subheading-smaller" id="btn-text col-secondary">
+                            <h2 className="subheading-smaller" id="btn-text col-secondary">
                                 Popular posts
-                            </h4>
+                            </h2>
                             <div className="horisontal-line" />
-                            <h6 className="subheading-small" id="col-heading-1">
+                            <h3 className="subheading-small" id="col-heading-1">
                                 Those posts are most beloved ones by our subscribers
-                            </h6>
+                            </h3>
                         </div>
                     </div>
 

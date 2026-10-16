@@ -99,7 +99,7 @@ const PaginationPreferences = ({ postsPerPage, setModalOpen }: PaginationPrefere
 
             <div className="container">
                 <div className={`${styles.postDataContainer} ${styles.paginationPreferences}`} onClick={e => e.stopPropagation()}>
-                    <button className={`${styles.expandedPostCloseBtn} btn-pill`} onClick={() => handleClose()}>
+                    <button className={`${styles.expandedPostCloseBtn} btn-pill`} aria-label="Close preferences" onClick={() => handleClose()}>
                         <IoMdClose className={styles.icon} />
                     </button>
 

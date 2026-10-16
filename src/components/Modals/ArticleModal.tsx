@@ -208,7 +208,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug, initialPost }) => {
                                             <button onClick={() => closeModal()} className="d-block d-md-none btn-outlined py-2 px-md-3">
                                                 ← Back
                                             </button>
-                                            <button onClick={() => closeModal()} className="d-none d-md-block btn-pill py-2 px-md-2">
+                                            <button onClick={() => closeModal()} className="d-none d-md-block btn-pill py-2 px-md-2" aria-label="Back to articles">
                                                 ←
                                             </button>
                                         </div>
