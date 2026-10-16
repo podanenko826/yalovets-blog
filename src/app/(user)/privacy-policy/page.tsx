@@ -12,7 +12,7 @@ export default async function PrivacyPolicyPage() {
             .from('pages')
             .select('content')
             .eq('slug', 'privacy-policy')
-            .single();
+            .maybeSingle();
 
         if (data && !error) {
             content = data.content;

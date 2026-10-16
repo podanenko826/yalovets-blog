@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         .from('authors')
         .select('*')
         .eq('handle', handle)
-        .single();
+        .maybeSingle();
 
     if (!author) {
         notFound();
@@ -32,6 +32,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
+import { getAuthorPosts } from '@/lib/posts';
+
 export default async function AuthorDashboard({ params }: Props) {
     const { handle } = await params;
     const POSTS_PER_PAGE = 28;
@@ -40,13 +42,14 @@ export default async function AuthorDashboard({ params }: Props) {
         .from('authors')
         .select('*')
         .eq('handle', handle)
-        .single();
+        .maybeSingle();
 
     if (error || !author) {
         notFound();
     }
 
     const authorData = author;
+    const authorPosts = await getAuthorPosts(authorData.email, POSTS_PER_PAGE);
 
     return (
         <main id="body">
@@ -73,7 +76,7 @@ export default async function AuthorDashboard({ params }: Props) {
                                 {authorData.full_name.at(-1)?.toLowerCase() === 's' ? "'" : "'s"} posts
                             </h3>
                         </div>
-                        <PostList displayMode="author" limit={POSTS_PER_PAGE} style="full" infiniteScroll authorEmail={authorData.email} />
+                        <PostList displayMode="author" limit={POSTS_PER_PAGE} style="full" infiniteScroll authorEmail={authorData.email} postsData={authorPosts.posts} />
                     </div>
                 </div>
             </div>

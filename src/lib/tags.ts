@@ -26,7 +26,7 @@ export const getTagBySlug = async (slug: string): Promise<TagItem | null> => {
             .from('tags')
             .select('*')
             .eq('tag', slug)
-            .single();
+            .maybeSingle();
 
         if (error) {
             return null;
@@ -45,7 +45,7 @@ export const getTagById = async (id: string): Promise<TagItem | null> => {
             .from('tags')
             .select('*')
             .eq('id', id)
-            .single();
+            .maybeSingle();
 
         if (error) {
             return null;

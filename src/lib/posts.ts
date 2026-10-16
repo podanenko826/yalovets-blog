@@ -129,7 +129,7 @@ export const getAuthorPosts = async (email: string, limit: number, offset: numbe
             .from('authors')
             .select('id')
             .eq('email', email)
-            .single();
+            .maybeSingle();
 
         if (authorError || !author) {
             return { posts: [], lastKey: '' };
@@ -248,7 +248,7 @@ export const getPost = async (slug: string): Promise<PostItem> => {
             .from('posts')
             .select('*, post_tags ( tags (*) )')
             .eq('slug', slug)
-            .single();
+            .maybeSingle();
 
         if (error || !post) {
             return {} as PostItem;
@@ -490,6 +490,7 @@ const VIEW_COOKIE_NAME = 'viewed_articles';
 const COOKIE_EXPIRATION_DAYS = 1;
 
 async function incrementViewCount(id: string) {
+    if (!id) return;
     try {
         const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
 
@@ -500,7 +501,7 @@ async function incrementViewCount(id: string) {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to increment view count');
+            return;
         }
     } catch (error) {
         console.error('Error incrementing view count:', error);
@@ -508,6 +509,8 @@ async function incrementViewCount(id: string) {
 }
 
 export async function trackView(id: string, slug: string) {
+    if (!id || !slug) return;
+
     const viewedArticles = Cookies.get(VIEW_COOKIE_NAME) ? JSON.parse(Cookies.get(VIEW_COOKIE_NAME) as string) : [];
 
     if (viewedArticles.includes(slug)) {

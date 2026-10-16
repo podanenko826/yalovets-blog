@@ -24,6 +24,7 @@ import Giscus from '@giscus/react';
 import { useUserConfigStore } from '../userConfig/store';
 interface ArticleModalProps {
     slug: string;
+    initialPost?: PostItem;
 }
 
 /**
@@ -31,13 +32,12 @@ interface ArticleModalProps {
  *
  * @param {Object} props - The props for ArticleModal.
  * @param {string} props.slug - A slug needed to fetch the post from the API.
- * @param {React.Dispatch<React.SetStateAction<PostItem | null>>} [props.setValue] -
- * Optional. Pass a useState setter to get the up-to-date selected post from the ArticleModal.
+ * @param {PostItem} [props.initialPost] - Pre-fetched post data from Server Component.
  */
 
 const POPULAR_POSTS_LIMIT = 3;
 
-const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
+const ArticleModal: React.FC<ArticleModalProps> = ({ slug, initialPost }) => {
     const { posts, fetchPosts, selectedPost, setSelectedPost } = usePostStore();
     const { authors, fetchAuthors } = useAuthorStore();
     const { theme } = useUserConfigStore();
@@ -50,7 +50,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
     const [prevPost, setPrevPost] = useState<PostItem | null>(null);
     const [nextPost, setNextPost] = useState<PostItem | null>(null);
 
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(!initialPost);
 
     //? Encoded link and text for sharing purpose on social media
     // const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
@@ -63,6 +63,13 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
     const router = useRouter();
 
     const components = useMDXComponents();
+
+    useEffect(() => {
+        if (initialPost && initialPost.slug === slug && (!selectedPost || selectedPost.slug !== slug)) {
+            setSelectedPost(initialPost);
+            setLoading(false);
+        }
+    }, [initialPost, slug, selectedPost, setSelectedPost]);
 
     useEffect(() => {
         const fetchPopularPosts = async () => {
@@ -91,8 +98,8 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
     }, [setSelectedPost]);
 
     useEffect(() => {
-        if (slug && selectedPost) {
-            document.title = `${selectedPost?.title} / AWS By Denis`;
+        if (slug && selectedPost && selectedPost.title) {
+            document.title = `${selectedPost.title} / AWS By Denis`;
         } else {
             document.title = "AWS By Denis";
         }
@@ -100,10 +107,8 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
 
     //? Update post's views_count when it gets opened
     useEffect(() => {
-        if (selectedPost) {
-            console.log("selected post: ", selectedPost);
-
-            trackView(selectedPost?.id as string, selectedPost?.slug);
+        if (selectedPost && selectedPost.id && selectedPost.slug) {
+            trackView(selectedPost.id, selectedPost.slug);
         }
     }, [selectedPost]);
 
@@ -115,6 +120,11 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
             if (loading) return;
 
             if (selectedPost === null && slug) {
+                if (initialPost && initialPost.slug === slug) {
+                    if (isMounted) setSelectedPost(initialPost);
+                    return;
+                }
+
                 const postFromCache = posts.find(post => post.slug === slug) as PostItem;
                 let post: PostItem;
 
@@ -124,7 +134,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
                     post = await getPost(slug);
                 }
 
-                if (!post) return;
+                if (!post || !post.id || !post.slug) return;
 
                 if (post && isMounted) {
                     setSelectedPost(post);
@@ -137,12 +147,12 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
         return () => {
             isMounted = false;
         };
-    }, [slug, selectedPost, setSelectedPost, posts, loading]);
+    }, [slug, selectedPost, setSelectedPost, posts, loading, initialPost]);
 
     useEffect(() => {
         const processMarkdown = async () => {
-            if (selectedPost) {
-                const result = await mdSerialize(selectedPost?.content as string);
+            if (selectedPost && selectedPost.content) {
+                const result = await mdSerialize(selectedPost.content);
 
                 setSerializedMarkdown(result);
             }
@@ -153,7 +163,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
 
     useEffect(() => {
         const fetchAdjacentPosts = async () => {
-            if (!selectedPost) return;
+            if (!selectedPost || !selectedPost.created_at) return;
 
             const { prevPost, nextPost } = await getAdjacentPosts(selectedPost.created_at);
 
@@ -174,12 +184,12 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ slug }) => {
     };
 
     useEffect(() => {
-        if (slug && loading) {
+        if (slug && loading && !initialPost) {
             //? Fake loading time, adjust the time if needed
             const timer = setTimeout(() => setLoading(false), 250);
             return () => clearTimeout(timer);
         }
-    }, [slug, loading]);
+    }, [slug, loading, initialPost]);
 
     const author = authors.find(author => author.id === selectedPost?.author_id);
 

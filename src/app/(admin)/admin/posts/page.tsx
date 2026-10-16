@@ -111,9 +111,7 @@ const PostsPage = () => {
                             </div>
                         </div>
 
-                        {authors.length > 0 && (
-                            <PostList postsData={posts} displayMode='admin' style='admin' limit={ARTICLES_PER_PAGE} infiniteScroll />
-                        )}
+                        <PostList postsData={posts} displayMode='admin' style='admin' limit={ARTICLES_PER_PAGE} infiniteScroll />
                     </div>
                 </div>
             </div>

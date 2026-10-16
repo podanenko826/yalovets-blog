@@ -12,7 +12,7 @@ export default async function ImprintPage() {
             .from('pages')
             .select('content')
             .eq('slug', 'imprint')
-            .single();
+            .maybeSingle();
 
         if (data && !error) {
             content = data.content;

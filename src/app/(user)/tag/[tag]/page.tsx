@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         .from('tags')
         .select('*')
         .eq('tag', tag)
-        .single();
+        .maybeSingle();
 
     if (!tagData) {
         notFound();
@@ -28,6 +28,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
+import { getPostsByTag } from '@/lib/posts';
+
 export default async function TagDashboard({ params }: Props) {
     const { tag } = await params;
     const POSTS_PER_PAGE = 28;
@@ -36,11 +38,13 @@ export default async function TagDashboard({ params }: Props) {
         .from('tags')
         .select('*')
         .eq('tag', tag)
-        .single();
+        .maybeSingle();
 
     if (error || !tagData) {
         notFound();
     }
+
+    const tagPosts = await getPostsByTag(tagData.tag, POSTS_PER_PAGE);
 
     return (
         <main id="body">
@@ -60,7 +64,7 @@ export default async function TagDashboard({ params }: Props) {
 
                 <div className="container posts" id="posts">
                     <div className="row post-list mb-5">
-                        <PostList displayMode="tag" limit={POSTS_PER_PAGE} style="full" infiniteScroll tag={tagData.tag} />
+                        <PostList displayMode="tag" limit={POSTS_PER_PAGE} style="full" infiniteScroll tag={tagData.tag} postsData={tagPosts.posts} />
                     </div>
                 </div>
             </div>

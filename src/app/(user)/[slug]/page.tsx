@@ -11,7 +11,7 @@ const PostPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
         notFound();
     }
 
-    return <ArticleModal slug={slug} />
+    return <ArticleModal slug={slug} initialPost={post} />
 };
 
 export default PostPage;
