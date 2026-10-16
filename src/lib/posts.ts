@@ -2,6 +2,7 @@ import moment from 'moment';
 import Cookies from 'js-cookie';
 
 import type { AuthorItem, PostItem } from '@/types';
+import { supabase } from '@/lib/supabase';
 import { getAuthorEmails, getAuthorByEmail } from './authors';
 
 export const postTypes = [
@@ -56,23 +57,32 @@ export function sortPosts(postsData: PostItem[]): PostItem[] {
     return sortedPostsData;
 }
 
+const formatPostTags = (post: any): PostItem => {
+    if (!post) return post;
+    const tags = post.post_tags?.map((pt: any) => pt.tags).filter(Boolean) || post.tags || [];
+    const formatted = { ...post, tags };
+    delete formatted.post_tags;
+    return formatted as PostItem;
+};
+
 export const getPaginatedPosts = async (page: number, limit: number): Promise<{ posts: PostItem[]; lastKey: string }> => {
     if (!limit || limit > 50) return { posts: [], lastKey: '' };
 
     try {
-        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
         const offset = (page - 1) * limit;
+        const { data: postsData, error } = await supabase
+            .from('posts')
+            .select('*, post_tags ( tags (*) )')
+            .order('created_at', { ascending: false })
+            .range(offset, offset + limit - 1);
 
-        const response = await fetch(`${baseUrl}/api/posts?limit=${limit}&offset=${offset}`, { next: { revalidate: 0 } });
-
-        if (!response.ok) {
-            console.error('API returned an error:', response.status, await response.text());
+        if (error) {
+            console.error('Failed to fetch posts from Supabase:', error);
             return { posts: [], lastKey: '' };
         }
 
-        const data = await response.json();
-        const posts = Array.isArray(data) ? data : (data.posts || []);
-        const sortedPostsData = sortPosts(posts);
+        const formattedPosts = (postsData || []).map(formatPostTags);
+        const sortedPostsData = sortPosts(formattedPosts);
 
         return { posts: sortedPostsData, lastKey: '' };
     } catch (err) {
@@ -85,19 +95,24 @@ export const getSortedPosts = async (limit: number, lastKey?: string): Promise<{
     if (!limit || limit > 50) return { posts: [], lastKey: '' };
 
     try {
-        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+        let query = supabase
+            .from('posts')
+            .select('*, post_tags ( tags (*) )')
+            .order('created_at', { ascending: false });
 
-        // For simplicity, converting lastKey usage to just limit fetching since lastKey implies cursor pagination
-        const response = await fetch(`${baseUrl}/api/posts?limit=${limit}`, { next: { revalidate: 0 } });
+        if (limit) {
+            query = query.limit(limit);
+        }
 
-        if (!response.ok) {
-            console.error('API returned an error:', response.status, await response.text());
+        const { data: postsData, error } = await query;
+
+        if (error) {
+            console.error('Failed to fetch sorted posts from Supabase:', error);
             return { posts: [], lastKey: '' };
         }
 
-        const data = await response.json();
-        const posts = Array.isArray(data) ? data : (data.posts || []);
-        const sortedPostsData = sortPosts(posts);
+        const formattedPosts = (postsData || []).map(formatPostTags);
+        const sortedPostsData = sortPosts(formattedPosts);
 
         return { posts: sortedPostsData, lastKey: '' };
     } catch (err) {
@@ -110,18 +125,35 @@ export const getAuthorPosts = async (email: string, limit: number, offset: numbe
     if (!email || !limit || limit > 50) return { posts: [], lastKey: '' };
 
     try {
-        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+        const { data: author, error: authorError } = await supabase
+            .from('authors')
+            .select('id')
+            .eq('email', email)
+            .single();
 
-        const response = await fetch(`${baseUrl}/api/posts-by-author?email=${encodeURIComponent(email)}&limit=${limit}&offset=${offset}`, { next: { revalidate: 0 } });
-
-        if (!response.ok) {
-            console.error('API returned an error:', response.status, await response.text());
+        if (authorError || !author) {
             return { posts: [], lastKey: '' };
         }
 
-        const data = await response.json();
-        const posts = data.posts || [];
-        const sortedPostsData = sortPosts(posts);
+        let query = supabase
+            .from('posts')
+            .select('*, post_tags ( tags (*) )')
+            .eq('author_id', author.id)
+            .order('created_at', { ascending: false });
+
+        if (limit) {
+            query = query.range(offset, offset + limit - 1);
+        }
+
+        const { data: postsData, error: postsError } = await query;
+
+        if (postsError) {
+            console.error('Failed to fetch author posts from Supabase:', postsError);
+            return { posts: [], lastKey: '' };
+        }
+
+        const formattedPosts = (postsData || []).map(formatPostTags);
+        const sortedPostsData = sortPosts(formattedPosts);
 
         return { posts: sortedPostsData, lastKey: '' };
     } catch (err) {
@@ -134,19 +166,24 @@ export const getPopularPosts = async (limit: number): Promise<PostItem[]> => {
     if (!limit || limit > 50) return [];
 
     try {
-        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+        let query = supabase
+            .from('posts')
+            .select('*, post_tags ( tags (*) )')
+            .order('views_count', { ascending: false });
 
-        const response = await fetch(`${baseUrl}/api/posts-by-views?limit=${limit}`, { next: { revalidate: 0 } });
+        if (limit) {
+            query = query.limit(limit);
+        }
 
-        if (!response.ok) {
-            console.error('API returned an error:', response.status, await response.text());
+        const { data: postsData, error } = await query;
+
+        if (error) {
+            console.error('Failed to fetch popular posts from Supabase:', error);
             return [];
         }
 
-        const data: PostItem[] = await response.json();
-        const sortedPostsData = sortPosts(data);
-
-        return sortedPostsData;
+        const formattedPosts = (postsData || []).map(formatPostTags);
+        return sortPosts(formattedPosts);
     } catch (err) {
         console.error('Failed to fetch posts from the database: ', err);
         return [];
@@ -157,20 +194,46 @@ export const getPostsByTag = async (tag: string, limit: number, offset: number =
     if (!tag || !limit || limit > 50) return { posts: [], lastKey: '' };
 
     try {
-        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+        const { data: tagData, error: tagError } = await supabase
+            .from('tags')
+            .select('id')
+            .eq('tag', tag)
+            .single();
 
-        const response = await fetch(`${baseUrl}/api/posts-by-tag?tag=${tag}&limit=${limit}&offset=${offset}`, { next: { revalidate: 0 } });
-
-        if (!response.ok) {
-            console.error('API returned an error:', response.status, await response.text());
+        if (tagError || !tagData) {
             return { posts: [], lastKey: '' };
         }
 
-        const data = await response.json();
-        const posts = data.posts || [];
-        const sortedPostsData = sortPosts(posts);
+        const { data: postTags, error: postTagsError } = await supabase
+            .from('post_tags')
+            .select('post_id')
+            .eq('tag_id', tagData.id);
 
-        return { posts: sortedPostsData, lastKey: '' };
+        if (postTagsError || !postTags || postTags.length === 0) {
+            return { posts: [], lastKey: '' };
+        }
+
+        const postIds = postTags.map(pt => pt.post_id);
+
+        let query = supabase
+            .from('posts')
+            .select('*, post_tags ( tags (*) )')
+            .in('id', postIds)
+            .order('created_at', { ascending: false });
+
+        if (limit) {
+            query = query.range(offset, offset + limit - 1);
+        }
+
+        const { data: postsData, error: postsError } = await query;
+
+        if (postsError) {
+            console.error('Failed to fetch posts by tag from Supabase:', postsError);
+            return { posts: [], lastKey: '' };
+        }
+
+        const formattedPosts = (postsData || []).map(formatPostTags);
+        return { posts: sortPosts(formattedPosts), lastKey: '' };
     } catch (err) {
         console.error('Failed to fetch posts from the database: ', err);
         return { posts: [], lastKey: '' };
@@ -178,26 +241,48 @@ export const getPostsByTag = async (tag: string, limit: number, offset: number =
 };
 
 export const getPost = async (slug: string): Promise<PostItem> => {
-    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
-    
-    const response = await fetch(`${baseUrl}/api/post-by-slug?slug=${slug}`, { next: { revalidate: 0 } });
-    const data: PostItem[] = await response.json();
-    
-    const unwrappedData = Array.isArray(data) ? data : [data];
-    return unwrappedData[0] || {} as PostItem;
+    if (!slug) return {} as PostItem;
+
+    try {
+        const { data: post, error } = await supabase
+            .from('posts')
+            .select('*, post_tags ( tags (*) )')
+            .eq('slug', slug)
+            .single();
+
+        if (error || !post) {
+            return {} as PostItem;
+        }
+
+        return formatPostTags(post);
+    } catch (err) {
+        console.error('Failed to fetch post from Supabase:', err);
+        return {} as PostItem;
+    }
 };
 
 export const getAdjacentPosts = async (createdAt: string): Promise<{ prevPost: PostItem | null; nextPost: PostItem | null }> => {
-    try {
-        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
+    if (!createdAt) return { prevPost: null, nextPost: null };
 
-        const response = await fetch(`${baseUrl}/api/posts/adjacent?created_at=${encodeURIComponent(createdAt)}`, { next: { revalidate: 0 } });
-        if (!response.ok) {
-            console.error('API returned an error:', response.status, await response.text());
-            return { prevPost: null, nextPost: null };
-        }
-        
-        return await response.json();
+    try {
+        const { data: prevData } = await supabase
+            .from('posts')
+            .select('slug, title, created_at')
+            .gt('created_at', createdAt)
+            .order('created_at', { ascending: true })
+            .limit(1);
+
+        const { data: nextData } = await supabase
+            .from('posts')
+            .select('slug, title, created_at')
+            .lt('created_at', createdAt)
+            .order('created_at', { ascending: false })
+            .limit(1);
+
+        return {
+            prevPost: prevData && prevData.length > 0 ? (prevData[0] as unknown as PostItem) : null,
+            nextPost: nextData && nextData.length > 0 ? (nextData[0] as unknown as PostItem) : null
+        };
     } catch (err) {
         console.error('Failed to fetch adjacent posts: ', err);
         return { prevPost: null, nextPost: null };
@@ -205,12 +290,16 @@ export const getAdjacentPosts = async (createdAt: string): Promise<{ prevPost: P
 };
 
 export const getPostsCount = async (): Promise<number> => {
-    const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
-    
     try {
-        const response = await fetch(`${baseUrl}/api/posts`, { method: 'GET', next: { revalidate: 0 } });
-        const posts = await response.json();
-        return Array.isArray(posts) ? posts.length : (posts.posts?.length || 0);
+        const { count, error } = await supabase
+            .from('posts')
+            .select('*', { count: 'exact', head: true });
+
+        if (error) {
+            console.error('Failed to count posts:', error);
+            return 0;
+        }
+        return count || 0;
     } catch (err) {
         console.error('Failed to count posts:', err);
         return 0;

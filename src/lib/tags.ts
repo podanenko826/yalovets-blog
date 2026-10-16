@@ -1,21 +1,19 @@
 import { TagItem } from '@/types';
-
-// Utility to recursively unwrap DynamoDB format ({ S: "string" }, { N: "123" }, { M: {...} })
+import { supabase } from '@/lib/supabase';
 
 export const getTags = async (): Promise<TagItem[]> => {
     try {
-        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
-        const response = await fetch(`${baseUrl}/api/tags`, { next: { revalidate: 0 } });
+        const { data: tagsData, error } = await supabase
+            .from('tags')
+            .select('*')
+            .order('created_at', { ascending: false });
 
-        if (!response.ok) {
-            console.error('API returned an error:', response.status, await response.text());
+        if (error) {
+            console.error('Failed to fetch tags from Supabase:', error);
             return [];
         }
 
-        const data = await response.json();
-        const tags = Array.isArray(data) ? data : (data.tags || []);
-
-        return tags;
+        return tagsData || [];
     } catch (err) {
         console.error('Failed to fetch tags from the database: ', err);
         return [];
@@ -24,16 +22,15 @@ export const getTags = async (): Promise<TagItem[]> => {
 
 export const getTagBySlug = async (slug: string): Promise<TagItem | null> => {
     try {
-        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
-        const response = await fetch(`${baseUrl}/api/tags?slug=${slug}`, { next: { revalidate: 0 } });
+        const { data: tag, error } = await supabase
+            .from('tags')
+            .select('*')
+            .eq('tag', slug)
+            .single();
 
-        if (!response.ok) {
-            console.error('API returned an error:', response.status, await response.text());
+        if (error) {
             return null;
         }
-
-        const data = await response.json();
-        const tag = Array.isArray(data) ? data[0] : (data.tags || null);
 
         return tag;
     } catch (err) {
@@ -44,16 +41,15 @@ export const getTagBySlug = async (slug: string): Promise<TagItem | null> => {
 
 export const getTagById = async (id: string): Promise<TagItem | null> => {
     try {
-        const baseUrl = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000' : '';
-        const response = await fetch(`${baseUrl}/api/tags?id=${id}`, { next: { revalidate: 0 } });
+        const { data: tag, error } = await supabase
+            .from('tags')
+            .select('*')
+            .eq('id', id)
+            .single();
 
-        if (!response.ok) {
-            console.error('API returned an error:', response.status, await response.text());
+        if (error) {
             return null;
         }
-
-        const data = await response.json();
-        const tag = Array.isArray(data) ? data[0] : (data.tags || null);
 
         return tag;
     } catch (err) {
