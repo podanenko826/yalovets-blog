@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import PostList from '@/components/PostCard/PostList';
-import postCardStyles from '@/components/PostCard/postCard.module.css';
+import postCardStyles from '@/components/PostCard/PostCard.module.css';
 
 import { supabase } from '@/lib/supabase';
 
