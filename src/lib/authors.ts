@@ -44,12 +44,14 @@ export const getAuthors = async (): Promise<AuthorItem[]> => {
     try {
         if (typeof window === 'undefined') {
             const { createClient } = await import('@supabase/supabase-js');
-            const supabaseAdmin = createClient(
-                process.env.NEXT_PUBLIC_SUPABASE_URL!,
-                process.env.SUPABASE_SERVICE_ROLE_KEY!
-            );
+            const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://qarqpcollwcvirrnostl.supabase.co';
+            const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+            const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
             const { data, error } = await supabaseAdmin.from('authors').select('*');
-            if (error) throw error;
+            if (error) {
+                console.error('Failed to query authors:', error);
+                return [];
+            }
             if (Array.isArray(data)) {
                 return data.map(transformAuthor).reverse();
             }
@@ -57,6 +59,7 @@ export const getAuthors = async (): Promise<AuthorItem[]> => {
         } else {
             const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
             const response = await fetch(`${baseUrl}/api/author`, { cache: 'no-store' });
+            if (!response.ok) return [];
             const data = await response.json();
             
             if (Array.isArray(data)) {

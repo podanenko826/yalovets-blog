@@ -5,6 +5,7 @@ import LazyPostCard from './LazyPostCard';
 import moment from 'moment';
 import { usePostStore } from '../posts/store';
 import { useAuthorStore } from '../authors/store';
+import { emptyAuthorObject } from '@/lib/authors';
 
 import LoadingSkeleton from '../LoadingSkeleton';
 import { getAuthorPosts, getPopularPosts, sortPosts, getPostsByTag } from '@/lib/posts';
@@ -163,7 +164,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, ind
     if (!loading && authors.length > 0 && displayMode === 'author' && authorPosts.length === 0) return null;
     if (!loading && authors.length > 0 && displayMode === 'tag' && tagPosts.length === 0) return null;
 
-    if (authors.length === 0) {
+    if (loading && (!postsData || postsData.length === 0)) {
         return (
             <>
                 {Array.from({ length: limit }).map((_, index) => (
@@ -173,6 +174,10 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, ind
         );
     }
 
+    const getAuthorForPost = (authorId: string | number | undefined) => {
+        return memoizedAuthors.get(String(authorId)) || (authors[0] as AuthorItem) || emptyAuthorObject;
+    };
+
     return (
         <>
             {/* Render dynamically fetched posts */}
@@ -181,7 +186,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, ind
                     postsData.map((post, index) => (
                         <LazyPostCard
                             post={post}
-                            authorData={memoizedAuthors.get(String(post.author_id)) || authors[0] as AuthorItem}
+                            authorData={getAuthorForPost(post.author_id)}
                             key={post.slug}
                             index={index + indexIncrement}
                             style={style}
@@ -192,7 +197,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, ind
                     posts.map((post, index) => (
                         <LazyPostCard
                             post={post}
-                            authorData={memoizedAuthors.get(String(post.author_id)) || authors[0] as AuthorItem}
+                            authorData={getAuthorForPost(post.author_id)}
                             key={post.slug}
                             index={index + indexIncrement}
                             style={style}
@@ -204,7 +209,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, ind
                 latest && (
                     <LazyPostCard
                         post={latest}
-                        authorData={memoizedAuthors.get(String(latest.author_id)) || authors[0] as AuthorItem}
+                        authorData={getAuthorForPost(latest.author_id)}
                         key={latest.slug}
                         index={indexIncrement}
                         style={style}
@@ -216,7 +221,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, ind
                 recent.map((post, index) => (
                     <LazyPostCard
                         post={post}
-                        authorData={memoizedAuthors.get(String(post.author_id)) || authors[0] as AuthorItem}
+                        authorData={getAuthorForPost(post.author_id)}
                         key={`${post.slug}-${index}`}
                         index={index + posts.length + indexIncrement}
                         style={style}
@@ -229,7 +234,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, ind
                     <div key={`${post.slug}-${index}`} className="col-md-6 col-lg-4">
                         <LazyPostCard
                             post={post}
-                            authorData={memoizedAuthors.get(String(post.author_id)) || authors[0] as AuthorItem}
+                            authorData={getAuthorForPost(post.author_id)}
                             key={`${post.slug}-${index}`}
                             index={index + posts.length + indexIncrement}
                             style={style}
@@ -242,7 +247,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, ind
                 mostViewed.map((post, index) => (
                     <LazyPostCard
                         post={post}
-                        authorData={memoizedAuthors.get(String(post.author_id)) || authors[0] as AuthorItem}
+                        authorData={getAuthorForPost(post.author_id)}
                         key={`${post.slug}-${index}`}
                         index={index + posts.length + indexIncrement}
                         style={style}
@@ -254,7 +259,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, ind
                 authorPosts.map((post, index) => (
                     <LazyPostCard
                         post={post}
-                        authorData={memoizedAuthors.get(String(post.author_id)) || authors[0] as AuthorItem}
+                        authorData={getAuthorForPost(post.author_id)}
                         key={`${post.slug}-${index}`}
                         index={index + indexIncrement}
                         style={style}
@@ -266,7 +271,7 @@ const PostList: React.FC<PostListProps> = ({ displayMode, style, limit = 28, ind
                 tagPosts.map((post, index) => (
                     <LazyPostCard
                         post={post}
-                        authorData={memoizedAuthors.get(String(post.author_id)) || authors[0] as AuthorItem}
+                        authorData={getAuthorForPost(post.author_id)}
                         key={`${post.slug}-${index}`}
                         index={index + indexIncrement}
                         style={style}
